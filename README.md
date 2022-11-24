@@ -1,7 +1,7 @@
 ### IMPORTANTE:
-Para executar essa app tem que instalar o driver ODBC MS-SQL para Linux, conforme descrito aqui
+Para executar essa app tem que instalar o driver ODBC MS-SQL para Linux, conforme descrito [aqui](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16#ubuntu17)
 
-Para configurar o SQL Alchemy (não é necessário para a executar a app), e consequentemente o Flask, a documentação está aqui
+Para configurar o SQL Alchemy (**não é necessário** para a executar a app), e consequentemente o Flask, a documentação está [aqui](https://docs.sqlalchemy.org/en/14/dialects/mssql.html#dsn-connections)
 
 Script python para converter a string de conexão:
 
