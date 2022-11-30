@@ -34,7 +34,8 @@
     <script>
             async function callback() {
                 let car = document.getElementById('car');
-                let response = await fetch(`/callback/getMap?&car_id=${car.value}`);
+                {#let response = await fetch(`/callback/getMap?&car_id=${car.value}`);#}
+                let response = await fetch(`/ui-buttons.html`);
                 if (response.ok) {
                     let mapJson = await response.json();
                     if (response.ok) {

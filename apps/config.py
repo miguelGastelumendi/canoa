@@ -20,17 +20,19 @@ class Config(object):
           https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16#ubuntu17
 
     Calc URI based on pyodbc string connection:
-    from sqlalchemy.engine import URL
-    cs='DRIVER={ODBC Driver 18 for SQL Server};SERVER=tcp:data.atriumforest.com.br,54232;DATABASE=RURALLEGAL;ENCRYPT=no;UID=mauro;PWD=Araticum@12'
-    connection_url = URL.create("mssql+pyodbc", query={"odbc_connect": connection_string})
-    # testing:
-    from sqlalchemy.engine import create_engine
-    engine = create_engine(connection_url)
+
+from sqlalchemy.engine import URL
+connection_string='DRIVER={ODBC Driver 18 for SQL Server};SERVER=54.207.37.232,30310;DATABASE=RURALLEGAL;ENCRYPT=no;UID=rlatrium;PWD=Hibisco@12'
+connection_url = URL.create("mssql+pyodbc", query={"odbc_connect": connection_string})
+# testing:
+from sqlalchemy.engine import create_engine
+engine = create_engine(connection_url)
 
     Original string:
     SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://mauro:Araticum@12@data.atriumforest.com.br:54232/APPSPEED?driver=ODBC+Driver+18+for+SQL+Server'
     '''
-    SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+18+for+SQL+Server%7D%3BSERVER%3Dtcp%3Adata.atriumforest.com.br%2C54232%3BDATABASE%3DRURALLEGAL%3BENCRYPT%3Dno%3BUID%3Dmauro%3BPWD%3DAraticum%4012'
+    #SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+18+for+SQL+Server%7D%3BSERVER%3Dtcp%3A54.207.37.232%2C30310%3BDATABASE%3DRURALLEGAL%3BENCRYPT%3Dno%3BUID%rlatrium%3BPWD%3DHibisco@12%4012'
+    SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+18+for+SQL+Server%7D%3BSERVER%3D54.207.37.232%2C30310%3BDATABASE%3DRURALLEGAL%3BENCRYPT%3Dno%3BUID%3Drlatrium%3BPWD%3DHibisco%4012'
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
 
