@@ -29,7 +29,7 @@ from sqlalchemy.engine import create_engine
 engine = create_engine(connection_url)
 
     Original string:
-    SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://mauro:Araticum@12@data.atriumforest.com.br:54232/APPSPEED?driver=ODBC+Driver+18+for+SQL+Server'
+    SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://mauro:Araticum@12@data.atriumforest.com.br:/APPSPEED?driver=ODBC+Driver+18+for+SQL+Server'
     '''
     #SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+18+for+SQL+Server%7D%3BSERVER%3Dtcp%3A54.207.37.232%2C30310%3BDATABASE%3DRURALLEGAL%3BENCRYPT%3Dno%3BUID%rlatrium%3BPWD%3DHibisco@12%4012'
     SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+18+for+SQL+Server%7D%3BSERVER%3D54.207.37.232%2C30310%3BDATABASE%3DRURALLEGAL%3BENCRYPT%3Dno%3BUID%3Drlatrium%3BPWD%3DHibisco%4012'
