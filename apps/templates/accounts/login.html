@@ -12,23 +12,19 @@
         {% include 'includes/preloader.html' %}
 
         <!-- Section -->
-        <section class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark" data-background="/static/assets/img/pages/form-image.jpg">
+        <section class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark img-fluid" style="background: url(../../static/assets/img/pages/1440_Tree-tops.jpg) center center no-repeat;">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-12 d-flex align-items-center justify-content-center">
-                        <div class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 p-lg-5 w-100 fmxw-500">
+                        <div class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 w-100 fmxw-500">
                             <div class="text-center text-md-center mb-4 mt-md-0">
                                 <h1 class="mb-0 h3">
-                                    <a href="https://appseed.us/product/pixel-bootstrap/flask/" target="_blank">Flask Pixel UI</a> - Login
+                                    Login
                                 </h1>
+                                <section>
+                                    <img class="img-fluid" src="../../static/assets/img/sections/Logo-Rural-Legal_horizontal.png" width="309px" height="126px">
+                                </section>
                                 <br />
-                                <span class="font-weight-normal">
-                                    {% if msg %}
-                                        {{ msg | safe }}
-                                    {% else %}
-                                        Add your credentials
-                                    {% endif %}                                  
-                                </span>
                             </div>
                             <form method="post" action="" class="mt-4">
 
@@ -36,7 +32,7 @@
 
                                 <!-- Form -->
                                 <div class="form-group mb-4">
-                                    <label for="email">Username</label>
+                                    <label for="email">Usuário</label>
                                     <div class="input-group">
                                         <span class="input-group-text" id="basic-addon1"><span class="fas fa-user"></span></span>
                                         {{ form.username(class="form-control") }}
@@ -46,7 +42,7 @@
                                 <div class="form-group">
                                     <!-- Form -->
                                     <div class="form-group mb-4">
-                                        <label for="password">Password</label>
+                                        <label for="password">Senha</label>
                                         <div class="input-group">
                                             <span class="input-group-text" id="basic-addon2"><span class="fas fa-unlock-alt"></span></span>
                                             {{ form.password(class="form-control", type="password") }}
@@ -57,14 +53,14 @@
                                         <div class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox" value="" id="remember">
                                             <label class="form-check-label mb-0" for="remember">
-                                              Remember me
+                                              Lembrar meus dados
                                             </label>
                                         </div>
-                                        <div><a href="{{ url_for('authentication_blueprint.register') }}" class="text-right">Register</a></div>
+                                        <div><a href="{{ url_for('authentication_blueprint.register') }}" class="text-right">Registrar</a></div>
                                     </div>
                                 </div>
                                 <div class="d-grid">
-                                    <button type="submit" name="login" class="btn btn-primary">Sign in</button>
+                                    <button type="submit" name="login" class="btn btn-primary">Entrar</button>
                                 </div>
                             </form>
 
