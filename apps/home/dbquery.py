@@ -3,7 +3,8 @@ import pandas as pd
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import scoped_session
 from sqlalchemy import text
-from .. import config
+from apps import config
+import json
 
 def getEngine():
     return create_engine(config.Config.SQLALCHEMY_DATABASE_URI)
@@ -41,6 +42,10 @@ def getJSONResultset(sql):
     return executeSQL(sql).first()[0]
 
 
-def getDataframeResultSet(sql):
+def getDataframeResultset(sql):
     return pd.read_sql(sql, connectDB())
+
+
+def getListResultset(sql):
+    return [row[0] for row in executeSQL(sql)]
 
