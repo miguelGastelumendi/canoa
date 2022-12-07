@@ -129,9 +129,10 @@
           <div>
             <select style="width: 100%; padding: 6px" name="municipio">
               <option hidden selected>Municipio</option>
-              <option value="valor1">Valor 1</option>
-              <option value="valor2">Valor 2</option>
-              <option value="valor3">Valor 3</option>
+                   {% for key, value in municipios.items() %}
+                        <option value="{{ key }}">
+                            {{ value }}</option>
+                    {%  endfor %}
             </select>
             <select style="width: 100%; padding: 6px" name="fitoEcologica">
               <option hidden selected>R. Fitoecologica</option>

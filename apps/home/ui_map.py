@@ -34,6 +34,10 @@ import apps.home.dbquery as dbquery
 #         zoom = 13.5
 #     return df, gjson, {"lat": centroid[1], "lon": centroid[0]}, zoom
 
+def getListaMunicipios():
+    return dbquery.getDictResultset("select id, NomeMunicipio from Municipio "
+                                    "order by NomeMunicipio")
+
 def getCAR(CAR : str):
     df = dbquery.getDataframeResultset(f"select OBJECTID as id, CAR from CAR "
                                   f"where CAR = '{CAR}'")
