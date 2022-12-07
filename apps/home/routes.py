@@ -19,7 +19,7 @@ def index():
 def route_callback(endpoint):
     args = request.args
     if endpoint == 'getMap':
-        return ui_location.getFigMap(args.get('car_id'))
+        return ui_location.getMapCAR(args.get('car_id'))
 
 @blueprint.route('/<template>')
 @login_required

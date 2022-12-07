@@ -92,7 +92,7 @@ def getCAR(CAR : str):
 #     return df, gjson, {"lat": centroid[1], "lon": centroid[0]}, zoom
 
 
-def getFigMap(pCAR: str = ''):
+def getMapCAR(pCAR: str = ''):
     if pCAR != '':
         CAR, geo, centroid, zoom = getCAR(pCAR)
         fig = px.choropleth_mapbox(CAR, geojson=geo,
