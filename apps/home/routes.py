@@ -19,12 +19,11 @@ def index():
 def route_callback(endpoint):
     args = request.args
     if endpoint == 'getMap':
-        return ui_location.getFigMunicipio(args.get('car_id'))
+        return ui_location.getFigMap(args.get('car_id'))
 
 @blueprint.route('/<template>')
 @login_required
 def route_template(template):
-
     try:
         if template.endswith('.html'):
             # Detect the current page
