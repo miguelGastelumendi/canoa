@@ -127,18 +127,17 @@
         <b>Informe sua localização:</b>
         <section>
           <div>
-            <select style="width: 100%; padding: 6px" name="municipio">
+            <select style="width: 100%; padding: 6px" id="municipio" name="municipio-select" onchange="callback()">
               <option hidden selected>Municipio</option>
                    {% for key, value in municipios.items() %}
-                        <option value="{{ key }}">
-                            {{ value }}</option>
-                    {%  endfor %}
+                        <option value="{{ key }}">{{ value }}</option>
+                   {%  endfor %}
             </select>
-            <select style="width: 100%; padding: 6px" name="fitoEcologica">
+            <select style="width: 100%; padding: 6px" id="fito_ecologica" name="fitoEcologica-select">
               <option hidden selected>R. Fitoecologica</option>
-              <option value="valor1">Valor 1</option>
-              <option value="valor2">Valor 2</option>
-              <option value="valor3">Valor 3</option>
+                   {% for key, value in fito_municipios.items() %}
+                        <option value="{{ key }}">{{ value }}</option>
+                   {%  endfor %}
             </select>
             <select style="width: 100%; padding: 6px" name="select">
               <option hidden selected>Coordenadas: lat/lon</option>
@@ -154,7 +153,7 @@
           <i class="fa-solid fa-location-crosshairs"></i>
         </span>
         <div>
-          <h1>DIV DO MAPA</h1>
+          <div id="map" class="chart" style="height: 400px"></div>
         </div>
         <button type="submit" style="border: none; border-radius: 10px; width:30%; height: 60px; background-color: #29874a; padding: 5px 10px; color: white;">
           Ok
@@ -162,7 +161,26 @@
       </div>
     </div>
 
-    {% endblock content %} {% include 'includes/scripts.html' %} {% block
-    javascripts %} {% endblock javascripts %}
+    {% endblock content %} {% include 'includes/scripts.html' %}
+    {% block javascripts %}
+    <script>
+            async function callback() {
+                let municipio = document.getElementById('municipio');
+                let response = await fetch(`/callback/getMunicipio?&idMunicipio=${municipio.value}`);
+                if (response.ok) {
+                    let mapJson = await response.json();
+                    if (response.ok) {
+                        Plotly.react('map', JSON.parse(mapJson['Map']), {});
+                    } else {
+                        alert("HTTP-Error: " + response.status + "on getInfo");
+                    }
+                } else {
+                    alert("HTTP-Error: " + response.status + "on getState");
+                }
+        }
+    </script>
+<!--    <script>callback();</script>-->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    {% endblock javascripts %}
   </body>
 </html>

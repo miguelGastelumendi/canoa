@@ -37,7 +37,9 @@ engine = create_engine(connection_url)
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
 
     # Assets Management
-    ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')    
+    ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')
+
+    MAPBOX_TOKEN = 'pk.eyJ1IjoiYXNzaXNtYXVybyIsImEiOiJja3RvcGt2eTgwZXc5Mm9taGd6MTltZ2o2In0.FJ2GqIssNuJxeYh0ewTpLw'
     
 class ProductionConfig(Config):
     DEBUG = False

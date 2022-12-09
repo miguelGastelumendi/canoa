@@ -25,7 +25,7 @@ def updateMunicipio():
         print(_,row.id)
 
 def updateCAR():
-    ids = dbquery.getDataframeResultset('select OBJECTID from CAR where OBJECTID >= 64159 and lengthGeomAsText < 10000 order by 1')
+    ids = dbquery.getDataframeResultset('select OBJECTID from CAR where OBJECTID >= 142523 and lengthGeomAsText < 10000 order by 1')
     i=0
     #count=dbquery.getValueFromDb('select top 123 count(1) from CAR')
     count = len(ids)
