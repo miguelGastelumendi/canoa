@@ -128,23 +128,19 @@
         <section>
           <div>
             <select style="width: 100%; padding: 6px" id="municipio" name="municipio-select" onchange="callback()">
-              <option hidden selected>Municipio</option>
+              <option hidden selected>(Selecione o Municipio)</option>
                    {% for key, value in municipios.items() %}
                         <option value="{{ key }}">{{ value }}</option>
                    {%  endfor %}
             </select>
-            <select style="width: 100%; padding: 6px" id="fito_ecologica" name="fitoEcologica-select">
-              <option hidden selected>R. Fitoecologica</option>
+            <select style="width: 100%; padding: 6px" id="fito_ecologica" name="fitoEcologica-select" onchange="callback()">
+              <option value="-1" selected>(Selecione a Região Fitoecologica)</option>
                    {% for key, value in fito_municipios.items() %}
                         <option value="{{ key }}">{{ value }}</option>
                    {%  endfor %}
             </select>
-            <select style="width: 100%; padding: 6px" name="select">
-              <option hidden selected>Coordenadas: lat/lon</option>
-              <option value="valor1">Valor 1</option>
-              <option value="valor2">Valor 2</option>
-              <option value="valor3">Valor 3</option>
-            </select>
+            <input type="text" style="width: 100%; padding: 6px" id="lat_long" name="latlong-text" value="(Digite a latitude longitude)"></input>
+            <input type="text" style="width: 100%; padding: 6px" id="CAR" name="CAR-text" value="(Digite o CAR)"></input>
           </div>
         </section>
         <span style="display: flex; justify-content: center; gap: 40px; margin: 20px;">
@@ -165,12 +161,25 @@
     {% block javascripts %}
     <script>
             async function callback() {
-                let municipio = document.getElementById('municipio');
-                let response = await fetch(`/callback/getMunicipio?&idMunicipio=${municipio.value}`);
+                let municipio = document.getElementById('municipio').value;
+                let fito = document.getElementById('fito_ecologica').value;
+                let latlong = document.getElementById('lat_long').value;
+                let CAR = document.getElementById('CAR').value;
+                if (latlong.startsWith('('))
+                  latlong = ''
+                if (CAR.startsWith('('))
+                  CAR = ''
+                let response = await fetch(
+                    `/callback/getMunicipioFito?&idMunicipio=${municipio}&idFito=${fito}&latlong=${latlong}&CAR=${CAR}`);
                 if (response.ok) {
                     let mapJson = await response.json();
                     if (response.ok) {
-                        Plotly.react('map', JSON.parse(mapJson['Map']), {});
+                      let newHTML=''
+                      for (const [key, value] of Object.entries(JSON.parse(mapJson['FitoMunicipio']))) {
+                        newHTML = newHTML + `<option value='${key}'>${value}</option>`
+                      }
+                      document.getElementById('fito_ecologica').setHTML(newHTML);
+                      Plotly.react('map', JSON.parse(mapJson['Map']), {});
                     } else {
                         alert("HTTP-Error: " + response.status + "on getInfo");
                     }

@@ -16,9 +16,9 @@ def getGJson(centroid_extent_polytype, features):
     if centroid_extent_polytype[2] is not None:
         extent = centroid_extent_polytype[2].replace('(', '').replace(',','').split(' ')
         max_bound = max(abs(float(extent[1]) - float(extent[3])), abs(float(extent[2]) - float(extent[6]))) * 111 # km/degree
-        zoom = 13.5 - np.log(max_bound)
+        zoom = 12.0 - np.log(max_bound)
     else:
-        zoom = 13.5
+        zoom = 12.0
     return gjson, centroid, zoom
 
 def getListaMunicipios():
@@ -27,11 +27,14 @@ def getListaMunicipios():
 
 def getListaFito(idMunicipio: int):
     return dbquery.getDictResultset(
-        f"select mf.id,descFitoFisionomia "
+        f"select -1, '(escolha a Fitofisionomia)' as Fitofisionomia "
+        f"union "
+        f"select mf.idFitoFisionomia,descFitoFisionomia as Fitofisionomia "
         f"from MunicipioFito mf "
         f"inner join FitoFisionomia ff "
         f"on mf.idFitoFisionomia = ff.id "
-        f"where {' 0=1' if idMunicipio is None else f'idMunicipio = {idMunicipio}'}")
+        f"where {' 0=1' if idMunicipio is None else f'idMunicipio = {idMunicipio}'} "
+        f"order by 2")
 
 def getCAR(CAR : str):
     df = dbquery.getDataframeResultset(f"select OBJECTID as id, CAR from CAR "
@@ -57,7 +60,7 @@ def getMunicipio(idMunicipio: int):
         f"select Centroid.STY as Longitude, Centroid.STX as Latitude, extent, geometrytype from "
         f"(select geom.STCentroid() as Centroid, geom.STEnvelope().STAsText() as extent "
         f",geom.STGeometryType() as geometrytype "
-        f"from Municipio where idMunicipio = {idMunicipio}) a").first()
+        f"from Municipio where id = {idMunicipio}) a").first()
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
     return df, gjson, centroid, zoom
 
@@ -76,35 +79,60 @@ def getMapMunicipio(idMunicipio: int):
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder),
                             'Fito': json.dumps(getListaFito(idMunicipio), cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
-def getFitoMunicipio(idMunicipio: int):
-    df = dbquery.getDataframeResultset(
-        f"select mf.id,descFitoFisionomia "
+def getFitoMunicipio(idMunicipio: int, idFito: int, latlong: str, CAR: str):
+    if CAR != '':
+        whereFito = (f"where mf.id in (select mf.id from car c \n"
+                     f"inner join MunicipioFito mf \n"
+                     f"on c.idMunicipio = mf.idMunicipio \n"
+                     f"where car = '{CAR}' \n"
+                     f"and c.geom.STIntersects(mf.geom) = 1)")
+    elif latlong != '':
+        lat, long = latlong.split(' ')
+        lat=lat.replace(',','.').replace('S','')
+        long=long.replace(',','.').replace('S','')
+        if not lat.startswith('-'):
+            lat='-'+lat
+        if not long.startswith('-'):
+            long='-'+long
+        whereFito=f"where mf.geom.STIntersects((geometry::STPointFromText('POINT ({long} {lat})', 4326)))=1"
+    else:
+        whereFito = (f"where mf.idMunicipio = {idMunicipio} " +
+                    (f"and mf.idFitofisionomia = {idFito}" if idFito > -1 else ""))
+    fito = dbquery.getDataframeResultset(
+        f"select mf.id,concat(m.nomeMunicipio,'/',descFitoFisionomia) as label,ff.color "
         f"from MunicipioFito mf "
+        f"inner join Municipio m "
+        f"on mf.idMunicipio = m.id "
         f"inner join FitoFisionomia ff "
         f"on mf.idFitoFisionomia = ff.id "
-        f"where idMunicipio = {idMunicipio}")
+        f"{whereFito}")
     features=[json.loads(x) for x in dbquery.getListResultset(
-        f"select geomtext from MunicipioFito where idMunicipio = {idMunicipio}")]
+        f"select geomtext from MunicipioFito mf {whereFito}")]
     centroid_extent_polytype = dbquery.executeSQL(
         f"select Centroid.STY as Longitude, Centroid.STX as Latitude, extent, geometrytype from "
         f"(select geom.STCentroid() as Centroid, geom.STEnvelope().STAsText() as extent "
         f",geom.STGeometryType() as geometrytype "
-        f"from MunicipioFito where idMunicipio = {idMunicipio}) a").first()
+        f"from MunicipioFito mf {whereFito}) a").first()
+    color = fito.set_index('id').to_dict()['color']
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
-    return df, gjson, centroid, zoom
+    return fito, gjson, centroid, zoom, color
 
-def getMapFitoMunicipio(idMunicipio: int):
-    fito, geo, centroid, zoom = getFitoMunicipio(idMunicipio)
-    fig = px.choropleth_mapbox(fito, geojson=geo,
+def getMapFitoMunicipio(idMunicipio: int,
+                        idFito: int,
+                        latlong: str,
+                        CAR: str):
+    fito, geo, centroid, zoom, color = getFitoMunicipio(idMunicipio, idFito, latlong, CAR)
+    fig = px.choropleth_mapbox(fito, geojson=geo, color=fito.color.tolist(),
                                locations=fito.id, featureidkey="properties.id",
                                center=centroid,
-                               hover_name=fito.id.tolist(), hover_data={'id': False},
+                               hover_name=fito.label.tolist(),
+                               color_discrete_map="identity",
+                               hover_data={'id': False},
                                mapbox_style="carto-positron", zoom=zoom,
                                opacity=0.4)
-    # fig.update_layout(
-    #     mapbox_style="white-bg",
-    #     showlegend=False)
-    # fig.update_layout(coloraxis_showscale=False)
+    fig.update_layout(
+         showlegend=False)
+
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder),
                             'FitoMunicipio': json.dumps(getListaFito(idMunicipio), cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON

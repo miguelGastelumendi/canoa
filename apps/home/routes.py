@@ -18,8 +18,15 @@ def index():
 @login_required
 def route_callback(endpoint):
     args = request.args
-    if endpoint == 'getMunicipio':
-        return ui_map.getMapMunicipio(int(args.get('municipio_id')))
+    if endpoint == 'getMunicipioFito':
+        idMunicipio = int(args.get('idMunicipio'))
+        idFito = int(args.get('idFito'))
+        latlong = args.get('latlong')
+        CAR = args.get('CAR')
+        return ui_map.getMapFitoMunicipio(idMunicipio,
+                                          idFito,
+                                          latlong,
+                                          CAR)
 
 @blueprint.route('/<template>')
 @login_required
@@ -37,7 +44,6 @@ def route_template(template):
         return render_template("home/" + template, segment=segment)
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
-
     except:
         return render_template('home/page-500.html'), 500
 
