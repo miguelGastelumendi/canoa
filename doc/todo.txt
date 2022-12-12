@@ -1,0 +1,26 @@
+1) Tela de Localização
+
+O backend da tela de localização tá pronto. Lembro que o objetivo dela é achar a fitofisionomia da propriedade do usuário, e agora ele consegue achar:
+a- Selecionando o Município e a Fito.
+b- Indicando as coordenadas geográficas, ou seja, digitando a latitude e a longitude nessa ordem separadas por um espaço em branco. Faço algumas validações, então o front não precisa se preocupar com isso.
+c- Digitando o CAR.
+
+Na tela tá funcionando da seguinte forma:
+a. Se ele seleciona o Município, o select com a lista de fitos daquele município aparece, bem como o mapa com as features de do município.
+Quando ele escolhe a fito, vem o mapa daquela fito no município.
+b e c - se ele digita o CAR ou a Lat/Long vem o polígono daquela fito no município.
+
+Tem que consertar algumas coisas no front que Pedro e Miguel farão melhor que eu:
+
+a- Remover a tela do Pixel-UI kit do sistema (Pedro)
+b- Ajustar o comportamento dos combos ("indicadores de digite").
+c- Quando há uma alteração na tela isso tá gerando dois acessos no backend, quando deveria ser um só.
+Deve ser pq mudam-se os dados na tela e isso dispara outra chamada na callback, não sei como eliminar isso, está impactando na performance.
+4
+d- Ordenação das fito na tela.
+e- Ajuste do tamanho do componente de mapa.
+
+2) Sistema no servidor
+
+Coloque a app pra rodar no nosso server Windows na AWS. Tá funcionando, mas não consegui publicar.
+Acho que é algum detalhe que o Miguel vai saber resolver.

@@ -105,7 +105,7 @@ def getFitoMunicipio(idMunicipio: int, idFito: int, latlong: str, CAR: str):
         f"on mf.idMunicipio = m.id "
         f"inner join FitoFisionomia ff "
         f"on mf.idFitoFisionomia = ff.id "
-        f"{whereFito}")
+        f"{whereFito} ")
     features=[json.loads(x) for x in dbquery.getListResultset(
         f"select geomtext from MunicipioFito mf {whereFito}")]
     centroid_extent_polytype = dbquery.executeSQL(
