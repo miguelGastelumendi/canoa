@@ -86,6 +86,7 @@ def getFitoMunicipio(idMunicipio: int, idFito: int, latlong: str, CAR: str):
                      f"on c.idMunicipio = mf.idMunicipio \n"
                      f"where car = '{CAR}' \n"
                      f"and c.geom.STIntersects(mf.geom) = 1)")
+        area=f"{dbquery.getValueFromDb(f'select area from CAR where car = {CAR}'):.4f}".replace('.',',')
     elif latlong != '':
         lat, long = latlong.split(' ')
         lat=lat.replace(',','.').replace('S','')
@@ -95,9 +96,11 @@ def getFitoMunicipio(idMunicipio: int, idFito: int, latlong: str, CAR: str):
         if not long.startswith('-'):
             long='-'+long
         whereFito=f"where mf.geom.STIntersects((geometry::STPointFromText('POINT ({long} {lat})', 4326)))=1"
+        area=''
     else:
         whereFito = (f"where mf.idMunicipio = {idMunicipio} " +
                     (f"and mf.idFitofisionomia = {idFito}" if idFito > -1 else ""))
+        area=''
     fito = dbquery.getDataframeResultset(
         f"select mf.id,concat(m.nomeMunicipio,'/',descFitoFisionomia) as label,ff.color "
         f"from MunicipioFito mf "
@@ -115,13 +118,13 @@ def getFitoMunicipio(idMunicipio: int, idFito: int, latlong: str, CAR: str):
         f"from MunicipioFito mf {whereFito}) a").first()
     color = fito.set_index('id').to_dict()['color']
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
-    return fito, gjson, centroid, zoom, color
+    return fito, gjson, centroid, zoom, color, area
 
 def getMapFitoMunicipio(idMunicipio: int,
                         idFito: int,
                         latlong: str,
                         CAR: str):
-    fito, geo, centroid, zoom, color = getFitoMunicipio(idMunicipio, idFito, latlong, CAR)
+    fito, geo, centroid, zoom, color, area = getFitoMunicipio(idMunicipio, idFito, latlong, CAR)
     fig = px.choropleth_mapbox(fito, geojson=geo, color=fito.color.tolist(),
                                locations=fito.id, featureidkey="properties.id",
                                center=centroid,
@@ -134,7 +137,8 @@ def getMapFitoMunicipio(idMunicipio: int,
          showlegend=False)
 
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder),
-                            'FitoMunicipio': json.dumps(getListaFito(idMunicipio), cls=plotly.utils.PlotlyJSONEncoder)})
+                            'FitoMunicipio': json.dumps(getListaFito(idMunicipio), cls=plotly.utils.PlotlyJSONEncoder),
+                            'Area': area})
     return graphJSON
 
 def getMapCAR(pCAR: str = ''):

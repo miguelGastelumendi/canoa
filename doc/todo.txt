@@ -16,9 +16,11 @@ a- Remover a tela do Pixel-UI kit do sistema (Pedro)
 b- Ajustar o comportamento dos combos ("indicadores de digite").
 c- Quando há uma alteração na tela isso tá gerando dois acessos no backend, quando deveria ser um só.
 Deve ser pq mudam-se os dados na tela e isso dispara outra chamada na callback, não sei como eliminar isso, está impactando na performance.
-4
 d- Ordenação das fito na tela.
 e- Ajuste do tamanho do componente de mapa.
+f- Nome do projeto (discutir).
+g- Implementar o Ok.
+h- Disparar o
 
 2) Sistema no servidor
 

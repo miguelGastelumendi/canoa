@@ -141,6 +141,7 @@
             </select>
             <input type="text" style="width: 100%; padding: 6px" id="lat_long" name="latlong-text" value="(Digite a latitude longitude)"></input>
             <input type="text" style="width: 100%; padding: 6px" id="CAR" name="CAR-text" value="(Digite o CAR)"></input>
+            <input type="text" style="width: 100%; padding: 6px" id="area" name="area-text" value="(Digite a Área em ha)"></input>
           </div>
         </section>
         <span style="display: flex; justify-content: center; gap: 40px; margin: 20px;">
@@ -179,12 +180,13 @@
                         newHTML = newHTML + `<option value='${key}'>${value}</option>`
                       }
                       document.getElementById('fito_ecologica').setHTML(newHTML);
+                      document.getElementById('area').value=mapJson['Area']
                       Plotly.react('map', JSON.parse(mapJson['Map']), {});
                     } else {
-                        alert("HTTP-Error: " + response.status + "on getInfo");
+                        alert("HTTP-Error: " + response.status + "on callback()");
                     }
                 } else {
-                    alert("HTTP-Error: " + response.status + "on getState");
+                    alert("HTTP-Error: " + response.status + "on callback()");
                 }
         }
     </script>
