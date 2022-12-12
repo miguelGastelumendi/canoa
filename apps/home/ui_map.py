@@ -27,8 +27,6 @@ def getListaMunicipios():
 
 def getListaFito(idMunicipio: int):
     return dbquery.getDictResultset(
-        f"select -1, '(escolha a Fitofisionomia)' as Fitofisionomia "
-        f"union "
         f"select mf.idFitoFisionomia,descFitoFisionomia as Fitofisionomia "
         f"from MunicipioFito mf "
         f"inner join FitoFisionomia ff "

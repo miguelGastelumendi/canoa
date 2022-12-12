@@ -26,3 +26,13 @@ g- Implementar o Ok.
 
 Coloque a app pra rodar no nosso server Windows na AWS. Tá funcionando, mas não consegui publicar.
 Acho que é algum detalhe que o Miguel vai saber resolver.
+
+3) Tela de finalidade
+
+Usuário escolhe a finalidade do projeto. Opções:
+1- Recomposição de Reserva Legal
+2- Restauração de Área de Preservação Permanente
+Regra: se a área da propriedade for menor que quatro módulos fiscais (tabela CAR), só existe a opção 1.
+
+4) Tela de escolha do Modelo de plantio
+Nessa tela será escolhido modelo de plantio através do desenho destes. Serão exibidos 8 modelos e o usuário deverá clicar no escolhido.
