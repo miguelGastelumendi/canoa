@@ -12,15 +12,15 @@ b e c - se ele digita o CAR ou a Lat/Long vem o polígono daquela fito no munic�
 
 Tem que consertar algumas coisas no front que Pedro e Miguel farão melhor que eu:
 
-a- Remover a tela do Pixel-UI kit do sistema (Pedro)
-b- Ajustar o comportamento dos combos ("indicadores de digite").
-c- Quando há uma alteração na tela isso tá gerando dois acessos no backend, quando deveria ser um só.
+a- Remover a tela do Pixel-UI kit do sistema (Pedro) - feito
+b- Ajustar o comportamento dos combos ("indicadores de digite") (sumir)
+c- Quando há uma alteração na tela isso tá gerando dois acessos no backend, quando deveria ser um só. baixa
 Deve ser pq mudam-se os dados na tela e isso dispara outra chamada na callback, não sei como eliminar isso, está impactando na performance.
-d- Ordenação das fito na tela.
+d- Ordenação das fito na tela. baixa
 e- Ajuste do tamanho do componente de mapa.
 f- Nome do projeto (discutir).
 g- Implementar o Ok.
-h- Disparar o
+
 
 2) Sistema no servidor
 
