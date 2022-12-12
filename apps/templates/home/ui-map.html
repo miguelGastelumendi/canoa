@@ -74,7 +74,12 @@
     />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="../../static/assets/img/favicon/unnamed.png">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../../static/assets/img/favicon/unnamed.png"
+    />
 
     <!-- Fontawesome -->
     <link
@@ -95,6 +100,17 @@
     <!-- Specific Page JS goes HERE  -->
     {% block stylesheets %}{% endblock stylesheets %}
   </head>
+  <style>
+    .containerMap{
+      margin-top: 10%;
+    }
+
+    @media screen and (max-width: 980px) {
+      .containerMap{
+      margin-top: 30%;;
+    }
+    }
+  </style>
   <body
     style="
       background: url(../../static/assets/img/pages/1440_Tree-tops.jpg);
@@ -102,96 +118,323 @@
       margin: 0;
     "
   >
-    {% include 'includes/navigation.html' %} {% block content %}
-    <div
-      style="
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
- 
-      "
-    >
+    <div style="width: 100vw; height: 100vh">
       <div
+        class="containerMap"
         style="
           width: 60%;
           background: #fff;
-          text-align: center;
           padding: 15px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          margin: 0 auto;
+          border-radius: 15px;
+          flex-direction: column;
+          margin-top: 10%;
         "
       >
-        <h3>Localização</h3>
-        <hr />
-        <b>Informe sua localização:</b>
-        <section>
-          <div>
-            <select style="width: 100%; padding: 6px" id="municipio" name="municipio-select" onchange="callback()">
-              <option hidden selected>(Selecione o Municipio)</option>
-                   {% for key, value in municipios.items() %}
-                        <option value="{{ key }}">{{ value }}</option>
-                   {%  endfor %}
-            </select>
-            <select style="width: 100%; padding: 6px" id="fito_ecologica" name="fitoEcologica-select" onchange="callback()">
-              <option value="-1" selected>(Selecione a Região Fitoecologica)</option>
-                   {% for key, value in fito_municipios.items() %}
-                        <option value="{{ key }}">{{ value }}</option>
-                   {%  endfor %}
-            </select>
-            <input type="text" style="width: 100%; padding: 6px" id="lat_long" name="latlong-text" value="(Digite a latitude longitude)"></input>
-            <input type="text" style="width: 100%; padding: 6px" id="CAR" name="CAR-text" value="(Digite o CAR)"></input>
-            <input type="text" style="width: 100%; padding: 6px" id="area" name="area-text" value="(Digite a Área em ha)"></input>
+        <form style="display: flex; width: 100%">
+          <label style="font-size: 20px">Nome do projeto:</label>
+          <input
+            type="text"
+            name="projectName"
+            id="projectName"
+            style="
+              margin-bottom: 25px;
+              padding: 3px;
+              border-radius: 15px;
+              width: 50%;
+              border: 1px solid black;
+            "
+          />
+        </form>
+        <div class="accordion" id="accordionExample" style="width: 100%">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button
+                class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseOne"
+                aria-expanded="true"
+                aria-controls="collapseOne"
+              >
+                Escolha como informar sua localização:
+              </button>
+            </h2>
+            <div
+              id="collapseOne"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingOne"
+              data-bs-parent="#accordionExample"
+            >
+              <div class="accordion-body">
+                <div class="d-grid">
+                  <button
+                    type="button"
+                    class="btn btn-primary mb-3"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalMunicipio"
+                  >
+                    Municipio e Regioão Fitoecológica
+                  </button>
+                </div>
+                <div
+                  class="modal fade"
+                  id="modalMunicipio"
+                  tabindex="-1"
+                  role="dialog"
+                  aria-labelledby="modalMunicipio"
+                  aria-hidden="true"
+                >
+                  <div
+                    class="modal-dialog modal-dialog-centered"
+                    role="document"
+                  >
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h2 class="h6 modal-title">Informe sua localização:</h2>
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div class="modal-body">
+                        <select
+                          style="width: 100%; padding: 6px"
+                          id="municipio"
+                          name="municipio-select"
+                          onchange="callback()"
+                        >
+                          <option hidden selected>
+                            (Selecione o Municipio)
+                          </option>
+                          {% for key, value in municipios.items() %}
+                          <option value="{{ key }}">{{ value }}</option>
+                          {% endfor %}
+                        </select>
+                        <select
+                          style="width: 100%; padding: 6px"
+                          id="fito_ecologica"
+                          name="fitoEcologica-select"
+                          onchange="callback()"
+                        >
+                          <option value="-1" selected>
+                            (Selecione a Região Fitoecologica)
+                          </option>
+                          {% for key, value in fito_municipios.items() %}
+                          <option value="{{ key }}">{{ value }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary">
+                          Ok
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-link ms-auto"
+                          data-bs-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-grid">
+                  <button
+                    type="button"
+                    class="btn btn-primary mb-3"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalLatLong"
+                  >
+                    Latitude e Longitude
+                  </button>
+                </div>
+                <div
+                  class="modal fade"
+                  id="modalLatLong"
+                  tabindex="-1"
+                  role="dialog"
+                  aria-labelledby="modalLatLong"
+                  aria-hidden="true"
+                >
+                  <div
+                    class="modal-dialog modal-dialog-centered"
+                    role="document"
+                  >
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h2 class="h6 modal-title">Informe sua localização:</h2>
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div class="modal-body">
+                        <input
+                          type="text"
+                          style="width: 100%; padding: 6px"
+                          id="lat_long"
+                          name="latlong-text"
+                          placeholder="Digite a latitude e longitude:"
+                        />
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary">
+                          Ok
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-link ms-auto"
+                          data-bs-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-grid">
+                  <button
+                    type="button"
+                    class="btn btn-primary mb-3"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalCar"
+                  >
+                    CAR
+                  </button>
+                </div>
+                <div
+                  class="modal fade"
+                  id="modalCar"
+                  tabindex="-1"
+                  role="dialog"
+                  aria-labelledby="modalCar"
+                  aria-hidden="true"
+                >
+                  <div
+                    class="modal-dialog modal-dialog-centered"
+                    role="document"
+                  >
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h2 class="h6 modal-title">Informe sua localização:</h2>
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div class="modal-body">
+                        <input
+                          type="text"
+                          style="width: 100%; padding: 6px"
+                          id="CAR"
+                          name="CAR-text"
+                          value="(Digite o CAR)"
+                        />
+                        <input
+                          type="text"
+                          style="width: 100%; padding: 6px"
+                          id="area"
+                          name="area-text"
+                          value="(Digite a Área em ha)"
+                        />
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary">
+                          Ok
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-link ms-auto"
+                          data-bs-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </section>
-        <span style="display: flex; justify-content: center; gap: 40px; margin: 20px;">
+        </div>
+        <span
+          style="
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px;
+          "
+        >
           <i class="fa-solid fa-pen-to-square"></i>
           <i class="fa-solid fa-map-location-dot"></i>
           <i class="fa-solid fa-location-crosshairs"></i>
         </span>
-        <div>
-          <div id="map" class="chart" style="height: 400px"></div>
-        </div>
-        <button type="submit" style="border: none; border-radius: 10px; width:30%; height: 60px; background-color: #29874a; padding: 5px 10px; color: white;">
+        <div id="map" class="chart" style="max-height: 200px"></div>
+        <button
+          type="submit"
+          style="
+            border: none;
+            border-radius: 10px;
+            width: 30%;
+            height: 60px;
+            background-color: #29874a;
+            padding: 5px 10px;
+            color: white;
+            margin-top: 15px;
+          "
+        >
           Ok
         </button>
       </div>
-    </div>
 
-    {% endblock content %} {% include 'includes/scripts.html' %}
-    {% block javascripts %}
-    <script>
-            async function callback() {
-                let municipio = document.getElementById('municipio').value;
-                let fito = document.getElementById('fito_ecologica').value;
-                let latlong = document.getElementById('lat_long').value;
-                let CAR = document.getElementById('CAR').value;
-                if (latlong.startsWith('('))
-                  latlong = ''
-                if (CAR.startsWith('('))
-                  CAR = ''
-                let response = await fetch(
-                    `/callback/getMunicipioFito?&idMunicipio=${municipio}&idFito=${fito}&latlong=${latlong}&CAR=${CAR}`);
-                if (response.ok) {
-                    let mapJson = await response.json();
-                    if (response.ok) {
-                      let newHTML=''
-                      for (const [key, value] of Object.entries(JSON.parse(mapJson['FitoMunicipio']))) {
-                        newHTML = newHTML + `<option value='${key}'>${value}</option>`
-                      }
-                      document.getElementById('fito_ecologica').setHTML(newHTML);
-                      document.getElementById('area').value=mapJson['Area']
-                      Plotly.react('map', JSON.parse(mapJson['Map']), {});
-                    } else {
-                        alert("HTTP-Error: " + response.status + "on callback()");
-                    }
-                } else {
-                    alert("HTTP-Error: " + response.status + "on callback()");
-                }
+      {% include 'includes/navigation.html' %} {% block content %} {% endblock
+      content %} {% include 'includes/scripts.html' %} {% block javascripts %}
+      <script>
+        async function callback() {
+          let municipio = document.getElementById("municipio").value;
+          let fito = document.getElementById("fito_ecologica").value;
+          let latlong = document.getElementById("lat_long").value;
+          let CAR = document.getElementById("CAR").value;
+          if (latlong.startsWith("(")) latlong = "";
+          if (CAR.startsWith("(")) CAR = "";
+          let response = await fetch(
+            `/callback/getMunicipioFito?&idMunicipio=${municipio}&idFito=${fito}&latlong=${latlong}&CAR=${CAR}`
+          );
+          if (response.ok) {
+            let mapJson = await response.json();
+            if (response.ok) {
+              let newHTML = "";
+              for (const [key, value] of Object.entries(
+                JSON.parse(mapJson["FitoMunicipio"])
+              )) {
+                newHTML = newHTML + `<option value='${key}'>${value}</option>`;
+              }
+              document.getElementById("fito_ecologica").setHTML(newHTML);
+              document.getElementById("area").value = mapJson["Area"];
+              Plotly.react("map", JSON.parse(mapJson["Map"]), {});
+            } else {
+              alert("HTTP-Error: " + response.status + "on callback()");
+            }
+          } else {
+            alert("HTTP-Error: " + response.status + "on callback()");
+          }
         }
-    </script>
-<!--    <script>callback();</script>-->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    {% endblock javascripts %}
+      </script>
+      <!--    <script>callback();</script>-->
+      <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+      {% endblock javascripts %}
+    </div>
   </body>
 </html>
