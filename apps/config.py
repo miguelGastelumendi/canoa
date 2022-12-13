@@ -40,11 +40,8 @@ engine = create_engine(connection_url)
     # Assets Management
     ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')
 
-<<<<<<< HEAD
-=======
     MAPBOX_TOKEN = 'pk.eyJ1IjoiYXNzaXNtYXVybyIsImEiOiJja3RvcGt2eTgwZXc5Mm9taGd6MTltZ2o2In0.FJ2GqIssNuJxeYh0ewTpLw'
-    
->>>>>>> f4bd2fe1a3b5c3404ba387257b6b6a6e7c1bd930
+
 class ProductionConfig(Config):
     DEBUG = False
 
