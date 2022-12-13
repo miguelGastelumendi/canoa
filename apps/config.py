@@ -32,9 +32,9 @@ engine = create_engine(connection_url)
     SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://mauro:Araticum@12@data.atriumforest.com.br:/APPSPEED?driver=ODBC+Driver+18+for+SQL+Server'
     '''
     # SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+18+for+SQL+Server%7D%3BSERVER%3Dtcp%3A54.207.37.232%2C30310%3BDATABASE%3DRURALLEGAL%3BENCRYPT%3Dno%3BUID%rlatrium%3BPWD%3DHibisco@12%4012'
-    # SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+18+for+SQL+Server%7D%3BSERVER%3D54.207.37.232%2C30310%3BDATABASE%3DRURALLEGAL%3BENCRYPT%3Dno%3BUID%3Drlatrium%3BPWD%3DHibisco%4012'
-    SQLALCHEMY_DATABASE_URI =   'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+17+for+SQL+Server%7D%3BSERVER%3D54.207.37.232%2C30310%3BDATABASE%3DRURALLEGAL%3BENCRYPT%3Dno%3BUID%3Drlatrium%3BPWD%3DHibisco%4012'
-
+    # SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+18+for+SQL+Server%7D%3BSERVER%3D54.207.37.232%2C30310%3BDATABASE%3DRURALLEGAL%3BENCRYPT%3Dno%3BUID%3Drlatrium%3BPWD%3DHibisco%4012'ALCHEM
+    # SQLALCHEMY_DATABASE_URI =   'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+17+for+SQL+Server%7D%3BSERVER%3D54.207.37.232%2C30310%3BDATABASE%3DRURALLEGAL%3BENCRYPT%3Dno%3BUID%3Drlatrium%3BPWD%3DHibisco%4012'
+    SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Assets Management
@@ -42,30 +42,8 @@ engine = create_engine(connection_url)
 
     MAPBOX_TOKEN = 'pk.eyJ1IjoiYXNzaXNtYXVybyIsImEiOiJja3RvcGt2eTgwZXc5Mm9taGd6MTltZ2o2In0.FJ2GqIssNuJxeYh0ewTpLw'
 
-class ProductionConfig(Config):
-    DEBUG = False
-
-    # Security
-    SESSION_COOKIE_HTTPONLY = True
-    REMEMBER_COOKIE_HTTPONLY = True
-    REMEMBER_COOKIE_DURATION = 3600
-
-    # PostgreSQL database
-    SQLALCHEMY_DATABASE_URI = '{}://{}:{}@{}:{}/{}'.format(
-        os.getenv('DB_ENGINE'   , 'mysql'),
-        os.getenv('DB_USERNAME' , 'appseed_db_usr'),
-        os.getenv('DB_PASS'     , 'pass'),
-        os.getenv('DB_HOST'     , 'localhost'),
-        os.getenv('DB_PORT'     , 3306),
-        os.getenv('DB_NAME'     , 'appseed_db')
-    )
-
-class DebugConfig(Config):
-    DEBUG = True
-
-
 # Load all possible configurations
 config_dict = {
-    'Production': ProductionConfig,
-    'Debug'     : DebugConfig
+    'Production': Config,
+    'Debug'     : Config
 }

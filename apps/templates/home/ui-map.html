@@ -430,6 +430,31 @@
       {% include 'includes/navigation.html' %} {% block content %} {% endblock
       content %} {% include 'includes/scripts.html' %} {% block javascripts %}
       <script>
+          $(document).ready(function () {
+          $('#btnturnemailonoff').on('click',function () {
+          var checked = !$(this).data('checked');
+          $("#Chkemailonoff").prop('checked', checked);
+          $(this).val(checked ?'Turn Email Off' :'Turn Email on')
+          $(this).data('checked', checked);
+
+          //if (confirm("Do you want to turn on the email?")) {
+          //    checked.val("true");
+          //} else {
+          //    checked.val("false");
+          //}
+          var url ='@Url.Action("CheckEmail", "BillingDetails")';
+          $.ajax({
+              url: url,
+              type:"POST",
+              data: { checkemails: checked },
+              dataType:"json",
+              // traditional: true,
+              success:function () {
+                  alert("ajax request to server succeed");
+              }
+          });
+      });
+  })
         async function callback() {
           let municipio = document.getElementById("municipio").value;
           let fito = document.getElementById("fito_ecologica").value;

@@ -22,8 +22,13 @@ Baseado em:
 - 👉 [Flask Pixel Lite](https://flask-pixel-lite.appseed-srv1.com/) - LIVE Deployment
 - ✅ Compatible with [LIVE Deployer](https://appseed.us/go-live/)
   - [Deploy Flask Pixel with Drag & Drop](https://youtu.be/InVMfrzEwBQ) - `video material` 
-  
-<br />
+
+
+A string de conexão com o banco deve ser obtida de uma variável de ambiente: **SQLALCHEMY_DATABASE_URI**
+
+Esta então deve ser definida no [Linux](https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-set-environment-variables-in-linux/) ou no [Windows](https://docs.oracle.com/en/database/oracle/machine-learning/oml4r/1.5.1/oread/creating-and-modifying-environment-variables-on-windows.html#GUID-DD6F9982-60D5-48F6-8270-A27EC53807D0).
+
+Obtenha o conteúdo desta com o "dono" desse git.
 
 ## ✨ Start the app in `Docker`
 
