@@ -1,3 +1,5 @@
+12/12/2022
+
 1) Tela de Localização
 
 O backend da tela de localização tá pronto. Lembro que o objetivo dela é achar a fitofisionomia da propriedade do usuário, e agora ele consegue achar:
@@ -36,3 +38,12 @@ Regra: se a área da propriedade for menor que quatro módulos fiscais (tabela C
 
 4) Tela de escolha do Modelo de plantio
 Nessa tela será escolhido modelo de plantio através do desenho destes. Serão exibidos 8 modelos e o usuário deverá clicar no escolhido.
+
+13/12/2022
+
+1) Projeto mudou de nome: Refloresta SP
+Novas imagens em project_assets, já comitadas
+
+2) Tela de  Localização:
+
+a- O Campo "Área da propriedade" deve estar em Município/Fito e em Latitude e Longitude, devendo ser removido do CAR.
