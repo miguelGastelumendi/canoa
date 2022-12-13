@@ -1,15 +1,23 @@
 ### IMPORTANTE:
-Para executar essa app tem que instalar o driver ODBC MS-SQL para Linux, conforme descrito [aqui](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16#ubuntu17)
 
-Para configurar o SQL Alchemy (**não é necessário** para a executar a app), e consequentemente o Flask, a documentação está [aqui](https://docs.sqlalchemy.org/en/14/dialects/mssql.html#dsn-connections)
+1) Para executar essa app tem que instalar o driver ODBC MS-SQL para Linux, conforme descrito [aqui](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16#ubuntu17)
 
-Script python para converter a string de conexão:
+2) Para configurar o SQL Alchemy (**não é necessário** para a executar a app), e consequentemente o Flask, a documentação está [aqui](https://docs.sqlalchemy.org/en/14/dialects/mssql.html#dsn-connections)
 
-    # Calc URI based on pyodbc string connection:
+3) A string de conexão com o banco deve ser obtida de uma variável de ambiente: **SQLALCHEMY_DATABASE_URI**
+
+Esta então deve ser definida no [Linux](https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-set-environment-variables-in-linux/) ou no [Windows](https://docs.oracle.com/en/database/oracle/machine-learning/oml4r/1.5.1/oread/creating-and-modifying-environment-variables-on-windows.html#GUID-DD6F9982-60D5-48F6-8270-A27EC53807D0).
+
+Obtenha o conteúdo desta string com o "dono" desse git.
+
+4) Script python para converter a string de conexão pro formato do sqlalchemy:
+
+    ### Calc URI based on pyodbc string connection:
     from sqlalchemy.engine import URL
-    cs='DRIVER={ODBC Driver 18 for SQL Server};SERVER=tcp:data.atriumforest.com.br,54232;DATABASE=RURALLEGAL;ENCRYPT=no;UID=mauro;PWD=Araticum@12'
+    cs='DRIVER={ODBC Driver 18 for SQL Server};SERVER=tcp:xxx.xxx.xxx.xxx,port;DATABASE=database;ENCRYPT=no;UID=user_id;PWD=pwd'
+
     connection_url = URL.create("mssql+pyodbc", query={"odbc_connect": connection_string})
-    # testing:
+    ### testing:
     from sqlalchemy.engine import create_engine
     engine = create_engine(connection_url)
 
@@ -22,8 +30,7 @@ Baseado em:
 - 👉 [Flask Pixel Lite](https://flask-pixel-lite.appseed-srv1.com/) - LIVE Deployment
 - ✅ Compatible with [LIVE Deployer](https://appseed.us/go-live/)
   - [Deploy Flask Pixel with Drag & Drop](https://youtu.be/InVMfrzEwBQ) - `video material` 
-  
-<br />
+
 
 ## ✨ Start the app in `Docker`
 
