@@ -1,0 +1,8 @@
+/* refloresta.css */
+
+body {
+   background-image: url(../img/pages/1440_Tree-tops.jpg);
+   background-repeat: no-repeat;
+   background-attachment: fixed;
+   background-size: cover;
+}
