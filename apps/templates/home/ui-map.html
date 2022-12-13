@@ -1,477 +1,352 @@
-<!--
-
-=========================================================
-* Pixel Free Bootstrap 5 UI Kit
-=========================================================
-
-* Product Page: https://themesberg.com/product/ui-kit/pixel-free-bootstrap-5-ui-kit
-* Copyright 2021 Themesberg (https://www.themesberg.com)
-
-* Coded by https://themesberg.com
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. Contact us if you want to remove it.
-
--->
-
 <!DOCTYPE html>
-<html lang="en" style="height: 100vh">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<html lang="pt-br">
 
-    <!-- Primary Meta Tags -->
-    <title>Rural Legal</title>
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta name="title" content="Pixel Bootstrap 5 - About company" />
-    <meta name="author" content="Themesberg" />
-    <meta
-      name="description"
-      content="Open source and free Bootstrap 5 UI Kit featuring 80 UI components, 5 example pages, and a Gulp and Sass workflow."
-    />
-    <link
-      rel="canonical"
-      href="https://appseed.us/apps/flask-apps/flask-pixel-bootstrap-uikit"
-    />
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://demo.themesberg.com/pixel-bootstrap-5-ui-kit"
-    />
-    <meta property="og:title" content="Pixel Bootstrap 5 - About company" />
-    <meta
-      property="og:description"
-      content="Open source and free Bootstrap 5 UI Kit featuring 80 UI components, 5 example pages, and a Gulp and Sass workflow."
-    />
-    <meta
-      property="og:image"
-      content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/pixel-lite/pixel-lite-preview.jpg"
-    />
+        <!-- Primary Meta Tags -->
+        <title>
+            Refloresta SP
+        </title>
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta
-      property="twitter:url"
-      content="https://demo.themesberg.com/pixel-bootstrap-5-ui-kit"
-    />
-    <meta
-      property="twitter:title"
-      content="Pixel Bootstrap 5 - About company"
-    />
-    <meta
-      property="twitter:description"
-      content="Open source and free Bootstrap 5 UI Kit featuring 80 UI components, 5 example pages, and a Gulp and Sass workflow."
-    />
-    <meta
-      property="twitter:image"
-      content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/pixel-lite/pixel-lite-preview.jpg"
-    />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="title" content="Refloresta SP">
+        <meta name="author" content="Equipe `Refloresta SP`">
+        <meta name="description" content="Open source and free Bootstrap 5 UI Kit featuring 80 UI components, 5 example pages, and a Gulp and Sass workflow.">
 
-    <!-- Favicon -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="../../static/assets/img/favicon/favicon-16x16.jpg"
-    />
-    <meta name="msapplication-TileColor" content="#ffffff" />
-    <meta name="theme-color" content="#ffffff" />
+        <link rel="icon" type="image/png" sizes="16x16"  href="../../static/assets/img/favicon/favicon-16x16.jpg">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="theme-color" content="#ffffff">
 
-    <!-- Fontawesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
+        <!-- Fontawesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <!-- CSS -->
+        <link type="text/css" href="static/assets/css/pixel.css" rel="stylesheet">
+        <link type="text/css" href="static/assets/css/refloresta.css" rel="stylesheet">
 
-    <!-- Pixel CSS -->
-    <link
-      type="text/css"
-      href="/static/assets/css/pixel.css"
-      rel="stylesheet"
-    />
-
-    <!-- Specific Page JS goes HERE  -->
-    {% block stylesheets %}{% endblock stylesheets %}
-  </head>
-  <style>
-    .containerMap {
-      margin-top: 10%;
-    }
-
-    @media screen and (max-width: 980px) {
-      .containerMap {
-        margin-top: 30%;
-      }
-    }
-  </style>
-  <body
-    style="
-      background: url(../../static/assets/img/pages/1440_Tree-tops.jpg);
-
-      margin: 0;
-    "
-  >
-    <div>
-      <div
-        class="containerMap"
-        style="
-          width: 60%;
-          background: #fff;
-          padding: 15px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          margin: 0 auto;
-          border-radius: 15px;
-          flex-direction: column;
-          margin-top: 10%;
-        "
-      >
-        <div class="accordion" id="accordionName" style="width: 100%">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="headingTwo">
-              <button
-                class="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseTwo"
-                aria-expanded="false"
-                aria-controls="collapseTwo"
-              >
-                Informe o nome e a área do projeto em ha:
-              </button>
-            </h2>
-            <div
-              id="collapseTwo"
-              class="accordion-collapse collapse"
-              aria-labelledby="headingTwo"
-              data-bs-parent="#accordionName"
-            >
-              <div class="accordion-body">
-                <form style="display: flex; width: 100%">
-                  <label style="font-size: 20px">Nome do projeto:</label>
-                  <input
-                    type="text"
-                    name="projectName"
-                    id="projectName"
-                    style="
-                      margin-left: 10px;
-                      padding: 3px;
-                      border-radius: 15px;
-                      width: 50%;
-                      border: 1px solid black;
-                    "
-                  />
-                  <label style="font-size: 20px">Área do projeto:</label>
-                  <input
-                    type="text"
-                    name="projectArea"
-                    id="projectArea"
-                    style="
-                      margin-left: 10px;
-                      padding: 3px;
-                      border-radius: 15px;
-                      width: 50%;
-                      border: 1px solid black;
-                    "
-                  />
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="accordion" id="accordionLocation" style="width: 100%">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="headingOne">
-              <button
-                class="accordion-button"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseOne"
-                aria-expanded="true"
-                aria-controls="collapseOne"
-              >
-                Escolha como informar sua localização:
-              </button>
-            </h2>
-            <div
-              id="collapseOne"
-              class="accordion-collapse collapse"
-              aria-labelledby="headingOne"
-              data-bs-parent="#accordionLocation"
-            >
-              <div class="accordion-body">
-                <div class="d-grid">
-                  <button
-                    type="button"
-                    class="btn btn-primary mb-3"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalMunicipio"
-                  >
-                    Municipio e Regioão Fitoecológica
-                  </button>
-                </div>
-                <div
-                  class="modal fade"
-                  id="modalMunicipio"
-                  tabindex="-1"
-                  role="dialog"
-                  aria-labelledby="modalMunicipio"
-                  aria-hidden="true"
-                >
-                  <div
-                    class="modal-dialog modal-dialog-centered"
-                    role="document"
-                  >
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h2 class="h6 modal-title">Informe sua localização:</h2>
-                        <button
-                          type="button"
-                          class="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"
-                        ></button>
-                      </div>
-                      <div class="modal-body">
-                        <select
-                          style="width: 100%; padding: 6px"
-                          id="municipio"
-                          name="municipio-select"
-                          onchange="callback()"
-                        >
-                          <option hidden selected>
-                            (Selecione o Municipio)
-                          </option>
-                          {% for key, value in municipios.items() %}
-                          <option value="{{ key }}">{{ value }}</option>
-                          {% endfor %}
-                        </select>
-                        <select
-                          style="width: 100%; padding: 6px"
-                          id="fito_ecologica"
-                          name="fitoEcologica-select"
-                          onchange="callback()"
-                        >
-                          <option value="-1" selected>
-                            (Selecione a Região Fitoecologica)
-                          </option>
-                          {% for key, value in fito_municipios.items() %}
-                          <option value="{{ key }}">{{ value }}</option>
-                          {% endfor %}
-                        </select>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary">
-                          Ok
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-link ms-auto"
-                          data-bs-dismiss="modal"
-                        >
-                          Close
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-grid">
-                  <button
-                    type="button"
-                    class="btn btn-primary mb-3"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalLatLong"
-                  >
-                    Latitude e Longitude
-                  </button>
-                </div>
-                <div
-                  class="modal fade"
-                  id="modalLatLong"
-                  tabindex="-1"
-                  role="dialog"
-                  aria-labelledby="modalLatLong"
-                  aria-hidden="true"
-                >
-                  <div
-                    class="modal-dialog modal-dialog-centered"
-                    role="document"
-                  >
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h2 class="h6 modal-title">Informe sua localização:</h2>
-                        <button
-                          type="button"
-                          class="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"
-                        ></button>
-                      </div>
-                      <div class="modal-body">
-                        <input
-                          type="text"
-                          style="width: 100%; padding: 6px"
-                          id="lat_long"
-                          name="latlong-text"
-                          placeholder="Digite a latitude e longitude, ex: -22,992079 -45,923527"
-                        />
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary">
-                          Ok
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-link ms-auto"
-                          data-bs-dismiss="modal"
-                        >
-                          Close
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-grid">
-                  <button
-                    type="button"
-                    class="btn btn-primary mb-3"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalCar"
-                  >
-                    CAR
-                  </button>
-                </div>
-                <div
-                  class="modal fade"
-                  id="modalCar"
-                  tabindex="-1"
-                  role="dialog"
-                  aria-labelledby="modalCar"
-                  aria-hidden="true"
-                >
-                  <div
-                    class="modal-dialog modal-dialog-centered"
-                    role="document"
-                  >
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h2 class="h6 modal-title">Informe sua localização:</h2>
-                        <button
-                          type="button"
-                          class="btn-close"
-                          data-bs-dismiss="modal"
-                          aria-label="Close"
-                        ></button>
-                      </div>
-                      <div class="modal-body">
-                        <input
-                          type="text"
-                          style="width: 100%; padding: 6px"
-                          id="CAR"
-                          name="CAR-text"
-                          placeholder="Digite o CAR:"
-                        />
-                        <input
-                          type="text"
-                          style="width: 100%; padding: 6px"
-                          id="area"
-                          name="area-text"
-                          placeholder="Digite a área em ha, ex: 12,4564:"
-                        />
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary">
-                          Ok
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-link ms-auto"
-                          data-bs-dismiss="modal"
-                        >
-                          Close
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="map" class="chart" style="max-height: 200px"></div>
-        <a
-          style="
-            border: none;
-            border-radius: 10px;
-            width: 30%;
-            height: 60px;
-            background-color: #29874a;
-            padding: 5px 10px;
-            color: white;
-            margin-top: 15px;
-            text-align: center;
-            display: flex;
+        <style>
+          .containerFull {
+            width: 80%;
+            background: #fff;
+            padding: 15px;
             justify-content: center;
-          "
-          href="./ui-plantLocation.html"
-        >
-          <button
-            type="button"
-            style="background: none; border: none; color: white"
-          >
-            Ok
-          </button>
-        </a>
-      </div>
+            align-items: center;
+            text-align: center;
+            margin: 0 auto;
+            border-radius: 15px;
+            flex-direction: column;
+          }
 
-      {% include 'includes/navigation.html' %} {% block content %} {% endblock
-      content %} {% include 'includes/scripts.html' %} {% block javascripts %}
+          /* @media screen and (max-width: 980px) {
+            .containerFull {
+              margin-top: 2%;
+            }
+          }*/
+        </style>
+    </head>
+    <body>
+
+      <div style="margin-top: 2%;">
+
+        <div class="containerFull">
+          <!-- start Accordion -->
+          <div class="accordion" id="acData" style="width: 100%">
+            <!-----------------  Project --------------------->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="hdProject">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#bdProject"
+                  aria-expanded="true"
+                  aria-controls="bdProject"
+                >
+                  Clique aqui para informe o nome e a área do projeto
+                </button>
+              </h2>
+              <!-- add class show to start open -->
+              <div id="bdProject"
+                class="accordion-collapse collapse"
+                aria-labelledby="hdProject"
+                data-bs-parent= "#acData"
+              >
+                <div class="accordion-body">
+                  <div class="container" width="60%">
+                    <div class="row mb-3">
+                      <label for="projectName" class="col-sm-2 col-form-label">Nome</label>
+                      <div class="col-sm-10">
+                        <input id="projectName" class="form-control" type="text" name="projectName">
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="projectArea"  class="col-sm-2 col-form-label">Área&nbsp;[ha]</label>
+                      <div class="col-sm-10">
+                        <input id="projectArea" class="form-control" type="number" name="projectArea" title= "Ingrese el área del proyecto en hectáreas">
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+            <!-----------------  Location --------------------->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="hdLocation">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#bdLocation"
+                  aria-expanded="true"
+                  aria-controls="bdLocation"
+                >
+                  Clique aqui para escolher um método para informar a localização do projeto
+                </button>
+              </h2>
+              <div id="bdLocation"
+                class="accordion-collapse collapse"
+                aria-labelledby= "hdLocation"
+                data-bs-parent= "#acData"
+              >
+                <div class="accordion-body">
+                  <!-- Municipio e Região Fitoecológica (xxxLocation) -->
+                  <div class="d-grid">
+                    <button
+                      type="button"
+                      class="btn btn-info bg-gradient mb-1 mx-5"
+                      data-bs-toggle="modal"
+                      data-bs-target="#mdlLocation"
+                    >
+                      Municipio e Região Fitoecológica
+                    </button>
+                  </div>
+                  <div
+                    class="modal fade"
+                    id="mdlLocation"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="mdlLocation"
+                    aria-hidden="true"
+                  >
+                    <div class="modal-dialog modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h2 class="h6 modal-title">Informe o Municipio e Região Fitoecológica</h2>
+                          <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                          ></button>
+                        </div>
+                        <div class="modal-body">
+                          <p>
+                            <select
+                              style="width: 90%; padding: 6px"
+                              id="municipio"
+                              name="municipio-select"
+                              onchange= "callback()"
+                            >
+                              <option hidden selected>(Primeiro selecione o Municipio)</option>
+                              {% for key, value in municipios.items() %}
+                                <option value="{{ key }}">{{ value }}</option>
+                              {% endfor %}
+                            </select>
+                          </p>
+                          <select
+                            style="width: 90%; padding: 6px"
+                            id= "fito_ecologica"
+                            name= "fitoEcologica-select"
+                            disabled="true"
+                            onchange="callback()"
+                          >
+                            <option value="-1" selected>
+                              (Logo selecione a Região Fitoecológica)
+                            </option>
+                            {% for key, value in fito_municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+                          </select>
+                        </div>
+                        <div class="modal-footer">
+                          <button id="okLocation" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
+                          <!-- mgd 2022.12.13 button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok </button> -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Latitude e Longitude (xxxLatLong) -->
+                  <div class="d-grid">
+                    <button
+                      type="button"
+                      class="btn btn-info bg-gradient mb-1 mx-5"
+                      data-bs-toggle="modal"
+                      data-bs-target="#mdlLatLong"
+                    >
+                      Latitude e Longitude
+                    </button>
+                  </div>
+                  <div
+                    class="modal fade"
+                    id="mdlLatLong"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="mdlLatLong"
+                    aria-hidden="true"
+                  >
+                    <div class="modal-dialog modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h2 class="h6 modal-title">Informe a localização geográfica do projeto</h2>
+                          <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                          ></button>
+                        </div>
+                        <div class="modal-body">
+                          <input
+                            type= "text"
+                            style= "width: 100%; padding: 6px"
+                            id= "lat_long"
+                            name= "latlong-text"
+                            placeholder= "Latitude, longitude, por exemplo: -22,992079 -45,923527"
+                            pattern= "/-(19|2[0-5])(\.[0-9]{1,6}),-(4[4-9]|5[0-3])(\.[0-9]{1,6})/"
+                          />
+                        </div>
+                        <div class="modal-footer">
+                          <button id= 'okLatLong' class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
+                          <button class="btn btn-secundary" type="button"  data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- CAR (xxxCAR)-->
+                  <div class="d-grid">
+                    <button
+                      type="button"
+                      class="btn btn-info bg-gradient mx-5"
+                      data-bs-toggle="modal"
+                      data-bs-target="#mdlCAR"
+                    >
+                      CAR
+                    </button>
+                  </div>
+                  <div
+                    class="modal fade"
+                    id="mdlCAR"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="mdlCAR"
+                    aria-hidden="true"
+                  >
+                    <div class="modal-dialog modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h2 class="h6 modal-title">Informe o CAR do Projeto</h2>
+                          <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                          ></button>
+                        </div>
+                        <div class="modal-body">
+                          <input
+                            type="text"
+                            style="width: 100%; padding: 6px"
+                            id="CAR"
+                            name="CAR-text"
+                            placeholder="Digite o CAR"
+                          />
+                        </div>
+                        <div class="modal-footer">
+                          <button id= "okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
+                          <button class="btn btn-secundary"type="button" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end Accordion -->
+
+          <!-- Map -->
+          <div id="map" class="chart" style="min-height: 400px; height: 100%; width: 100%; border: 1px solid #29874a; margin: 0.5em 0em;"></div>
+
+          <!-- Go button -->
+          <a href="./ui-plantLocation.html">
+            <button type="button" class="btn btn-primary" style="width: 6em;">Ok</button>
+          </a>
+        </div>
+        <!-- end containerFull -->
+
+      </div>
+      <!-- end -->
       <script>
+        const onClose = () => {
+          const ele = document.activeElement;
+          if (ele && ele.id) setTimeout(() => callback(ele.id), 0);
+          // console(ele.id);
+        }
+        const onHide= 'hide.bs.modal';
+       // document.getElementById("mdlLocation").addEventListener(onHide, onClose);
+        document.getElementById("mdlLatLong").addEventListener(onHide, onClose);
+        document.getElementById("mdlCAR").addEventListener(onHide, onClose);
+
         async function callback() {
-          let municipio = document.getElementById("municipio").value;
-          let fito = document.getElementById("fito_ecologica").value;
+          const selMun= document.getElementById("municipio");
+          const selFito= document.getElementById("fito_ecologica");
+          let municipio = selMun.value;
+          let fito = selFito.value;
           let latlong = document.getElementById("lat_long").value;
           let CAR = document.getElementById("CAR").value;
           if (latlong.startsWith("(")) latlong = "";
           if (CAR.startsWith("(")) CAR = "";
-          let response = await fetch(
-            `/callback/getMunicipioFito?&idMunicipio=${municipio}&idFito=${fito}&latlong=${latlong}&CAR=${CAR}`
-          );
-          if (response.ok) {
-            let mapJson = await response.json();
-            if (response.ok) {
-              let newHTML = "";
-              for (const [key, value] of Object.entries(
-                JSON.parse(mapJson["FitoMunicipio"])
-              )) {
-                newHTML = newHTML + `<option value='${key}'>${value}</option>`;
-              }
-              document.getElementById("fito_ecologica").setHTML(newHTML);
-              document.getElementById("area").value = mapJson["Area"];
-              Plotly.react("map", JSON.parse(mapJson["Map"]), {});
+          try {
+            selMun.disabled = true;
+            selFito.disabled = true;
+            document.body.style.cursor = 'progress';
+            const setFitoMsg = (sMsg) => selFito.setHTML(`<option value="-1" selected>(${sMsg})</option>`);
+            let response = await fetch(`/callback/getMunicipioFito?&idMunicipio=${municipio}&idFito=${fito}&latlong=${latlong}&CAR=${CAR}`);
+
+            const sFitoErr= 'Selecione a Região Fitoecológica';
+            if (!response.ok) {
+              setFitoMsg(sFitoErr);
+              alert(`HTTP-Error: ${response.status} on callback().`);
             } else {
-              alert("HTTP-Error: " + response.status + "on callback()");
+              let jsoData = await response.json();
+              if (!response.ok) {
+                setFitoMsg(sFitoErr);
+                alert(`HTTP-Error: ${response.status} on json response.`);
+              } else {
+                // novas opcoes para o select Fito (pelo Municipio)
+                const jsFitoMun = JSON.parse(jsoData["FitoMunicipio"]);
+                selFito.disabled = Object.keys(jsFitoMun).length == 0;
+                if (selFito.disabled){
+                  setFitoMsg('Sem regiões Fitoecológicas');
+                } else {  // O diccionario vem ordenado por key
+                  let newHTML = "";
+                  for (const [key, value] of Object.entries(jsFitoMun)) {
+                    newHTML += `<option value='${key}'>${value}</option>`;
+                  }
+                  selFito.setHTML(newHTML);
+                }
+                // mgd não encontrei 'area' (por isso não tem mapa) document.getElementById("area").value = jsoData["Area"]; -->
+                Plotly.react('map', JSON.parse(jsoData["Map"]), {});
+                document.getElementById('map').on('plotly_afterplot', () => document.body.style.cursor = 'default');
+              }
             }
-          } else {
-            alert("HTTP-Error: " + response.status + "on callback()");
+          } finally {
+            selMun.disabled = false;
+            //setTimeout( ()=> {document.body.style.cursor = 'default';}, 5000);
           }
         }
       </script>
-      <!--    <script>callback();</script>-->
       <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-      {% endblock javascripts %}
-    </div>
+
+        {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock javascripts %}
   </body>
 </html>

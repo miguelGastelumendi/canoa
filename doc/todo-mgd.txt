@@ -1,3 +1,11 @@
 Mauro:
 
+      	Bug: se muda de regiao, o select volta ao anterior. Tem que distinguir quem chama.
+
+
          <meta name="description" content=" .. ">
+         O tamnho do mapa parece que já vem fixado
+         Se o tamanhi do browser muda, o mapa fica igual de tamanho.
+         Acho que vale a pena colocar (pelo menos) o que as siglas CAR significam e como é o formato
+         o que é 'area' que traz do server?
+         seria bacana já abrir com mapa de SP
