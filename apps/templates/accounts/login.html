@@ -1,6 +1,6 @@
 {% extends "layouts/base-fullscreen.html" %}
 
-{% block title %} Sign IN {% endblock %} 
+{% block title %} Sign IN {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -12,7 +12,7 @@
         {% include 'includes/preloader.html' %}
 
         <!-- Section -->
-        <section class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark img-fluid" style="background: url(../../static/assets/img/pages/1440_Tree-tops.jpg) center center no-repeat;">
+        <section class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark img-fluid">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-12 d-flex align-items-center justify-content-center">
@@ -25,28 +25,38 @@
                                     <img class="img-fluid" src="../../static/assets/img/sections/Logo-Rural-Legal_horizontal.png" width="309px" height="126px">
                                 </section>
                                 <br />
+                                <!-- 2022.12.12 voltar com msg que foi 'perdida' nas melhorias -->
+                                <span class="font-weight-normal">
+                                    {% if msg %}
+                                        <div class="alert alert-danger">
+                                        {{ msg | safe }}
+                                        </div>
+                                    {% else %}
+                                        <!-- Add your credentials -->
+                                    {% endif %}
+                                </span>
                             </div>
                             <form method="post" action="" class="mt-4">
 
                                 {{ form.hidden_tag() }}
 
-                                <!-- Form -->
+                                <!-- Form Input User Name -->
                                 <div class="form-group mb-4">
-                                    <label for="email">Usuário</label>
+                                    <label for="username_login">Usuário</label>  <!-- mgd fix for with input id -->
                                     <div class="input-group">
                                         <span class="input-group-text" id="basic-addon1"><span class="fas fa-user"></span></span>
-                                        {{ form.username(class="form-control") }}
-                                    </div>  
+                                        {{ form.username(class="form-control", id="username_login") }}
+                                    </div>
                                 </div>
                                 <!-- End of Form -->
                                 <div class="form-group">
-                                    <!-- Form -->
+                                    <!-- Form Input Password -->
                                     <div class="form-group mb-4">
-                                        <label for="password">Senha</label>
+                                        <label for="pwd_login">Senha</label>    <!-- mgd fix for with input id -->
                                         <div class="input-group">
                                             <span class="input-group-text" id="basic-addon2"><span class="fas fa-unlock-alt"></span></span>
-                                            {{ form.password(class="form-control", type="password") }}
-                                        </div>  
+                                            {{ form.password(class="form-control", type="password", id="pwd_login") }}
+                                        </div>
                                     </div>
                                     <!-- End of Form -->
                                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -59,20 +69,13 @@
                                         <div><a href="{{ url_for('authentication_blueprint.register') }}" class="text-right">Registrar</a></div>
                                     </div>
                                 </div>
+
+                                <!-- <input class="" type="text" value="" id="latlon" pattern="/-(19|2[0-5])(\.[0-9]{1,6})/" onblur=""> -->
+
                                 <div class="d-grid">
                                     <button type="submit" name="login" class="btn btn-primary">Entrar</button>
                                 </div>
                             </form>
-
-                            <br />
-
-                            <div class="d-flex justify-content-center align-items-center mt-4">
-                                <span class="fw-normal">
-                                    &copy; Themesberg - coded by 
-                                    <a href="https://appseed.us" target="_blank"
-                                       class="fw-bold text-underline">AppSeed</a>
-                                </span>
-                            </div>
                         </div>
                     </div>
                 </div>
