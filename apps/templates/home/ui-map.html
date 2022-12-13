@@ -77,9 +77,11 @@
     <link
       rel="icon"
       type="image/png"
-      sizes="32x32"
-      href="../../static/assets/img/favicon/unnamed.png"
+      sizes="16x16"
+      href="../../static/assets/img/favicon/favicon-16x16.jpg"
     />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
 
     <!-- Fontawesome -->
     <link
@@ -118,7 +120,7 @@
       margin: 0;
     "
   >
-    <div style="width: 100vw; height: 100vh">
+    <div>
       <div
         class="containerMap"
         style="
@@ -163,20 +165,20 @@
                     name="projectName"
                     id="projectName"
                     style="
-                    margin-left: 10px;
+                      margin-left: 10px;
                       padding: 3px;
                       border-radius: 15px;
                       width: 50%;
                       border: 1px solid black;
                     "
                   />
-                   <label style="font-size: 20px">Área do projeto:</label>
+                  <label style="font-size: 20px">Área do projeto:</label>
                   <input
                     type="text"
                     name="projectArea"
                     id="projectArea"
                     style="
-                    margin-left: 10px;
+                      margin-left: 10px;
                       padding: 3px;
                       border-radius: 15px;
                       width: 50%;
@@ -189,7 +191,6 @@
           </div>
         </div>
 
-       
         <div class="accordion" id="accordionLocation" style="width: 100%">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
@@ -410,8 +411,7 @@
           </div>
         </div>
         <div id="map" class="chart" style="max-height: 200px"></div>
-        <button
-          type="submit"
+        <a
           style="
             border: none;
             border-radius: 10px;
@@ -421,10 +421,19 @@
             padding: 5px 10px;
             color: white;
             margin-top: 15px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
           "
+          href="./ui-plantLocation.html"
         >
-          Ok
-        </button>
+          <button
+            type="button"
+            style="background: none; border: none; color: white"
+          >
+            Ok
+          </button>
+        </a>
       </div>
 
       {% include 'includes/navigation.html' %} {% block content %} {% endblock
