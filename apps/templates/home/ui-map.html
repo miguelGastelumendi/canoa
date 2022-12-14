@@ -146,7 +146,7 @@
                               style="width: 90%; padding: 6px"
                               id="municipio"
                               name="municipio-select"
-                              onchange= "callback()"
+                              onchange= "callback(this.id)"
                             >
                               <option hidden selected>(Primeiro selecione o Municipio)</option>
                               {% for key, value in municipios.items() %}
@@ -159,7 +159,7 @@
                             id= "fito_ecologica"
                             name= "fitoEcologica-select"
                             disabled="true"
-                            onchange="callback()"
+                            onchange="callback(this.id)"
                           >
                             <option value="-1" selected>
                               (Logo selecione a Região Fitoecológica)
@@ -296,7 +296,7 @@
         document.getElementById("mdlLatLong").addEventListener(onHide, onClose);
         document.getElementById("mdlCAR").addEventListener(onHide, onClose);
 
-        async function callback() {
+        async function callback(callerID) {
           const selMun= document.getElementById("municipio");
           const selFito= document.getElementById("fito_ecologica");
           let municipio = selMun.value;
