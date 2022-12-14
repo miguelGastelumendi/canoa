@@ -63,7 +63,8 @@
                   aria-expanded="true"
                   aria-controls="bdProject"
                 >
-                  Clique aqui para informe o nome e a área do projeto
+                  Clique aqui para informar o nome, a área do projeto e a area da propriedade.
+                  Se vc for informar o CAR não precisará informar a área, esta virá do registro do CAR.
                 </button>
               </h2>
               <!-- add class show to start open -->
@@ -75,15 +76,24 @@
                 <div class="accordion-body">
                   <div class="container" width="60%">
                     <div class="row mb-3">
-                      <label for="projectName" class="col-sm-2 col-form-label">Nome</label>
+                      <label for="projectName" class="col-sm-2 col-form-label">Nome do projeto</label>
                       <div class="col-sm-10">
-                        <input id="projectName" class="form-control" type="text" name="projectName">
+                        <input id="projectName" class="form-control" type="text" name="projectName"
+                               title= "Forneça o nome de seu projeto.">
                       </div>
                     </div>
                     <div class="row mb-3">
-                      <label for="projectArea"  class="col-sm-2 col-form-label">Área&nbsp;[ha]</label>
+                      <label for="projectArea"  class="col-sm-2 col-form-label">Área do projeto&nbsp;(ha)</label>
                       <div class="col-sm-10">
-                        <input id="projectArea" class="form-control" type="number" name="projectArea" title= "Ingrese el área del proyecto en hectáreas">
+                        <input id="projectArea" class="form-control" type="number" name="projectArea"
+                               title= "Forneça a área do projeto em ha.">
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="propertyArea"  class="col-sm-2 col-form-label">Área da propriedade&nbsp;(ha)</label>
+                      <div class="col-sm-10">
+                        <input id="propertyArea" class="form-control" type="number" name="propertyArea"
+                               title= "Forneça a área da propriedade em ha.">
                       </div>
                     </div>
                 </div>
@@ -146,7 +156,7 @@
                               style="width: 90%; padding: 6px"
                               id="municipio"
                               name="municipio-select"
-                              onchange= "callback(this.id)"
+                              onchange= "updateFormData(this.id)"
                             >
                               <option hidden selected>(Primeiro selecione o Municipio)</option>
                               {% for key, value in municipios.items() %}
@@ -159,7 +169,7 @@
                             id= "fito_ecologica"
                             name= "fitoEcologica-select"
                             disabled="true"
-                            onchange="callback(this.id)"
+                            onchange="updateFormData(this.id)"
                           >
                             <option value="-1" selected>
                               (Logo selecione a Região Fitoecológica)
@@ -277,9 +287,7 @@
           <div id="map" class="chart" style="min-height: 400px; height: 100%; width: 100%; border: 1px solid #29874a; margin: 0.5em 0em;"></div>
 
           <!-- Go button -->
-          <a href="./ui-plantLocation.html">
-            <button type="button" class="btn btn-primary" style="width: 6em;">Ok</button>
-          </a>
+          <button type="button" class="btn btn-primary" style="width: 6em" onclick="saveProject();">Ok</button>
         </div>
         <!-- end containerFull -->
 
@@ -288,7 +296,7 @@
       <script>
         const onClose = () => {
           const ele = document.activeElement;
-          if (ele && ele.id) setTimeout(() => callback(ele.id), 0);
+          if (ele && ele.id) setTimeout(() => updateFormData(ele.id), 0);
           // console(ele.id);
         }
         const onHide= 'hide.bs.modal';
@@ -296,21 +304,21 @@
         document.getElementById("mdlLatLong").addEventListener(onHide, onClose);
         document.getElementById("mdlCAR").addEventListener(onHide, onClose);
 
-        async function callback(callerID) {
+        async function updateFormData(callerID) {
           const selMun= document.getElementById("municipio");
           const selFito= document.getElementById("fito_ecologica");
           let municipio = selMun.value;
           let fito = selFito.value;
           let latlong = document.getElementById("lat_long").value;
           let CAR = document.getElementById("CAR").value;
-          if (latlong.startsWith("(")) latlong = "";
-          if (CAR.startsWith("(")) CAR = "";
           try {
             selMun.disabled = true;
             selFito.disabled = true;
             document.body.style.cursor = 'progress';
             const setFitoMsg = (sMsg) => selFito.setHTML(`<option value="-1" selected>(${sMsg})</option>`);
-            let response = await fetch(`/callback/getMunicipioFito?&idMunicipio=${municipio}&idFito=${fito}&latlong=${latlong}&CAR=${CAR}`);
+            let response =
+                    await fetch(
+                            `/callback/updateFormData?&callerID=${callerID}&idMunicipio=${municipio}&idFito=${fito}&latlong=${latlong}&CAR=${CAR}`);
 
             const sFitoErr= 'Selecione a Região Fitoecológica';
             if (!response.ok) {
@@ -328,11 +336,13 @@
                 if (selFito.disabled){
                   setFitoMsg('Sem regiões Fitoecológicas');
                 } else {  // O diccionario vem ordenado por key
-                  let newHTML = "";
-                  for (const [key, value] of Object.entries(jsFitoMun)) {
-                    newHTML += `<option value='${key}'>${value}</option>`;
+                  if (callerID != 'fito_ecologica') {
+                    let newHTML = "";
+                    for (const [key, value] of Object.entries(jsFitoMun)) {
+                      newHTML += `<option value='${key}'>${value}</option>`;
+                    }
+                    selFito.setHTML(newHTML);
                   }
-                  selFito.setHTML(newHTML);
                 }
                 // mgd não encontrei 'area' (por isso não tem mapa) document.getElementById("area").value = jsoData["Area"]; -->
                 Plotly.react('map', JSON.parse(jsoData["Map"]), {});
@@ -343,6 +353,25 @@
             selMun.disabled = false;
             //setTimeout( ()=> {document.body.style.cursor = 'default';}, 5000);
           }
+        }
+
+        async function saveProject(){
+          const projectName = document.getElementById("projectName").value;
+          if (projectName === '')
+            return;
+          const projectArea = document.getElementById("projectArea").value;
+          const propertyArea = document.getElementById("propertyArea").value;
+          const selMun= document.getElementById("municipio");
+          const selFito= document.getElementById("fito_ecologica");
+          const municipio = selMun.value;
+          const fito = selFito.value;
+          const latlong = document.getElementById("lat_long").value;
+          const CAR = document.getElementById("CAR").value;
+          selMun.disabled = true;
+          selFito.disabled = true;
+          document.body.style.cursor = 'progress';
+          await fetch(
+`/callback/saveProject?&ProjectName=${projectName}&ProjectArea=${projectArea}&PropertyArea=${propertyArea}&idMunicipio=${municipio}&idFito=${fito}&latlong=${latlong}&CAR=${CAR}`);
         }
       </script>
       <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>

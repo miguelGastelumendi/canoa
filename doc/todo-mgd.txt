@@ -9,3 +9,7 @@ Mauro:
          Acho que vale a pena colocar (pelo menos) o que as siglas CAR significam e como é o formato
          o que é 'area' que traz do server?
          seria bacana já abrir com mapa de SP
+   
+   O ui_map.html tem que ser criado sobre um template e trocar  <a href="./ui-plantLocation.html"> do template
+
+

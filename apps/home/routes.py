@@ -18,15 +18,29 @@ def index():
 @login_required
 def route_callback(endpoint):
     args = request.args
-    if endpoint == 'getMunicipioFito':
-        idMunicipio = int(args.get('idMunicipio'))
-        idFito = int(args.get('idFito'))
-        latlong = args.get('latlong')
-        CAR = args.get('CAR')
-        return ui_map.getMapFitoMunicipio(idMunicipio,
+    callerID = args.get('callerID')
+    if callerID == 'mapSP':
+        return ui_map.getMapSP()
+    idMunicipio = int(args.get('idMunicipio'))
+    idFito = int(args.get('idFito')) if callerID == 'fito_ecologica' else -1
+    latlong = args.get('latlong')
+    CAR = args.get('CAR')
+    if endpoint == 'updateFormData':
+        # else
+        return ui_map.getMapFitoMunicipio(callerID,
+                                          idMunicipio,
                                           idFito,
                                           latlong,
                                           CAR)
+    elif endpoint == 'saveProject':
+        return ui_map.saveProject(args.get('projectName'),
+                                  args.get('projectArea'),
+                                  args.get('propertyArea'),
+                                  idMunicipio,
+                                  idFito,
+                                  latlong,
+                                  CAR)
+        pass
 
 @blueprint.route('/<template>')
 @login_required
@@ -37,8 +51,9 @@ def route_template(template):
             segment = get_segment(request)
             if segment == 'ui-map.html':
                 return render_template("home/" + template,
-                                       municipios=ui_map.getListaMunicipios(),
-                                       fito_municipios=ui_map.getListaFito(None)
+                                       municipios=ui_map.getListaMunicipios()
+                                       , fito_municipios=ui_map.getListaFito(None)
+                                       #, map=ui_map.getMapSP()
                                        )
             # Serve the file (if exists) from app/templates/home/FILE.html
         return render_template("home/" + template, segment=segment)
