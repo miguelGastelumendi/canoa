@@ -77,7 +77,22 @@ def getMapMunicipio(idMunicipio: int):
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder),
                             'Fito': json.dumps(getListaFito(idMunicipio), cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
-def getFitoMunicipio(idMunicipio: int, idFito: int, latlong: str, CAR: str):
+
+def getSP():
+    df = dbquery.getDataframeResultset(
+        f"select id,Nome "
+        f"from SP ")
+    features = [json.loads(x) for x in dbquery.getListResultset(
+        f"select geomText from SP ")]
+    centroid_extent_polytype = dbquery.executeSQL(
+        f"select Centroid.STY as Longitude, Centroid.STX as Latitude, extent, geometrytype from "
+        f"(select geom.STCentroid() as Centroid, geom.STEnvelope().STAsText() as extent "
+        f",geom.STGeometryType() as geometrytype "
+        f"from SP) a").first()
+    gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
+    return df, gjson, centroid, zoom
+def getFitoMunicipio(callerID: str, idMunicipio:
+                     int, idFito: int, latlong: str, CAR: str):
     if CAR != '':
         whereFito = (f"where mf.id in (select mf.id from car c \n"
                      f"inner join MunicipioFito mf \n"
@@ -118,11 +133,13 @@ def getFitoMunicipio(idMunicipio: int, idFito: int, latlong: str, CAR: str):
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
     return fito, gjson, centroid, zoom, color, area
 
-def getMapFitoMunicipio(idMunicipio: int,
+def getMapFitoMunicipio(callerID: str,
+                        idMunicipio: int,
                         idFito: int,
                         latlong: str,
                         CAR: str):
-    fito, geo, centroid, zoom, color, area = getFitoMunicipio(idMunicipio, idFito, latlong, CAR)
+    fito, geo, centroid, zoom, color, area = getFitoMunicipio(callerID,
+                                                              idMunicipio, idFito, latlong, CAR)
     fig = px.choropleth_mapbox(fito, geojson=geo, color=fito.color.tolist(),
                                locations=fito.id, featureidkey="properties.id",
                                center=centroid,
@@ -151,5 +168,16 @@ def getMapCAR(pCAR: str = ''):
     #     mapbox_style="white-bg",
     #     showlegend=False)
     # fig.update_layout(coloraxis_showscale=False)
+    graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
+    return graphJSON
+
+def getMapSP():
+    SP, geo, centroid, zoom = getSP()
+    fig = px.choropleth_mapbox(SP, geojson=geo,
+                               locations=SP.id, featureidkey="properties.id",
+                               center=centroid,
+                               hover_name=SP.Nome.tolist(), hover_data={'id': False},
+                               mapbox_style="carto-positron", zoom=zoom,
+                               opacity=0.4)
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
