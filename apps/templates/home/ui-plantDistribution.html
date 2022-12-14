@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <!-- Primary Meta Tags -->
+    <title>Refloresta SP</title>
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="title" content="Refloresta SP" />
+    <meta name="author" content="Equipe `Refloresta SP`" />
+    <meta
+      name="description"
+      content="Open source and free Bootstrap 5 UI Kit featuring 80 UI components, 5 example pages, and a Gulp and Sass workflow."
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../../static/assets/img/favicon/favicon-16x16.jpg"
+    />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Fontawesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- CSS -->
+    <link type="text/css" href="static/assets/css/pixel.css" rel="stylesheet" />
+    <link
+      type="text/css"
+      href="static/assets/css/refloresta.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .containerFull {
+        width: 80%;
+        background: #fff;
+        padding: 15px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin: 0 auto;
+        border-radius: 15px;
+        flex-direction: column;
+        display: flex;
+        gap: 30px;
+      }
+
+      /* @media screen and (max-width: 980px) {
+            .containerFull {
+              margin-top: 2%;
+            }
+          }*/
+    </style>
+  </head>
+  <body>
+    <div style="margin-top: 2%">
+      <div class="containerFull">
+        <h2>Distribuição de plantio:</h2>
+        <div style="display: flex; gap: 80px;">
+          <div>
+            <h4>Plantio 1</h4>
+            <a href="./">
+              <button
+                type="button"
+                style="width: 6em; background: none; border: none"
+              >
+                <img src="../../static/assets/img/faixas_plantio/MVMV.png"
+              </button>
+            </a>
+          </div>
+          <div>
+            <h4>Plantio 2</h4>
+            <a href="./">
+              <button
+                type="button"
+                style="width: 6em; background: none; border: none"
+              >
+                <img src="../../static/assets/img/faixas_plantio/AAAAAAAA.png"
+              </button>
+            </a>
+          </div>
+        </div>
+        <div style="display: flex; gap: 80px;">
+          <div>
+            <h4>Plantio 3</h4>
+            <a href="./">
+              <button
+                type="button"
+                style="width: 6em; background: none; border: none"
+              >
+                <img src="../../static/assets/img/faixas_plantio/LBBBLBBB.png"
+              </button>
+            </a>
+          </div>
+          <div>
+            <h4>Plantio 4</h4>
+            <a href="./">
+              <button
+                type="button"
+                style="width: 6em; background: none; border: none"
+              >
+                <img src="../../static/assets/img/faixas_plantio/VVVV.png"
+              </button>
+            </a>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    <!-- end -->
+
+    {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock
+    javascripts %}
+  </body>
+</html>
