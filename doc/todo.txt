@@ -41,9 +41,15 @@ Nessa tela será escolhido modelo de plantio através do desenho destes. Serão 
 
 13/12/2022
 
-1) Projeto mudou de nome: Refloresta SP
+1) Projeto mudou de nome: Refloresta SP - OK
 Novas imagens em project_assets, já comitadas
 
 2) Tela de  Localização:
 
 a- O Campo "Área da propriedade" deve estar em Município/Fito e em Latitude e Longitude, devendo ser removido do CAR.
+
+13/12/2022
+1) Tela de  Localização:
+
+a- Ajustar largura do mapa junto com a tela.
+b- Logo da tela principal.
