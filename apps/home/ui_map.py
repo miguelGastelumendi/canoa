@@ -181,3 +181,14 @@ def getMapSP():
                                opacity=0.4)
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
+
+def saveProject(projectName: str,
+                projectArea,
+                propertyArea,
+                idMunicipio: int,
+                idFito: int,
+                latlong: str,
+                CAR: str):
+    dbquery.executeSQL(f"INSERT INTO RURALLEGAL.dbo.Projeto(idUser, descProjeto, dtCriacao, dtAtualizacao)"
+                       f"VALUES(0, '{projectName}', GETDATE(), GETDATE())")
+    pass

@@ -178,7 +178,7 @@
                           </select>
                         </div>
                         <div class="modal-footer">
-                          <button id="okLocation" class="btn btn-primary" type="button" data-bs-dismiss="modal" onclick="saveProject()">Ok</button>
+                          <button id="okLocation" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
                           <!-- mgd 2022.12.13 button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok </button> -->
                         </div>
                       </div>
@@ -287,9 +287,7 @@
           <div id="map" class="chart" style="min-height: 400px; height: 100%; width: 100%; border: 1px solid #29874a; margin: 0.5em 0em;"></div>
 
           <!-- Go button -->
-          <a href="./ui-plantLocation.html">
-            <button type="button" class="btn btn-primary" style="width: 6em;">Ok</button>
-          </a>
+          <button type="button" class="btn btn-primary" style="width: 6em" onclick="saveProject();">Ok</button>
         </div>
         <!-- end containerFull -->
 
@@ -361,7 +359,7 @@
           const projectName = document.getElementById("projectName").value;
           if (projectName === '')
             return;
-          const projectArea = document.getElementById("projectName").value;
+          const projectArea = document.getElementById("projectArea").value;
           const propertyArea = document.getElementById("propertyArea").value;
           const selMun= document.getElementById("municipio");
           const selFito= document.getElementById("fito_ecologica");

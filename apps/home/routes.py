@@ -33,6 +33,13 @@ def route_callback(endpoint):
                                           latlong,
                                           CAR)
     elif endpoint == 'saveProject':
+        return ui_map.saveProject(args.get('projectName'),
+                                  args.get('projectArea'),
+                                  args.get('propertyArea'),
+                                  idMunicipio,
+                                  idFito,
+                                  latlong,
+                                  CAR)
         pass
 
 @blueprint.route('/<template>')
