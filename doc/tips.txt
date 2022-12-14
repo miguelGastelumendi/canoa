@@ -1,1 +1,10 @@
 Deploy na AWS: https://www.twilio.com/blog/deploy-flask-python-app-aws
+puttygen refloresta_sp.pem -o refloresta_sp.ppk
+
+sh ubuntu@18.231.10.125
+cd Atrium/rurallegal/
+source venv/bin/activate
+gunicorn --bind 0.0.0.0:50051 run:app --timeout 90
+
+git fetch --all
+git reset --hard origin/master
