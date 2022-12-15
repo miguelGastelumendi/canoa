@@ -58,6 +58,8 @@ def route_template(template):
         if template.find('.html') > -1:
             # Detect the current page
             segment = helper.get_segment(request)
+            if segment == 'rsp-combinations':
+                return render_template("home/" + template)
             if segment == 'rsp-projeto_localizacao.html':
                 return render_template("home/" + template,
                                        municipios=ui_map.getListaMunicipios()
