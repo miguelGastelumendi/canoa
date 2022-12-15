@@ -81,13 +81,12 @@
           const jsoRsp = await response.json();
           const jsData = jsoRsp.data;// já é jso  JSON.parse(jsoData["data"]);
 
-          const iColCount = 2;
           let sHtml = ''
           jsData.forEach(itm => {
             //  sHtml += ((sHtml == '') ? '' : '</div>') + '<div class="row">';
             sHtml += `
               <div style="display:grid; margin:20px;">
-                <a style="margin-bottom: 10px; max-width: 186px;" href="/rsp-relief(${itm.id}).html?id=${itm.id}"><button type="button" class="btn btn-info">${itm.caption}</button></a>
+                <a style="margin-bottom: 10px; max-width: 186px;" href="/rsp-relief.html?id=${itm.id}"><button type="button" class="btn btn-info">${itm.caption}</button></a>
                 <img style="max-width: 186px;" src="../../static/assets/img/modelo_plantio/${itm.fileName}.png" alt="${itm.fileName}">
               </div>
               `

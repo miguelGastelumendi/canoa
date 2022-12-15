@@ -36,25 +36,35 @@
 
       <!-- start Accordion -->
       <div class="accordion" id="acData" style="width: 100%">
-        {% set current_combination = -1 %}
-        {% for combination in combinations %}
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="header_{{ combination.id }}">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-              data-bs-target="#bdLocation" aria-expanded="true" aria-controls="bdLocation">
-              Verde
-            </button>
-          </h2>
-          <div id="bdLocation" class="accordion-collapse collapse" aria-labelledby="hdLocation" data-bs-parent="#acData">
-            <div class="accordion-body">
-              <div class="d-grid gap-2">
-                <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal" data-bs-target="#mdlCAR">
-                  CAR
+      {% for strip in strips %}
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        style="text-align:left; padding-left:6px"
+                  data-bs-target="#bdLocation" aria-expanded="true" aria-controls="bdLocation">
+                  {{ strip }}
                 </button>
+              </h2>
+              <div id="bdLocation" class="accordion-collapse collapse" aria-labelledby="hdLocation" data-bs-parent="#acData">
+                <div class="accordion-body">
+                  <div class="d-grid gap-2">
+              {% for _, combination in combinations.iterrows() %}
+              {% if strip == combination.nomeFaixa %}
+                    <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal"
+                            style="text-align:left; padding-left:6px" onclick="showConfirmacao( '' )"
+                    >
+                        {{ combination.Especies }}<br><b>Financeiro</b><br><b>TIR:</b> {{ combination.TIR }}<br>
+                        <b>Pay-back (anos):</b> {{ combination.payback }}<br>
+                        <b>Investimento necessário:</b> {{ combination.InvNecessario }}<br>
+                        <b>Valor Total Líquido:</b> {{ combination.VTLiquido }}<br>
+                        <b>Valor Presente Líquido:</b> {{ combination.VPLiquido }}<br>
+                    </button>
+              {% endif %}
+              {% endfor %}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
         {% endfor %}
       </div>
       <!-- end Accordion -->
@@ -88,82 +98,10 @@
   <!-- ===== Start Scripts ===== -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script>
-    // Modal close
-    const _onClose = () => {
-      const ele = document.activeElement;
-      if (ele && ele.id) setTimeout(() => updateFormData(ele.id), 0);
-      // console(ele.id);
-    }
-    const onHide = 'hide.bs.modal';
-    // document.getElementById("mdlLocation").addEventListener(onHide, _onClose);
-    document.getElementById("mdlCAR").addEventListener(onHide, _onClose);
-
-    // -------------------------
-    async function updateFormData(callerID) {
-      if (bFetching) return; // Acho que o erro 500 é por sobrecarga
-      const selMun = document.getElementById("municipio");
-      const selFito = document.getElementById("fito_ecologica");
-      const btnOkLocat = document.getElementById("okLocation");
-      let municipio = selMun.value;
-      let fito = selFito.value;
-      let latlong = document.getElementById("lat_long").value;
-      let CAR = document.getElementById("CAR").value;
-
-      // TODO ver se mudou o parâmetro
-      bFetching = true;
-      try {
-        // TODO se for Mun/Fito disable OK
-        selMun.disabled = true;
-        selFito.disabled = true;
-        btnOkLocat.disabled = true;
-        document.body.style.cursor = 'progress';
-        const setFitoMsg = (sMsg) => selFito.setHTML(`<option value="-1" selected>(${sMsg})</option>`);
-        let response = await fetch('/callback/updateFormData?' +
-                              `&callerID=${callerID}` +
-                              `&idMunicipio=${municipio}` +
-                              `&idFito=${fito}` +
-                              `&latlong=${latlong}` +
-                              `&CAR=${CAR}`
-                          );
-
-
-        const sFitoErr = 'Selecione a Região Fitoecológica';
-        if (!response.ok) {
-          setFitoMsg(sFitoErr);
-          alert(`HTTP-Error: ${response.status} on callback().`);
-        } else {
-          let jsoData = await response.json();
-          if (!response.ok) {
-            setFitoMsg(sFitoErr);
-            alert(`HTTP-Error: ${response.status} on json response.`);
-          } else {
-            // novas opções para o select Fito (pelo Município)
-            const jsFitoMun = JSON.parse(jsoData["FitoMunicipio"]);
-            selFito.disabled = Object.keys(jsFitoMun).length == 0;
-            if (selFito.disabled) {
-              setFitoMsg('Sem regiões Fitoecológicas');
-            } else {
-              var newHTML = "";
-              if (callerID != 'fito_ecologica')
-              {
-                for (const [key, value] of Object.entries(jsFitoMun)) {
-                  newHTML += `<option value='${key}'>${value}</option>`;
-                }
-                 document.getElementById('fito_ecologica').innerHTML = newHTML;
-              }
-            }
-            _showMap(jsoData["Map"]);
-            document.getElementById('map').on('plotly_afterplot', () => document.body.style.cursor = 'default');
-          }
+    function showConfirmacao(id){
+        if (confirm("É isso mêssss?")){
         }
-      } finally {
-        selMun.disabled = false;
-        btnOkLocat.disabled = false;
-        setTimeout(() => { document.body.style.cursor = 'default'; }, 5000); // last resurse
-        bFetching = false;
-      }
     }
-
   </script>
 
 <!-- Core -->

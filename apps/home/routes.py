@@ -61,31 +61,27 @@ def route_template(template):
         if template.find('.html') > -1:
             # Detect the current page
             segment = helper.get_segment(request)
-<<<<<<< HEAD
-            id = request.args.get('id')  # mgd
-            if segment == 'rsp-combinations':
-                return render_template("home/" + template)
-=======
             # if segment.startswith('testeJinja'):
             if segment.startswith('rsp-combinations'):
                 # return render_template("home/testeJinja.html",
+                combinations, strips = ui_combination.getCombinations(session['_projeto_id'])
                 return render_template("home/" + template,
-                                       combinations=ui_combination.getCombinations(session['_projeto_id']))
->>>>>>> 2f2fb920ca8b527f00b303f5381424bea70d6f3c
+                                       strips=strips,
+                                       combinations=combinations)
             if segment == 'rsp-projeto_localizacao.html':
                 return render_template("home/" + template,
                                        municipios=ui_map.getListaMunicipios()
                                        , fito_municipios=ui_map.getListaFito(None)
                                        #, map=ui_map.getMapSP()
                                        )
-            elif segment.startswith('rsp-plantDistribution'):
+            elif segment == 'rsp-plantDistribution.html':
             # TODO: number of número de módulos fiscais validation
-                idFinalidade, template, segment = helper.getValueFromHTMLName(template)
+                idFinalidade = request.args.get('id')
                 dbquery.executeSQL(f"update ProjetoPreferencias set idFinalidade = {idFinalidade} "
                                    f"where idProjeto = {session['_projeto_id']}")
                 render_template("home/" +template, segment=segment)
-            elif segment.startswith('rsp-relief'):
-                idTopografia, template, segment = helper.getValueFromHTMLName(template)
+            elif segment == 'rsp-relief.html':
+                idTopografia = request.args.get('id')
                 dbquery.executeSQL(f"update ProjetoPreferencias set idTopografia = {idTopografia} "
                                    f"where idProjeto = {session['_projeto_id']}")
                 render_template("home/" +template, segment=segment)
