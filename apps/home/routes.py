@@ -58,6 +58,7 @@ def route_template(template):
         if template.find('.html') > -1:
             # Detect the current page
             segment = helper.get_segment(request)
+            id = request.args.get('id')  # mgd
             if segment == 'rsp-combinations':
                 return render_template("home/" + template)
             if segment == 'rsp-projeto_localizacao.html':
