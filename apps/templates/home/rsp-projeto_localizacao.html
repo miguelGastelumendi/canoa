@@ -78,95 +78,18 @@
               Clique aqui para escolher um método para informar a localização do projeto
             </button>
           </h2>
-          <div id="bdLocation" class="accordion-collapse collapse" aria-labelledby="hdLocation"
-            data-bs-parent="#acData">
+          <div id="bdLocation" class="accordion-collapse collapse" aria-labelledby="hdLocation" data-bs-parent="#acData">
             <div class="accordion-body">
-              <!-- Município e Região Fitoecológica (xxxLocation) -->
-              <div class="d-grid">
-                <button type="button" class="btn btn-info bg-gradient mb-1 mx-5" data-bs-toggle="modal" data-bs-target="#mdlLocation">
+              <div class="d-grid gap-2">
+                <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal" data-bs-target="#mdlLocation">
                   Município e Região Fitoecológica
                 </button>
-              </div>
-              <div class="modal fade" id="mdlLocation" tabindex="-1" role="dialog" aria-labelledby="mdlLocation"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h2 class="h6 modal-title">Informe o Município e Região Fitoecológica</h2>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <p>
-                        <select id="municipio" class="form-select"
-                          onchange="updateFormData(this.id)">
-                          <option hidden selected>(Primeiro selecione o Municipio)</option>
-                          {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
-                        </select>
-                      </p>
-                      <select id="fito_ecologica" class="form-select" disabled="true" onchange="updateFormData(this.id)">
-                        <option value="-1" selected>
-                          (Logo selecione a Região Fitoecológica)
-                        </option>
-                        {% for key, value in fito_municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
-                      </select>
-                    </div>
-                    <div class="modal-footer">
-                      <button id="okLocation" class="btn btn-primary" type="button" data-bs-dismiss="modal" disabled="true">Ok</button>
-                      <!--se não tem id, não atualiza, deixar assim  -->
-                      <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Latitude e Longitude (xxxLatLong) -->
-              <div class="d-grid">
-                <button type="button" class="btn btn-info bg-gradient mb-1 mx-5" data-bs-toggle="modal" data-bs-target="#mdlLatLong">
+                  <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal" data-bs-target="#mdlLatLong">
                   Latitude e Longitude
                 </button>
-              </div>
-              <div class="modal fade" id="mdlLatLong" tabindex="-1" role="dialog" aria-labelledby="mdlLatLong"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h2 class="h6 modal-title">Informe a localização geográfica do projeto</h2>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <input id="lat_long" class="form-control" type="text"
-                        placeholder="Latitude, longitude, por exemplo: -22,992079 -45,923527"
-                        pattern="/-(19|2[0-5])(\.[0-9]{1,6}),-(4[4-9]|5[0-3])(\.[0-9]{1,6})/" />
-                    </div>
-                    <div class="modal-footer">
-                      <button id='okLatLong' class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
-                      <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- CAR (xxxCAR)-->
-              <div class="d-grid">
                 <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal" data-bs-target="#mdlCAR">
                   CAR
                 </button>
-              </div>
-              <div class="modal fade" id="mdlCAR" tabindex="-1" role="dialog" aria-labelledby="mdlCAR"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h2 class="h6 modal-title">Informe o CAR do Projeto</h2>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
-                    </div>
-                    <div class="modal-footer">
-                      <button id="okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
-                      <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -174,17 +97,90 @@
       </div>
       <!-- end Accordion -->
 
-      <!-- Map -->
-      <div style="min-height: 400px; height: 100%; margin: 10px 0px; border: 1px solid #29874a ">
-        <div id="map" class="chart" style="min-height: 400px; height: 100%; width: 100%;">
+      <!-- ===== Start Modals ===== -->
+      <!-- Modal Projeto -->
+      <div class="modal fade" id="mdlLocation" tabindex="-1" role="dialog" aria-labelledby="mdlLocation" aria-hidden="true">
+        <div class="modal-dialog modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="h6 modal-title">Informe o Município e Região Fitoecológica</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>
+              <select id="municipio" class="form-select"
+                onchange="updateFormData(this.id)">
+                <option hidden selected>(Primeiro selecione o Município)</option>
+                {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+              </select>
+            </p>
+            <select id="fito_ecologica" class="form-select" disabled="true" onchange="updateFormData(this.id)">
+              <option value="-1" selected>
+                (Logo selecione a Região Fitoecológica)
+              </option>
+              {% for key, value in fito_municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button id="okLocation" class="btn btn-primary" type="button" data-bs-dismiss="modal" disabled="true">Ok</button>
+            <!--se não tem id, não atualiza, deixar assim  -->
+            <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
         </div>
       </div>
+
+        <!-- Modal LatLong -->
+        <div class="modal fade" id="mdlLatLong" tabindex="-1" role="dialog" aria-labelledby="mdlLatLong" aria-hidden="true">
+          <div class="modal-dialog modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h2 class="h6 modal-title">Informe a localização geográfica do projeto</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <input id="lat_long" class="form-control" type="text"
+                  placeholder="Latitude, longitude, por exemplo: -22,992079 -45,923527"
+                  pattern="/-(19|2[0-5])(\.[0-9]{1,6}),-(4[4-9]|5[0-3])(\.[0-9]{1,6})/" />
+              </div>
+              <div class="modal-footer">
+                <button id='okLatLong' class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
+                <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal CAR -->
+        <div class="modal fade" id="mdlCAR" tabindex="-1" role="dialog" aria-labelledby="mdlCAR" aria-hidden="true">
+          <div class="modal-dialog modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h2 class="h6 modal-title">Informe o CAR do Projeto</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
+              </div>
+              <div class="modal-footer">
+                <button id="okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
+                <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <!-- ===== End Modals ===== -->
+
+      <!-- Map -->
+      <div style="min-height: 400px; height: 100%; margin: 10px 0px; border: 1px solid #29874a ">
+        <div id="map" class="chart" style="height: 100%; width: 100%;">
+        </div>
+      </div>
+
       <!-- Save button -->
       <div id="map" class="wzdFooter">
         <button type="button" class="btn btn-primary" style="width: 6em" onclick="saveProject();">Ok</button>
       </div>
-
-    </div>
     <!-- end wzdContainer -->
 
   </div>
@@ -257,7 +253,7 @@
               setFitoMsg(sFitoErr);
               alert(`HTTP-Error: ${response.status} on json response.`);
             } else {
-              // novas opcoes para o select Fito (pelo Municipio)
+              // novas opções para o select Fito (pelo Município)
               const jsFitoMun = JSON.parse(jsoData["FitoMunicipio"]);
               selFito.disabled = Object.keys(jsFitoMun).length == 0;
               if (selFito.disabled) {
