@@ -2,7 +2,6 @@
 <html lang="pt-br">
 
 <head>
-  <!-- ar_map.html version 0.996 -->
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
   <!-- Primary Meta Tags -->
@@ -19,11 +18,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
     integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <!-- CSS -->
   <link type="text/css" href="../../static/assets/css/pixel.css" rel="stylesheet">
   <link type="text/css" href="../../static/assets/css/refloresta.css" rel="stylesheet">
+
   <script>
-      const goto = (sHref) => window.location.href = sHref;
+      const goto = (id) => window.location.href = `./rsp-plantDistribution.html?${id}`;
   </script>
 </head>
 
@@ -36,13 +37,13 @@
           Selecione a atividade segundo os critérios
         </div>
         <div class="d-grid gap-2">
-          <button type="button" class="btn btn-info bg-gradient" onclick="goto('./rsp-plantDistribution(3).html')">
+          <button type="button" class="btn btn-info bg-gradient" onclick="goto(3)">
             Área de Preservação Permanente
           </button>
-          <button type="button" class="btn btn-info bg-gradient" onclick="goto('./rsp-plantDistribution(1).html')">
+          <button type="button" class="btn btn-info bg-gradient" onclick="goto(1)">
             Reserva Legal
           </button>
-          <button type="button" class="btn btn-info bg-gradient" onclick="goto('./rsp-plantDistribution(2).html')">
+          <button type="button" class="btn btn-info bg-gradient" onclick="goto(2)">
             Área de uso alternativo do solo
           </button>
         </div>

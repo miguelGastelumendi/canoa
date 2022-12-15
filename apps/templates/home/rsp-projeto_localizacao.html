@@ -275,7 +275,7 @@
       } finally {
         selMun.disabled = false;
         btnOkLocat.disabled = false;
-        setTimeout(() => { document.body.style.cursor = 'default'; }, 5000); // last resurse
+        setTimeout(() => { document.body.style.cursor = 'default'; }, 5000); // last recurse
         bFetching = false;
       }
     }
@@ -289,9 +289,7 @@
       }
       const projectArea = document.getElementById("projectArea").value;
       const propertyArea = document.getElementById("propertyArea").value;
-      const selMun = document.getElementById("municipio");
-      const selFito = document.getElementById("fito_ecologica");
-      const fito = selFito.value;
+      const fito = document.getElementById("fito_ecologica").value;
       const latlong = document.getElementById("lat_long").value;
       const CAR = document.getElementById("CAR").value;
       // TODO colocar modal de espera
