@@ -6,16 +6,10 @@
     <!-- Primary Meta Tags -->
     <title>Refloresta SP</title>
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="title" content="Refloresta SP" />
     <meta name="author" content="Equipe `Refloresta SP`" />
-    <meta
-      name="description"
-      content="Open source and free Bootstrap 5 UI Kit featuring 80 UI components, 5 example pages, and a Gulp and Sass workflow."
-    />
+    <meta name="description" content=""/>
 
     <link
       rel="icon"
@@ -65,79 +59,52 @@
     </style> -->
   </head>
   <body>
+    <!-- version 0.990 -->
     <div style="margin-top: 2%">
-      <div class="containerWizard">
-        <h2>Distribuição de plantio:</h2>
-        <div style="display: flex; gap: 80px;">
-          <div>
-            <h4>Plantio 1</h4>
-            <a href="./">
-              <button
-                type="button"
-                style="width: 6em; background: none; border: none"
-              >
-                <img src="../../static/assets/img/modelo_plantio/MVMV.png"
-              </button>
-            </a>
-          </div>
-<!--          <div>-->
-<!--            <h4>Plantio 2</h4>-->
-<!--            <a href="./">-->
-<!--              <button-->
-<!--                type="button"-->
-<!--                style="width: 6em; background: none; border: none"-->
-<!--              >-->
-<!--                <img src="../../static/assets/img/modelo_plantio/AAAAAAAA.png"-->
-<!--              </button>-->
-<!--            </a>-->
-<!--          </div>-->
+      <div class="wzdContainer">
+        <div class="alert alert-primary mb-3" role="alert">
+          <h6 class="alert-heading">Distribuição de Plantio</h6>
+          Selecione a atividade segundo os critérios
         </div>
-        <div style="display: flex; gap: 80px;">
-          <div>
-            <h4>Plantio 3</h4>
-            <a href="./">
-              <button
-                type="button"
-                style="width: 6em; background: none; border: none"
-              >
-                <img src="../../static/assets/img/modelo_plantio/LBBBLBBB.png"
-              </button>
-            </a>
-          </div>
-          <div>
-            <h4>Plantio 4</h4>
-            <a href="./">
-              <button
-                type="button"
-                style="width: 6em; background: none; border: none"
-              >
-                <img src="../../static/assets/img/modelo_plantio/VVVV.png"
-              </button>
-            </a>
-          </div>
-        </div>
+        <div id="grdModelos" class="container">
 
+        </div>
       </div>
     </div>
-    <!-- end -->
 
-    {% include 'includes/scripts.html' %}
-    {% block javascripts %}
     <script>
       async function getDistribution() {
-        let response = await fetch('/callback/getDistribution')
+        const response = await fetch('/callback/getDistribution');
         if (!response.ok) {
-            setFitoMsg(sFitoErr);
-            alert(`HTTP-Error: ${response.status} on callback().`);
-        }
-        else{
-          let jsoData = await response.json();
-          const data = JSON.parse(jsoData["data"]);
+          setFitoMsg(sFitoErr);
+          alert(`HTTP-Error: ${response.status} on callback().`);
+        } else {
+          const jsoRsp = await response.json();
+          const jsData = jsoRsp.data;// já é jso  JSON.parse(jsoData["data"]);
+
+          imgData = [];
+          for (let i = 0; i < jsData.length; i += 2) {
+            imgData.push({ caption: jsData[i].descModelo, file: jsData[i + 1].ArquivoDesenho });
+          }
+
+          const iColCount = 2;
+          let i = 0;
+          let sHtml = ''
+          imgData.forEach(itm => {
+            if (i == 0) { sHtml += ((sHtml == '') ? '' : '</div>') + '<div class="row">'; }
+            sHtml += '<div class="col">' +
+                    `<img src="../../static/assets/img/modelo_plantio/${itm.file}.png" alt="${itm.file}">` +
+                    `<button type="button" class="btn btn-info" onclick="xxx">${itm.caption}</button>` +
+                  '</div>';
+            i = (i >= iColCount) ? 0 : i + 1;
+          });
+          document.getElementById('grdModelos').innerHTML = sHtml;
         }
       }
       getDistribution();
     </script>
 
-    {% endblock javascripts %}
+    {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock javascripts %}
+
   </body>
 </html>

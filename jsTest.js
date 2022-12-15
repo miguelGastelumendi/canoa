@@ -1,33 +1,28 @@
-// Usar este arquivo para testar js que está no HTML
+async function getDistribution() {
+  const response = await fetch('/callback/getDistribution')
+  if (!response.ok) {
+    setFitoMsg(sFitoErr);
+    alert(`HTTP-Error: ${response.status} on callback().`);
+  } else {
+    const jsoRsp = await response.json();
+    const jsData = jsoRsp.data;// já é jso  JSON.parse(jsoData["data"]);
 
-async function callback() {
-   let municipio = document.getElementById("municipio").value;
-   let fito = document.getElementById("fito_ecologica").value;
-   let latlong = document.getElementById("lat_long").value;
-   let CAR = document.getElementById("CAR").value;
-   if (latlong.startsWith("(")) latlong = "";
-   if (CAR.startsWith("(")) CAR = "";
-   try {
-     document.body.style.cursor = 'progress';
-     let response = await fetch(`/callback/getMunicipioFito?&idMunicipio=${municipio}&idFito=${fito}&latlong=${latlong}&CAR=${CAR}`);
-     if (!response.ok) {
-       alert(`HTTP-Error: ${response.status} on callback().`);
-     } else {
-       let jsoData = await response.json();
-       if (!response.ok) {
-         alert(`HTTP-Error: ${response.status} on json response.`);
-       } else {
-         const jsFitoMun = JSON.parse(jsoData["FitoMunicipio"]);
-         let newHTML = "";
-         for (const [key, value] of Object.entries(jsFitoMun)) {
-           newHTML = newHTML + `<option value='${key}'>${value}</option>`;
-         }
-         document.getElementById("fito_ecologica").setHTML(newHTML);
-         Plotly.react("map", JSON.parse(jsoData["Map"]), {});
-         document.getElementById("area").value = jsoData["Area"];
-       }
-     }
-   } finally {
-     document.body.style.cursor = 'default';
-   }
- }
+    imgData = [];
+    for (let i = 0; i < jsData.length; i += 2) {
+      imgData.push({ caption: jsData[i].descModelo, file: jsData[i + 1].ArquivoDesenho });
+    }
+
+    const iColCount = 2;
+    let i = 0;
+    let sHtml = ''
+    imgData.forEach(itm => {
+      if (i == 0) { sHtml += ((sHtml == '') ? '' : '</div>') + '<div class="row">'; }
+      sHtml += '<div class="col">' +
+        `<img src="../../assets/img/modelo_plantio/${itm.file}" alt="${itm.file}">` +
+        '<br>' +
+        `<button type="button" class="btn btn-info" onclick="">${itm.caption}</button>` +
+        '</div>';
+      i = (i >= iColCount) ? 0 : i + 1;
+    });
+  }
+}
