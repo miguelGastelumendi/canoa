@@ -259,13 +259,13 @@
             if (selFito.disabled) {
               setFitoMsg('Sem regiões Fitoecológicas');
             } else {
-              let newHTML = "";
+              var newHTML = "";
               if (callerID != 'fito_ecologica')
               {
                 for (const [key, value] of Object.entries(jsFitoMun)) {
                   newHTML += `<option value='${key}'>${value}</option>`;
                 }
-                selFito.setHTML(newHTML);
+                 document.getElementById('fito_ecologica').innerHTML = newHTML;
               }
             }
             _showMap(jsoData["Map"]);
