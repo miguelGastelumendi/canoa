@@ -32,3 +32,8 @@ apps/static/assets/yarn.lock
 apps/static/assets/.temp
 
 apps/config.py
+
+# mgd
+test.js
+test.html
+
