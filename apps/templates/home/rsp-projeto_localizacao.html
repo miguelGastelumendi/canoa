@@ -2,7 +2,7 @@
 <html lang="pt-br">
 
 <head>
-  <!-- ar_map.html version 0.996 -->
+  <!-- version 0.998 -->
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
   <!-- Primary Meta Tags -->
@@ -26,8 +26,8 @@
 
 <body>
 
+  <!-- ===== Start Wizard ===== -->
   <div style="margin-top: 2%;">
-    <!-- start wzdContainer -->
     <div class="wzdContainer">
       <div class="alert alert-primary mb-2" role="alert">
         <h6 class="alert-heading">Dados do Projeto e Forma de Localização</h6>
@@ -97,80 +97,6 @@
       </div>
       <!-- end Accordion -->
 
-      <!-- ===== Start Modals ===== -->
-      <!-- Modal Projeto -->
-      <div class="modal fade" id="mdlLocation" tabindex="-1" role="dialog" aria-labelledby="mdlLocation" aria-hidden="true">
-        <div class="modal-dialog modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="h6 modal-title">Informe o Município e Região Fitoecológica</h2>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <p>
-              <select id="municipio" class="form-select"
-                onchange="updateFormData(this.id)">
-                <option hidden selected>(Primeiro selecione o Município)</option>
-                {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
-              </select>
-            </p>
-            <select id="fito_ecologica" class="form-select" disabled="true" onchange="updateFormData(this.id)">
-              <option value="-1" selected>
-                (Logo selecione a Região Fitoecológica)
-              </option>
-              {% for key, value in fito_municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
-            </select>
-          </div>
-          <div class="modal-footer">
-            <button id="okLocation" class="btn btn-primary" type="button" data-bs-dismiss="modal" disabled="true">Ok</button>
-            <!--se não tem id, não atualiza, deixar assim  -->
-            <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
-          </div>
-        </div>
-        </div>
-      </div>
-
-        <!-- Modal LatLong -->
-        <div class="modal fade" id="mdlLatLong" tabindex="-1" role="dialog" aria-labelledby="mdlLatLong" aria-hidden="true">
-          <div class="modal-dialog modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h2 class="h6 modal-title">Informe a localização geográfica do projeto</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <input id="lat_long" class="form-control" type="text"
-                  placeholder="Latitude, longitude, por exemplo: -22,992079 -45,923527"
-                  pattern="/-(19|2[0-5])(\.[0-9]{1,6}),-(4[4-9]|5[0-3])(\.[0-9]{1,6})/" />
-              </div>
-              <div class="modal-footer">
-                <button id='okLatLong' class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
-                <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal CAR -->
-        <div class="modal fade" id="mdlCAR" tabindex="-1" role="dialog" aria-labelledby="mdlCAR" aria-hidden="true">
-          <div class="modal-dialog modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h2 class="h6 modal-title">Informe o CAR do Projeto</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
-              </div>
-              <div class="modal-footer">
-                <button id="okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
-                <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      <!-- ===== End Modals ===== -->
-
       <!-- Map -->
       <div style="min-height: 400px; height: 100%; margin: 10px 0px; border: 1px solid #29874a ">
         <div id="map" class="chart" style="height: 100%; width: 100%;">
@@ -184,131 +110,205 @@
     <!-- end wzdContainer -->
 
   </div>
-  <!-- end -->
+  <!-- ====== End Wizard ====== -->
 
-    <!-- page scripts -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script>
-      let bFetching = false;
-      const _showMap = ( /** @type {Object} */ jsoData) => {
-        const jsData = JSON.parse(jsoData);
-        Plotly.react('map', jsData , {});
-      }
-      // Modal close
-      const _onClose = () => {
-        const ele = document.activeElement;
-        if (ele && ele.id) setTimeout(() => updateFormData(ele.id), 0);
-        // console(ele.id);
-      }
-      const onHide = 'hide.bs.modal';
-      // document.getElementById("mdlLocation").addEventListener(onHide, _onClose);
-      document.getElementById("mdlLatLong").addEventListener(onHide, _onClose);
-      document.getElementById("mdlCAR").addEventListener(onHide, _onClose);
-      // Startup map
-      const _fetchMapSp = async () => {
-        const rsp = await fetch(`/callback/updateFormData?&callerID=mapSP`);
-        if (!rsp.ok) { return; }
-        const jsoData = await rsp.json();
-        if (rsp.ok) { _showMap(jsoData['Map']); }
-      }
-      _fetchMapSp();
+  <!-- ===== Start Modals ===== -->
+  <!-- Modal Projeto -->
+  <div class="modal fade" id="mdlLocation" tabindex="-1" role="dialog" aria-labelledby="mdlLocation" aria-hidden="true">
+    <div class="modal-dialog modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="h6 modal-title">Informe o Município e Região Fitoecológica</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          <select id="municipio" class="form-select"
+            onchange="updateFormData(this.id)">
+            <option hidden selected>(Primeiro selecione o Município)</option>
+            {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+          </select>
+        </p>
+        <select id="fito_ecologica" class="form-select" disabled="true" onchange="updateFormData(this.id)">
+          <option value="-1" selected>
+            (Logo selecione a Região Fitoecológica)
+          </option>
+          {% for key, value in fito_municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button id="okLocation" class="btn btn-primary" type="button" data-bs-dismiss="modal" disabled="true">Ok</button>
+        <!--se não tem id, não atualiza, deixar assim  -->
+        <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+    </div>
+  </div>
+
+    <!-- Modal LatLong -->
+    <div class="modal fade" id="mdlLatLong" tabindex="-1" role="dialog" aria-labelledby="mdlLatLong" aria-hidden="true">
+      <div class="modal-dialog modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="h6 modal-title">Informe a localização geográfica do projeto</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input id="lat_long" class="form-control" type="text"
+              placeholder="Latitude, longitude, por exemplo: -22,992079 -45,923527"
+              pattern="/-(19|2[0-5])(\.[0-9]{1,6}),-(4[4-9]|5[0-3])(\.[0-9]{1,6})/" />
+          </div>
+          <div class="modal-footer">
+            <button id='okLatLong' class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
+            <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal CAR -->
+    <div class="modal fade" id="mdlCAR" tabindex="-1" role="dialog" aria-labelledby="mdlCAR" aria-hidden="true">
+      <div class="modal-dialog modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="h6 modal-title">Informe o CAR do Projeto</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
+          </div>
+          <div class="modal-footer">
+            <button id="okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
+            <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- ====== End Modals ====== -->
+
+  <!-- ===== Start Scripts ===== -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script>
+    let bFetching = false;
+    const _showMap = ( /** @type {Object} */ jsoData) => {
+      const jsData = JSON.parse(jsoData);
+      Plotly.react('map', jsData , {});
+    }
+    // Modal close
+    const _onClose = () => {
+      const ele = document.activeElement;
+      if (ele && ele.id) setTimeout(() => updateFormData(ele.id), 0);
+      // console(ele.id);
+    }
+    const onHide = 'hide.bs.modal';
+    // document.getElementById("mdlLocation").addEventListener(onHide, _onClose);
+    document.getElementById("mdlLatLong").addEventListener(onHide, _onClose);
+    document.getElementById("mdlCAR").addEventListener(onHide, _onClose);
+    // Startup map
+    const _fetchMapSp = async () => {
+      const rsp = await fetch(`/callback/updateFormData?&callerID=mapSP`);
+      if (!rsp.ok) { return; }
+      const jsoData = await rsp.json();
+      if (rsp.ok) { _showMap(jsoData['Map']); }
+    }
+    _fetchMapSp();
 
 
-      // -------------------------
-      async function updateFormData(callerID) {
-        if (bFetching) return; // Acho que o erro 500 é por sobrecarga
-        const selMun = document.getElementById("municipio");
-        const selFito = document.getElementById("fito_ecologica");
-        const btnOkLocat = document.getElementById("okLocation");
-        let municipio = selMun.value;
-        let fito = selFito.value;
-        let latlong = document.getElementById("lat_long").value;
-        let CAR = document.getElementById("CAR").value;
+    // -------------------------
+    async function updateFormData(callerID) {
+      if (bFetching) return; // Acho que o erro 500 é por sobrecarga
+      const selMun = document.getElementById("municipio");
+      const selFito = document.getElementById("fito_ecologica");
+      const btnOkLocat = document.getElementById("okLocation");
+      let municipio = selMun.value;
+      let fito = selFito.value;
+      let latlong = document.getElementById("lat_long").value;
+      let CAR = document.getElementById("CAR").value;
 
-        // TODO ver se mudou o parâmetro
-        bFetching = true;
-        try {
-          // TODO se for Mun/Fito disable OK
-          selMun.disabled = true;
-          selFito.disabled = true;
-          btnOkLocat.disabled = true;
-          document.body.style.cursor = 'progress';
-          const setFitoMsg = (sMsg) => selFito.setHTML(`<option value="-1" selected>(${sMsg})</option>`);
-          let response = await fetch('/callback/updateFormData?' +
-                                `&callerID=${callerID}` +
-                                `&idMunicipio=${municipio}` +
-                                `&idFito=${fito}` +
-                                `&latlong=${latlong}` +
-                                `&CAR=${CAR}`
-                            );
+      // TODO ver se mudou o parâmetro
+      bFetching = true;
+      try {
+        // TODO se for Mun/Fito disable OK
+        selMun.disabled = true;
+        selFito.disabled = true;
+        btnOkLocat.disabled = true;
+        document.body.style.cursor = 'progress';
+        const setFitoMsg = (sMsg) => selFito.setHTML(`<option value="-1" selected>(${sMsg})</option>`);
+        let response = await fetch('/callback/updateFormData?' +
+                              `&callerID=${callerID}` +
+                              `&idMunicipio=${municipio}` +
+                              `&idFito=${fito}` +
+                              `&latlong=${latlong}` +
+                              `&CAR=${CAR}`
+                          );
 
 
-          const sFitoErr = 'Selecione a Região Fitoecológica';
+        const sFitoErr = 'Selecione a Região Fitoecológica';
+        if (!response.ok) {
+          setFitoMsg(sFitoErr);
+          alert(`HTTP-Error: ${response.status} on callback().`);
+        } else {
+          let jsoData = await response.json();
           if (!response.ok) {
             setFitoMsg(sFitoErr);
-            alert(`HTTP-Error: ${response.status} on callback().`);
+            alert(`HTTP-Error: ${response.status} on json response.`);
           } else {
-            let jsoData = await response.json();
-            if (!response.ok) {
-              setFitoMsg(sFitoErr);
-              alert(`HTTP-Error: ${response.status} on json response.`);
-            } else {
-              // novas opções para o select Fito (pelo Município)
-              const jsFitoMun = JSON.parse(jsoData["FitoMunicipio"]);
-              selFito.disabled = Object.keys(jsFitoMun).length == 0;
-              if (selFito.disabled) {
-                setFitoMsg('Sem regiões Fitoecológicas');
-              } else {  // O dicionario vem ordenado por key
-                if (callerID != 'fito_ecologica') {
-                  let newHTML = "";
-                  for (const [key, value] of Object.entries(jsFitoMun)) {
-                    newHTML += `<option value='${key}'>${value}</option>`;
-                  }
-                  selFito.setHTML(newHTML);
+            // novas opções para o select Fito (pelo Município)
+            const jsFitoMun = JSON.parse(jsoData["FitoMunicipio"]);
+            selFito.disabled = Object.keys(jsFitoMun).length == 0;
+            if (selFito.disabled) {
+              setFitoMsg('Sem regiões Fitoecológicas');
+            } else {  // O dicionario vem ordenado por key
+              if (callerID != 'fito_ecologica') {
+                let newHTML = "";
+                for (const [key, value] of Object.entries(jsFitoMun)) {
+                  newHTML += `<option value='${key}'>${value}</option>`;
                 }
+                selFito.setHTML(newHTML);
               }
-              _showMap(jsoData["Map"]);
-              document.getElementById('map').on('plotly_afterplot', () => document.body.style.cursor = 'default');
             }
+            _showMap(jsoData["Map"]);
+            document.getElementById('map').on('plotly_afterplot', () => document.body.style.cursor = 'default');
           }
-        } finally {
-          selMun.disabled = false;
-          btnOkLocat.disabled = false;
-          setTimeout(() => { document.body.style.cursor = 'default'; }, 5000); // last resurse
-          bFetching = false;
         }
+      } finally {
+        selMun.disabled = false;
+        btnOkLocat.disabled = false;
+        setTimeout(() => { document.body.style.cursor = 'default'; }, 5000); // last resurse
+        bFetching = false;
       }
+    }
 
-      // -------------------------
-      async function saveProject() {
-        const projectName = document.getElementById("projectName").value;
-        if (projectName === ''){
-          alert('Deve informar um nome de projeto.')
-          return;
-        }
-        const projectArea = document.getElementById("projectArea").value;
-        const propertyArea = document.getElementById("propertyArea").value;
-        const selMun = document.getElementById("municipio");
-        const selFito = document.getElementById("fito_ecologica");
-        const municipio = selMun.value;
-        const fito = selFito.value;
-        const latlong = document.getElementById("lat_long").value;
-        const CAR = document.getElementById("CAR").value;
-        await fetch('/callback/saveProject?' +
-              `&ProjectName=${projectName}` +
-              `&ProjectArea=${projectArea}` +
-              `&PropertyArea=${propertyArea}` +
-              `&idMunicipio=${municipio}` +
-              `&idFito=${fito}` +
-              `&latlong=${latlong}` +
-              `&CAR=${CAR}`
-        );
-        window.location.href = "rsp-finalidade.html";
+    // -------------------------
+    async function saveProject() {
+      const projectName = document.getElementById("projectName").value;
+      if (projectName === ''){
+        alert('Deve informar um nome de projeto.')
+        return;
       }
-    </script>
-
-    {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock javascripts %}
+      const projectArea = document.getElementById("projectArea").value;
+      const propertyArea = document.getElementById("propertyArea").value;
+      const selMun = document.getElementById("municipio");
+      const selFito = document.getElementById("fito_ecologica");
+      const municipio = selMun.value;
+      const fito = selFito.value;
+      const latlong = document.getElementById("lat_long").value;
+      const CAR = document.getElementById("CAR").value;
+      // TODO colocar modal de espera
+      await fetch('/callback/saveProject?' +
+            `&ProjectName=${projectName}` +
+            `&ProjectArea=${projectArea}` +
+            `&PropertyArea=${propertyArea}` +
+            `&idMunicipio=${municipio}` +
+            `&idFito=${fito}` +
+            `&latlong=${latlong}` +
+            `&CAR=${CAR}`
+      );
+      window.location.href = "rsp-finalidade.html";
+    }
+  </script>
+  {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock javascripts %}
+  <!-- ====== End Scripts ====== -->
 
 </body>
-
 </html>
