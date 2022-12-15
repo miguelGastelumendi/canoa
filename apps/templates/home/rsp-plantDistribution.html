@@ -82,21 +82,14 @@
           const jsoRsp = await response.json();
           const jsData = jsoRsp.data;// já é jso  JSON.parse(jsoData["data"]);
 
-          imgData = [];
-          for (let i = 0; i < jsData.length; i += 2) {
-            imgData.push({ caption: jsData[i].descModelo, file: jsData[i + 1].ArquivoDesenho });
-          }
-
           const iColCount = 2;
-          let i = 0;
           let sHtml = ''
-          imgData.forEach(itm => {
-            if (i == 0) { sHtml += ((sHtml == '') ? '' : '</div>') + '<div class="row">'; }
+          jsData.forEach(itm => {
+            sHtml += ((sHtml == '') ? '' : '</div>') + '<div class="row">';
             sHtml += '<div class="col">' +
-                    `<img src="../../static/assets/img/modelo_plantio/${itm.file}.png" alt="${itm.file}">` +
+                    `<img src="../../static/assets/img/modelo_plantio/${itm.fileName}.png" alt="${itm.fileName}">` +
                     `<button type="button" class="btn btn-info" onclick="xxx">${itm.caption}</button>` +
                   '</div>';
-            i = (i >= iColCount) ? 0 : i + 1;
           });
           document.getElementById('grdModelos').innerHTML = sHtml;
         }

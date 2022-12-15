@@ -26,18 +26,21 @@ def route_callback(endpoint):
     callerID = args.get('callerID')
     if callerID == 'mapSP':
         return ui_map.getMapSP()
-    idMunicipio = int(args.get('idMunicipio'))
-    idFito = int(args.get('idFito')) if callerID == 'fito_ecologica'or callerID is None else -1
+    idFito = int(args.get('idFito')) if callerID in ['fito_ecologica', 'saveProject'] else -1
     latlong = args.get('latlong')
     CAR = args.get('CAR')
     if endpoint == 'updateFormData':
-        # else
+        idMunicipio = int(args.get('idMunicipio'))
         return ui_map.getMapFitoMunicipio(callerID,
                                           idMunicipio,
                                           idFito,
                                           latlong,
                                           CAR)
     elif endpoint == 'saveProject':
+        projectName = args.get('ProjectName')
+        if projectName == '':
+            session['_projeto_id'] = 18
+            return "Ok"
         projeto_id=ui_map.saveProject(session['_user_id'],
                                   args.get('ProjectName'),
                                   args.get('ProjectArea'),

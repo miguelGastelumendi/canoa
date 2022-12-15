@@ -44,8 +44,10 @@ def getListDictResultset(sql):
     df = getDataframeResultset(sql)
     ret = []
     for _, row in df.iterrows():
+        dic = {}
         for i in range(len(row)):
-            ret.append({df.columns[i]: row[i]})
+            dic[df.columns[i]] = row[i]
+        ret.append(dic)
     return ret
 
 

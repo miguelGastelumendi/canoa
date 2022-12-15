@@ -53,3 +53,7 @@ a- O Campo "Área da propriedade" deve estar em Município/Fito e em Latitude e 
 
 a- Ajustar largura do mapa junto com a tela.
 b- Logo da tela principal.
+
+14/12/2022
+
+a-

@@ -283,26 +283,23 @@
     async function saveProject() {
       const projectName = document.getElementById("projectName").value;
       if (projectName === ''){
-        alert('Deve informar um nome de projeto.')
-        return;
+        // alert('Deve informar um nome de projeto.')
+        // return;
       }
       const projectArea = document.getElementById("projectArea").value;
       const propertyArea = document.getElementById("propertyArea").value;
-      const selMun = document.getElementById("municipio");
-      const selFito = document.getElementById("fito_ecologica");
-      const municipio = selMun.value;
-      const fito = selFito.value;
+      const fito = document.getElementById("fito_ecologica").value;
       const latlong = document.getElementById("lat_long").value;
       const CAR = document.getElementById("CAR").value;
       // TODO colocar modal de espera
       await fetch('/callback/saveProject?' +
-            `&ProjectName=${projectName}` +
-            `&ProjectArea=${projectArea}` +
-            `&PropertyArea=${propertyArea}` +
-            `&idMunicipio=${municipio}` +
-            `&idFito=${fito}` +
-            `&latlong=${latlong}` +
-            `&CAR=${CAR}`
+              `&callerID=saveProject` +
+              `&ProjectName=${projectName}` +
+              `&ProjectArea=${projectArea}` +
+              `&PropertyArea=${propertyArea}` +
+              `&idFito=${fito}` +
+              `&latlong=${latlong}` +
+              `&CAR=${CAR}`
       );
       window.location.href = "rsp-finalidade.html";
     }
