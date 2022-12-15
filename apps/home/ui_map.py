@@ -27,7 +27,7 @@ def getListaMunicipios():
 
 def getListaFito(idMunicipio: int):
     return dbquery.getDictResultset(
-        f"select mf.idFitoFisionomia,descFitoFisionomia as Fitofisionomia "
+        f"select mf.id,descFitoFisionomia as Fitofisionomia "
         f"from MunicipioFito mf "
         f"inner join FitoFisionomia ff "
         f"on mf.idFitoFisionomia = ff.id "
@@ -112,7 +112,7 @@ def getFitoMunicipio(callerID: str, idMunicipio:
         area=''
     else:
         whereFito = (f"where mf.idMunicipio = {idMunicipio} " +
-                    (f"and mf.idFitofisionomia = {idFito}" if idFito > -1 else ""))
+                    (f"and mf.id = {idFito}" if idFito > -1 else ""))
         area=''
     fito = dbquery.getDataframeResultset(
         f"select mf.id,concat(m.nomeMunicipio,'/',descFitoFisionomia) as label,ff.color "
@@ -182,13 +182,20 @@ def getMapSP():
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
 
-def saveProject(projectName: str,
+def saveProject(userId: str,
+                projectName: str,
                 projectArea,
                 propertyArea,
-                idMunicipio: int,
                 idFito: int,
                 latlong: str,
                 CAR: str):
-    dbquery.executeSQL(f"INSERT INTO RURALLEGAL.dbo.Projeto(idUser, descProjeto, dtCriacao, dtAtualizacao)"
-                       f"VALUES(0, '{projectName}', GETDATE(), GETDATE())")
-    pass
+    #dbquery.executeSQL("delete from ProjetoPreferencias; delete from Projeto")
+
+    dbquery.executeSQL(f"INSERT INTO Projeto(idUser, descProjeto, CAR, dtCriacao, dtAtualizacao) "
+                       f"VALUES ({userId}, '{projectName}', '{CAR}', GETDATE(), GETDATE())")
+    project_id=dbquery.getLastId('Projeto')
+    dbquery.executeSQL(f"INSERT INTO ProjetoPreferencias(idProjeto, idModeloPlantio, idMunicipioFito,  "
+                       f"idOpcaoMadeireira, idTopografia, idMecanizacaoNivel, AreaProjeto,AreaPropriedade, dtAtualizacao) "
+                       f"VALUES({project_id}, null, {idFito}, null, null, null, {projectArea.replace(',','.')}, "
+                       f"{propertyArea.replace(',','.')},{'GETDATE())'}")
+    return project_id

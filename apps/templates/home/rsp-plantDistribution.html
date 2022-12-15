@@ -76,7 +76,7 @@
                 type="button"
                 style="width: 6em; background: none; border: none"
               >
-                <img src="../../static/assets/img/faixas_plantio/MVMV.png"
+                <img src="../../static/assets/img/modelo_plantio/MVMV.png"
               </button>
             </a>
           </div>
@@ -87,7 +87,7 @@
 <!--                type="button"-->
 <!--                style="width: 6em; background: none; border: none"-->
 <!--              >-->
-<!--                <img src="../../static/assets/img/faixas_plantio/AAAAAAAA.png"-->
+<!--                <img src="../../static/assets/img/modelo_plantio/AAAAAAAA.png"-->
 <!--              </button>-->
 <!--            </a>-->
 <!--          </div>-->
@@ -100,7 +100,7 @@
                 type="button"
                 style="width: 6em; background: none; border: none"
               >
-                <img src="../../static/assets/img/faixas_plantio/LBBBLBBB.png"
+                <img src="../../static/assets/img/modelo_plantio/LBBBLBBB.png"
               </button>
             </a>
           </div>
@@ -111,7 +111,7 @@
                 type="button"
                 style="width: 6em; background: none; border: none"
               >
-                <img src="../../static/assets/img/faixas_plantio/VVVV.png"
+                <img src="../../static/assets/img/modelo_plantio/VVVV.png"
               </button>
             </a>
           </div>
@@ -121,7 +121,23 @@
     </div>
     <!-- end -->
 
-    {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock
-    javascripts %}
+    {% include 'includes/scripts.html' %}
+    {% block javascripts %}
+    <script>
+      async function getDistribution() {
+        let response = await fetch('/callback/getDistribution')
+        if (!response.ok) {
+            setFitoMsg(sFitoErr);
+            alert(`HTTP-Error: ${response.status} on callback().`);
+        }
+        else{
+          let jsoData = await response.json();
+          const data = JSON.parse(jsoData["data"]);
+        }
+      }
+      getDistribution();
+    </script>
+
+    {% endblock javascripts %}
   </body>
 </html>

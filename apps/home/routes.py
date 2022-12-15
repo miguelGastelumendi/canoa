@@ -7,7 +7,10 @@ from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-from apps.home import ui_map
+from apps.home import ui_map, ui_plantdistribution, dbquery
+from flask import session
+import re
+
 
 @blueprint.route('/index')
 @login_required
@@ -17,12 +20,14 @@ def index():
 @blueprint.route('/callback/<endpoint>')
 @login_required
 def route_callback(endpoint):
+    if endpoint == 'getDistribution':
+       return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
     args = request.args
     callerID = args.get('callerID')
     if callerID == 'mapSP':
         return ui_map.getMapSP()
     idMunicipio = int(args.get('idMunicipio'))
-    idFito = int(args.get('idFito')) if callerID == 'fito_ecologica' else -1
+    idFito = int(args.get('idFito')) if callerID == 'fito_ecologica'or callerID is None else -1
     latlong = args.get('latlong')
     CAR = args.get('CAR')
     if endpoint == 'updateFormData':
@@ -33,20 +38,21 @@ def route_callback(endpoint):
                                           latlong,
                                           CAR)
     elif endpoint == 'saveProject':
-        return ui_map.saveProject(args.get('projectName'),
-                                  args.get('projectArea'),
-                                  args.get('propertyArea'),
-                                  idMunicipio,
+        projeto_id=ui_map.saveProject(session['_user_id'],
+                                  args.get('ProjectName'),
+                                  args.get('ProjectArea'),
+                                  args.get('PropertyArea'),
                                   idFito,
                                   latlong,
                                   CAR)
-        pass
+        session['_projeto_id'] = projeto_id
+    return "Ok"
 
 @blueprint.route('/<template>')
 @login_required
 def route_template(template):
     try:
-        if template.endswith('.html'):
+        if template.find('.html') > -1:
             # Detect the current page
             segment = get_segment(request)
             if segment == 'rsp-projeto_localizacao.html':
@@ -55,6 +61,14 @@ def route_template(template):
                                        , fito_municipios=ui_map.getListaFito(None)
                                        #, map=ui_map.getMapSP()
                                        )
+            elif segment.startswith('rsp-plantDistribution'):
+            # TODO: number of número de módulos fiscais validation
+                finalidade_id = re.findall(r'\(.*?\)', template)[0].replace('(', '').replace(')', '')
+                dbquery.executeSQL(f"update ProjetoPreferencias set idFinalidade = {finalidade_id} "
+                                   f"where idProjeto = {session['_projeto_id']}")
+                template = template[0:template.find('(')] + '.html'
+                segment = segment[0:template.find('(')]+'.html'
+                render_template("home/" +template, segment=segment)
             # Serve the file (if exists) from app/templates/home/FILE.html
         return render_template("home/" + template, segment=segment)
     except TemplateNotFound:

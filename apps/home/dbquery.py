@@ -34,8 +34,19 @@ def getValueFromDb(sql):
         return row[0]
     return None
 
+def getLastId(tabeName: str)->int:
+    return getValueFromDb(f"SELECT IDENT_CURRENT('{tabeName}')")
+
 def getDictResultset(sql):
     return {row[0]: row[1] for row in executeSQL(sql)}
+
+def getListDictResultset(sql):
+    df = getDataframeResultset(sql)
+    ret = []
+    for _, row in df.iterrows():
+        for i in range(len(row)):
+            ret.append({df.columns[i]: row[i]})
+    return ret
 
 
 def getJSONResultset(sql):
