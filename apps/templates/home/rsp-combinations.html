@@ -36,25 +36,31 @@
 
       <!-- start Accordion -->
       <div class="accordion" id="acData" style="width: 100%">
-        {% set current_combination = -1 %}
-        {% for combination in combinations %}
+        {% set current_faixa = '' %}
+        {% for index, combination in combinations.iterrows() %}
+            {% if combination.nomeFaixa != current_faixa %}
         <div class="accordion-item">
           <h2 class="accordion-header" id="header_{{ combination.id }}">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    style="text-align:left; padding-left:6px"
               data-bs-target="#bdLocation" aria-expanded="true" aria-controls="bdLocation">
-              Verde
+              {{ combination.nomeFaixa }}
             </button>
           </h2>
+          {% endif %}
           <div id="bdLocation" class="accordion-collapse collapse" aria-labelledby="hdLocation" data-bs-parent="#acData">
             <div class="accordion-body">
               <div class="d-grid gap-2">
-                <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal" data-bs-target="#mdlCAR">
-                  CAR
+                <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal"
+                        style="text-align:left; padding-left:6px"
+                        data-bs-target="#mdlCAR">
+                  {{ combination.Especies }}
                 </button>
               </div>
             </div>
           </div>
         </div>
+          {% set current_faixa = combination.nomeFaixa %}
         {% endfor %}
       </div>
       <!-- end Accordion -->
