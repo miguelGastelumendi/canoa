@@ -86,10 +86,12 @@
           let sHtml = ''
           jsData.forEach(itm => {
             sHtml += ((sHtml == '') ? '' : '</div>') + '<div class="row">';
-            sHtml += '<div class="col">' +
-                    `<img src="../../static/assets/img/modelo_plantio/${itm.fileName}.png" alt="${itm.fileName}">` +
-                    `<button type="button" class="btn btn-info" onclick="xxx">${itm.caption}</button>` +
-                  '</div>';
+            sHtml += `
+              <div style="display:grid; margin:20px;"> 
+                <a style="margin-bottom: 10px; max-width: 186px;" href="/rsp-relief.html"><button type="button" class="btn btn-info" onclick="xxx">${itm.caption}</button></a> 
+                <img style="max-width: 186px;" src="../../static/assets/img/modelo_plantio/${itm.fileName}.png" alt="${itm.fileName}"> 
+              </div>
+              `
           });
           document.getElementById('grdModelos').innerHTML = sHtml;
         }
