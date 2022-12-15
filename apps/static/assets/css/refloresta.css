@@ -6,3 +6,26 @@ body {
    background-attachment: fixed;
    background-size: cover;
 }
+
+
+.wzdContainer {
+  width: 80%;
+  background: #fff;
+  padding: .5em;
+  margin: 0 auto;
+  border-radius: 15px;
+}
+
+.wzdBody {
+  width: 100%;
+  text-align: center;
+}
+
+.wzdFooter{
+  width: 100%;
+  text-align: center;
+  margin-top: 0.5em;
+  /* background: rgb(237, 250, 232); */
+}
+
+/*~*/

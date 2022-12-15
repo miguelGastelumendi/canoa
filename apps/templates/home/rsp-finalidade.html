@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <!-- ar_map.html version 0.996 -->
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <!-- Primary Meta Tags -->
+  {% block title %} Projeto e Localização {% endblock %}
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="title" content="Refloresta SP">
+  <meta name="author" content="Equipe `Refloresta SP`">
+  <meta name="description" content="">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="../../static/assets/img/favicon/favicon-16x16.jpg">
+
+  <!-- Fontawesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- CSS -->
+  <link type="text/css" href="../../static/assets/css/pixel.css" rel="stylesheet">
+  <link type="text/css" href="../../static/assets/css/refloresta.css" rel="stylesheet">
+  <script>
+      const goto = (sHref) => window.location.href = sHref;
+  </script>
+</head>
+
+  <body>
+    <div style="margin-top: 2%;">
+      <!-- start wzdContainer -->
+      <div class="wzdContainer">
+        <div class="alert alert-primary mb-3" role="alert">
+          <h6 class="alert-heading">Finalidade</h6>
+          Selecione a atividade segundo os critérios
+        </div>
+        <div class="d-grid gap-2">
+          <button type="button" class="btn btn-info bg-gradient" onclick="goto('./ui-plantDistribution.html')">
+            Área de Preservação Permanente
+          </button>
+          <button type="button" class="btn btn-info bg-gradient" onclick="goto('./ui-plantDistribution.html')">
+            Reserva Legal
+          </button>
+          <button type="button" class="btn btn-info bg-gradient" onclick="goto('./ui-plantDistribution.html')">
+            Área de uso alternativo do solo
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
