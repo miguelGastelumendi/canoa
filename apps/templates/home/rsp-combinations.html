@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <!-- version 0.998 -->
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <!-- Primary Meta Tags -->
+   Projeto e Localização
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="title" content="Refloresta SP">
+  <meta name="author" content="Equipe `Refloresta SP`">
+  <meta name="description" content="">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="../../static/assets/img/favicon/favicon-16x16.jpg">
+
+  <!-- Fontawesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- CSS -->
+  <link type="text/css" href="../../static/assets/css/pixel.css" rel="stylesheet">
+  <link type="text/css" href="../../static/assets/css/refloresta.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- ===== Start Wizard ===== -->
+  <div style="margin-top: 2%;">
+    <div class="wzdContainer">
+      <div class="alert alert-primary mb-2" role="alert">
+        <h6 class="alert-heading">Estimativas financeiras para cada combinação possível</h6>
+      </div>
+
+      <!-- start Accordion -->
+      <div class="accordion" id="acData" style="width: 100%">
+        {% set current_combination = -1 %}
+        {% for combination in combinations %}
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="header_{{ combination.id }}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#bdLocation" aria-expanded="true" aria-controls="bdLocation">
+              Verde
+            </button>
+          </h2>
+          <div id="bdLocation" class="accordion-collapse collapse" aria-labelledby="hdLocation" data-bs-parent="#acData">
+            <div class="accordion-body">
+              <div class="d-grid gap-2">
+                <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal" data-bs-target="#mdlCAR">
+                  CAR
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <!-- end Accordion -->
+    <!-- end wzdContainer -->
+    </div>
+  </div>
+  <!-- ====== End Wizard ====== -->
+
+  <!-- ===== Start Modals ===== -->
+  <!-- Modal Projeto -->
+    <!-- Modal Combinações -->
+    <div class="modal fade" id="U Uai" tabindex="-1" role="dialog" aria-labelledby="mdlCAR" aria-hidden="true">
+      <div class="modal-dialog modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="h6 modal-title">Informe o CAR do Projeto</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
+          </div>
+          <div class="modal-footer">
+            <button id="okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
+            <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- ====== End Modals ====== -->
+
+  <!-- ===== Start Scripts ===== -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script>
+    // Modal close
+    const _onClose = () => {
+      const ele = document.activeElement;
+      if (ele && ele.id) setTimeout(() => updateFormData(ele.id), 0);
+      // console(ele.id);
+    }
+    const onHide = 'hide.bs.modal';
+    // document.getElementById("mdlLocation").addEventListener(onHide, _onClose);
+    document.getElementById("mdlCAR").addEventListener(onHide, _onClose);
+
+    // -------------------------
+    async function updateFormData(callerID) {
+      if (bFetching) return; // Acho que o erro 500 é por sobrecarga
+      const selMun = document.getElementById("municipio");
+      const selFito = document.getElementById("fito_ecologica");
+      const btnOkLocat = document.getElementById("okLocation");
+      let municipio = selMun.value;
+      let fito = selFito.value;
+      let latlong = document.getElementById("lat_long").value;
+      let CAR = document.getElementById("CAR").value;
+
+      // TODO ver se mudou o parâmetro
+      bFetching = true;
+      try {
+        // TODO se for Mun/Fito disable OK
+        selMun.disabled = true;
+        selFito.disabled = true;
+        btnOkLocat.disabled = true;
+        document.body.style.cursor = 'progress';
+        const setFitoMsg = (sMsg) => selFito.setHTML(`<option value="-1" selected>(${sMsg})</option>`);
+        let response = await fetch('/callback/updateFormData?' +
+                              `&callerID=${callerID}` +
+                              `&idMunicipio=${municipio}` +
+                              `&idFito=${fito}` +
+                              `&latlong=${latlong}` +
+                              `&CAR=${CAR}`
+                          );
+
+
+        const sFitoErr = 'Selecione a Região Fitoecológica';
+        if (!response.ok) {
+          setFitoMsg(sFitoErr);
+          alert(`HTTP-Error: ${response.status} on callback().`);
+        } else {
+          let jsoData = await response.json();
+          if (!response.ok) {
+            setFitoMsg(sFitoErr);
+            alert(`HTTP-Error: ${response.status} on json response.`);
+          } else {
+            // novas opções para o select Fito (pelo Município)
+            const jsFitoMun = JSON.parse(jsoData["FitoMunicipio"]);
+            selFito.disabled = Object.keys(jsFitoMun).length == 0;
+            if (selFito.disabled) {
+              setFitoMsg('Sem regiões Fitoecológicas');
+            } else {
+              var newHTML = "";
+              if (callerID != 'fito_ecologica')
+              {
+                for (const [key, value] of Object.entries(jsFitoMun)) {
+                  newHTML += `<option value='${key}'>${value}</option>`;
+                }
+                 document.getElementById('fito_ecologica').innerHTML = newHTML;
+              }
+            }
+            _showMap(jsoData["Map"]);
+            document.getElementById('map').on('plotly_afterplot', () => document.body.style.cursor = 'default');
+          }
+        }
+      } finally {
+        selMun.disabled = false;
+        btnOkLocat.disabled = false;
+        setTimeout(() => { document.body.style.cursor = 'default'; }, 5000); // last resurse
+        bFetching = false;
+      }
+    }
+
+  </script>
+
+<!-- Core -->
+<script src="/static/assets/vendor/@popperjs/core/dist/umd/popper.min.js"></script>
+<script src="/static/assets/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/static/assets/vendor/headroom.js/dist/headroom.min.js"></script>
+
+<!-- Vendor JS -->
+<script src="/static/assets/vendor/onscreen/dist/on-screen.umd.min.js"></script>
+<script src="/static/assets/vendor/jarallax/dist/jarallax.min.js"></script>
+<script src="/static/assets/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+<script src="/static/assets/vendor/vivus/dist/vivus.min.js"></script>
+<script src="/static/assets/vendor/vanillajs-datepicker/dist/js/datepicker.min.js"></script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<!-- Pixel JS -->
+<script src="/static/assets/js/pixel.js"></script>
+  <!-- ====== End Scripts ====== -->
+
+</body>
+</html>
