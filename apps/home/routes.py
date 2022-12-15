@@ -7,7 +7,10 @@ from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-from apps.home import ui_map, ui_plantdistribution, dbquery
+import apps.home.ui_map as ui_map
+import apps.home.ui_plantdistribution as ui_plantdistribution
+import apps.home.dbquery as dbquery
+import apps.home.ui_combination as ui_combination
 from flask import session
 from apps.home import helper
 
@@ -58,9 +61,17 @@ def route_template(template):
         if template.find('.html') > -1:
             # Detect the current page
             segment = helper.get_segment(request)
+<<<<<<< HEAD
             id = request.args.get('id')  # mgd
             if segment == 'rsp-combinations':
                 return render_template("home/" + template)
+=======
+            # if segment.startswith('testeJinja'):
+            if segment.startswith('rsp-combinations'):
+                # return render_template("home/testeJinja.html",
+                return render_template("home/" + template,
+                                       combinations=ui_combination.getCombinations(session['_projeto_id']))
+>>>>>>> 2f2fb920ca8b527f00b303f5381424bea70d6f3c
             if segment == 'rsp-projeto_localizacao.html':
                 return render_template("home/" + template,
                                        municipios=ui_map.getListaMunicipios()
@@ -79,9 +90,9 @@ def route_template(template):
                                    f"where idProjeto = {session['_projeto_id']}")
                 render_template("home/" +template, segment=segment)
 
-        return render_template("home/" + template, segment=segment)
+        return render_template("home/" + template, segment=helper.get_segment(template))
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
-    except:
+    except Exception as e:
         return render_template('home/page-500.html'), 500
 
