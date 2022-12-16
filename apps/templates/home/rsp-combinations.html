@@ -29,9 +29,9 @@
 
   <!-- ===== Start Wizard ===== -->
   <div style="margin-top: 2%;">
-    <div class="wzdContainer">
+    <div id="wzdId" class="wzdContainer">
       <div class="alert alert-primary mb-2" role="alert">
-        <h6 class="alert-heading">Estimativas financeiras para cada combinação possível</h6>
+        <h6 class="alert-heading">Combinações possíveis para suas escolhas</h6>
       </div>
 
       <!-- start Accordion -->
@@ -100,6 +100,7 @@
   <script>
     function showConfirmacao(id){
         if (confirm("É isso mêssss?")){
+          document.getElementById('wzdId').style.visibility = 'hidden';
         }
     }
   </script>

@@ -60,14 +60,17 @@
       <!-- start wzdContainer -->
       <div class="wzdContainer">
         <div style="padding: 15px; display: flex; justify-content: space-evenly;">
-          <button>
+          <button onclick="goto(1)">
             + Manual
           </button>
-          <button>
+          <button onclick="goto(2)">
             + Mecanizada
           </button>
         </div>
       </div>
     </div>
   </body>
+  <script>
+      const goto = (id) => window.location.href = `./rsp-combinations.html?id=${id}`;
+  </script>
 </html>
