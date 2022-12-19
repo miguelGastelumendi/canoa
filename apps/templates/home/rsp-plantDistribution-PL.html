@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <!-- Primary Meta Tags -->
+    <title>Refloresta SP</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="title" content="Refloresta SP" />
+    <meta name="author" content="Equipe `Refloresta SP`" />
+    <meta name="description" content=""/>
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../../static/assets/img/favicon/favicon-16x16.jpg"
+    />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Fontawesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- CSS -->
+    <link type="text/css" href="static/assets/css/pixel.css" rel="stylesheet" />
+    <link
+      type="text/css"
+      href="static/assets/css/refloresta.css"
+      rel="stylesheet"
+    />
+
+    <!-- <style>
+      .containerFull {
+        width: 80%;
+        background: #fff;
+        padding: 15px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin: 0 auto;
+        border-radius: 15px;
+        flex-direction: column;
+        display: flex;
+        gap: 30px;
+      }
+
+      /* @media screen and (max-width: 980px) {
+            .containerFull {
+              margin-top: 2%;
+            }
+          }*/
+    </style> -->
+  </head>
+  <body>
+    <!-- version 0.990 -->
+    <div style="margin-top: 2%">
+      <div class="wzdContainer">
+        <div class="alert alert-primary mb-3" role="alert">
+          <h6 class="alert-heading">Distribuição de Plantio</h6>
+          Selecione a atividade segundo os critérios
+        </div>
+        <div id="grdModelos" class="container">
+
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function getDistribution() {
+        const response = await fetch('/callback/getDistribution');
+        if (!response.ok) {
+          alert(`HTTP-Error: ${response.status} on callback().`);
+        } else {
+          const jsoRsp = await response.json();
+          const jsData = jsoRsp.data;// já é jso  JSON.parse(jsoData["data"]);
+
+          let sHtml = ''
+          jsData.forEach(itm => {
+            //  sHtml += ((sHtml == '') ? '' : '</div>') + '<div class="row">';
+            sHtml += `
+              <div style="display:grid; margin:20px;">
+                <a style="margin-bottom: 10px; max-width: 186px;" href="/rsp-relief.html?id=${itm.id}"><button type="button" class="btn btn-info">${itm.caption}</button></a>
+                <img style="max-width: 186px;" src="../../static/assets/img/modelo_plantio/${itm.fileName}.png" alt="${itm.fileName}">
+              </div>
+              `
+          });
+          document.getElementById('grdModelos').innerHTML = sHtml;
+        }
+      }
+      getDistribution();
+
+    </script>
+
+    {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock javascripts %}
+
+  </body>
+</html>
