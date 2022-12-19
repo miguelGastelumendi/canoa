@@ -54,10 +54,10 @@
                             style="text-align:left; padding-left:6px" onclick="showConfirmacao( '' )"
                     >
                         {{ combination.Especies }}<br><b>Financeiro</b><br><b>TIR:</b> {{ "%.4f"|format(combination.TIR) }}<br>
-                        <b>Pay-back (anos):</b> {{ combination.payback }}<br>
-                        <b>Investimento necessário:</b> {{ "R$ %.2f"|format(combination.InvNecessario) }}<br>
-                        <b>Valor Total Líquido:</b> {{ "R$ %.2f"|format(combination.VTLiquido) }}<br>
-                        <b>Valor Presente Líquido:</b> {{ "R$ %.2f"|format(combination.VPLiquido) }}<br>
+                        <b>Pay-back:</b> {{ combination.payback }} anos<br>
+                        <b>Investimento necessário:</b> {{"%.2f"|format(combination.InvNecessario) }} R$/ha<br>
+                        <b>Valor Total Líquido:</b> {{"%.2f"|format(combination.VTLiquido) }} R$/ha<br>
+                        <b>Valor Presente Líquido:</b> {{"%.2f"|format(combination.VPLiquido) }} R$/ha<br>
                     </button>
               {% endif %}
               {% endfor %}
