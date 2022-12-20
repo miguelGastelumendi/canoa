@@ -45,14 +45,74 @@
   <body>
     {% include 'includes/navigation.html' %}
 
-    <main>
 
-      <img
-        src="../../static/assets/img/pages/LogoReflorestaSPbranco.png"
-        style="left: 0; width: 30%"
-      />
+      <div style="display: flex;">
+        <img
+          src="../../static/assets/img/pages/LogoReflorestaSPbranco.png"
+          style="position: absolute;
+          width: 30%;
+          left: -20px;"
+        />
 
-    </main>
+        <div class="rfsContainer">
+          <div
+            class="row"
+            style="display: flex; justify-content: center; align-items: center"
+          >
+            <h4 style="font-size: 15px;">Crie um novo Projeto:</h4>
+
+            <div
+              style="
+                width: 60%;
+                height: 80px;
+                padding: 10px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #29874a;
+                border-radius: 18px;
+                color: #fff;
+                gap: 3px;
+                margin-bottom: 5px;
+                cursor: pointer;
+              "
+            >
+              <a href="/rsp-projeto_localizacao.html">
+                <i class="fa-sharp fa-solid fa-plus">&nbsp;</i> Projeto
+                <img
+                  src="../../static/assets/img/brand/tree-silhouette.png"
+                  height="50px"
+                />
+              </a>
+            </div>
+          </div>
+          <div
+            class="row"
+            style="display: flex; justify-content: center; align-items: center"
+          >
+            <h4 style="font-size: 15px;">Consulte um Projeto existente:</h4>
+            <div
+              style="
+                width: 51%;
+                height: 80px;
+                padding: 10px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #b6b6b6;
+                border-radius: 18px;
+                color: #000;
+                gap: 3px;
+                margin-bottom: 5px;
+                cursor: pointer;
+              "
+            >
+              Projeto
+            </div>
+          </div>
+        </div>
+      </div>
+
 
     {% include 'includes/scripts.html' %}
   </body>
