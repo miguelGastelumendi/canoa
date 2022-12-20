@@ -24,7 +24,7 @@
     <link type="text/css" href="../../static/assets/css/pixel.css" rel="stylesheet">
     <link type="text/css" href="../../static/assets/css/refloresta.css" rel="stylesheet">
     <script>
-        const goto = (sHref) => window.location.href = sHref;
+        const goto = (id) => window.location.href = `./rsp-relief.html?id=${id}`;
     </script>
   </head>
   <body>
@@ -65,7 +65,7 @@
           jsData.forEach((itm, i) => {
             if (c == 1) { sHtml += ((sHtml == '') ? '' : '</div>') + htmRow; }
             sHtml += htmCol +
-              `<button class="mb-2 btn btn-info" type="button" style="font-size: 13px;" onclick="accept(${i})">${itm.caption + '-- ' + c}</button>` +
+              `<button class="mb-2 btn btn-info" type="button" style="width: 85%; font-size: 13px;" onclick="goto(${i})">${itm.caption + '-- ' + c}</button>` +
               `<img src="${sPath}${itm.fileName}.png" alt="${itm.fileName}">` +
               '</div>';
             c = (c == iColCount) ? 1 : c + 1;
