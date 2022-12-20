@@ -2,7 +2,7 @@ from apps.home import dbquery as dbquery
 
 def getCombinations(idProjeto):
     df = dbquery.getDataframeResultset(
-        f"select CONCAT('Escolha uma entre as opções para a faixa ',ft.nomeFaixa,'. Valores em R$/',cast(ft.AreaFaixa as decimal(10,2)),' m².'), "
+        f"select CONCAT('Escolha uma entre as opções para a faixa ',ft.nomeFaixa,'. Valores em R$/',cast(ft.AreaFaixa as decimal(10,2)),' m².') as nomeFaixa, "
         f"vfc.idFaixaTipo,  vfc.idCombinacao, vfc.Especies, vfc.TIR, vfc.payback, vfc.InvNecessario, VTLiquido, vfc.VPLiquido "
         f"from ProjetoPreferencias pp "
         f"inner join MunicipioFito mf "
