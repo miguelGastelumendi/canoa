@@ -28,4 +28,14 @@ body {
   /* background: rgb(237, 250, 232); */
 }
 
+.rfsContainer{
+  margin-top: 4% !important;
+  width: 52%;
+  background: #fff;
+  padding: 0.5em;
+  margin: 0 auto;
+  border-radius: 15px;
+  font-size: 10px;
+}
+
 /*~*/
