@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -7,7 +6,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
   <!-- Primary Meta Tags -->
-   Projeto e Localização
+  Projeto e Localização
 
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="title" content="Refloresta SP">
@@ -30,98 +29,120 @@
   <!-- ===== Start Wizard ===== -->
   <div style="margin-top: 2%;">
     <div id="wzdId" class="wzdContainer">
-      <div class="alert alert-primary mb-2" role="alert">
-        <h6 class="alert-heading">Combinações possíveis para suas escolhas</h6>
+      <!-- header -->
+      <div class="wzdHeader">
+        <table>
+          <tr>
+            <td class="wzdLogo"></td>
+            <td>
+              <h6 class="alert-heading">Combinações possíveis para suas escolhas</h6>
+              <div>Selecione a combinação de sua preferência</div>
+            </td>
+          </tr>
+        </table>
       </div>
+      <!-- end header -->
 
-      <!-- start Accordion -->
-      <div class="accordion" id="acData" style="width: 100%">
-      {% for strip in strips %}
-            <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        style="text-align:left; padding-left:6px"
-                  data-bs-target="#bdLocation" aria-expanded="true" aria-controls="bdLocation">
-                  {{ strip }}
-                </button>
-              </h2>
-              <div id="bdLocation" class="accordion-collapse collapse" aria-labelledby="hdLocation" data-bs-parent="#acData">
-                <div class="accordion-body">
-                  <div class="d-grid gap-2">
-              {% for _, combination in combinations.iterrows() %}
-              {% if strip == combination.nomeFaixa %}
-                    <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal"
-                            style="text-align:left; padding-left:6px" onclick="showConfirmacao( '' )"
-                    >
-                        {{ combination.Especies }}<br><b>Financeiro</b><br><b>TIR:</b> {{ "%.4f"|format(combination.TIR) }}<br>
-                        <b>Pay-back:</b> {{ combination.payback }} anos<br>
-                        <b>Investimento necessário:</b> {{"%.2f"|format(combination.InvNecessario) }} <br>
-                        <b>Valor Total Líquido:</b> {{"%.2f"|format(combination.VTLiquido) }} <br>
-                        <b>Valor Presente Líquido:</b> {{"%.2f"|format(combination.VPLiquido) }} <br>
-                    </button>
-              {% endif %}
-              {% endfor %}
-                  </div>
+      <!-- body -->
+      <div id="idWzdBody" class="wzdBody container">
+        <!-- start Accordion -->
+        <div class="accordion" id="acData" style="width: 100%">
+          {% for strip in strips %}
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                style="text-align:left; padding-left:6px" data-bs-target="#bdLocation" aria-expanded="true"
+                aria-controls="bdLocation">
+                {{ strip }}
+              </button>
+            </h2>
+            <div id="bdLocation" class="accordion-collapse collapse" aria-labelledby="hdLocation"
+              data-bs-parent="#acData">
+              <div class="accordion-body">
+                <div class="d-grid gap-2">
+                  {% for _, combination in combinations.iterrows() %}
+                  {% if strip == combination.nomeFaixa %}
+                  <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal"
+                    style="text-align:left; padding-left:6px" onclick="showConfirmacao( '' )">
+                    {{ combination.Especies }}<br><b>Financeiro</b><br><b>TIR:</b> {{ "%.4f"|format(combination.TIR)
+                    }}<br>
+                    <b>Pay-back:</b> {{ combination.payback }} anos<br>
+                    <b>Investimento necessário:</b> {{"%.2f"|format(combination.InvNecessario) }} <br>
+                    <b>Valor Total Líquido:</b> {{"%.2f"|format(combination.VTLiquido) }} <br>
+                    <b>Valor Presente Líquido:</b> {{"%.2f"|format(combination.VPLiquido) }} <br>
+                  </button>
+                  {% endif %}
+                  {% endfor %}
                 </div>
               </div>
             </div>
-        {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+        <!-- end Accordion -->
       </div>
-      <!-- end Accordion -->
-    <!-- end wzdContainer -->
+      <!-- end body -->
+         <!-- footer -->
+         <div class="wzdFooter">
+          <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
+          <button class="wzdBtnNext btn btn-primary" type="button" onclick="_next();">Ok</button>
+        </div>
+        <!-- end footer -->
+      <!-- end wzdContainer -->
     </div>
   </div>
   <!-- ====== End Wizard ====== -->
 
   <!-- ===== Start Modals ===== -->
   <!-- Modal Projeto -->
-    <!-- Modal Combinações -->
-    <div class="modal fade" id="U Uai" tabindex="-1" role="dialog" aria-labelledby="mdlCAR" aria-hidden="true">
-      <div class="modal-dialog modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="h6 modal-title">Informe o CAR do Projeto</h2>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
-          </div>
-          <div class="modal-footer">
-            <button id="okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
-            <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
-          </div>
+  <!-- Modal Combinações -->
+  <div class="modal fade" id="U Uai" tabindex="-1" role="dialog" aria-labelledby="mdlCAR" aria-hidden="true">
+    <div class="modal-dialog modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="h6 modal-title">Informe o CAR do Projeto</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
+        </div>
+        <div class="modal-footer">
+          <button id="okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
+          <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
         </div>
       </div>
     </div>
+  </div>
   <!-- ====== End Modals ====== -->
 
   <!-- ===== Start Scripts ===== -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script>
-    function showConfirmacao(id){
-        if (confirm("Confirma a escolha?")){
-          document.getElementById('wzdId').style.visibility = 'hidden';
-        }
+    function showConfirmacao(id) {
+      if (confirm("Confirma a escolha?")) {
+        document.getElementById('wzdId').style.visibility = 'hidden';
+      }
     }
   </script>
 
-<!-- Core -->
-<script src="/static/assets/vendor/@popperjs/core/dist/umd/popper.min.js"></script>
-<script src="/static/assets/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="/static/assets/vendor/headroom.js/dist/headroom.min.js"></script>
+  <!-- Core -->
+  <script src="/static/assets/vendor/@popperjs/core/dist/umd/popper.min.js"></script>
+  <script src="/static/assets/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="/static/assets/vendor/headroom.js/dist/headroom.min.js"></script>
 
-<!-- Vendor JS -->
-<script src="/static/assets/vendor/onscreen/dist/on-screen.umd.min.js"></script>
-<script src="/static/assets/vendor/jarallax/dist/jarallax.min.js"></script>
-<script src="/static/assets/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
-<script src="/static/assets/vendor/vivus/dist/vivus.min.js"></script>
-<script src="/static/assets/vendor/vanillajs-datepicker/dist/js/datepicker.min.js"></script>
+  <!-- Vendor JS -->
+  <script src="/static/assets/vendor/onscreen/dist/on-screen.umd.min.js"></script>
+  <script src="/static/assets/vendor/jarallax/dist/jarallax.min.js"></script>
+  <script src="/static/assets/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+  <script src="/static/assets/vendor/vivus/dist/vivus.min.js"></script>
+  <script src="/static/assets/vendor/vanillajs-datepicker/dist/js/datepicker.min.js"></script>
 
-<script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
 
-<!-- Pixel JS -->
-<script src="/static/assets/js/pixel.js"></script>
+  <!-- Pixel JS -->
+  <script src="/static/assets/js/pixel.js"></script>
   <!-- ====== End Scripts ====== -->
 
 </body>
+
 </html>
