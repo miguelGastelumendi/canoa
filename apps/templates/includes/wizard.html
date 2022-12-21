@@ -1,36 +1,45 @@
-  <!-- version 0.3 2022.12.20 mgd -->
+  <!-- version 0.4 2022.12.21 mgd -->
+
+
+  <!-- ==== Wizard ==== -->
   <div style="margin-top: 2%">
-   <div class="wzdContainer">
+    <!-- ==== Container ==== -->
+    <div class="wzdContainer">
 
-     <!-- header -->
-     <div class="wzdHeader">
-       <table>
-         <tr>
-           <td class="wzdLogo"></td>
-           <td>
-             <h6 class="alert-heading">Distribuição de Plantio</h6>
-             <div>Selecione a distribuição segundo o tipo de faixas</div>
-           </td>
-         </tr>
-       </table>
-     </div>
-     <!-- end header -->
+      <!-- Header -->
+      <div class="wzdHeader">
+        <table>
+          <tr>
+            <td class="wzdLogo"></td>
+            <td>
+              <h6 class="alert-heading">Descrição</h6>
+              <div>Instruções</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <!-- Header end -->
 
-     <!-- body -->
-     <div id="grdModelos" class="wzdBody">
-       <div id="grdModelos" class="container">
-         <div class="text-center text-warning" style="height: 30em; width: 100%">
-           <span class="spinner-border" style="height: 20%;"></span>
-           <h4>Aguarde...</h4>
-         </div>
-       </div>
-     </div>
-     <!-- end body -->
+      <!-- Body -->
+      <div id="idWzdBody" class="wzdBody container">
 
-     <!-- Next button -->
-     <div class="wzdFooter">
-       <div id= "idUsDisplay" class="wzdUsDisplay visually-hidden"></div>
-       <button id="idBtnNext" class="wzdBtnNext btn btn-primary" type="button" onclick="_next();">Ok</button>
-     </div>
-   </div>
- </div>
+        <!-- === User Area === -->
+        <div class="text-center text-warning d-flex justify-content-center align-items-center" style="height: 30em; width: 100%;">
+          <div class="spinner-border" style="height: 4rem; width: 4rem;"></div>
+        </div>
+        <!-- === User Area end === -->
+
+      </div>
+      <!-- Body end -->
+
+      <!-- Footer -->
+      <div class="wzdFooter">
+        <div id= "idUsDisplay" class="wzdUsDisplay visually-hidden"></div>
+        <button id="idBtnNext" class="wzdBtnNext btn btn-primary" type="button" onclick="_next();">Ok</button>
+      </div>
+      <!-- Footer end -->
+
+    </div>
+    <!-- ==== Container end ==== -->
+  </div>
+  <!-- ==== Wizard end ==== -->

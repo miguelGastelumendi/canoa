@@ -1,0 +1,48 @@
+<!-- === Modal window, call userMessage( sMsg, sTitle, oOptions, fOnClose ) === -->
+<div id="mdlWindow" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+   aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div id="mdlHeader" class="modal-header">
+            <h1 id="mdlTitle" class="modal-title fs-5"></h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div id="mdlMessage" class="modal-body"></div>
+         <div id="mdlFooter" class="modal-footer">
+            <button type="button" class="btn btn-primary" style="min-width: 6em;" data-bs-dismiss="modal">OK</button>
+         </div>
+      </div>
+   </div>
+</div>
+
+<script>
+   const __1 = (sId) => document.getElementById(sId);
+   /**
+    * @param {string} sMessage Mensagem
+    * @param {string} [sTitle] Título da janela
+    * @param {Object} [oOptions] Opções futuras
+    * @param {function} [fOnClose] callback quando fechar a janela
+    */
+   const userMessage = (sMessage, sTitle = 'Refloresta SP', oOptions = {}, fOnClose) => {
+      const sStyle = oOptions.style ? oOptions.style : 'info';
+      const sStyleClass = sStyle ? `alert-${sStyle} text-${sStyle}` : '';
+      __1('mdlTitle').innerText = sTitle;
+      __1('mdlMessage').innerHTML = sMessage ? sMessage : 'Mensagem não disponível.';
+      const eleHdr = __1('mdlHeader');
+      eleHdr.classList.add(... sStyleClass.split(' '));
+      const eleMdl = __1('mdlWindow');
+      const mdlWindow = new bootstrap.Modal(eleMdl);
+      eleMdl.addEventListener(
+         'hidden.bs.modal',
+         e => {
+            eleHdr.classList.remove(sStyleClass);
+            if (fOnClose) { fOnClose(); }
+         }
+      );
+      mdlWindow.show();
+   }
+   //--
+   const userMessageError = (sMessage, sTitle) => {
+      userMessage(sMessage, sTitle, { style: 'danger' });
+   }
+</script>
