@@ -30,11 +30,13 @@
   <div style="margin-top: 2%;">
     <div class="wzdContainer">
       <!-- header -->
-      <div class="alert alert-primary mb-3" role="alert">
+      <div class="wzdHeader">
         <table>
           <tr>
-            <td><img src="../../static/assets/img/logo-wzd.png" height="52px"></td>
-            <td><h6 class="alert-heading">Dados do Projeto e Forma de Localização</h6></td>
+            <td class="wzdLogo"></td>
+            <td>
+              <h6 class="alert-heading">Dados do Projeto e Forma de Localização</h6>
+            </td>
           </tr>
         </table>
       </div>
@@ -104,14 +106,15 @@
       <!-- end Accordion -->
 
       <!-- Map -->
-      <div style="min-height: 400px; height: 100%; margin: 10px 0px; border: 1px solid #29874a ">
+      <div style="min-height: 400px; height: 100%; margin: 10px 10px; border: 1px solid #29874a ">
         <div id="map" class="chart" style="height: 100%; width: 100%;">
         </div>
       </div>
 
       <!-- Save button -->
-      <div id="map" class="wzdFooter">
-        <button type="button" class="btn btn-primary" style="width: 6em" onclick="saveProject();">Ok</button>
+      <div class="wzdFooter">
+        <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
+        <button class="wzdBtnNext btn btn-primary" type="button" onclick="_next();">Ok</button>
       </div>
     <!-- end wzdContainer -->
 
@@ -287,7 +290,7 @@
     }
 
     // -------------------------
-    async function saveProject() {
+    async function _next() {
       const projectName = document.getElementById("projectName").value;
       if (projectName === ''){
         // alert('Deve informar um nome de projeto.')

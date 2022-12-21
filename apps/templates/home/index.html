@@ -1,119 +1,115 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <!-- Primary Meta Tags -->
-    <title>Refloresta SP</title>
+<head>
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta name="title" content="Refloresta SP" />
-    <meta name="author" content="Equipe `Refloresta SP`" />
-    <meta
-      name="description"
-      content="Open source and free Bootstrap 5 UI Kit featuring 80 UI components, 5 example pages, and a Gulp and Sass workflow."
-    />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="../../static/assets/img/favicon/favicon-16x16.jpg"
-    />
-    <meta name="msapplication-TileColor" content="#ffffff" />
-    <meta name="theme-color" content="#ffffff" />
+  <!-- Primary Meta Tags -->
+  <!-- {% block title %} &mdash Distribuição de Plantio {% endblock %} -->
 
-    <!-- Fontawesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <!-- CSS -->
-    <link type="text/css" href="static/assets/css/pixel.css" rel="stylesheet" />
-    <link
-      type="text/css"
-      href="static/assets/css/refloresta.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    {% include 'includes/navigation.html' %}
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="title" content="Refloresta SP &mdash Distribuição de Plantio">
+  <meta name="author" content="Equipe `Refloresta SP`">
+  <meta name="description" content="">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="../../static/assets/img/favicon/favicon-16x16.jpg">
+
+  <!-- Fontawesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+
+  <!-- CSS -->
+  <link type="text/css" href="../../static/assets/css/pixel.css" rel="stylesheet">
+  <link type="text/css" href="../../static/assets/css/refloresta.css" rel="stylesheet">
+  <script>
+    let iSelectedIx = -1;
+    let iSelectedId = -1;
+   
+    const _next = () => {
+      if (iSelectedId < 0) {
+        alert('Favor selecione uma das opções.');
+      } else { // if (confirm('Confirma a seleção?')) {  
+        window.location.href = `./rsp-projeto_localizacao.html`;
+      }
+    }
+    const _error = (sMsg) => {
 
 
-      <div style="display: flex;">
-        <img
-          src="../../static/assets/img/pages/LogoReflorestaSPbranco.png"
-          style="position: absolute;
-          width: 30%;
-          left: -20px;"
-        />
+    }
+    const _select = (ix, id) => {
+      if (iSelectedIx != ix) {
+        const eleUsDisplay = document.getElementById('idWzdUsDisplay');
+        for (let i = 1; i < 3; i++) {
+          let eleButton = document.getElementById(`btn${i}`);
+          if (i == iSelectedIx) {
+            eleButton.classList.remove('btn-warning');
+            eleButton.classList.add('btn-info');
 
-        <div class="rfsContainer">
-          <div
-            class="row"
-            style="display: flex; justify-content: center; align-items: center"
-          >
-            <h4 style="font-size: 15px;">Crie um novo Projeto:</h4>
+          } else if (i == ix) {
+            eleButton.classList.remove('btn-info');
+            eleButton.classList.add('btn-warning');
+            eleUsDisplay.innerHTML = `Selecionado: <b>${eleButton.innerText}</b>`;
+            eleUsDisplay.classList.remove('visually-hidden');
+          }
+        }
+        iSelectedIx = ix;
+        iSelectedId = id;
+      }
+    }
+  </script>
+</head>
 
-            <div
-              style="
-                width: 60%;
-                height: 80px;
-                padding: 10px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: #29874a;
-                border-radius: 18px;
-                color: #fff;
-                gap: 3px;
-                margin-bottom: 5px;
-                cursor: pointer;
-              "
-            >
-              <a href="/rsp-projeto_localizacao.html">
-                <i class="fa-sharp fa-solid fa-plus">&nbsp;</i> Projeto
-                <img
-                  src="../../static/assets/img/brand/tree-silhouette.png"
-                  height="50px"
-                />
-              </a>
-            </div>
-          </div>
-          <div
-            class="row"
-            style="display: flex; justify-content: center; align-items: center"
-          >
-            <h4 style="font-size: 15px;">Consulte um Projeto existente:</h4>
-            <div
-              style="
-                width: 51%;
-                height: 80px;
-                padding: 10px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: #b6b6b6;
-                border-radius: 18px;
-                color: #000;
-                gap: 3px;
-                margin-bottom: 5px;
-                cursor: pointer;
-              "
-            >
-              Projeto
-            </div>
-          </div>
+<body>
+
+  {% include 'includes/navigation.html' %}
+
+  <!-- version 0.4 2022.12.20 mgd -->
+  <div style="margin-top: 2%">
+    <div class="wzdContainer">
+
+      <!-- header -->
+      <div class="wzdHeader">
+        <table>
+          <tr>
+            <td class="wzdLogo"></td>
+            <td>
+              <h6 class="alert-heading">Criação de projeto Refloresta SP</h6>
+              <div>Selecione o que deseja fazer</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <!-- end header -->
+
+      <!-- =========    Usar de Aqui ======= -->
+      <!-- body -->
+      <div id="idWzdBody" class="wzdBody container">
+        <!-- end header -->
+
+        <div class="d-grid gap-2">
+          <button id="btn1" class="btn btn-info bg-gradient mx-5" type="button" onclick="_select(1, 3)">
+            Criar Projeto
+          </button>
+          <button id="btn2" class="btn btn-info bg-gradient mx-5" type="button" onclick="_select(2, 1)">
+            Consulte um projeto existente
+          </button>
         </div>
       </div>
+      <!-- end body -->
+      <!-- =========    Até de Aqui ======= -->
 
 
-    {% include 'includes/scripts.html' %}
-  </body>
+      <!-- Next button -->
+      <div class="wzdFooter">
+        <div id="idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
+        <button class="wzdBtnNext btn btn-primary" type="button" onclick="_next();">Ok</button>
+      </div>
+    </div>
+  </div>
+
+  {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock javascripts %}
+</body>
+
 </html>
