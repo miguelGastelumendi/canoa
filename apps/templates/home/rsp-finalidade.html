@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
   <!-- Primary Meta Tags -->
-  {% block title %} Projeto e Localização {% endblock %}
+  {% block title %}  &mdash Finalidade {% endblock %}
 
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="title" content="Refloresta SP">
@@ -32,18 +32,24 @@
     <div style="margin-top: 2%;">
       <!-- start wzdContainer -->
       <div class="wzdContainer">
+        <!-- header -->
         <div class="alert alert-primary mb-3" role="alert">
-          <h6 class="alert-heading">Finalidade</h6>
-          Selecione a atividade segundo os critérios
+          <table>
+            <tr>
+              <td><img src="../../static/assets/img/logo-wzd.png" height="52px"></td>
+              <td><h6 class="alert-heading">Finalidade</h6>Selecione a atividade segundo os critérios</td>
+            </tr>
+          </table>
         </div>
+        <!-- end header -->
         <div class="d-grid gap-2">
-          <button type="button" class="btn btn-info bg-gradient" onclick="goto(3)">
+          <button type="button" class="btn btn-info bg-gradient mx-5" onclick="goto(3)">
             Área de Preservação Permanente
           </button>
-          <button type="button" class="btn btn-info bg-gradient" onclick="goto(1)">
+          <button type="button" class="btn btn-info bg-gradient mx-5" onclick="goto(1)">
             Reserva Legal
           </button>
-          <button type="button" class="btn btn-info bg-gradient" onclick="goto(2)">
+          <button type="button" class="btn btn-info bg-gradient mx-5" onclick="goto(2)">
             Área de uso alternativo do solo
           </button>
         </div>

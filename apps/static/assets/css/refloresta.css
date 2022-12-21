@@ -10,28 +10,59 @@ body {
 
 .wzdContainer {
   width: 80%;
-  background: #fff;
-  padding: .5em;
   margin: 0 auto;
+  background: #fff;
   border-radius: 15px;
 }
 
+/* Header: Left: logo, right: Title / sub title */
+.wzdHeader{
+  width: 100%;
+  background-color: var(--bs-gray-300);
+  padding: 1rem 1rem;
+  border-radius: 15px 15px 0 0;
+}
+
+.wzdLogo {
+  background-image: url(../img/logo-wzd.png);
+  height: 52px;  /* important */
+  width: 52px;
+}
+
+/* Body: specific for each wizard */
 .wzdBody {
   width: 100%;
+  padding: .5em;
+  background-color: var(--bs-gray-500);
   text-align: center;
 }
 
-.wzdFooter{
+/* Footer: a Ok button and display selected info */
+.wzdFooter {
   width: 100%;
   text-align: center;
-  margin-top: 0.5em;
-  /* background: rgb(237, 250, 232); */
+  background-color: var(--bs-gray-400);
+  border-radius: 0 0 15px 15px;
 }
+
+/* User Selection Display area (inside Footer) */
+.wzdUsDisplay {
+  width: 100%;
+  text-align: center;
+  background-color: var(--bs-warning);
+  padding: 0.1em 0px;
+}
+
+.wzdBtnNext{
+  width: 6em;
+  margin: 0.5rem 0.5rem;
+}
+
 
 .rfsContainer{
   margin-top: 4% !important;
   width: 52%;
-  background: #fff;
+  background: var(--bs-gray-200);
   padding: 0.5em;
   margin: 0 auto;
   border-radius: 15px;

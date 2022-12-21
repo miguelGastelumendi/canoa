@@ -1,15 +1,15 @@
 Mauro:
 
-      	Bug: se muda de regiao, o select volta ao anterior. Tem que distinguir quem chama.
 
 
-         <meta name="description" content=" .. ">
+      rsp-projeto_localizacao.html
          O tamnho do mapa parece que já vem fixado
-         Se o tamanhi do browser muda, o mapa fica igual de tamanho.
+         Se o tamanho do browser muda, o mapa fica igual de tamanho.
          Acho que vale a pena colocar (pelo menos) o que as siglas CAR significam e como é o formato
-         o que é 'area' que traz do server?
-         seria bacana já abrir com mapa de SP
-   
-   O ui_map.html tem que ser criado sobre um template e trocar  <a href="./ui-plantLocation.html"> do template
+
+      rsp-finalidade.htm
+         Heade e um pouco mais finoque o rsp-projeto_localizacao
+
+
 
 
