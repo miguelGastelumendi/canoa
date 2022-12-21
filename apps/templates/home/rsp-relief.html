@@ -30,7 +30,7 @@
     const _next = () => {
       if (iSelectedId < 0) {
         alert('Favor selecione uma das opções.');
-      } else { // if (confirm('Confirma a seleção?')) 
+      } else { // if (confirm('Confirma a seleção?'))
         window.location.href = `./rsp-mecanization.html?id=${iSelectedId}`;
       }
     }
@@ -62,11 +62,13 @@
 </head>
 
 <body>
-  <!-- version 0.4 2022.12.20 mgd -->
+
+  <!-- ==== Wizard ==== -->
   <div style="margin-top: 2%">
+    <!-- ==== Container ==== -->
     <div class="wzdContainer">
 
-      <!-- header -->
+      <!-- Header -->
       <div class="wzdHeader">
         <table>
           <tr>
@@ -78,54 +80,58 @@
           </tr>
         </table>
       </div>
-      <!-- end header -->
+      <!-- Header end -->
 
-      <!-- =========    Usar de Aqui ======= -->
-      <!-- body -->
+      <!-- Body -->
       <div id="idWzdBody" class="wzdBody container">
-        <!-- <div id="grdModelos" class="container"> -->
-          <div class="row row-cols-1 row-cols-lg-2">
-            <div class="col text-center mb-3">
-              <button id="btn1" class="mb-2 btn btn-info bg-gradient" type="button" style="height:2.6em; width:100%" onclick="_select(1, 4)">
-                Terreno Montanhoso
-              </button>
-              <a onclick="_select(1, 4)"><img src="../../static/assets/img/relevo/TerrenoMontanhoso1024.png" alt="Montanhoso"></a>
-            </div>
-            <div class="col text-center mb-3">
-              <button id="btn2" class="mb-2 btn btn-info bg-gradient" type="button" style="height:2.6em; width:100%" onclick="_select(2, 3)">
-                Terreno Ondulado
-              </button>
-              <a onclick="_select(2, 3)"><img src="../../static/assets/img/relevo/TerrenoOndulado1024.png" alt="Montanhoso"></a>
 
-            </div>
+        <!-- === User Area === -->
+        <div class="row row-cols-1 row-cols-lg-2">
+          <div class="col text-center mb-3">
+            <button id="btn1" class="mb-2 btn btn-info bg-gradient" type="button" style="height:2.6em; width:100%" onclick="_select(1, 4)">
+              Terreno Montanhoso
+            </button>
+            <a onclick="_select(1, 4)"><img src="../../static/assets/img/relevo/wzd-terrenoMontanhoso.png" alt="Montanhoso"></a>
+          </div>
+          <div class="col text-center mb-3">
+            <button id="btn2" class="mb-2 btn btn-info bg-gradient" type="button" style="height:2.6em; width:100%" onclick="_select(2, 3)">
+              Terreno Ondulado
+            </button>
+            <a onclick="_select(2, 3)"><img src="../../static/assets/img/relevo/wzd-terrenoOndulado.png" alt="Montanhoso"></a>
+
+          </div>
           <div class="col text-center mb-3">
             <button id="btn3" class="mb-2 btn btn-info bg-gradient" type="button" style="height:2.6em; width:100%" onclick="_select(3, 1)">
               Terreno Plano
             </button>
-            <a onclick="_select(3, 1)"><img src="../../static/assets/img/relevo/TerrenoPlano1024.png"></a>
+            <a onclick="_select(3, 1)"><img src="../../static/assets/img/relevo/wzd-terrenoPlano.png"></a>
           </div>
           <div class="col text-center mb-3">
             <button id="btn4" class="mb-2 btn btn-info bg-gradient" type="button" style="height:2.6em; width:100%" onclick="_select(4, 2)">
               Terreno Suave Ondulado
             </button>
-            <a onclick="_select(4, 2)"><img src="../../static/assets/img/relevo/TerrenoSuaveOndulado1024.png"></a>
+            <a onclick="_select(4, 2)"><img src="../../static/assets/img/relevo/wzd-terrenoSuaveOndulado.png"></a>
           </div>
         </div>
-        <!-- </div> -->
+        <!-- === User Area end === -->
+
       </div>
-      <!-- end body -->
-      <!-- =========    Até de Aqui ======= -->
+      <!-- Body end -->
 
-
-      <!-- Next button -->
+      <!-- Footer -->
       <div class="wzdFooter">
         <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
-        <button class="wzdBtnNext btn btn-primary" type="button" onclick="_next();">Ok</button>
+        <button id="idWzdBtnOk" class="wzdBtnNext btn btn-primary" type="button" onclick="_next();">Ok</button>
       </div>
+      <!-- Footer end -->
+
     </div>
+    <!-- ==== Container end ==== -->
   </div>
+  <!-- ==== Wizard end ==== -->
 
   {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock javascripts %}
+
 </body>
 
 </html>
