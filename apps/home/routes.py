@@ -103,4 +103,4 @@ def route_template(template):
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
     except Exception as e:
-        return render_template('home/page-500.html'), 500
+        return render_template('home/page-500.html', errorMsg=str(e)), 500

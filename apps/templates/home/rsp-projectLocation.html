@@ -161,17 +161,22 @@
 <!-- ===== Start Scripts ===== -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
+  // Get Element
+  const _ge = (sId) => document.getElementById(sId);
+  // Get element's Value
+  const _gv = (sId) => _ge(sId);
   // Map's div
   const sMapArea = 'mapArea';
   //-- Avoid multiple async calls
   let bFetching = false;
+
 
   //-- Map arrived, show it
   let bBound = false;
   const _showMap = ( /** @type {Object} */ jsoData) => {
     const jsData = JSON.parse(jsoData);
     Plotly.react(sMapArea, jsData , {});
-    if (!bBound) document.getElementById(sMapArea).on('plotly_afterplot', () => document.body.style.cursor = 'default');
+    if (!bBound) _ge(sMapArea).on('plotly_afterplot', () => document.body.style.cursor = 'default');
   }
 
   //-- Create modal on close events & callback
@@ -180,9 +185,9 @@
     if (ele && ele.id) setTimeout(() => updateFormData(ele.id), 0);
   }
   const onHide = 'hide.bs.modal';
-  // document.getElementById("mdlLocation").addEventListener(onHide, _onClose);
-  document.getElementById("mdlLatLong").addEventListener(onHide, _onClose);
-  document.getElementById("mdlCAR").addEventListener(onHide, _onClose);
+  // _ge("mdlLocation").addEventListener(onHide, _onClose);
+  _ge("mdlLatLong").addEventListener(onHide, _onClose);
+  _ge("mdlCAR").addEventListener(onHide, _onClose);
 
   //-- Startup map
   const _fetchMapSp = async () => {
@@ -192,18 +197,18 @@
     if (rsp.ok) { _showMap(jsoData['Map']); }
   }
 //DEBUG   _fetchMapSp();
-  wzdInitEmpty('rsp-goal.html');
+
 
   // -------------------------
   async function updateFormData(callerID) {
     if (bFetching) return; // Acho que o erro 500 é por sobrecarga
-    const selMun = document.getElementById("municipio");
-    const selFito = document.getElementById("fito_ecologica");
-    const btnOkLocat = document.getElementById("okLocation");
+    const selMun = _ge("municipio");
+    const selFito = _ge("fito_ecologica");
+    const btnOkLocat = _ge("okLocation");
     let municipio = selMun.value;
     let fito = selFito.value;
-    let latlong = document.getElementById("lat_long").value;
-    let CAR = document.getElementById("CAR").value;
+    let latlong = _gv("lat_long");
+    let CAR = _gv("CAR");
 
     // TODO ver se mudou o parâmetro
     bFetching = true;
@@ -245,7 +250,7 @@
               for (const [key, value] of Object.entries(jsFitoMun)) {
                 newHTML += `<option value='${key}'>${value}</option>`;
               }
-                document.getElementById('fito_ecologica').innerHTML = newHTML;
+                _ge('fito_ecologica').innerHTML = newHTML;
             }
           }
           _showMap(jsoData["Map"]);
@@ -260,17 +265,17 @@
   }
 
   // -------------------------
-  async function _next() {
-    const projectName = document.getElementById("projectName").value;
+  const sendData = async () => {
+    const projectName = _gv("projectName");
     if (projectName === ''){
       // alert('Deve informar um nome de projeto.')
       // return;
     }
-    const projectArea = document.getElementById("projectArea").value;
-    const propertyArea = document.getElementById("propertyArea").value;
-    const fito = document.getElementById("fito_ecologica").value;
-    const latlong = document.getElementById("lat_long").value;
-    const CAR = document.getElementById("CAR").value;
+    const projectArea = _gv("projectArea");
+    const propertyArea = _gv("propertyArea");
+    const fito = _gv("fito_ecologica");
+    const latlong = _gv("lat_long");
+    const CAR = _gv("CAR");
     // TODO colocar modal de espera
     await fetch('/callback/saveProject?' +
             `&callerID=saveProject` +
@@ -281,8 +286,17 @@
             `&latlong=${latlong}` +
             `&CAR=${CAR}`
     );
-    window.location.href = "rsp-goal.html";
+    return true;
   }
+  const confirm = () =>{
+    sendData();
+    alert('aa');
+    return true;
+
+  }
+  //-- Initialize Custom Wizard
+  wzdControl.initCustom('rsp-goal.html', confirm);
+
 </script>
 <!-- ====== End Scripts ====== -->
 

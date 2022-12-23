@@ -16,34 +16,38 @@
 </div>
 
 <script>
-   const __w1 = (sId) => document.getElementById(sId);
-   /**
-    * @param {string} sMessage Mensagem
-    * @param {string} [sTitle] Título da janela
-    * @param {Object} [oOptions] Opções futuras
-    * @param {function} [fOnClose] callback quando fechar a janela
-    */
-   const mdlUserMessage = (sMessage, sTitle = 'Refloresta SP', oOptions = {}, fOnClose) => {
-      const sStyle = oOptions.style ? oOptions.style : 'info';
-      const sStyleClass = sStyle ? `alert-${sStyle} text-${sStyle}` : '';
-      __w1('mdlTitle').innerText = sTitle;
-      __w1('mdlMessage').innerHTML = sMessage ? sMessage : 'Mensagem não disponível.';
-      const eleHdr = __w1('mdlHeader');
-      eleHdr.classList.add(... sStyleClass.split(' '));
-      const eleMdl = __w1('mdlWindow');
-      const mdlWindow = new bootstrap.Modal(eleMdl, {backdrop: 'static'});
-      eleMdl.addEventListener(
-         'hidden.bs.modal',
-         e => {
-            eleHdr.classList.remove(sStyleClass);
-            if (fOnClose) { fOnClose(); }
-         }
-      );
-      mdlWindow.show();
-   }
-   //--
-   const mdlUserMessageError = (sMessage, sTitle) => {
-      mdlUserMessage(sMessage, sTitle, { style: 'danger' });
+   const mdlControl = {
+      ge: (sId) => document.getElementById(sId),
+      /**
+       * @param {string} sMessage Mensagem
+       * @param {string} [sTitle] Título da janela
+       * @param {Object} [oOptions] Opções futuras
+       * @param {function} [fOnClose] callback quando fechar a janela
+       */
+      message: (sMessage, sTitle = 'Refloresta SP', oOptions = {}, fOnClose) => {
+         const sStyle = oOptions.style ? oOptions.style : 'info';
+         const sStyleClass = sStyle ? `alert-${sStyle} text-${sStyle}` : '';
+         mdlControl.ge('mdlTitle').innerText = sTitle;
+         mdlControl.ge('mdlMessage').innerHTML = sMessage ? sMessage : 'Mensagem não disponível.';
+         const eleHdr = mdlControl.ge('mdlHeader');
+         eleHdr.classList.add(...sStyleClass.split(' '));
+         const eleMdl = mdlControl.ge('mdlWindow');
+         const mdlWindow = new bootstrap.Modal(eleMdl, { backdrop: 'static' });
+         eleMdl.addEventListener(
+            'hidden.bs.modal',
+            e => {
+               eleHdr.classList.remove(sStyleClass);
+               if (fOnClose) { fOnClose(); }
+            }
+         );
+         mdlWindow.show();
+      },
+      messageInfo: (sMessage, sTitle) => {
+         mdlControl.message(sMessage, sTitle, { style: 'info' });
+      },
+      messageError: (sMessage, sTitle) => {
+         mdlControl.message(sMessage, sTitle, { style: 'danger' });
+      }
    }
 </script>
 <!-- === end Modal window === -->
