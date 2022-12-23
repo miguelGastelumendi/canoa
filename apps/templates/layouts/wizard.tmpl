@@ -1,0 +1,70 @@
+{# files are relative to ./templates #}
+{% extends "layouts/base-refloresta.tmpl" %}
+
+
+
+{% block content %}
+   {% include 'includes/navigation.html' %}
+
+   {# -- version 0.6 2022.12.22--23 Miguel Gastelumendi -- mgd
+      https://jinja.palletsprojects.com/en/3.1.x/templates/
+    #}
+
+   {# The `block wizardBody` is inside #}
+   <!-- ==== Wizard ==== -->
+   <div class="wzdBackdrop">
+
+      <!-- ==== Container ==== -->
+      <div class="wzdContainer container">
+
+         <!-- Header -->
+         <div class="wzdHeader">
+            <table>
+            <tr>
+               <td class="wzdLogo"></td>
+               <td>
+                  <h6 id="wzdDescription" class="alert-heading">
+                  {% block wizardDescription %}{% endblock %}
+                  </h6>
+                  <div id="wzdInstructions">
+                  {% block wizardInstructions %}{% endblock %}
+                  </div>
+               </td>
+            </tr>
+            </table>
+         </div>
+         <!-- Header end -->
+
+         <!-- Body -->
+         <div id="idWzdBody" class="wzdBody">
+
+         <!-- === User Area === -->
+         {% block wizardBody required %}
+
+         {% endblock wizardBody %}
+         <!-- === User Area end === -->
+
+         </div>
+         <!-- Body end -->
+
+         <!-- Footer -->
+         <div class="wzdFooter">
+            <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
+            <button id="idWzdBtnOk" class="wzdBtnNext btn btn-primary" type="button" disabled= "true" onclick="wzdNext();">Ok</button>
+         </div>
+         <!-- Footer end -->
+
+      </div>
+      <!-- ==== Container end ==== -->
+   </div>
+   <!-- ==== Wizard end ==== -->
+{% endblock content %}
+
+{% block htmlHelpers %}
+   {% include 'includes/modal.html' %}
+{% endblock htmlHelpers %}
+
+{% block javascripts %}
+   <script src="/static/assets/js/wizard.js"></script>
+{% endblock javascripts %}
+

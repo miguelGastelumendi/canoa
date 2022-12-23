@@ -16,22 +16,22 @@
 </div>
 
 <script>
-   const __1 = (sId) => document.getElementById(sId);
+   const __w1 = (sId) => document.getElementById(sId);
    /**
     * @param {string} sMessage Mensagem
     * @param {string} [sTitle] Título da janela
     * @param {Object} [oOptions] Opções futuras
     * @param {function} [fOnClose] callback quando fechar a janela
     */
-   const userMessage = (sMessage, sTitle = 'Refloresta SP', oOptions = {}, fOnClose) => {
+   const mdlUserMessage = (sMessage, sTitle = 'Refloresta SP', oOptions = {}, fOnClose) => {
       const sStyle = oOptions.style ? oOptions.style : 'info';
       const sStyleClass = sStyle ? `alert-${sStyle} text-${sStyle}` : '';
-      __1('mdlTitle').innerText = sTitle;
-      __1('mdlMessage').innerHTML = sMessage ? sMessage : 'Mensagem não disponível.';
-      const eleHdr = __1('mdlHeader');
+      __w1('mdlTitle').innerText = sTitle;
+      __w1('mdlMessage').innerHTML = sMessage ? sMessage : 'Mensagem não disponível.';
+      const eleHdr = __w1('mdlHeader');
       eleHdr.classList.add(... sStyleClass.split(' '));
-      const eleMdl = __1('mdlWindow');
-      const mdlWindow = new bootstrap.Modal(eleMdl);
+      const eleMdl = __w1('mdlWindow');
+      const mdlWindow = new bootstrap.Modal(eleMdl, {backdrop: 'static'});
       eleMdl.addEventListener(
          'hidden.bs.modal',
          e => {
@@ -42,7 +42,8 @@
       mdlWindow.show();
    }
    //--
-   const userMessageError = (sMessage, sTitle) => {
-      userMessage(sMessage, sTitle, { style: 'danger' });
+   const mdlUserMessageError = (sMessage, sTitle) => {
+      mdlUserMessage(sMessage, sTitle, { style: 'danger' });
    }
 </script>
+<!-- === end Modal window === -->

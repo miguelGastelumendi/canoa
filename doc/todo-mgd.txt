@@ -1,15 +1,11 @@
-Mauro:
+Tarefas
 
-
-
-      rsp-projeto_localizacao.html
-         O tamnho do mapa parece que já vem fixado
+      4) rsp-projeto_localizacao.html
+         O tamanho do mapa parece que já vem fixado
          Se o tamanho do browser muda, o mapa fica igual de tamanho.
          Acho que vale a pena colocar (pelo menos) o que as siglas CAR significam e como é o formato
 
-      rsp-finalidade.htm
-         Heade e um pouco mais finoque o rsp-projeto_localizacao
+      6) Atualizar bootstrap a latest
 
-
-
+      B) criar o template para Wizard.html
 

@@ -63,7 +63,7 @@ def route_template(template):
             segment = helper.get_segment(request)
             # if segment.startswith('testeJinja'):
 
-            if segment == 'rsp-projeto_localizacao.html':
+            if segment == 'rsp-projectLocation.html':
                 return render_template("home/" + template,
                                        municipios=ui_map.getListaMunicipios()
                                        , fito_municipios=ui_map.getListaFito(None)

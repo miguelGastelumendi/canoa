@@ -1,0 +1,18 @@
+{% extends "layouts/wizard.tmpl" %}
+
+{% block title %}Projetos{% endblock %}
+
+{% block wizardDescription %}Projetos{% endblock %}
+{% block wizardInstructions %}Selecione a atividade desejada e logo confirme clicando no botão [Ok]{% endblock %}
+
+{% block wizardConfig %}
+  <script>
+    const jsBtn = [
+      { caption: 'Criar projeto', href: 'rsp-projectLocation.html' },
+      { caption: 'Consultar projeto existente', href: '' }
+    ];
+    wzdInitPage(jsBtn, 'buttons' /* 'images' */);
+  </script>
+{% endblock %}
+
+{# eof #}

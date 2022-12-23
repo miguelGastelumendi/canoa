@@ -5,9 +5,6 @@
 
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-  <!-- Primary Meta Tags -->
-  <!-- {% block title %} &mdash Distribuição de Plantio {% endblock %} -->
-
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="title" content="Refloresta SP &mdash Distribuição de Plantio">
   <meta name="author" content="Equipe `Refloresta SP`">
@@ -113,9 +110,7 @@
       <div id="idWzdBody" class="wzdBody container">
 
         <!-- === User Area === -->
-        <div class="text-center text-warning d-flex justify-content-center align-items-center" style="height: 30em; width: 100%;">
-          <div class="spinner-border" style="height: 4rem; width: 4rem;"></div>
-        </div>
+        {# % include dddd 'includes/spinner.html' % #}
         <!-- === User Area end === -->
 
       </div>
@@ -149,12 +144,10 @@
         }
       }
     }
-    getDistribution();
+   // getDistribution();
   </script>
 
-  {% include 'includes/modal.html' %}
 
-  {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock javascripts %}
 </body>
 
 </html>

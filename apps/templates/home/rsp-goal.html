@@ -26,11 +26,11 @@
   <script>
     let iSelectedIx = -1;
     let iSelectedId = -1;
-   
+
     const _next = () => {
       if (iSelectedId < 0) {
         alert('Favor selecione uma das opções.');
-      } else { // if (confirm('Confirma a seleção?')) {  
+      } else { // if (confirm('Confirma a seleção?')) {
         window.location.href = `./rsp-plantDistribution.html?id=${iSelectedId}`;
       }
     }
@@ -64,7 +64,7 @@
 <body>
   <!-- version 0.4 2022.12.20 mgd -->
   <div style="margin-top: 2%">
-    <div class="wzdContainer">
+    <div class="wzdContainer container">
 
       <!-- header -->
       <div class="wzdHeader">
@@ -82,7 +82,7 @@
 
       <!-- =========    Usar de Aqui ======= -->
       <!-- body -->
-      <div id="idWzdBody" class="wzdBody container">
+      <div id="idWzdBody" class="wzdBody">
         <!-- end header -->
 
         <div class="d-grid gap-2">
