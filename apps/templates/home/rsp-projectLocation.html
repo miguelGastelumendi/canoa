@@ -73,7 +73,7 @@
     <!-- end Accordion -->
 
     <!-- Map -->
-    <div style="min-height: 300px; margin-top: 1em; border: 1px solid #29874a ">
+    <div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
       <div id="mapArea" class="chart" style="height: 100%; width: 100%; visibility: hiddssen;">
       </div>
     </div>
@@ -196,7 +196,7 @@
     const jsoData = await rsp.json();
     if (rsp.ok) { _showMap(jsoData['Map']); }
   }
-//DEBUG   _fetchMapSp();
+  _fetchMapSp();
 
 
   // -------------------------
@@ -219,7 +219,7 @@
       btnOkLocat.disabled = true;
       document.body.style.cursor = 'progress';
       const setFitoMsg = (sMsg) => selFito.setHTML(`<option value="-1" selected>(${sMsg})</option>`);
-      let response = await fetch('/callback/updateFormData?' +
+      const rsp = await fetch('/callback/updateFormData?' +
                             `&callerID=${callerID}` +
                             `&idMunicipio=${municipio}` +
                             `&idFito=${fito}` +
@@ -229,14 +229,14 @@
 
 
       const sFitoErr = 'Selecione a Região Fitoecológica';
-      if (!response.ok) {
+      if (!rsp.ok) {
         setFitoMsg(sFitoErr);
-        alert(`HTTP-Error: ${response.status} on callback().`);
+        wzdControl.messageError(`HTTP-Error: ${rsp.status} on callback().`);
       } else {
-        let jsoData = await response.json();
-        if (!response.ok) {
+        let jsoData = await rsp.json();
+        if (!rsp.ok) {
           setFitoMsg(sFitoErr);
-          alert(`HTTP-Error: ${response.status} on json response.`);
+          wzdControl.messageError(`HTTP-Error: ${rsp.status} on json response.`);
         } else {
           // novas opções para o select Fito (pelo Município)
           const jsFitoMun = JSON.parse(jsoData["FitoMunicipio"]);
@@ -277,25 +277,19 @@
     const latlong = _gv("lat_long");
     const CAR = _gv("CAR");
     // TODO colocar modal de espera
-    await fetch('/callback/saveProject?' +
-            `&callerID=saveProject` +
-            `&ProjectName=${projectName}` +
-            `&ProjectArea=${projectArea}` +
-            `&PropertyArea=${propertyArea}` +
-            `&idFito=${fito}` +
-            `&latlong=${latlong}` +
-            `&CAR=${CAR}`
-    );
-    return true;
-  }
-  const confirm = () =>{
-    sendData();
-    alert('aa');
-    return true;
-
+    fetch('/callback/saveProject?' +
+          `&callerID=saveProject` +
+          `&ProjectName=${projectName}` +
+          `&ProjectArea=${projectArea}` +
+          `&PropertyArea=${propertyArea}` +
+          `&idFito=${fito}` +
+          `&latlong=${latlong}` +
+          `&CAR=${CAR}`)
+        .then(window.location.href = 'rsp-goal.html') // TODO spinner
+        .catch(err => wzdControl.messageError( 'Não foii possível salvar os dados, confira a internet e, por favor, tente de novo.'));
   }
   //-- Initialize Custom Wizard
-  wzdControl.initCustom('rsp-goal.html', confirm);
+  wzdControl.initCustom('rsp-goal.html', () => { sendData(); return false;} );
 
 </script>
 <!-- ====== End Scripts ====== -->
