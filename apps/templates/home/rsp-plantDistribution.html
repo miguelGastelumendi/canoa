@@ -1,153 +1,29 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends "layouts/wizard.tmpl" %}
 
-<head>
+{% block title %}Projetos{% endblock %}
 
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+{% block wizardDescription %}Distribuição de Plantio{% endblock %}
+{% block wizardInstructions %}Selecione a distribuição segundo o tipo de faixas{% endblock %}
 
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="title" content="Refloresta SP &mdash Distribuição de Plantio">
-  <meta name="author" content="Equipe `Refloresta SP`">
-  <meta name="description" content="">
-
-  <link rel="icon" type="image/png" sizes="16x16" href="../../static/assets/img/favicon/favicon-16x16.jpg">
-
-  <!-- Fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-    crossorigin="anonymous" referrerpolicy="no-referrer">
-
-  <!-- CSS -->
-  <link type="text/css" href="../../static/assets/css/pixel.css" rel="stylesheet">
-  <link type="text/css" href="../../static/assets/css/refloresta.css" rel="stylesheet">
-  <script>
-    let iSelectedIx = -1;
-    let iSelectedId = -1;
-    let jsBlocks = null;
-    const modalReady = !(typeof /* wizard.html */ userMessage === void 0);
-    const _ge = (sId) => document.getElementById(sId);
-    const _userMessage = (sMsg, sTitle) => {
-      if (modalReady) {
-        userMessage(sMsg, sTitle)
+{% block wizardConfig %}
+<script>
+  async function getDistribution() {
+    const response = await fetch('/callback/getDistribution');
+    if (!response.ok) {
+      wzdControl.errorMessage(`Não foi possível obter os dados do servidor (status: ${response.status}).`);
+    } else {
+      const jsoRsp = await response.json();
+      const jsData = jsoRsp.data;
+      if (jsData.length == 0) {
+        wzdControl.errorMessage('Não exitem distribuições para esta configuração.');
       } else {
-        alert(sMsg)
+        wzdControl.initPage({ data: jsData, nextPage: 'rsp-relief.html', mode: wzdControl.mode.IMAGES });
       }
     }
-    const _next = () => {
-      if (iSelectedId < 0) {
-        _userMessage('Por favor, selecione uma das opções.')
-      } else { // if (confirm('Confirma a seleção?')) {
-        window.location.href = `./rsp-relief.html?id=${iSelectedId}`
-      }
-    }
-    const _error = (sMsg, sTitle) => {
-      _setBody('');
-      if (modalReady) {
-        userMessageError(sMsg, sTitle)
-      } else {
-        _userMessage(sMsg, sTitle)
-      }
-    }
-    // selects a button
-    const _select = (ix) => {
-      if (iSelectedIx == ix) { return; }
-      iSelectedIx = ix;
-      iSelectedId = jsBlocks[ix].id;
-      const eleUsDisplay = _ge('idWzdUsDisplay');
-      eleUsDisplay.innerHTML = `Selecionado: <b>${jsBlocks[iSelectedIx].caption}</b>`;
-      eleUsDisplay.classList.remove('visually-hidden');
-      _display();
-    }
-    const _setBody = (sBody) => _ge('idWzdBody').innerHTML = '' + sBody;
-    // display data
-    const _display = () => {
-      const sPath = '../../static/assets/img/modelo_plantio/';
-      const htmCol = '<div class="col text-center mb-3">';
-      let sHtml = /* htmlRow */ '<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">';
-      jsBlocks.forEach((itm, i) => {
-        let onClick = `onclick="_select(${i})`;
-        sHtml += htmCol + // <htmCol>
-          `<button class="mb-2 btn btn-${(i == iSelectedIx) ? 'warning' : 'info'} bg-gradient" type="button" style="height:4.2em; width:100%" ${onClick}">${itm.caption}</button>` +
-          `<a ${onClick}"> <img src="${sPath}${itm.fileName}.png" alt="${itm.fileName}"></a>` +
-          '</div>'; /* </htmCol>  */
-      });
-      sHtml += '</div>'; // htmlRow
-      _setBody(sHtml);
-    }
-    // initialize Body
-    const _initialize = (jsData) => {
-      jsBlocks = jsData;
-      _display();
-      _ge('idWzdBtnOk').disabled = false;
-    }
-  </script>
-</head>
+  }
+  getDistribution();
+</script>
+{% endblock %}
 
-<body>
+{# eof #}
 
-  <!-- version 0.4 2022.12.20 mgd -->
-
-  <!-- ==== Wizard ==== -->
-  <div style="margin-top: 2%">
-    <!-- ==== Container ==== -->
-    <div class="wzdContainer">
-
-      <!-- Header -->
-      <div class="wzdHeader">
-        <table>
-          <tr>
-            <td class="wzdLogo"></td>
-            <td>
-              <h6 class="alert-heading">Distribuição de Plantio</h6>
-              <div>Selecione a distribuição segundo o tipo de faixas</div>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <!-- Header end -->
-
-      <!-- Body -->
-      <div id="idWzdBody" class="wzdBody container">
-
-        <!-- === User Area === -->
-        {# % include dddd 'includes/spinner.html' % #}
-        <!-- === User Area end === -->
-
-      </div>
-      <!-- Body end -->
-
-      <!-- Footer -->
-      <div class="wzdFooter">
-        <div id="idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
-        <button id="idWzdBtnOk" class="wzdBtnNext btn btn-primary" type="button" disabled="true"  onclick="_next();">Ok</button>
-      </div>
-      <!-- Footer end -->
-
-    </div>
-    <!-- ==== Container end ==== -->
-  </div>
-  <!-- ==== Wizard end ==== -->
-
-
-  <script>
-    async function getDistribution() {
-      const response = await fetch('/callback/getDistribution');
-      if (!response.ok) {
-        _error(`Não foi possível obter os dados do servidor (status: ${response.status}).`);
-      } else {
-        const jsoRsp = await response.json();
-        const jsData = jsoRsp.data;
-        if (jsData.length == 0) {
-          _error('Não exitem distribuições para esta configuração.');
-        } else {
-          _initialize(jsData);
-        }
-      }
-    }
-   // getDistribution();
-  </script>
-
-
-</body>
-
-</html>

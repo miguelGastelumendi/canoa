@@ -7,5 +7,5 @@ Tarefas
 
       6) Atualizar bootstrap a latest
 
-      B) criar o template para Wizard.html
+
 

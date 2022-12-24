@@ -6,13 +6,13 @@
 {% block wizardInstructions %}Selecione a atividade desejada e logo confirme clicando no botão [Ok]{% endblock %}
 
 {% block wizardConfig %}
-  <script>
-    const jsBtn = [
-      { caption: 'Criar projeto', href: 'rsp-projectLocation.html' },
-      { caption: 'Consultar projeto existente', href: '' }
-    ];
-    wzdControl.initPage(jsBtn, wzdControl.mode.BUTTONS );
-  </script>
+<script>
+  const jsBtn = [
+    { caption: 'Criar projeto', href: 'rsp-projectLocation.html' },
+    { caption: 'Consultar projeto existente', href: '' }
+  ];
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS });
+</script>
 {% endblock %}
 
 {# eof #}

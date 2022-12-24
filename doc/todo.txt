@@ -57,3 +57,9 @@ b- Logo da tela principal.
 14/12/2022
 
 a-
+
+26/12/2022
+   1. refatorar os wizards para novo template (version 0.7)
+      > A lógica está em `apps\static\assets\js\wizard.js` e esta documentado
+      > O template é `apps\templates\layouts\wizard.tmpl`
+      > Usar  rsp-projectStart.html  como exemplo, iniciar por rsp-goal.html, rsp-relief.html, rsp-mecanization...

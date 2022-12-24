@@ -6,7 +6,10 @@
 {% block content %}
    {% include 'includes/navigation.html' %}
 
-   {# -- version 0.6 2022.12.22--23 Miguel Gastelumendi -- mgd
+   {# Wizard Template
+      version 0.7
+      2022.12.22--24
+      Miguel Gastelumendi -- mgd
       https://jinja.palletsprojects.com/en/3.1.x/templates/
     #}
 
@@ -50,7 +53,7 @@
          <!-- Footer -->
          <div class="wzdFooter">
             <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
-            <button id="idWzdBtnOk" class="wzdBtnNext btn btn-primary" type="button" disabled= "true" onclick="wzdControl.next();">Ok</button>
+            <button id="idWzdBtnOk" class="wzdBtnNext btn btn-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage();">Ok</button>
          </div>
          <!-- Footer end -->
 
