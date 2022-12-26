@@ -45,7 +45,7 @@ def route_callback(endpoint):
     elif endpoint == 'saveProject':
         projectName = args.get('ProjectName')
         if projectName == '':
-            session['_projeto_id'] = 18
+            session['_projeto_id'] = 75
             return "Ok"
         projeto_id=ui_map.saveProject(session['_user_id'],
                                   args.get('ProjectName'),
