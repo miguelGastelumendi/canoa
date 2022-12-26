@@ -1,148 +1,45 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends "layouts/wizard.tmpl" %}
 
-<head>
-  <!-- version 0.998 -->
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+{% block title %}Combinações possíveis para suas escolhas{% endblock %}
 
-  <!-- Primary Meta Tags -->
-  Projeto e Localização
+{% block wizardDescription %}Dados do Projeto e Forma de Localização{% endblock %}
+{% block wizardInstructions %}&nbsp;{% endblock %}
 
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="title" content="Refloresta SP">
-  <meta name="author" content="Equipe `Refloresta SP`">
-  <meta name="description" content="">
+{% block wizardBody %}
 
-  <link rel="icon" type="image/png" sizes="16x16" href="../../static/assets/img/favicon/favicon-16x16.jpg">
-
-  <!-- Fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- CSS -->
-  <link type="text/css" href="../../static/assets/css/pixel.css" rel="stylesheet">
-  <link type="text/css" href="../../static/assets/css/refloresta.css" rel="stylesheet">
-</head>
-
-<body>
-
-  <!-- ===== Start Wizard ===== -->
-  <div style="margin-top: 2%;">
-    <div id="wzdId" class="wzdContainer container">
-      <!-- header -->
-      <div class="wzdHeader">
-        <table>
-          <tr>
-            <td class="wzdLogo"></td>
-            <td>
-              <h6 class="alert-heading">Combinações possíveis para suas escolhas</h6>
-              <div>Selecione a combinação de sua preferência</div>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <!-- end header -->
-
-      <!-- body -->
-      <div id="idWzdBody" class="wzdBody container">
-        <!-- start Accordion -->
-        <div class="accordion" id="acData" style="width: 100%">
-          {% for _, strip in strips.iterrows() %}
-          <div class="accordion-item">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                style="text-align:left; padding-left:6px" data-bs-target="#bdLocation" aria-expanded="true"
-                aria-controls="bdLocation">
-                {{ strip.nomeFaixa }}
-              </button>
-            </h2>
-            <div id="bdLocation" class="accordion-collapse collapse" aria-labelledby="hdLocation"
-              data-bs-parent="#acData">
-              <div class="accordion-body" id="{{ strip.idFaixaTipo }}">
-                <div class="d-grid gap-2">
-                  {% for _, combination in combinations.iterrows() %}
-                    {% if strip.idFaixaTipo == combination.idFaixaTipo %}
-                    <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal"
-                      id="{{ combination.idCombinacao }}" style="text-align:left; padding-left:6px" onclick="showConfirmacao( '' )">
-                      {{ combination.Especies }}<br><b>Financeiro</b><br><b>TIR:</b> {{ "%.4f"|format(combination.TIR)
-                      }}<br>
-                      <b>Pay-back:</b> {{ combination.payback }} anos<br>
-                      <b>Investimento necessário:</b> {{"%.2f"|format(combination.InvNecessario) }} <br>
-                      <b>Valor Total Líquido:</b> {{"%.2f"|format(combination.VTLiquido) }} <br>
-                      <b>Valor Presente Líquido:</b> {{"%.2f"|format(combination.VPLiquido) }} <br>
-                    </button>
-                    {% endif %}
-                  {% endfor %}
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        <!-- end Accordion -->
-      </div>
-      <!-- end body -->
-         <!-- footer -->
-         <div class="wzdFooter">
-          <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
-          <button class="wzdBtnNext btn btn-primary" type="button" onclick="_next();">Ok</button>
-        </div>
-        <!-- end footer -->
-      <!-- end wzdContainer -->
-    </div>
-  </div>
-  <!-- ====== End Wizard ====== -->
-
-  <!-- ===== Start Modals ===== -->
-  <!-- Modal Projeto -->
-  <!-- Modal Combinações -->
-  <div class="modal fade" id="U Uai" tabindex="-1" role="dialog" aria-labelledby="mdlCAR" aria-hidden="true">
-    <div class="modal-dialog modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="h6 modal-title">Informe o CAR do Projeto</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
-        </div>
-        <div class="modal-footer">
-          <button id="okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">Ok</button>
-          <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">Fechar</button>
-        </div>
+<!-- start Accordion -->
+<div class="accordion" id="acData" style="width: 100%">
+  {% for _, strip in strips.items() %}
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#btnFaixa{{ strip.idFaixaTipo }}">
+        Opções da Faixa '{{ strip.nomeFaixa }}'
+      </button>
+    </h2>
+    <div id="btnFaixa{{ strip.idFaixaTipo }}" class="accordion-collapse collapse" data-bs-parent="#acData">
+      <div class="accordion-body" id="body{{ strip.idFaixaTipo }}">
       </div>
     </div>
   </div>
-  <!-- ====== End Modals ====== -->
+  {% endfor %}
+</div>
+<!-- end Accordion -->
+{% endblock wizardBody %}
 
-  <!-- ===== Start Scripts ===== -->
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <script>
-    function showConfirmacao(id) {
-      if (confirm("Confirma a escolha?")) {
-        document.getElementById('wzdId').style.visibility = 'hidden';
-      }
-    }
-  </script>
-
-  <!-- Core -->
-  <script src="/static/assets/vendor/@popperjs/core/dist/umd/popper.min.js"></script>
-  <script src="/static/assets/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="/static/assets/vendor/headroom.js/dist/headroom.min.js"></script>
-
-  <!-- Vendor JS -->
-  <script src="/static/assets/vendor/onscreen/dist/on-screen.umd.min.js"></script>
-  <script src="/static/assets/vendor/jarallax/dist/jarallax.min.js"></script>
-  <script src="/static/assets/vendor/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
-  <script src="/static/assets/vendor/vivus/dist/vivus.min.js"></script>
-  <script src="/static/assets/vendor/vanillajs-datepicker/dist/js/datepicker.min.js"></script>
-
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
-
-  <!-- Pixel JS -->
-  <script src="/static/assets/js/pixel.js"></script>
-  <!-- ====== End Scripts ====== -->
-
-</body>
-
-</html>
+{% block wizardScripts %}
+<script>
+  let jsoData = [];
+  {% for _, combination in combinations.iterrows() %}
+    jsoData.push({
+      body: `body${combination.idFaixaTipo}`,
+      id: "{{ combination.idCombinacao }}",
+      caption: "Combinação {{ combination.idCombinacao }}",
+      text: '{{ combination.Especies }}<br><b>Financeiro</b><br><b>TIR:</b> {{ "%.4f"|format(combination.TIR)}}<br>'+
+            '<b>Pay-back:</b> {{ combination.payback }} anos<br>' +
+            '<b>Investimento necessário:</b> {{"%.2f"|format(combination.InvNecessario) }} <br>' +
+            '<b>Valor Total Líquido:</b> {{"%.2f"|format(combination.VTLiquido) }} <br>' +
+            '<b>Valor Presente Líquido:</b> {{"%.2f"|format(combination.VPLiquido) }} <br>'
+    });
+  {% endfor %}
+</script>
+{% endblock wizardScripts %}
