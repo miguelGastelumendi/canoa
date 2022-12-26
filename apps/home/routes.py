@@ -13,6 +13,7 @@ import apps.home.dbquery as dbquery
 import apps.home.ui_combination as ui_combination
 from flask import session
 from apps.home import helper
+from flask import flash
 
 
 @blueprint.route('/index')
@@ -33,7 +34,10 @@ def route_callback(endpoint):
     latlong = args.get('latlong')
     CAR = args.get('CAR')
     if endpoint == 'updateFormData':
-        idMunicipio = int(args.get('idMunicipio'))
+        try:
+            idMunicipio = int(args.get('idMunicipio'))
+        except:
+            idMunicipio = -1
         return ui_map.getMapFitoMunicipio(callerID,
                                           idMunicipio,
                                           idFito,
@@ -74,8 +78,9 @@ def route_template(template):
             # TODO: number of número de módulos fiscais validation
                 idFinalidade = request.args.get('id')
                 dbquery.executeSQL(f"update ProjetoPreferencias set idFinalidade = {idFinalidade} "
-                                   f"where idProjeto = {session['_projeto_id']}")
+                               f"where idProjeto = {session['_projeto_id']}")
                 render_template("home/" +template, segment=segment)
+
 
             elif segment == 'rsp-relief.html':
                 idModeloPlantio = request.args.get('id')
