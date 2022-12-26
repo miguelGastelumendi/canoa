@@ -1,7 +1,7 @@
 /**
  * @preserve
  * Wizard js
- * version 0.7.5
+ * version 0.7.6
  * 2022.12.22--26
  * Miguel Gastelumendi -- mgd
 */
@@ -185,7 +185,7 @@ const wzdControl = {
     wzdControl.displayMode = jsonConfig.mode;
     wzdControl.fOnNext = jsonConfig.onNext || null;
     wzdControl.nextPageHref = (jsonConfig.nextPage || '').trim();
-    wzdControl.path = (jsonConfig.path || '../../static/assets/img').trim();
+    wzdControl.path = (jsonConfig.path || '../../static/assets/img/wizard/').trim();
     if (!wzdControl.path.endsWith('/')) wzdControl.path += '/';
     wzdControl.display();
     // don't use try catch, if an error occurs, better leave button disabled
