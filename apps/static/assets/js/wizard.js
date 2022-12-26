@@ -1,11 +1,12 @@
 /**
  * @preserve
  * Wizard js
- * version 0.7
- * 2022.12.22--24
+ * version 0.7.5
+ * 2022.12.22--26
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
+/* cSpell:locale en, pt-br */
 
 /**
  * This callback should return true to go
@@ -59,7 +60,6 @@ const wzdControl = {
 
   /** @private */
   display: () => {
-    const sPath = '../../static/assets/img/modelo_plantio/';
     const htmCol = '<div class="col text-center mb-3">';
     let sHtml;
     switch (wzdControl.displayMode) {
@@ -75,12 +75,17 @@ const wzdControl = {
         });
         break;
       case wzdControl.mode.IMAGES:
-        sHtml = /* htmlRow */ '<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">';
+        const w = wzdControl.jsoData.length;
+        const sCols = 'row-cols-1' +
+              (((w > 1) ? ' row-cols-sm-2' : '')) +
+              (((w > 2) && (w & 1)) ? ' row-cols-md-3' : '') +  // >2 && odd
+              (((w > 3) ? ' row-cols-lg-4' : ''));
+        sHtml = /* htmlRow */ `<div class="row ${sCols}">`;
         wzdControl.jsoData.forEach((itm, i) => {
           let onClick = `onclick="wzdControl.selectItem(${i})`;
           sHtml += htmCol + // <htmCol>
             `<button id=${wzdControl.getBtnId(i)} class="mb-2 btn btn-${(i == wzdControl.selectedItemIx) ? 'warning' : 'info'} bg-gradient" type="button" style="height:4.2em; width:100%" ${onClick}">${itm.caption}</button>` +
-            `<a ${onClick}"> <img src="${sPath}${itm.fileName}.png" alt="${itm.fileName ? itm.fileName : 'Imagem não disponível'}"></a>` +
+            `<a ${onClick}"> <img src="${wzdControl.path}${itm.fileName}" alt="${itm.fileName ? itm.fileName : 'Imagem não disponível'}"></a>` +
             '</div>'; /* </htmCol>  */
         });
         break;
@@ -159,7 +164,7 @@ const wzdControl = {
    * @property {string} caption display text
    * @property {number} id item`s ID, if informed, it is sent as a parameter
    * @property {string} href address of the next page (if all items have the same one, use 'nextPage')
-   * @property {string} fileName image file name
+   * @property {string} fileName image file name and extension
    */
 
   /**
@@ -167,7 +172,8 @@ const wzdControl = {
    * @property {Array<wzdItem>} data array of json items
    * @property {number} mode see wzdControl.mode
    * @property {fOnNext?} onNext callback on Next button
-   * @property {string} nextPage address of next page
+   * @property {string?} nextPage address of next page
+   * @property {string?} path to wzdItem.fileName
    */
   /**
    * Initialize wizard's page
@@ -178,8 +184,11 @@ const wzdControl = {
     wzdControl.jsoData = jsonConfig.data || [];
     wzdControl.displayMode = jsonConfig.mode;
     wzdControl.fOnNext = jsonConfig.onNext || null;
-    wzdControl.nextPageHref = jsonConfig.nextPage || '';
+    wzdControl.nextPageHref = (jsonConfig.nextPage || '').trim();
+    wzdControl.path = (jsonConfig.path || '../../static/assets/img').trim();
+    if (!wzdControl.path.endsWith('/')) wzdControl.path += '/';
     wzdControl.display();
+    // don't use try catch, if an error occurs, better leave button disabled
     wzdControl.ge('idWzdBtnOk').disabled = false;
   },
 
