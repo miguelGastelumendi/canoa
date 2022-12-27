@@ -11,6 +11,7 @@ import apps.home.ui_map as ui_map
 import apps.home.ui_plantdistribution as ui_plantdistribution
 import apps.home.dbquery as dbquery
 import apps.home.ui_combination as ui_combination
+import apps.home.ui_projectData as ui_projectData
 from flask import session
 from apps.home import helper
 
@@ -93,7 +94,6 @@ def route_template(template):
                                    f"where idProjeto = {session['_projeto_id']}")
 
             elif segment == 'rsp-combinations.html':
-
                 idMecanizacaoNivel = request.args.get('id')
                 dbquery.executeSQL(f"update ProjetoPreferencias set idMecanizacaoNivel = {idMecanizacaoNivel} "
                                    f"where idProjeto = {session['_projeto_id']}")
@@ -102,6 +102,12 @@ def route_template(template):
                 return render_template("home/" + template,
                                        strips=strips,
                                        combinations=combinations)
+
+            elif segment == 'rsp-projectData.html':
+                ui_projectData.updateProjectData(request.args.get('idFaixaTipo'),
+                                                 request.args.get('idCombinacao'))
+                projectData = ui_projectData.getProjectData(session['_projeto_id'])
+                return render_template("home/" + template, projectData)
 
         return render_template("home/" + template, segment=helper.get_segment(template))
     except TemplateNotFound:
