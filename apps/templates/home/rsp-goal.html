@@ -1,6 +1,6 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block title %}Finalidade{% endblock %}
+{% block title %}Projetos{% endblock %}
 
 {% block wizardDescription %}Finalidade{% endblock %}
 {% block wizardInstructions %}Selecione a atividade segundo os critérios{% endblock %}
@@ -8,11 +8,11 @@
 {% block wizardConfig %}
 <script>
   const jsBtn = [
-    { caption: 'Área de Preservação Permanente', href: 'rsp-plantDistribution.html?id=3' },
-    { caption: 'Reserva Legal', href: 'rsp-plantDistribution.html?id=1' },
-    { caption: 'Área de uso alternativo do solo', href: 'rsp-plantDistribution.html?id=2' }
+    { caption: 'Área de Preservação Permanente', id: 3 },
+    { caption: 'Reserva Legal', id: 1 },
+    { caption: 'Área de uso alternativo do solo', id: 2 }
   ];
-  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS });
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-plantDistribution.html' });
 </script>
 {% endblock %}
 
