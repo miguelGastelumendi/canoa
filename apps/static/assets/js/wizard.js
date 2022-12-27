@@ -1,8 +1,8 @@
 /**
  * @preserve
  * Wizard js
- * version 0.7.6
- * 2022.12.22--26
+ * version 1.0.0
+ * 2022.12.22--27
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -16,6 +16,7 @@
 
 /**
  * @typedef {Object} wzdControl
+ * @property {Function} initPage
  * @property {Function} messageInfo
  * @property {Function} messageError
  * :
@@ -23,17 +24,32 @@
 */
 
 const wzdControl = {
+  multiSelect: false,
   selectedItemIx: -1,
   nextPageHref: '',  // Wizard page has ony one target
   displayMode: 0,
+  /** @type {Array<Object>}*/
+  groups: [],
   /** @type {Array<wzdItem>} */
   jsoData: [],
   /** @type {fOnNext?} */
   fOnNext: null,
   ge: (/** @type {string} */ sId) => /** @type{HTMLElement} */(document.getElementById(sId)),
   getBtn: (/** @type {number} */ ix) => wzdControl.ge(wzdControl.getBtnId(ix)),
-  getBtnId: (/** @type {number} */ ix) => `btn${ix}`,
-  setBody: (/** @type {string} */ sBody) => wzdControl.ge('idWzdBody').innerHTML = '' + sBody,
+  getBtnId: (/** @type {number} */ ix) => `wzdBtn${ix}`,
+  setBody: (/** @type {string} */ sId, /** @type {string} */ sBody) => wzdControl.ge(sId).innerHTML = '' + sBody,
+  getColClasses: (/** @type {string} */ sBody) => {
+    const w = wzdControl.jsoData.filter(itm => (itm.body == sBody)).length;
+    const sCols = 'row-cols-1' +
+      (((w > 1) ? ' row-cols-sm-2' : '')) +
+      (((w > 2) && (w & 1)) ? ' row-cols-md-3' : '') +  // ()> 2 && odd)
+      (((w > 3) ? ' row-cols-lg-4' : ''));
+    return sCols;
+  },
+  getGroupItemByIx: (/** @type {number} */ ix) => {
+    const itm = wzdControl.jsoData[ix];
+    return wzdControl.groups.find(grp => grp.bodyId == itm.body);
+  },
 
   //@ts-ignore mdlControl is defined on modal.js
   modalReady: () => (typeof mdlControl == 'object'),
@@ -45,13 +61,21 @@ const wzdControl = {
 
   /** @private */
   selectItem: (/** @type {number} */ ix) => {
-    if (wzdControl.selectedItemIx == ix) { return; }
+    let iLastSelectedIx;
+    if (wzdControl.multiSelect) {
+      const grp = wzdControl.getGroupItemByIx(ix);
+      iLastSelectedIx = grp.selected;
+    } else {
+      iLastSelectedIx = wzdControl.selectedItemIx;
+    }
+
+    if (iLastSelectedIx == ix) { return; }
     wzdControl.showSelected(ix);
-    let eleBtn = wzdControl.getBtn(ix)
+    let eleBtn = wzdControl.getBtn(ix);
     eleBtn.classList.remove('btn-info');
     eleBtn.classList.add('btn-warning');
-    if (wzdControl.selectedItemIx >= 0) {
-      eleBtn = wzdControl.getBtn(wzdControl.selectedItemIx);
+    if (iLastSelectedIx >= 0) {
+      eleBtn = wzdControl.getBtn(iLastSelectedIx);
       eleBtn.classList.remove('btn-warning');
       eleBtn.classList.add('btn-info');
     }
@@ -60,40 +84,49 @@ const wzdControl = {
 
   /** @private */
   display: () => {
-    const htmCol = '<div class="col text-center mb-3">';
-    let sHtml;
+    const aBody = []; // array with the IDs of each body (parent's ids)
+    const aHtml = []; // HTML for each parent body
+    wzdControl.jsoData.forEach(itm => { if (!itm.body) itm.body = 'idWzdBody' }); // default body's ID
+    const _getBodyId = (sId, sOpenDiv) => {
+      let id = aBody.indexOf(sId);
+      if (id < 0) {
+        id = aBody.push(sId) - 1;
+        aHtml.push(sOpenDiv);
+        wzdControl.groups.push({ bodyId: sId, selected: -1 });
+      }
+      return id;
+    }
+    let idBody;
+    let sAlign = 'text-' + wzdControl.alignText;
     switch (wzdControl.displayMode) {
       case wzdControl.mode.CUSTOM:
         return;
       case wzdControl.mode.BUTTONS:
-        sHtml = '<div class="d-grid gap-2">';
-        wzdControl.jsoData.forEach((itm, i) => {
-          sHtml +=
-            `<button id="${wzdControl.getBtnId(i)}" class="btn btn-info bg-gradient mx-5" type="button" onclick="wzdControl.selectItem(${i})">` +
-            itm.caption +
+        wzdControl.jsoData.forEach((itm, ix) => {
+          idBody = _getBodyId(itm.body, '<div class="d-grid gap-2">');
+          aHtml[idBody] +=
+            `<button id="${wzdControl.getBtnId(ix)}" class="btn btn-info bg-gradient ${sAlign} mx-5" type="button" onclick="wzdControl.selectItem(${ix})">` +
+            (itm.text ? itm.text : itm.caption) +
             '</button>';
         });
         break;
       case wzdControl.mode.IMAGES:
-        const w = wzdControl.jsoData.length;
-        const sCols = 'row-cols-1' +
-              (((w > 1) ? ' row-cols-sm-2' : '')) +
-              (((w > 2) && (w & 1)) ? ' row-cols-md-3' : '') +  // >2 && odd
-              (((w > 3) ? ' row-cols-lg-4' : ''));
-        sHtml = /* htmlRow */ `<div class="row ${sCols}">`;
-        wzdControl.jsoData.forEach((itm, i) => {
-          let onClick = `onclick="wzdControl.selectItem(${i})`;
-          sHtml += htmCol + // <htmCol>
-            `<button id=${wzdControl.getBtnId(i)} class="mb-2 btn btn-${(i == wzdControl.selectedItemIx) ? 'warning' : 'info'} bg-gradient" type="button" style="height:4.2em; width:100%" ${onClick}">${itm.caption}</button>` +
+        wzdControl.jsoData.forEach((itm, ix) => {
+          let onClick = `onclick="wzdControl.selectItem(${ix})`;
+          idBody = _getBodyId(itm.body, `<div class="row ${wzdControl.getColClasses(itm.body)}">`);
+          aHtml[idBody] +=
+            `<div class="col ${sAlign} mb-3">` +
+            `<button id=${wzdControl.getBtnId(ix)} class="mb-2 btn btn-info bg-gradient" type="button" style="height:4.2em; width:100%" ${onClick}">` +
+            (itm.text ? itm.text : itm.caption) +
+            '</button>' +
             `<a ${onClick}"> <img src="${wzdControl.path}${itm.fileName}" alt="${itm.fileName ? itm.fileName : 'Imagem não disponível'}"></a>` +
-            '</div>'; /* </htmCol>  */
+            '</div>';
         });
         break;
       default:
-        sHtml = '<div>';
+        wzdControl.jsoData.forEach(itm => { _getBodyId(itm.body, '<div>'); });
     }
-    sHtml += '</div>'; // htmlRow
-    wzdControl.setBody(sHtml)
+    aBody.forEach((sBodyId, i) => wzdControl.setBody(sBodyId, aHtml[i] + '</div>'));
   },
 
   /** @private */
@@ -104,6 +137,8 @@ const wzdControl = {
       // Not this time 8-|
     } else if (wzdControl.displayMode == wzdControl.mode.CUSTOM) {
       sHref = wzdControl.nextPageHref;
+    } else if (wzdControl.multiSelect) {
+      wzdControl.messageInfo('A opção multiple seleção não está implementada.')
     } else if (wzdControl.selectedItemIx < 0) {
       wzdControl.messageInfo('Por favor, selecione uma das opções.')
     } else if ((jsBtn = wzdControl.jsoData[wzdControl.selectedItemIx]).href) {
@@ -161,11 +196,13 @@ const wzdControl = {
 
   /**
    * @typedef {Object} wzdItem
-   * @property {string} caption display text
+   * @property {string} body parent element of the buttons
+   * @property {string} text buttons text, if nul/undef caption is used
+   * @property {string} caption display on selection
    * @property {number} id item`s ID, if informed, it is sent as a parameter
    * @property {string} href address of the next page (if all items have the same one, use 'nextPage')
    * @property {string} fileName image file name and extension
-   */
+  */
 
   /**
    * @typedef {Object} wzdConfig
@@ -174,7 +211,9 @@ const wzdControl = {
    * @property {fOnNext?} onNext callback on Next button
    * @property {string?} nextPage address of next page
    * @property {string?} path to wzdItem.fileName
-   */
+   * @property {string?} [alignText = 'center'] buttons text alignment [center|start|end]
+    * @property {boolean?} [multiSelect=false] allow selected item per group
+    */
   /**
    * Initialize wizard's page
    * @param {wzdConfig} jsonConfig
@@ -186,6 +225,8 @@ const wzdControl = {
     wzdControl.fOnNext = jsonConfig.onNext || null;
     wzdControl.nextPageHref = (jsonConfig.nextPage || '').trim();
     wzdControl.path = (jsonConfig.path || '../../static/assets/img/wizard/').trim();
+    wzdControl.multiSelect = jsonConfig.multiSelect || false;
+    wzdControl.alignText = jsonConfig.alignText || 'center';
     if (!wzdControl.path.endsWith('/')) wzdControl.path += '/';
     wzdControl.display();
     // don't use try catch, if an error occurs, better leave button disabled
