@@ -2,11 +2,10 @@
 
 {% block title %}Combinações possíveis para suas escolhas{% endblock %}
 
-{% block wizardDescription %}Dados do Projeto e Forma de Localização{% endblock %}
-{% block wizardInstructions %}&nbsp;{% endblock %}
+{% block wizardDescription %}Estimativas financeiras para cada combinação possível{% endblock %}
+{% block wizardInstructions %}Selecione a combinação da sua preferência{% endblock %}
 
 {% block wizardBody %}
-
 <!-- start Accordion -->
 <div class="accordion" id="acData" style="width: 100%">
   {% for _, strip in strips.iterrows() %}
@@ -29,13 +28,13 @@
 {% block wizardScripts %}
 <script>
   let jsoData = [];
-  // Mauro: aqui seria bacana que isto estives num fecth
+  // Mauro: aqui seria bacana que isto estives num fetch
+  //      removi sem permissão delas : "<b>Financeiro</b><br>" e coloquei <hr>
   {% for _, combination in combinations.iterrows() %}
     jsoData.push({
       body: "body{{ combination.idFaixaTipo }}",
       id: "{{ combination.idCombinacao }}",
       caption: "Combinação {{ combination.idCombinacao }}",
-      //  Mauro:  removi sem permissão delas : "<b>Financeiro</b><br>" e coloquei <hr>
       text: '<div class="text-center">{{ combination.Especies }}</div><hr><b>TIR:</b> {{ "%.4f"|format(combination.TIR) }}<br>'+
             '<b>Pay-back:</b> {{ combination.payback }} anos<br>' +
             '<b>Investimento necessário:</b> {{ "%.2f"|format(combination.InvNecessario) }} <br>' +
