@@ -1,112 +1,18 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends "layouts/wizard.tmpl" %}
 
-<head>
+{% block title %}Projetos{% endblock %}
 
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+{% block wizardDescription %}Plantação{% endblock %}
+{% block wizardInstructions %}Selecione a forma em que será plantado{% endblock %}
 
-  <!-- Primary Meta Tags -->
-  <!-- {% block title %} &mdash Distribuição de Plantio {% endblock %} -->
+{% block wizardConfig %}
+<script>
+  const jsBtn = [
+    { caption: '+ Manual', id: 1 },
+    { caption: '+ Mecanizada', id: 2 }
+  ];
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-combinations.html' });
+</script>
+{% endblock %}
 
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="title" content="Refloresta SP &mdash Distribuição de Plantio">
-  <meta name="author" content="Equipe `Refloresta SP`">
-  <meta name="description" content="">
-
-  <link rel="icon" type="image/png" sizes="16x16" href="../../static/assets/img/favicon/favicon-16x16.jpg">
-
-  <!-- Fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-    crossorigin="anonymous" referrerpolicy="no-referrer">
-
-  <!-- CSS -->
-  <link type="text/css" href="../../static/assets/css/pixel.css" rel="stylesheet">
-  <link type="text/css" href="../../static/assets/css/refloresta.css" rel="stylesheet">
-  <script>
-    let iSelectedIx = -1;
-    let iSelectedId = -1;
-
-    const _next = () => {
-      if (iSelectedId < 0) {
-        alert('Favor selecione uma das opções.');
-      } else { // if (confirm('Confirma a seleção?'))
-        window.location.href = `./rsp-combinations.html?id=${iSelectedId}`;
-      }
-    }
-    const _error = (sMsg) =>{
-
-
-    }
-    const _select = (ix, id) => {
-      if (iSelectedIx != ix) {
-        const eleUsDisplay = document.getElementById('idWzdUsDisplay');
-        for (let i = 1; i < 3; i++) {
-          let eleButton = document.getElementById(`btn${i}`);
-          if (i == iSelectedIx) {
-            eleButton.classList.remove('btn-warning');
-            eleButton.classList.add('btn-info');
-
-          } else if (i == ix) {
-            eleButton.classList.remove('btn-info');
-            eleButton.classList.add('btn-warning');
-            eleUsDisplay.innerHTML = `Selecionado: <b>${eleButton.innerText}</b>`;
-            eleUsDisplay.classList.remove('visually-hidden');
-          }
-        }
-        iSelectedIx = ix;
-        iSelectedId = id;
-      }
-    }
-  </script>
-</head>
-
-<body>
-  <!-- version 0.4 2022.12.20 mgd -->
-  <div style="margin-top: 2%">
-    <div class="wzdContainer container">
-
-      <!-- header -->
-      <div class="wzdHeader">
-        <table>
-          <tr>
-            <td class="wzdLogo"></td>
-            <td>
-              <h6 class="alert-heading">Distribuição de Plantio</h6>
-              <div>Selecione a distribuição segundo o tipo de faixas</div>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <!-- end header -->
-
-      <!-- =========    Usar de Aqui ======= -->
-      <!-- body -->
-      <div id="idWzdBody" class="wzdBody container">
-        <!-- <div id="grdModelos" class="container"> -->
-        <div class="d-grid gap-2">
-          <button id="btn1" class="btn btn-info bg-gradient mx-5" type="button" onclick="_select(1, 1)">
-            + Manual
-          </button>
-          <button id="btn2" class="btn btn-info bg-gradient mx-5" type="button" onclick="_select(2, 2)">
-            + Mecanizada
-          </button>
-        </div>
-        <!-- </div> -->
-      </div>
-      <!-- end body -->
-      <!-- =========    Até de Aqui ======= -->
-
-
-      <!-- Next button -->
-      <div class="wzdFooter">
-        <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
-        <button class="wzdBtnNext btn btn-primary" type="button" onclick="_next();">Ok</button>
-      </div>
-    </div>
-  </div>
-
-  {% include 'includes/scripts.html' %} {% block javascripts %} {% endblock javascripts %}
-</body>
-
-</html>
+{# eof #}

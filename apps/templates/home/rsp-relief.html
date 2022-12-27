@@ -1,138 +1,21 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends "layouts/wizard.tmpl" %}
 
-<head>
+{% block title %}Projetos{% endblock %}
 
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+{% block wizardDescription %}Distribuição de plantio{% endblock %}
+{% block wizardInstructions %}Selecione o tipo de terreno da sua área{% endblock %}
 
-  <!-- Primary Meta Tags -->
-  <!-- {% block title %} &mdash Distribuição de Plantio {% endblock %} -->
+{% block wizardConfig %}
+<script>
+  const jsBtn = [
+    { caption: 'Terreno Montanhoso', id: 4, fileName: 'wzd-terrenoMontanhoso' },
+    { caption: ' Terreno Ondulado', id: 3, fileName: 'wzd-terrenoOndulado' },
+    { caption: 'Terreno Plano', id: 1, fileName: 'wzd-terrenoPlano'},
+    { caption: 'Terreno Suave Ondulado', id: 2, fileName: 'wzd-terrenoSuaveOndulado'}
 
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="title" content="Refloresta SP &mdash Distribuição de Plantio">
-  <meta name="author" content="Equipe `Refloresta SP`">
-  <meta name="description" content="">
+  ];
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.IMAGES, nextPage: 'rsp-mecanization.html' });
+</script>
+{% endblock %}
 
-  <link rel="icon" type="image/png" sizes="16x16" href="../../static/assets/img/favicon/favicon-16x16.jpg">
-
-  <!-- Fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
-    crossorigin="anonymous" referrerpolicy="no-referrer">
-
-  <!-- CSS -->
-  <link type="text/css" href="../../static/assets/css/pixel.css" rel="stylesheet">
-  <link type="text/css" href="../../static/assets/css/refloresta.css" rel="stylesheet">
-  <script>
-    let iSelectedIx = -1;
-    let iSelectedId = -1;
-
-    const _next = () => {
-      if (iSelectedId < 0) {
-        alert('Favor selecione uma das opções.');
-      } else { // if (confirm('Confirma a seleção?'))
-        window.location.href = `./rsp-mecanization.html?id=${iSelectedId}`;
-      }
-    }
-    const _error = (sMsg) =>{
-
-
-    }
-    const _select = (ix, id) => {
-      if (iSelectedIx != ix) {
-        const eleUsDisplay = document.getElementById('idWzdUsDisplay');
-        for (let i = 1; i < 5; i++) {
-          let eleButton = document.getElementById(`btn${i}`);
-          if (i == iSelectedIx) {
-            eleButton.classList.remove('btn-warning');
-            eleButton.classList.add('btn-info');
-
-          } else if (i == ix) {
-            eleButton.classList.remove('btn-info');
-            eleButton.classList.add('btn-warning');
-            eleUsDisplay.innerHTML = `Selecionado: <b>${eleButton.innerText}</b>`;
-            eleUsDisplay.classList.remove('visually-hidden');
-          }
-        }
-        iSelectedIx = ix;
-        iSelectedId = id;
-      }
-    }
-  </script>
-</head>
-
-<body>
-
-  <!-- ==== Wizard ==== -->
-  <div style="margin-top: 2%">
-    <!-- ==== Container ==== -->
-    <div class="wzdContainer container">
-
-      <!-- Header -->
-      <div class="wzdHeader">
-        <table>
-          <tr>
-            <td class="wzdLogo"></td>
-            <td>
-              <h6 class="alert-heading">Distribuição de Plantio</h6>
-              <div>Selecione a distribuição segundo o tipo de faixas</div>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <!-- Header end -->
-
-      <!-- Body -->
-      <div id="idWzdBody" class="wzdBody container">
-
-        <!-- === User Area === -->
-        <div class="row row-cols-1 row-cols-lg-2">
-          <div class="col text-center mb-3">
-            <button id="btn1" class="mb-2 btn btn-info bg-gradient" type="button" style="height:2.6em; width:100%" onclick="_select(1, 4)">
-              Terreno Montanhoso
-            </button>
-            <a onclick="_select(1, 4)"><img src="../../static/assets/img/relevo/wzd-terrenoMontanhoso.png" alt="Montanhoso"></a>
-          </div>
-          <div class="col text-center mb-3">
-            <button id="btn2" class="mb-2 btn btn-info bg-gradient" type="button" style="height:2.6em; width:100%" onclick="_select(2, 3)">
-              Terreno Ondulado
-            </button>
-            <a onclick="_select(2, 3)"><img src="../../static/assets/img/relevo/wzd-terrenoOndulado.png" alt="Montanhoso"></a>
-
-          </div>
-          <div class="col text-center mb-3">
-            <button id="btn3" class="mb-2 btn btn-info bg-gradient" type="button" style="height:2.6em; width:100%" onclick="_select(3, 1)">
-              Terreno Plano
-            </button>
-            <a onclick="_select(3, 1)"><img src="../../static/assets/img/relevo/wzd-terrenoPlano.png"></a>
-          </div>
-          <div class="col text-center mb-3">
-            <button id="btn4" class="mb-2 btn btn-info bg-gradient" type="button" style="height:2.6em; width:100%" onclick="_select(4, 2)">
-              Terreno Suave Ondulado
-            </button>
-            <a onclick="_select(4, 2)"><img src="../../static/assets/img/relevo/wzd-terrenoSuaveOndulado.png"></a>
-          </div>
-        </div>
-        <!-- === User Area end === -->
-
-      </div>
-      <!-- Body end -->
-
-      <!-- Footer -->
-      <div class="wzdFooter">
-        <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
-        <button id="idWzdBtnOk" class="wzdBtnNext btn btn-primary" type="button" onclick="_next();">Ok</button>
-      </div>
-      <!-- Footer end -->
-
-    </div>
-    <!-- ==== Container end ==== -->
-  </div>
-  <!-- ==== Wizard end ==== -->
-
-  {% include 'includes/scripts.html' %}
-  {% block javascripts %} {% endblock javascripts %}
-
-</body>
-
-</html>
+{# eof #}
