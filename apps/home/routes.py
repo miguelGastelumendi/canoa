@@ -13,7 +13,6 @@ import apps.home.dbquery as dbquery
 import apps.home.ui_combination as ui_combination
 from flask import session
 from apps.home import helper
-from flask import flash
 
 
 @blueprint.route('/index')
@@ -46,7 +45,7 @@ def route_callback(endpoint):
     elif endpoint == 'saveProject':
         projectName = args.get('ProjectName')
         if projectName == '':
-            session['_projeto_id'] = 18
+            session['_projeto_id'] = 75
             return "Ok"
         projeto_id=ui_map.saveProject(session['_user_id'],
                                   args.get('ProjectName'),

@@ -21,4 +21,5 @@ def getCombinations(idProjeto):
         f"inner join FaixaTipo ft on ft.id =  mf2.idFaixaTipo "
         f"and pp.idProjeto = {idProjeto} "
         f"order by idFaixaTipo,TIR DESC ")
-    return df, df.nomeFaixa.unique().tolist()
+    uniques = df.groupby(['nomeFaixa','idFaixaTipo'], as_index=False).count()
+    return df, uniques[['nomeFaixa','idFaixaTipo']]
