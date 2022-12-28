@@ -8,19 +8,24 @@
 {% block wizardBody %}
 <!-- start Accordion -->
 <div class="accordion" id="acData" style="width: 100%">
-  {% for _, strip in strips.iterrows() %}
-  <div class="accordion-item">
-    <h2 class="accordion-header">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#btnFaixa{{ strip.idFaixaTipo }}">
-        Opções da Faixa '{{ strip.nomeFaixa }}'
-      </button>
-    </h2>
-    <div id="btnFaixa{{ strip.idFaixaTipo }}" class="accordion-collapse collapse" data-bs-parent="#acData">
-      <div class="accordion-body" id="body{{ strip.idFaixaTipo }}">
+
+  {% if strip is defined and strip|length %}
+    {% for _, strip in strips.iterrows() %}
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#btnFaixa{{ strip.idFaixaTipo }}">
+          Opções da Faixa '{{ strip.nomeFaixa }}'
+        </button>
+      </h2>
+      <div id="btnFaixa{{ strip.idFaixaTipo }}" class="accordion-collapse collapse" data-bs-parent="#acData">
+        <div class="accordion-body" id="body{{ strip.idFaixaTipo }}">
+        </div>
       </div>
     </div>
-  </div>
-  {% endfor %}
+    {% endfor %}
+  {% else %}
+<!--    "Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP."-->
+  {% endif %}
 </div>
 <!-- end Accordion -->
 {% endblock wizardBody %}
@@ -42,6 +47,6 @@
             '<b>Valor Presente Líquido:</b> {{ "%.2f"|format(combination.VPLiquido) }} <br>'
     });
   {% endfor %}
-  wzdControl.initPage( { data: jsoData, nextPage:'endProject.html', alignText: 'start', mode: wzdControl.mode.BUTTONS } );
+  wzdControl.initPage( { data: jsoData, nextPage:'rsp-endProject.html', alignText: 'start', mode: wzdControl.mode.BUTTONS } );
 </script>
 {% endblock wizardScripts %}
