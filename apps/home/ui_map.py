@@ -5,6 +5,7 @@ import numpy as np
 import apps.home.dbquery as dbquery
 import apps.config as config
 
+
 def getGJson(centroid_extent_polytype, features):
     if centroid_extent_polytype[3] == 'MultiPolygon':
         for feature in features:
@@ -14,16 +15,19 @@ def getGJson(centroid_extent_polytype, features):
              'features': features}
     centroid = {"lat": centroid_extent_polytype[0], "lon": centroid_extent_polytype[1]}
     if centroid_extent_polytype[2] is not None:
-        extent = centroid_extent_polytype[2].replace('(', '').replace(',','').split(' ')
-        max_bound = max(abs(float(extent[1]) - float(extent[3])), abs(float(extent[2]) - float(extent[6]))) * 111 # km/degree
+        extent = centroid_extent_polytype[2].replace('(', '').replace(',', '').split(' ')
+        max_bound = max(abs(float(extent[1]) - float(extent[3])),
+                        abs(float(extent[2]) - float(extent[6]))) * 111  # km/degree
         zoom = 12.0 - np.log(max_bound)
     else:
         zoom = 12.0
     return gjson, centroid, zoom
 
+
 def getListaMunicipios():
     return dbquery.getDictResultset("select id, NomeMunicipio from Municipio "
                                     "order by NomeMunicipio")
+
 
 def getListaFito(idMunicipio: int):
     return dbquery.getDictResultset(
@@ -34,10 +38,11 @@ def getListaFito(idMunicipio: int):
         f"where {' 0=1' if idMunicipio is None else f'idMunicipio = {idMunicipio}'} "
         f"order by 2")
 
-def getCAR(CAR : str):
+
+def getCAR(CAR: str):
     df = dbquery.getDataframeResultset(f"select OBJECTID as id, CAR from CAR "
-                                  f"where CAR = '{CAR}'")
-    features=[json.loads(x) for x in dbquery.getListResultset(
+                                       f"where CAR = '{CAR}'")
+    features = [json.loads(x) for x in dbquery.getListResultset(
         f"select geomtext from CAR where CAR = '{CAR}'")]
     centroid_extent_polytype = dbquery.executeSQL(
         f"select Centroid.STY as Longitude, Centroid.STX as Latitude, extent, geometrytype from "
@@ -47,12 +52,13 @@ def getCAR(CAR : str):
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
     return df, gjson, centroid, zoom
 
+
 def getMunicipio(idMunicipio: int):
     df = dbquery.getDataframeResultset(
         f"select id,NomeMunicipio "
         f"from Municipio "
         f"where id = {idMunicipio}")
-    features=[json.loads(x) for x in dbquery.getListResultset(
+    features = [json.loads(x) for x in dbquery.getListResultset(
         f"select geomText from Municipio where id = {idMunicipio}")]
     centroid_extent_polytype = dbquery.executeSQL(
         f"select Centroid.STY as Longitude, Centroid.STX as Latitude, extent, geometrytype from "
@@ -61,6 +67,7 @@ def getMunicipio(idMunicipio: int):
         f"from Municipio where id = {idMunicipio}) a").first()
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
     return df, gjson, centroid, zoom
+
 
 def getMapMunicipio(idMunicipio: int):
     municipio, geo, centroid, zoom = getMunicipio(idMunicipio)
@@ -78,6 +85,7 @@ def getMapMunicipio(idMunicipio: int):
                             'Fito': json.dumps(getListaFito(idMunicipio), cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
 
+
 def getSP():
     df = dbquery.getDataframeResultset(
         f"select id,Nome "
@@ -91,29 +99,31 @@ def getSP():
         f"from SP) a").first()
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
     return df, gjson, centroid, zoom
+
+
 def getFitoMunicipio(callerID: str, idMunicipio:
-                     int, idFito: int, latlong: str, CAR: str):
+int, idFito: int, latlong: str, CAR: str):
     if CAR != '':
         whereFito = (f"where mf.id in (select mf.id from car c \n"
                      f"inner join MunicipioFito mf \n"
                      f"on c.idMunicipio = mf.idMunicipio \n"
                      f"where car = '{CAR}' \n"
                      f"and c.geom.STIntersects(mf.geom) = 1)")
-        area=f"{dbquery.getValueFromDb(f'select area from CAR where car = {CAR}'):.4f}".replace('.',',')
+        area = f"{dbquery.getValueFromDb(f'select area from CAR where car = {CAR}'):.4f}".replace('.', ',')
     elif latlong != '':
         lat, long = latlong.split(' ')
-        lat=lat.replace(',','.').replace('S','')
-        long=long.replace(',','.').replace('S','')
+        lat = lat.replace(',', '.').replace('S', '')
+        long = long.replace(',', '.').replace('S', '')
         if not lat.startswith('-'):
-            lat='-'+lat
+            lat = '-' + lat
         if not long.startswith('-'):
-            long='-'+long
-        whereFito=f"where mf.geom.STIntersects((geometry::STPointFromText('POINT ({long} {lat})', 4326)))=1"
-        area=''
+            long = '-' + long
+        whereFito = f"where mf.geom.STIntersects((geometry::STPointFromText('POINT ({long} {lat})', 4326)))=1"
+        area = ''
     else:
         whereFito = (f"where mf.idMunicipio = {idMunicipio} " +
-                    (f"and mf.id = {idFito}" if idFito > -1 else ""))
-        area=''
+                     (f"and mf.id = {idFito}" if idFito > -1 else ""))
+        area = ''
     fito = dbquery.getDataframeResultset(
         f"select mf.id,concat(m.nomeMunicipio,'/',descFitoFisionomia) as label,ff.color "
         f"from MunicipioFito mf "
@@ -122,7 +132,7 @@ def getFitoMunicipio(callerID: str, idMunicipio:
         f"inner join FitoFisionomia ff "
         f"on mf.idFitoFisionomia = ff.id "
         f"{whereFito} ")
-    features=[json.loads(x) for x in dbquery.getListResultset(
+    features = [json.loads(x) for x in dbquery.getListResultset(
         f"select geomtext from MunicipioFito mf {whereFito}")]
     centroid_extent_polytype = dbquery.executeSQL(
         f"select Centroid.STY as Longitude, Centroid.STX as Latitude, extent, geometrytype from "
@@ -132,6 +142,7 @@ def getFitoMunicipio(callerID: str, idMunicipio:
     color = fito.set_index('id').to_dict()['color']
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
     return fito, gjson, centroid, zoom, color, area
+
 
 def getMapFitoMunicipio(callerID: str,
                         idMunicipio: int,
@@ -149,12 +160,13 @@ def getMapFitoMunicipio(callerID: str,
                                mapbox_style="carto-positron", zoom=zoom,
                                opacity=0.4)
     fig.update_layout(
-         showlegend=False)
+        showlegend=False)
 
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder),
                             'FitoMunicipio': json.dumps(getListaFito(idMunicipio), cls=plotly.utils.PlotlyJSONEncoder),
                             'Area': area})
     return graphJSON
+
 
 def getMapCAR(pCAR: str = ''):
     CAR, geo, centroid, zoom = getCAR(pCAR)
@@ -171,6 +183,7 @@ def getMapCAR(pCAR: str = ''):
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
 
+
 def getMapSP():
     SP, geo, centroid, zoom = getSP()
     fig = px.choropleth_mapbox(SP, geojson=geo,
@@ -182,6 +195,7 @@ def getMapSP():
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
 
+
 def saveProject(userId: str,
                 projectName: str,
                 projectArea,
@@ -189,13 +203,9 @@ def saveProject(userId: str,
                 idFito: int,
                 latlong: str,
                 CAR: str):
-    #dbquery.executeSQL("delete from ProjetoPreferencias; delete from Projeto")
+    # dbquery.executeSQL("delete from ProjetoPreferencias; delete from Projeto")
 
-    dbquery.executeSQL(f"INSERT INTO Projeto(idUser, descProjeto, CAR, dtCriacao, dtAtualizacao) "
-                       f"VALUES ({userId}, '{projectName}', '{CAR}', GETDATE(), GETDATE())")
-    project_id=dbquery.getLastId('Projeto')
-    dbquery.executeSQL(f"INSERT INTO ProjetoPreferencias(idProjeto, idModeloPlantio, idMunicipioFito,  "
-                       f"idOpcaoMadeireira, idTopografia, idMecanizacaoNivel, AreaProjeto,AreaPropriedade, dtAtualizacao) "
-                       f"VALUES({project_id}, null, {idFito}, null, null, null, {projectArea.replace(',','.')}, "
-                       f"{propertyArea.replace(',','.')},{'GETDATE())'}")
+    dbquery.executeSQL(f"INSERT INTO Projeto(idUser, descProjeto, CAR, idMunicipioFito, dtCriacao, dtAtualizacao) "
+                       f"VALUES ({userId}, '{projectName}', '{CAR}', {idFito}, GETDATE(), GETDATE())")
+    project_id = dbquery.getLastId('Projeto')
     return project_id

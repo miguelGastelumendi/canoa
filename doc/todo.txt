@@ -70,3 +70,6 @@ a-
   3. Na tela de Combinações, gerar alerta quando não há nenhuma combinação que atenda o projeto. Não haverá isso, em princípio, massss... (Mauro)
   4. Criar uma ordenação para os ítens da tela Relevo. (Mauro).
   5. Verificar e acertar os labels das telas. (Mauro)
+  6. Comentário do Miguel em Combinações:
+       // Mauro: aqui seria bacana que isto estives num fetch
+       // removi sem permissão delas : "<b>Financeiro</b><br>" e coloquei <hr>

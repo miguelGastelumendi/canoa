@@ -21,11 +21,12 @@ from apps.home import helper
 def index():
     return render_template('home/index.html', segment='index')
 
+
 @blueprint.route('/callback/<endpoint>')
 @login_required
 def route_callback(endpoint):
     if endpoint == 'getDistribution':
-       return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
+        return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
     args = request.args
     callerID = args.get('callerID')
     if callerID == 'mapSP':
@@ -46,17 +47,18 @@ def route_callback(endpoint):
     elif endpoint == 'saveProject':
         projectName = args.get('ProjectName')
         if projectName == '':
-            session['_projeto_id'] = 78
+            session['_projeto_id'] = 93
             return "Ok"
-        projeto_id=ui_map.saveProject(session['_user_id'],
-                                  args.get('ProjectName'),
-                                  args.get('ProjectArea'),
-                                  args.get('PropertyArea'),
-                                  idFito,
-                                  latlong,
-                                  CAR)
+        projeto_id = ui_map.saveProject(session['_user_id'],
+                                        args.get('ProjectName'),
+                                        args.get('ProjectArea'),
+                                        args.get('PropertyArea'),
+                                        idFito,
+                                        latlong,
+                                        CAR)
         session['_projeto_id'] = projeto_id
     return "Ok"
+
 
 @blueprint.route('/<template>')
 @login_required
@@ -71,32 +73,32 @@ def route_template(template):
                 return render_template("home/" + template,
                                        municipios=ui_map.getListaMunicipios()
                                        , fito_municipios=ui_map.getListaFito(None)
-                                       #, map=ui_map.getMapSP()
+                                       # , map=ui_map.getMapSP()
                                        )
 
             elif segment == 'rsp-plantDistribution.html':
-            # TODO: number of número de módulos fiscais validation
+                # TODO: number of número de módulos fiscais validation
                 idFinalidade = request.args.get('id')
-                dbquery.executeSQL(f"update ProjetoPreferencias set idFinalidade = {idFinalidade} "
-                               f"where idProjeto = {session['_projeto_id']}")
-                render_template("home/" +template, segment=segment)
+                dbquery.executeSQL(f"update Projeto set idFinalidade = {idFinalidade} "
+                                   f"where id = {session['_projeto_id']}")
+                render_template("home/" + template, segment=segment)
 
 
             elif segment == 'rsp-relief.html':
                 idModeloPlantio = request.args.get('id')
-                dbquery.executeSQL(f"update ProjetoPreferencias set idModeloPlantio = {idModeloPlantio} "
-                                   f"where idProjeto = {session['_projeto_id']}")
-                render_template("home/" +template, segment=segment)
+                dbquery.executeSQL(f"update Projeto set idModeloPlantio = {idModeloPlantio} "
+                                   f"where id = {session['_projeto_id']}")
+                render_template("home/" + template, segment=segment)
 
             elif segment == "rsp-mecanization.html":
                 idTopografia = request.args.get('id')
-                dbquery.executeSQL(f"update ProjetoPreferencias set idTopografia = {idTopografia} "
-                                   f"where idProjeto = {session['_projeto_id']}")
+                dbquery.executeSQL(f"update Projeto set idTopografia = {idTopografia} "
+                                   f"where id = {session['_projeto_id']}")
 
             elif segment == 'rsp-combinations.html':
                 idMecanizacaoNivel = request.args.get('id')
-                dbquery.executeSQL(f"update ProjetoPreferencias set idMecanizacaoNivel = {idMecanizacaoNivel} "
-                                   f"where idProjeto = {session['_projeto_id']}")
+                dbquery.executeSQL(f"update Projeto set idMecanizacaoNivel = {idMecanizacaoNivel} "
+                                   f"where id = {session['_projeto_id']}")
 
                 combinations, strips = ui_combination.getCombinations(session['_projeto_id'])
                 return render_template("home/" + template,
