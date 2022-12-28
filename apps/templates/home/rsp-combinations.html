@@ -1,6 +1,6 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block title %}Combinações possíveis para suas escolhas{% endblock %}
+{% block title %}Combinações{% endblock %}
 
 {% block wizardDescription %}Estimativas financeiras para cada combinação possível{% endblock %}
 {% block wizardInstructions %}Selecione a combinação da sua preferência{% endblock %}
@@ -22,8 +22,17 @@
         </div>
       </div>
     </div>
+    
     {% endfor %}
   {% else %}
+  <div class="alert-danger">
+    Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP.
+    <script>
+      setTimeout(() =>{
+        mdlControl.messageError(" Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP.")
+      }, 10)
+    </script>
+  </div>
 <!--    "Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP."-->
   {% endif %}
 </div>
@@ -47,6 +56,8 @@
             '<b>Valor Presente Líquido:</b> {{ "%.2f"|format(combination.VPLiquido) }} <br>'
     });
   {% endfor %}
-  wzdControl.initPage( { data: jsoData, nextPage:'rsp-endProject.html', alignText: 'start', mode: wzdControl.mode.BUTTONS } );
+  if(jsoData.length > 0){
+    wzdControl.initPage( { data: jsoData, nextPage:'rsp-endProject.html', alignText: 'start', mode: wzdControl.mode.BUTTONS } );
+  }
 </script>
 {% endblock wizardScripts %}
