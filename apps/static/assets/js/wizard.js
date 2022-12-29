@@ -1,8 +1,8 @@
 /**
  * @preserve
  * Wizard js
- * version 1.0.0
- * 2022.12.22--27
+ * version 1.1.0
+ * 2022.12.22--28
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -21,56 +21,93 @@
  * @property {Function} messageError
  * :
  * :
-*/
+ */
+
+/**
+ * @typedef {Object} wzdItem
+ * @property {string} bodyId parent ID element of the buttons
+ * @property {string} text buttons text, if nul/undef caption is used
+ * @property {string} caption display on selection
+ * @property {number} id item`s ID, if informed, it is sent as a parameter
+ * @property {string} href address of the next page (if all items have the same one, use 'nextPage')
+ * @property {string} fileName image file name and extension
+ */
+
+/**
+ * @typedef {Object} wzdConfig
+ * @property {Array<wzdItem>} data array of json items
+ * @property {number} mode see wzdControl.mode
+ * @property {fOnNext?} onNext callback on Next button
+ * @property {string?} nextPage address of next page
+ * @property {string?} path to wzdItem.fileName
+ * @property {string?} [alignText = 'center'] buttons text alignment [center|start|end]
+ * @property {boolean?} [multiSelect=false] allow selected item per group
+ */
+
+/**
+ * @typedef {Object} groupItem
+ * @property {string} bodyId the ID of the parent element (this is an 'index' to wzdConfig<wzdItem>.bodyId
+ * @property {number} selected If multiSelect: select button ix or -1 : see selectedIx
+ */
 
 const wzdControl = {
   multiSelect: false,
   selectedItemIx: -1,
   nextPageHref: '',  // Wizard page has ony one target
   displayMode: 0,
-  /** @type {Array<Object>}*/
+  /** @type {Array<groupItem>}*/
   groups: [],
   /** @type {Array<wzdItem>} */
   jsoData: [],
   /** @type {fOnNext?} */
   fOnNext: null,
+
   ge: (/** @type {string} */ sId) => /** @type{HTMLElement} */(document.getElementById(sId)),
   getBtn: (/** @type {number} */ ix) => wzdControl.ge(wzdControl.getBtnId(ix)),
   getBtnId: (/** @type {number} */ ix) => `wzdBtn${ix}`,
   setBody: (/** @type {string} */ sId, /** @type {string} */ sBody) => wzdControl.ge(sId).innerHTML = '' + sBody,
-  getColClasses: (/** @type {string} */ sBody) => {
-    const w = wzdControl.jsoData.filter(itm => (itm.body == sBody)).length;
+  getColClasses: (/** @type {string} */ sBodyId) => {
+    const w = wzdControl.jsoData.filter(itm => (itm.bodyId == sBodyId)).length;
     const sCols = 'row-cols-1' +
       (((w > 1) ? ' row-cols-sm-2' : '')) +
       (((w > 2) && (w & 1)) ? ' row-cols-md-3' : '') +  // ()> 2 && odd)
       (((w > 3) ? ' row-cols-lg-4' : ''));
     return sCols;
   },
+  getSelectedCount: () => (wzdControl.multiSelect ? wzdControl.groups.filter(grp => (grp.selected >= 0)).length : ((wzdControl.selectedItemIx < 0) ? 0 : 1)),
+
   getGroupItemByIx: (/** @type {number} */ ix) => {
     const itm = wzdControl.jsoData[ix];
-    return wzdControl.groups.find(grp => grp.bodyId == itm.body);
+    return /** @type {groupItem} */(wzdControl.groups.find(grp => grp.bodyId == itm.bodyId));
   },
 
   //@ts-ignore mdlControl is defined on modal.js
   modalReady: () => (typeof mdlControl == 'object'),
 
   /** @private */
-  showSelected: (/** @type {number} */ ix) => {
-    wzdControl.displaySelected(`Selecionado: <b>${wzdControl.jsoData[ix].caption}</b>`);
+  showSelected: () => {
+    const i = wzdControl.getSelectedCount();
+    let sSelected = `Selecionado${((i == 1) ? '' : 's')}: <b>`;
+    if (wzdControl.multiSelect) {
+      sSelected += wzdControl.groups.filter(grp => grp.selected >= 0).map(grp => wzdControl.jsoData[grp.selected].caption).join(', ');
+    } else {
+      sSelected += wzdControl.jsoData[wzdControl.selectedItemIx].caption;
+    }
+    wzdControl.displaySelected(sSelected + '</b>');
   },
-
   /** @private */
   selectItem: (/** @type {number} */ ix) => {
     let iLastSelectedIx;
+    let grp;
     if (wzdControl.multiSelect) {
-      const grp = wzdControl.getGroupItemByIx(ix);
+      grp = wzdControl.getGroupItemByIx(ix);
       iLastSelectedIx = grp.selected;
     } else {
       iLastSelectedIx = wzdControl.selectedItemIx;
     }
-
     if (iLastSelectedIx == ix) { return; }
-    wzdControl.showSelected(ix);
+
+
     let eleBtn = wzdControl.getBtn(ix);
     eleBtn.classList.remove('btn-info');
     eleBtn.classList.add('btn-warning');
@@ -79,32 +116,39 @@ const wzdControl = {
       eleBtn.classList.remove('btn-warning');
       eleBtn.classList.add('btn-info');
     }
-    wzdControl.selectedItemIx = ix;
+    // save
+    if (wzdControl.multiSelect) {
+      grp.selected = ix;
+    } else {
+      wzdControl.selectedItemIx = ix;
+    }
+    wzdControl.showSelected();
+
   },
 
   /** @private */
   display: () => {
     const aBody = []; // array with the IDs of each body (parent's ids)
     const aHtml = []; // HTML for each parent body
-    wzdControl.jsoData.forEach(itm => { if (!itm.body) itm.body = 'idWzdBody' }); // default body's ID
-    const _getBodyId = (sId, sOpenDiv) => {
-      let id = aBody.indexOf(sId);
+    wzdControl.jsoData.forEach(itm => { if (!itm.bodyId) itm.bodyId = 'idWzdBody' }); // default body's ID
+    const _getBodyIx = (sBodyId, sOpenDiv) => {
+      let id = aBody.indexOf(sBodyId);
       if (id < 0) {
-        id = aBody.push(sId) - 1;
+        id = aBody.push(sBodyId) - 1;
         aHtml.push(sOpenDiv);
-        wzdControl.groups.push({ bodyId: sId, selected: -1 });
+        wzdControl.groups.push({ bodyId: sBodyId, selected: -1 });
       }
       return id;
     }
-    let idBody;
+    let bodyIx;
     let sAlign = 'text-' + wzdControl.alignText;
     switch (wzdControl.displayMode) {
       case wzdControl.mode.CUSTOM:
         return;
       case wzdControl.mode.BUTTONS:
         wzdControl.jsoData.forEach((itm, ix) => {
-          idBody = _getBodyId(itm.body, '<div class="d-grid gap-2">');
-          aHtml[idBody] +=
+          bodyIx = _getBodyIx(itm.bodyId, '<div class="d-grid gap-2">');
+          aHtml[bodyIx] +=
             `<button id="${wzdControl.getBtnId(ix)}" class="btn btn-info bg-gradient ${sAlign} mx-5" type="button" onclick="wzdControl.selectItem(${ix})">` +
             (itm.text ? itm.text : itm.caption) +
             '</button>';
@@ -113,8 +157,8 @@ const wzdControl = {
       case wzdControl.mode.IMAGES:
         wzdControl.jsoData.forEach((itm, ix) => {
           let onClick = `onclick="wzdControl.selectItem(${ix})`;
-          idBody = _getBodyId(itm.body, `<div class="row ${wzdControl.getColClasses(itm.body)}">`);
-          aHtml[idBody] +=
+          bodyIx = _getBodyIx(itm.bodyId, `<div class="row ${wzdControl.getColClasses(itm.bodyId)}">`);
+          aHtml[bodyIx] +=
             `<div class="col ${sAlign} mb-3">` +
             `<button id=${wzdControl.getBtnId(ix)} class="mb-2 btn btn-info bg-gradient" type="button" style="height:4.2em; width:100%" ${onClick}">` +
             (itm.text ? itm.text : itm.caption) +
@@ -124,23 +168,48 @@ const wzdControl = {
         });
         break;
       default:
-        wzdControl.jsoData.forEach(itm => { _getBodyId(itm.body, '<div>'); });
+        wzdControl.jsoData.forEach(itm => { _getBodyIx(itm.bodyId, '<div>'); });
     }
     aBody.forEach((sBodyId, i) => wzdControl.setBody(sBodyId, aHtml[i] + '</div>'));
+  },
+
+  /** @private */
+  selectionReady: (o) => {
+    let i;
+    const k = wzdControl.groups.length;
+    if (!wzdControl.multiSelect) {
+      o.msg = 'Por favor, selecione uma das opções.';
+      return (wzdControl.selectedItemIx >= 0);
+    } else if (!wzdControl.nextPageHref) {
+      o.msg = `Não está definido o próximo passo para seleção múltipla.`;
+    } else if (k == (i = wzdControl.getSelectedCount())) {
+      return true;
+    } else if (k == 1) { // Um grupo somente
+      o.msg = `Por favor, selecione uma das opções do grupo.`;
+    } else {
+      o.msg = `Por favor, selecione uma opção de cada um dos ${k} grupos`;
+      const f = k - i;
+      o.msg += (i == 0) ? '.' : ` (falta${(f == 1) ? ' um' : `m ${f}`}).`;
+    }
+    return false;
   },
 
   /** @private */
   gotoNextPage: () => {
     let sHref = '';
     let jsBtn
+    let o = { msg: '' };
     if (wzdControl.fOnNext && !wzdControl.fOnNext()) {
       // Not this time 8-|
     } else if (wzdControl.displayMode == wzdControl.mode.CUSTOM) {
       sHref = wzdControl.nextPageHref;
+    } else if (wzdControl.jsoData.length == 0) {
+      wzdControl.messageError(`Não exitem items para selecionar.`)
+    } else if (!wzdControl.selectionReady(o)) {
+      wzdControl.messageInfo(o.msg)
     } else if (wzdControl.multiSelect) {
-      wzdControl.messageInfo('A opção multiple seleção não está implementada.')
-    } else if (wzdControl.selectedItemIx < 0) {
-      wzdControl.messageInfo('Por favor, selecione uma das opções.')
+      const sIds = wzdControl.groups.map(grp => wzdControl.jsoData[grp.selected].id).join('-');
+      sHref = `${wzdControl.nextPageHref}?id=${sIds}`;
     } else if ((jsBtn = wzdControl.jsoData[wzdControl.selectedItemIx]).href) {
       sHref = jsBtn.href;
     } else if (!wzdControl.nextPageHref) {
@@ -194,26 +263,6 @@ const wzdControl = {
   */
   mode: { BUTTONS: 1, IMAGES: 2, CUSTOM: 3 },
 
-  /**
-   * @typedef {Object} wzdItem
-   * @property {string} body parent element of the buttons
-   * @property {string} text buttons text, if nul/undef caption is used
-   * @property {string} caption display on selection
-   * @property {number} id item`s ID, if informed, it is sent as a parameter
-   * @property {string} href address of the next page (if all items have the same one, use 'nextPage')
-   * @property {string} fileName image file name and extension
-  */
-
-  /**
-   * @typedef {Object} wzdConfig
-   * @property {Array<wzdItem>} data array of json items
-   * @property {number} mode see wzdControl.mode
-   * @property {fOnNext?} onNext callback on Next button
-   * @property {string?} nextPage address of next page
-   * @property {string?} path to wzdItem.fileName
-   * @property {string?} [alignText = 'center'] buttons text alignment [center|start|end]
-    * @property {boolean?} [multiSelect=false] allow selected item per group
-    */
   /**
    * Initialize wizard's page
    * @param {wzdConfig} jsonConfig
