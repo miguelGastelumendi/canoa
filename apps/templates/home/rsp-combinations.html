@@ -23,6 +23,7 @@
     </div>
 
     {% endfor %}
+</div>
 <!-- end Accordion -->
 {% endblock wizardBody %}
 
@@ -33,9 +34,9 @@
   //      removi sem permissão delas : "<b>Financeiro</b><br>" e coloquei <hr>
   {% for _, combination in combinations.iterrows() %}
   jsoData.push({
-    body: "body{{ combination.idFaixaTipo }}",
+    bodyId: "body{{ combination.idFaixaTipo }}",
     id: "{{ combination.idCombinacao }}",
-    caption: "Combinação {{ combination.idCombinacao }}",
+    caption: "Combinação {{ combination.Especies }}",
     text: '<div class="text-center">{{ combination.Especies }}</div><hr><b>TIR:</b> {{ "%.4f"|format(combination.TIR) }}<br>' +
       '<b>Pay-back:</b> {{ combination.payback }} anos<br>' +
       '<b>Investimento necessário:</b> {{ "%.2f"|format(combination.InvNecessario) }} <br>' +

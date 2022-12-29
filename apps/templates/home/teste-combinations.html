@@ -1,6 +1,6 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block title %}Combinações{% endblock %}
+{% block title %}Combinações possíveis para suas escolhas{% endblock %}
 
 {% block wizardDescription %}Estimativas financeiras para cada combinação possível{% endblock %}
 {% block wizardInstructions %}Selecione a combinação da sua preferência{% endblock %}
@@ -9,31 +9,35 @@
 <!-- start Accordion -->
 <div class="accordion" id="acData" style="width: 100%">
 
+{#  {% if not noData %}#}
+    {% for _, strip in strips.iterrows() %}
     <div class="accordion-item">
       <h2 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#btnFaixa_1">
-          Opções da Faixa Bacana
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#btnFaixa{{ strip.idFaixaTipo }}">
+          Opções da Faixa '{{ strip.nomeFaixa }}'
         </button>
       </h2>
-      <div id="btnFaixa_1" class="accordion-collapse collapse" data-bs-parent="#acData">
-        <div class="accordion-body" id="body1">
+      <div id="btnFaixa{{ strip.idFaixaTipo }}" class="accordion-collapse collapse" data-bs-parent="#acData">
+        <div class="accordion-body" id="body{{ strip.idFaixaTipo }}">
         </div>
       </div>
     </div>
 
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#btnFaixa_2">
-          Opções da Faixa Segunda
-        </button>
-      </h2>
-      <div id="btnFaixa_2" class="accordion-collapse collapse" data-bs-parent="#acData">
-        <div class="accordion-body" id="body2">
-        </div>
-      </div>
-    </div>
+    {% endfor %}
+{#  {% else %}#}
+{##}
+{#  <div class="alert-danger">#}
+{#    Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP.#}
+{#    <script>#}
+{#      window.addEventListener('DOMContentLoaded', () => {#}
+{#        mdlControl.messageError(" Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP.")#}
+{#      })#}
+{#    </script>#}
+{#  </div>#}
+{##}
 
-
+  <!--    "Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP."-->
+{#  {% endif %}#}
 </div>
 <!-- end Accordion -->
 {% endblock wizardBody %}
@@ -41,13 +45,22 @@
 {% block wizardScripts %}
 <script>
   let jsoData = [];
-  jsoData.push({ bodyId: "body1", id: "12", caption: "Combinação 12" });
-  jsoData.push({ bodyId: "body2", id: "22", caption: "Combinação 22" });
-  jsoData.push({ bodyId: "body1", id: "11", caption: "Combinação 11" });
-  jsoData.push({ bodyId: "body2", id: "21", caption: "Combinação 21" });
-  jsoData.push({ bodyId: "body2", id: "24", caption: "Combinação 24" });
-  jsoData.push({ bodyId: "body1", id: "15", caption: "Combinação 15" });
-  wzdControl.initPage( { data: jsoData, nextPage:'rsp-endProject.html', alignText: 'start', multiSelect: true, mode: wzdControl.mode.BUTTONS } );
-
+  // Mauro: aqui seria bacana que isto estives num fetch
+  //      removi sem permissão delas : "<b>Financeiro</b><br>" e coloquei <hr>
+  {% for _, combination in combinations.iterrows() %}
+  jsoData.push({
+    body: "body{{ combination.idFaixaTipo }}",
+    id: "{{ combination.idCombinacao }}",
+    caption: "Combinação {{ combination.idCombinacao }}",
+    text: '<div class="text-center">{{ combination.Especies }}</div><hr><b>TIR:</b> {{ "%.4f"|format(combination.TIR) }}<br>' +
+      '<b>Pay-back:</b> {{ combination.payback }} anos<br>' +
+      '<b>Investimento necessário:</b> {{ "%.2f"|format(combination.InvNecessario) }} <br>' +
+      '<b>Valor Total Líquido:</b> {{ "%.2f"|format(combination.VTLiquido) }} <br>' +
+      '<b>Valor Presente Líquido:</b> {{ "%.2f"|format(combination.VPLiquido) }} <br>'
+  });
+  {% endfor %}
+  if(jsoData.length > 0){
+    wzdControl.initPage( { data: jsoData, nextPage:'rsp-endProject.html', alignText: 'start', mode: wzdControl.mode.BUTTONS } );
+  }
 </script>
 {% endblock wizardScripts %}
