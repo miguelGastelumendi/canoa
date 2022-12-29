@@ -22,4 +22,4 @@ def getCombinations(idProjeto):
         f"and p.id = {idProjeto} "
         f"order by idFaixaTipo,TIR DESC ")
     uniques = df.groupby(['nomeFaixa','idFaixaTipo'], as_index=False).count()
-    return df, uniques[['nomeFaixa','idFaixaTipo']]
+    return df, uniques[['nomeFaixa','idFaixaTipo']], len(df) == 0
