@@ -47,7 +47,7 @@ def route_callback(endpoint):
     elif endpoint == 'saveProject':
         projectName = args.get('ProjectName')
         if projectName == '':
-            session['_projeto_id'] = 93
+            session['_projeto_id'] = 95
             return "Ok"
         projeto_id = ui_map.saveProject(session['_user_id'],
                                         args.get('ProjectName'),
@@ -105,7 +105,7 @@ def route_template(template):
                                        strips=strips,
                                        combinations=combinations)
 
-            elif segment == 'rsp-projectData.html':
+            elif segment == 'rsp-projectEnd.html':
                 ui_projectData.updateProjectData(request.args.get('idFaixaTipo'),
                                                  request.args.get('idCombinacao'))
                 projectData = ui_projectData.getProjectData(session['_projeto_id'])

@@ -1,0 +1,53 @@
+{% extends "layouts/wizard.tmpl" %}
+
+{% block title %}Combinações{% endblock %}
+
+{% block wizardDescription %}Estimativas financeiras para cada combinação possível{% endblock %}
+{% block wizardInstructions %}Selecione a combinação da sua preferência{% endblock %}
+
+{% block wizardBody %}
+<!-- start Accordion -->
+<div class="accordion" id="acData" style="width: 100%">
+
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#btnFaixa_1">
+          Opções da Faixa Bacana
+        </button>
+      </h2>
+      <div id="btnFaixa_1" class="accordion-collapse collapse" data-bs-parent="#acData">
+        <div class="accordion-body" id="body1">
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#btnFaixa_2">
+          Opções da Faixa Segunda
+        </button>
+      </h2>
+      <div id="btnFaixa_2" class="accordion-collapse collapse" data-bs-parent="#acData">
+        <div class="accordion-body" id="body2">
+        </div>
+      </div>
+    </div>
+
+
+</div>
+<!-- end Accordion -->
+{% endblock wizardBody %}
+
+{% block wizardScripts %}
+<script>
+  let jsoData = [];
+  jsoData.push({ bodyId: "body1", id: "12", caption: "Combinação 12" });
+  jsoData.push({ bodyId: "body2", id: "22", caption: "Combinação 22" });
+  jsoData.push({ bodyId: "body1", id: "11", caption: "Combinação 11" });
+  jsoData.push({ bodyId: "body2", id: "21", caption: "Combinação 21" });
+  jsoData.push({ bodyId: "body2", id: "24", caption: "Combinação 24" });
+  jsoData.push({ bodyId: "body1", id: "15", caption: "Combinação 15" });
+  wzdControl.initPage( { data: jsoData, nextPage:'rsp-endProject.html', alignText: 'start', multiSelect: true, mode: wzdControl.mode.BUTTONS } );
+
+</script>
+{% endblock wizardScripts %}
