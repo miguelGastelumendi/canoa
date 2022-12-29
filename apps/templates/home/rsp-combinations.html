@@ -1,6 +1,6 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block title %}Combinações{% endblock %}
+{% block title %}Combinações possíveis para suas escolhas{% endblock %}
 
 {% block wizardDescription %}Estimativas financeiras para cada combinação possível{% endblock %}
 {% block wizardInstructions %}Selecione a combinação da sua preferência{% endblock %}
@@ -22,18 +22,21 @@
         </div>
       </div>
     </div>
-
+    
     {% endfor %}
   {% else %}
+
   <div class="alert-danger">
     Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP.
     <script>
-      setTimeout(() =>{
+      window.addEventListener('DOMContentLoaded', () => {
         mdlControl.messageError(" Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP.")
-      }, 10)
+      })
     </script>
   </div>
-<!--    "Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP."-->
+
+
+  <!--    "Não há alternativa cadastrada para suas escolhas. Entre em contato com a SEMA-SP."-->
   {% endif %}
 </div>
 <!-- end Accordion -->
@@ -45,19 +48,19 @@
   // Mauro: aqui seria bacana que isto estives num fetch
   //      removi sem permissão delas : "<b>Financeiro</b><br>" e coloquei <hr>
   {% for _, combination in combinations.iterrows() %}
-    jsoData.push({
-      body: "body{{ combination.idFaixaTipo }}",
-      id: "{{ combination.idCombinacao }}",
-      caption: "Combinação {{ combination.idCombinacao }}",
-      text: '<div class="text-center">{{ combination.Especies }}</div><hr><b>TIR:</b> {{ "%.4f"|format(combination.TIR) }}<br>'+
-            '<b>Pay-back:</b> {{ combination.payback }} anos<br>' +
-            '<b>Investimento necessário:</b> {{ "%.2f"|format(combination.InvNecessario) }} <br>' +
-            '<b>Valor Total Líquido:</b> {{ "%.2f"|format(combination.VTLiquido) }} <br>' +
-            '<b>Valor Presente Líquido:</b> {{ "%.2f"|format(combination.VPLiquido) }} <br>'
-    });
+  jsoData.push({
+    body: "body{{ combination.idFaixaTipo }}",
+    id: "{{ combination.idCombinacao }}",
+    caption: "Combinação {{ combination.idCombinacao }}",
+    text: '<div class="text-center">{{ combination.Especies }}</div><hr><b>TIR:</b> {{ "%.4f"|format(combination.TIR) }}<br>' +
+      '<b>Pay-back:</b> {{ combination.payback }} anos<br>' +
+      '<b>Investimento necessário:</b> {{ "%.2f"|format(combination.InvNecessario) }} <br>' +
+      '<b>Valor Total Líquido:</b> {{ "%.2f"|format(combination.VTLiquido) }} <br>' +
+      '<b>Valor Presente Líquido:</b> {{ "%.2f"|format(combination.VPLiquido) }} <br>'
+  });
   {% endfor %}
   if(jsoData.length > 0){
-    wzdControl.initPage( { data: jsoData, nextPage:'rsp-endProject.html', alignText: 'start', multiSelect: true, mode: wzdControl.mode.BUTTONS } );
+    wzdControl.initPage( { data: jsoData, nextPage:'rsp-endProject.html', alignText: 'start', mode: wzdControl.mode.BUTTONS } );
   }
 </script>
 {% endblock wizardScripts %}
