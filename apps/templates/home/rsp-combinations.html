@@ -22,7 +22,7 @@
         </div>
       </div>
     </div>
-    
+
     {% endfor %}
   {% else %}
   <div class="alert-danger">
@@ -57,7 +57,7 @@
     });
   {% endfor %}
   if(jsoData.length > 0){
-    wzdControl.initPage( { data: jsoData, nextPage:'rsp-endProject.html', alignText: 'start', mode: wzdControl.mode.BUTTONS } );
+    wzdControl.initPage( { data: jsoData, nextPage:'rsp-endProject.html', alignText: 'start', multiSelect: true, mode: wzdControl.mode.BUTTONS } );
   }
 </script>
 {% endblock wizardScripts %}
