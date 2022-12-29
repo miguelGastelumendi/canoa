@@ -1,6 +1,6 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block title %}Criar projeto{% endblock %}
+{% block title %}Localização{% endblock %}
 
 {% block wizardDescription %}Dados do Projeto e Localização (Fito-fisionomia){% endblock %}
 {% block wizardInstructions %}&nbsp;{% endblock %}
@@ -20,14 +20,15 @@
         <div class="d-grid gap-2">
           <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal"
             data-bs-target="#mdlLocation">
-            Município e Região Fitoecológica
+            <!-- __◊  Lozenge Para indicar que o botão abre uma janela modal -->
+            Município e Região Fitoecológica&nbsp;&nbsp;&#9674;
           </button>
           <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal"
             data-bs-target="#mdlLatLong">
-            Latitude e Longitude
+            Latitude e Longitude&nbsp;&nbsp;&#9674;
           </button>
           <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal" data-bs-target="#mdlCAR">
-            CAR
+            CAR&nbsp;&nbsp;&#9674;
           </button>
         </div>
       </div>
@@ -94,12 +95,12 @@
       </div>
       <div class="modal-body">
         <p>
-          <select id="municipio" class="form-select" onchange="updateFormData(this.id)">
-            <option hidden selected>(Primeiro selecione o Município)</option>
-            {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+          <select id="municipio" class="form-select" onchange="locChange(this.id)"">
+            <option value=" -1" hidden selected>(Primeiro selecione o Município)</option>
+            {% for key, value in municipios.items() %}<option value=" {{ key }}">{{ value }}</option>{% endfor %}
           </select>
         </p>
-        <select id="fito_ecologica" class="form-select" disabled="true" onchange="updateFormData(this.id)">
+        <select id="fito_ecologica" class="form-select" disabled="true" onchange="locChange(this.id)">
           <option value="-1" selected>
             (Logo selecione a Região Fitoecológica)
           </option>
@@ -198,17 +199,31 @@
     const jsoData = await rsp.json();
     if (rsp.ok) { _showMap(jsoData['Map']); }
   }
-  _fetchMapSp();
 
+
+  const selMun = _ge('municipio');
+  const selFito = _ge('fito_ecologica');
+
+  const locChange = (sId) => {
+    if (parseInt(selMun.value < 0)) { return }
+    if (sId) { updateFormData(sId) }
+    const sMuni = wzdControl.getSelectedTextFrom(selMun);
+    let sSelected = 'Localidade selecionada: <b>' + sMuni;
+    if ((sId == '') || (sId == selFito.id)) {
+      let sFito = wzdControl.getSelectedTextFrom(selFito);
+      if (sFito) { sSelected += `, <i>${sFito}</i>` }
+      lastFito = selFito.value;
+    }
+    sSelected += '</b>';
+    wzdControl.displaySelected(sSelected)
+  }
 
   // -------------------------
   async function updateFormData(callerID) {
     if (bFetching) return; // Acho que o erro 500 é por sobrecarga
-    const selMun = _ge("municipio");
-    const selFito = _ge("fito_ecologica");
     const btnOkLocat = _ge("okLocation");
-    let municipio = selMun.value;
-    let fito = selFito.value;
+    let sIdMunicipio = selMun.value;
+    let sIdFito = selFito.value;
     let latlong = _gv("lat_long");
     let CAR = _gv("CAR");
 
@@ -223,8 +238,8 @@
       const setFitoMsg = (sMsg) => selFito.setHTML(`<option value="-1" selected>(${sMsg})</option>`);
       const rsp = await fetch('/callback/updateFormData?' +
         `&callerID=${callerID}` +
-        `&idMunicipio=${municipio}` +
-        `&idFito=${fito}` +
+        `&idMunicipio=${sIdMunicipio}` +
+        `&idFito=${sIdFito}` +
         `&latlong=${latlong}` +
         `&CAR=${CAR}`
       );
@@ -254,6 +269,7 @@
               _ge('fito_ecologica').innerHTML = newHTML;
             }
           }
+          locChange(''); // refresh
           _showMap(jsoData["Map"]);
         }
       }
@@ -297,7 +313,8 @@
   }
   //-- Initialize Custom Wizard
   wzdControl.initPage({ mode: wzdControl.mode.CUSTOM, onNext: () => { sendData(); return false; } });
-
+  // selMun.value is kept after refresh, but selFito.value is not TODO keep it mgd 2022.12.29
+  window.addEventListener("load", () => { if (parseInt(selMun.value) < 0) _fetchMapSp(); else updateFormData(selMun.id); });
 </script>
 <!-- ====== End Scripts ====== -->
 
