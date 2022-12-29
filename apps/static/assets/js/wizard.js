@@ -1,8 +1,8 @@
 /**
  * @preserve
  * Wizard js
- * version 1.1.0
- * 2022.12.22--28
+ * version 1.2.0
+ * 2022.12.22--29
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -98,7 +98,7 @@ const wzdControl = {
   /** @private */
   selectItem: (/** @type {number} */ ix) => {
     let iLastSelectedIx;
-    let grp;
+    let grp = {};
     if (wzdControl.multiSelect) {
       grp = wzdControl.getGroupItemByIx(ix);
       iLastSelectedIx = grp.selected;
@@ -225,6 +225,7 @@ const wzdControl = {
   /** @public */
   messageInfo: (sMsg, sTitle) => {
     if (wzdControl.modalReady()) {
+      // @ts-ignore mdlControl
       mdlControl.message(sMsg, sTitle)
     } else {
       alert(sMsg)
@@ -235,6 +236,7 @@ const wzdControl = {
   messageError: (sMsg, sTitle, fOnError) => {
     if (fOnError) { fOnError(); }
     if (wzdControl.modalReady()) {
+      // @ts-ignore mdlControl
       mdlControl.messageError(sMsg, sTitle)
     } else {
       wzdControl.messageInfo(sMsg, sTitle)
@@ -242,11 +244,24 @@ const wzdControl = {
   },
 
   /**
+   * Return the text of the selected option of the param
+   * @param {HTMLSelectElement} eleSelect
+   * @returns {string}
+   * @public
+   */
+  getSelectedTextFrom: (eleSelect) => {
+    let sText = '';
+    if (eleSelect && eleSelect.selectedIndex >= 0) {
+      sText= eleSelect.options[eleSelect.selectedIndex].text;
+    }
+    return sText;
+  },
+
+  /**
    * Display HTML text of selected item
    * @param {string} sHtml
    * @public
    */
-
   displaySelected: (sHtml) => {
     const eleUsDisplay = wzdControl.ge('idWzdUsDisplay');
     eleUsDisplay.innerHTML = '' + sHtml;
@@ -279,7 +294,7 @@ const wzdControl = {
     if (!wzdControl.path.endsWith('/')) wzdControl.path += '/';
     wzdControl.display();
     // don't use try catch, if an error occurs, better leave button disabled
-    wzdControl.ge('idWzdBtnOk').disabled = false;
+    /** @type {HTMLButtonElement} */ (wzdControl.ge('idWzdBtnOk')).disabled = false;
   },
 
 }
