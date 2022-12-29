@@ -9,7 +9,8 @@
 <!-- start Accordion -->
 <div class="accordion" id="acData" style="width: 100%">
 
-  {% if strip is defined and strip|length %}
+  {% if 1==1 %}
+      {{ strip }}
     {% for _, strip in strips.iterrows() %}
     <div class="accordion-item">
       <h2 class="accordion-header">
@@ -22,7 +23,7 @@
         </div>
       </div>
     </div>
-    
+
     {% endfor %}
   {% else %}
 
