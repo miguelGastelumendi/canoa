@@ -1,0 +1,15 @@
+{% extends "layouts/wizard.tmpl" %}
+
+{% block title %}Projetos{% endblock %}
+
+{% block wizardDescription %}Projetos cadastrados pelo seu usuário{% endblock %}
+{% block wizardInstructions %}Selecione o o projeto cujos dados pretende alterar{% endblock %}
+
+{% block wizardConfig %}
+<script>
+  const jsBtn = {{ projects|tojson }};
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-mecanization.html' });
+</script>
+{% endblock %}
+
+{# eof #}

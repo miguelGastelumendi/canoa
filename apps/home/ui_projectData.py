@@ -1,5 +1,4 @@
-def updateProjectData(idFaixaTipo: int,
-                      idCombinacao: int):
+def updateProjectData(project_id: str, selectedCombinations: list):
     pass
 
 def getProjectData(idProjeto: int):

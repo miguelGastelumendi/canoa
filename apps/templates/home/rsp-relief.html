@@ -1,18 +1,17 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block title %}Projetos{% endblock %}
+{% block title %}Relevo{% endblock %}
 
-{% block wizardDescription %}Distribuição de plantio{% endblock %}
-{% block wizardInstructions %}Selecione o tipo de terreno da sua área{% endblock %}
+{% block wizardDescription %}Declividade{% endblock %}
+{% block wizardInstructions %}Selecione a declividade do terreno da sua área{% endblock %}
 
 {% block wizardConfig %}
 <script>
   const jsBtn = [
-    { caption: 'Terreno Montanhoso', id: 4, fileName: 'wzd-terrenoMontanhoso.png' },
-    { caption: ' Terreno Ondulado', id: 3, fileName: 'wzd-terrenoOndulado.png' },
     { caption: 'Terreno Plano', id: 1, fileName: 'wzd-terrenoPlano.png'},
-    { caption: 'Terreno Suave Ondulado', id: 2, fileName: 'wzd-terrenoSuaveOndulado.png'}
-
+    { caption: 'Terreno Suave Ondulado', id: 2, fileName: 'wzd-terrenoSuaveOndulado.png'},
+    { caption: ' Terreno Ondulado', id: 3, fileName: 'wzd-terrenoOndulado.png' },
+    { caption: 'Terreno Montanhoso', id: 4, fileName: 'wzd-terrenoMontanhoso.png' }
   ];
   wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.IMAGES, nextPage: 'rsp-mecanization.html' });
 </script>

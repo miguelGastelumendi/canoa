@@ -14,6 +14,7 @@ import apps.home.ui_combination as ui_combination
 import apps.home.ui_projectData as ui_projectData
 from flask import session
 from apps.home import helper
+from flask_login import current_user
 
 
 @blueprint.route('/index')
@@ -68,6 +69,10 @@ def route_template(template):
             # Detect the current page
             segment = helper.get_segment(request)
             # if segment.startswith('testeJinja'):
+            if segment == 'rsp-selectProject.html':
+                return render_template("home/" + template,
+                                       projects=dbquery.getListDictResultset(f"select descProjeto as caption, id from Projeto p "
+                                                                         f"where idUser = {current_user.id}"))
 
             if segment == 'rsp-projectLocation.html':
                 return render_template("home/" + template,
@@ -108,10 +113,9 @@ def route_template(template):
                                        noData=noData)
 
             elif segment == 'rsp-projectEnd.html':
-                ui_projectData.updateProjectData(request.args.get('idFaixaTipo'),
-                                                 request.args.get('idCombinacao'))
+                ui_projectData.updateProjectData(session['_projeto_id'], request.args['id'].split('-'))
                 projectData = ui_projectData.getProjectData(session['_projeto_id'])
-                return render_template("home/" + template, projectData)
+                return render_template("home/" + template, projectData=projectData)
 
         return render_template("home/" + template, segment=helper.get_segment(template))
     except TemplateNotFound:
