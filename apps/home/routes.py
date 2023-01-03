@@ -114,7 +114,7 @@ def route_template(template):
                                        noData=noData)
 
             elif segment == 'rsp-projectEnd.html':
-                ui_projectData.updateProjectData(session['_projeto_id'], request.args['id'].split('-'))
+                ui_projectData.updateProjectData(session['_projeto_id'], request.args['id'])
                 projectData = ui_projectData.getProjectData(session['_projeto_id'])
                 return render_template("home/" + template, projectData=projectData)
 
