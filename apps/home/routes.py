@@ -77,7 +77,8 @@ def route_template(template):
             if segment == 'rsp-projectLocation.html':
                 return render_template("home/" + template,
                                        municipios=ui_map.getListaMunicipios()
-                                       , fito_municipios=ui_map.getListaFito(None)
+                                       , fito_municipios=ui_map.getListaFito(None),
+                                       projectId=(request.args['id'] if 'id' in request.args else -1)
                                        # , map=ui_map.getMapSP()
                                        )
 
@@ -113,7 +114,7 @@ def route_template(template):
                                        noData=noData)
 
             elif segment == 'rsp-projectEnd.html':
-                ui_projectData.updateProjectData(session['_projeto_id'], request.args['id'].split('-'))
+                ui_projectData.updateProjectData(session['_projeto_id'], request.args['id'])
                 projectData = ui_projectData.getProjectData(session['_projeto_id'])
                 return render_template("home/" + template, projectData=projectData)
 
