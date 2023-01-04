@@ -7,11 +7,8 @@
 
 {% block wizardConfig %}
 <script>
-  const jsBtn = [
-    { caption: 'Área de Preservação Permanente', id: 3 },
-    { caption: 'Reserva Legal', id: 1 },
-    { caption: 'Área de uso alternativo do solo', id: 2 }
-  ];
+  const jsBtn = {{ goals|tojson }};
+
   wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-plantDistribution.html' });
 </script>
 {% endblock %}

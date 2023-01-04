@@ -71,8 +71,10 @@ def route_template(template):
             # if segment.startswith('testeJinja'):
             if segment == 'rsp-selectProject.html':
                 return render_template("home/" + template,
-                                       projects=dbquery.getListDictResultset(f"select descProjeto as caption, id from Projeto p "
-                                                                         f"where idUser = {current_user.id}"))
+                                       projects=dbquery.getListDictResultset(
+                                           f"select descProjeto as caption, id from Projeto p "
+                                           f"where idUser = {current_user.id}"
+                                           f"order by descProjeto"))
 
             if segment == 'rsp-projectLocation.html':
                 return render_template("home/" + template,
@@ -81,6 +83,12 @@ def route_template(template):
                                        projectId=(request.args['id'] if 'id' in request.args else -1)
                                        # , map=ui_map.getMapSP()
                                        )
+
+            elif segment == 'rsp-goal.html':
+                return render_template("home/" + template,
+                                       goals=dbquery.getListDictResultset(f"select desFinalidade as caption, id " # desFinalidade: typo
+                                                                          f"from Finalidade "
+                                                                          f"order by orderby"))
 
             elif segment == 'rsp-plantDistribution.html':
                 # TODO: number of número de módulos fiscais validation
