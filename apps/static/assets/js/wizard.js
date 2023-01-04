@@ -55,7 +55,7 @@ const wzdControl = {
   multiSelect: false,
   selectedItemIx: -1,
   nextPageHref: '',  // Wizard page has ony one target
-  /** @type {0|1|2|3} */
+  /** @type {number} */
   displayMode: 0,
   /** @type {Array<groupItem>}*/
   groups: [],
@@ -305,7 +305,7 @@ const wzdControl = {
     wzdControl.nextPageHref = (jsonConfig.nextPage || '').trim();
     wzdControl.path = (jsonConfig.path || '../../static/assets/img/wizard/').trim();
     wzdControl.multiSelect = jsonConfig.multiSelect || false;
-    wzdControl.alignText = jsonConfig.alignText || ((jsonConfig.mode == wzdControl.mode.BUTTONS) ? 'center' : 'left');
+    wzdControl.alignText = jsonConfig.alignText || ((jsonConfig.mode == wzdControl.mode.INFO) ? 'left' : 'center');
     if (!wzdControl.path.endsWith('/')) wzdControl.path += '/';
     setTimeout(() => wzdControl.display(), 0);
     // don't use try catch, if an error occurs, better leave button disabled
