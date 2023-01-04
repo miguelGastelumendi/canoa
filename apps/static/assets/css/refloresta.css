@@ -1,4 +1,5 @@
 /* refloresta.css */
+/* Miguel Gastelumendi -- mgd */
 
 body {
    background-image: url(../img/pages/1440_Tree-tops.jpg);
@@ -35,6 +36,8 @@ body {
   padding: 1.2em 0.5em;
   background-color: var(--bs-gray-500);
   text-align: center;
+  overflow-y: auto;
+  max-height: 80vh
 }
 
 /* Footer: a Ok button and display selected info */
@@ -59,7 +62,7 @@ body {
   margin: 0.5rem 0.5rem;
 }
 
-
+/* mgd ta valendo?
 .rfsContainer{
   margin-top: 4% !important;
   width: 52%;
@@ -69,5 +72,5 @@ body {
   border-radius: 15px;
   font-size: 10px;
 }
-
+*/
 /*~*/

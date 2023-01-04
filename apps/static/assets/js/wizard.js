@@ -1,8 +1,8 @@
 /**
  * @preserve
  * Wizard js
- * version 1.2.0
- * 2022.12.22--29
+ * version 1.4.0
+ * 2022.12.22--29 / 2023.01.03--04
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -25,10 +25,11 @@
 
 /**
  * @typedef {Object} wzdItem
- * @property {string} bodyId parent ID element of the buttons
+ * @property {string} [bodyId = "idWzdBody"] parent ID element of the buttons
  * @property {string} text buttons text, if nul/undef caption is used
  * @property {string} caption display on selection
  * @property {number} id item`s ID, if informed, it is sent as a parameter
+ * @property {string} [type = "success"] info type(https://getbootstrap.com/docs/5.0/components/alerts/)
  * @property {string} href address of the next page (if all items have the same one, use 'nextPage')
  * @property {string} fileName image file name and extension
  */
@@ -54,6 +55,7 @@ const wzdControl = {
   multiSelect: false,
   selectedItemIx: -1,
   nextPageHref: '',  // Wizard page has ony one target
+  /** @type {0|1|2|3} */
   displayMode: 0,
   /** @type {Array<groupItem>}*/
   groups: [],
@@ -95,6 +97,7 @@ const wzdControl = {
     }
     wzdControl.displaySelected(sSelected + '</b>');
   },
+
   /** @private */
   selectItem: (/** @type {number} */ ix) => {
     let iLastSelectedIx;
@@ -154,6 +157,17 @@ const wzdControl = {
             '</button>';
         });
         break;
+      case wzdControl.mode.INFO:
+        wzdControl.jsoData.forEach((itm, ix) => {
+          bodyIx = _getBodyIx(itm.bodyId, `<div class="d-grid gap-2 ${sAlign}">`);
+          aHtml[bodyIx] +=
+            `<div id="${wzdControl.getBtnId(ix)}" class="alert alert-${(itm.type ? itm.type : 'success')}">` +
+            (itm.caption ? `<h4 class="alert-heading">${itm.caption}</h4>${(itm.text ? '<hr>' : '')}` : '') +
+            (itm.text || '') +
+            '</div>';
+        });
+        break;
+
       case wzdControl.mode.IMAGES:
         wzdControl.jsoData.forEach((itm, ix) => {
           let onClick = `onclick="wzdControl.selectItem(${ix})`;
@@ -252,7 +266,7 @@ const wzdControl = {
   getSelectedTextFrom: (eleSelect) => {
     let sText = '';
     if (eleSelect && eleSelect.selectedIndex >= 0) {
-      sText= eleSelect.options[eleSelect.selectedIndex].text;
+      sText = eleSelect.options[eleSelect.selectedIndex].text;
     }
     return sText;
   },
@@ -273,10 +287,11 @@ const wzdControl = {
   },
 
   /**
-   * @enum {number} Wizard items display mode
+   * @readonly
+   * @enum {number} Wizard item's display mode
    * @public
   */
-  mode: { BUTTONS: 1, IMAGES: 2, CUSTOM: 3 },
+  mode: { BUTTONS: 1, IMAGES: 2, INFO: 3, CUSTOM: 4 },
 
   /**
    * Initialize wizard's page
@@ -290,9 +305,9 @@ const wzdControl = {
     wzdControl.nextPageHref = (jsonConfig.nextPage || '').trim();
     wzdControl.path = (jsonConfig.path || '../../static/assets/img/wizard/').trim();
     wzdControl.multiSelect = jsonConfig.multiSelect || false;
-    wzdControl.alignText = jsonConfig.alignText || 'center';
+    wzdControl.alignText = jsonConfig.alignText || ((jsonConfig.mode == wzdControl.mode.BUTTONS) ? 'center' : 'left');
     if (!wzdControl.path.endsWith('/')) wzdControl.path += '/';
-    wzdControl.display();
+    setTimeout(() => wzdControl.display(), 0);
     // don't use try catch, if an error occurs, better leave button disabled
     /** @type {HTMLButtonElement} */ (wzdControl.ge('idWzdBtnOk')).disabled = false;
   },
