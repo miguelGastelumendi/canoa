@@ -95,7 +95,7 @@
       </div>
       <div class="modal-body">
         <p>
-          <select id="municipio" class="form-select" onchange="locChange(this.id)"">
+          <select id="municipio" class="form-select" onchange="locChange(this.id)">
             <option value=" -1" hidden selected>(Primeiro selecione o Município)</option>
             {% for key, value in municipios.items() %}<option value=" {{ key }}">{{ value }}</option>{% endfor %}
           </select>
@@ -200,9 +200,22 @@
     if (rsp.ok) { _showMap(jsoData['Map']); }
   }
 
-  const projectId = {{ projectId }};
+
   const selMun = _ge('municipio');
   const selFito = _ge('fito_ecologica');
+
+  // const projectId = {{ projectId }};
+  const projectData = {
+    sIdMunicipio: ' 526'
+  }
+  //funcionou por causa do espaço antes do numeral em string 
+  if(projectData){
+    setTimeout(() =>{
+      selMun.value = projectData.sIdMunicipio;
+    }, 5000)
+  }
+
+
 
   const locChange = (sId) => {
     if (parseInt(selMun.value < 0)) { return }
