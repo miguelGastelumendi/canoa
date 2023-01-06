@@ -1,6 +1,7 @@
 {# files are relative to ./templates #}
 {% extends "layouts/base-refloresta.tmpl" %}
 
+{% block wizardPageTitle %}{{ pageTitle }}{% endblock %}
 
 
 {% block content %}
@@ -27,10 +28,10 @@
                <td class="wzdLogo"></td>
                <td>
                   <h6 id="wzdDescription" class="alert-heading">
-                  {% block wizardDescription %}{% endblock %}
+                  {% block wizardDescription %} {{ wzdDescription }} {% endblock %}
                   </h6>
                   <div id="wzdInstructions">
-                  {% block wizardInstructions %}{% endblock %}
+                  {% block wizardInstructions %} {{ wzdInstructions }} {% endblock %}
                   </div>
                </td>
             </tr>
@@ -53,7 +54,9 @@
          <!-- Footer -->
          <div class="wzdFooter">
             <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
-            <button id="idWzdBtnOk" class="wzdBtnNext btn btn-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage();">Ok</button>
+            <button id="idWzdBtnHelp" class="wzdBtnHelp btn btn-outline-info" type="button" disabled= "true" onclick="wzdControl.help();">Ajuda</button>
+            {#  Se mudar caption do botão, mudar também nas instruções de apps\templates\home\rsp-projectStart.html #}
+            <button id="idWzdBtnOk" class="wzdBtnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage();">Próximo</button>
          </div>
          <!-- Footer end -->
 

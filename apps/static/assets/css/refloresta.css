@@ -58,9 +58,13 @@ body {
   padding: 0.1em 0px;
 }
 
-.wzdBtnNext{
+.wzdBtnNext {
   width: 6em;
   margin: 0.5rem 0.5rem;
+}
+
+.wzdBtnNextText::after {
+  content: 'Próximo';
 }
 
 /* mgd ta valendo?

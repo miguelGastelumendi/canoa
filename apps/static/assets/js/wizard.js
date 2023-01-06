@@ -41,6 +41,7 @@
  * @property {fOnNext?} onNext callback on Next button
  * @property {string?} nextPage address of next page
  * @property {string?} path to wzdItem.fileName
+ * @property {string?} [help] callback function to fetch help html text (use <p></p> instead of <br>)
  * @property {string?} [alignText = 'center'] buttons text alignment [center|start|end]
  * @property {boolean?} [multiSelect=false] allow selected item per group
  */
@@ -303,6 +304,7 @@ const wzdControl = {
     wzdControl.displayMode = jsonConfig.mode;
     wzdControl.fOnNext = jsonConfig.onNext || null;
     wzdControl.nextPageHref = (jsonConfig.nextPage || '').trim();
+    wzdControl.help = jsonConfig.help || '';
     wzdControl.path = (jsonConfig.path || '../../static/assets/img/wizard/').trim();
     wzdControl.multiSelect = jsonConfig.multiSelect || false;
     wzdControl.alignText = jsonConfig.alignText || ((jsonConfig.mode == wzdControl.mode.INFO) ? 'left' : 'center');

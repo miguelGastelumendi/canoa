@@ -17,18 +17,22 @@
 
 <script>
    const mdlControl = {
+      /** @private */
       ge: (sId) => document.getElementById(sId),
+
       /**
-       * @param {string} sMessage Mensagem
-       * @param {string} [sTitle] Título da janela
-       * @param {Object} [oOptions] Opções futuras
-       * @param {function} [fOnClose] callback quando fechar a janela
+       * @param {string} sHtmlMessage Message.  Don't use <br> instead use <p></p>
+       * @param {string} [sTitle = 'Refloresta SP']
+       * @param {Object} [oOptions = {}] Options
+       * @param {function} [fOnClose = null] callback after window close
+       * @private
        */
-      message: (sMessage, sTitle = 'Refloresta SP', oOptions = {}, fOnClose) => {
+      message: (sHtmlMessage, sTitle = 'Refloresta SP', oOptions = {}, fOnClose = null) => {
          const sStyle = oOptions.style ? oOptions.style : 'info';
+         const sIcon = oOptions.icon ? oOptions.icon : sStyle;
          const sStyleClass = sStyle ? `alert-${sStyle} text-${sStyle}` : '';
          mdlControl.ge('mdlTitle').innerText = sTitle;
-         mdlControl.ge('mdlMessage').innerHTML = sMessage ? sMessage : 'Mensagem não disponível.';
+         mdlControl.ge('mdlMessage').innerHTML = sHtmlMessage ? sHtmlMessage : 'Mensagem não disponível.';
          const eleHdr = mdlControl.ge('mdlHeader');
          eleHdr.classList.add(...sStyleClass.split(' '));
          const eleMdl = mdlControl.ge('mdlWindow');
@@ -42,12 +46,38 @@
          );
          mdlWindow.show();
       },
-      messageInfo: (sMessage, sTitle) => {
-         mdlControl.message(sMessage, sTitle, { style: 'info' });
+
+      /**
+       * Displays a modal info  window
+       * @param {string} sHtmlMessage Mensagem.
+       * @param {string} [sTitle] Título da janela
+       * @public
+       */
+      messageInfo: (sHtmlMessage, sTitle) => {
+         mdlControl.message(sHtmlMessage, sTitle, { style: 'info' });
       },
-      messageError: (sMessage, sTitle) => {
-         mdlControl.message(sMessage, sTitle, { style: 'danger' });
-      }
+
+      /**
+       * Displays a modal error window
+       * @param {string} sHtmlMessage Mensagem. Don't use <br> instead use <p></p>
+       * @param {string} [sTitle] Título da janela
+       * @public
+       */
+      messageError: (sHtmlMessage, sTitle) => {
+         mdlControl.message(sHtmlMessage, sTitle, { style: 'danger' });
+      },
+
+      /**
+       * Displays a modal error window
+       * @param {string} sHtmlHelp Help html text. Don't use <br> instead use <p></p>
+       * @param {string} [sTitle] Título da janela
+       * @public
+       */
+       displayHelp: (sHtmlHelp, sTitle) => {
+         // TODO: set scroll bar to body
+         mdlControl.message(htmlHelp, sTitle, { style: 'info', icon: 'help' });
+      },
+
    }
 </script>
 <!-- === end Modal window === -->
