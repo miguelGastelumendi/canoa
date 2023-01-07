@@ -58,6 +58,8 @@ def route_callback(endpoint):
                                         latlong,
                                         CAR)
         session['_projeto_id'] = projeto_id
+    elif endpoint == 'help':
+        return helper.getHelpText(args.get('id'))
     return "Ok"
 
 
@@ -69,6 +71,9 @@ def route_template(template):
             # Detect the current page
             segment = helper.get_segment(request)
             # if segment.startswith('testeJinja'):
+            if segment == 'rsp-projectStart.html':
+                return render_template("home/" + template,
+                                       **helper.getFormText('rsp-projectStart'))
             if segment == 'rsp-selectProject.html':
                 return render_template("home/" + template,
                                        projects=dbquery.getListDictResultset(
@@ -79,8 +84,9 @@ def route_template(template):
             if segment == 'rsp-projectLocation.html':
                 return render_template("home/" + template,
                                        municipios=ui_map.getListaMunicipios()
-                                       , fito_municipios=ui_map.getListaFito(None),
-                                       projectId=(request.args['id'] if 'id' in request.args else -1)
+                                       , fito_municipios=ui_map.getListaFito(None)
+                                       , projectId=(request.args['id'] if 'id' in request.args else -1)
+                                       , **helper.getFormText('rsp-projectLocation')
                                        # , map=ui_map.getMapSP()
                                        )
 
