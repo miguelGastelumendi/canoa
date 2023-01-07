@@ -1,8 +1,8 @@
 /**
  * @preserve
  * Wizard js
- * version 1.4.0
- * 2022.12.22--29 / 2023.01.03--04
+ * version 1.5.0
+ * 2022.12.22--29 / 2023.01.03--06
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -64,6 +64,7 @@ const wzdControl = {
   jsoData: [],
   /** @type {fOnNext?} */
   fOnNext: null,
+  helpCallback: '', // fetch server help address
 
   ge: (/** @type {string} */ sId) => /** @type{HTMLElement} */(document.getElementById(sId)),
   getBtn: (/** @type {number} */ ix) => wzdControl.ge(wzdControl.getBtnId(ix)),
@@ -78,6 +79,8 @@ const wzdControl = {
     return sCols;
   },
   getSelectedCount: () => (wzdControl.multiSelect ? wzdControl.groups.filter(grp => (grp.selected >= 0)).length : ((wzdControl.selectedItemIx < 0) ? 0 : 1)),
+
+  getTitle: (sDefault) => (sDefault ? sDefault : wzdControl.ge('wzdDescription').innerText),
 
   getGroupItemByIx: (/** @type {number} */ ix) => {
     const itm = wzdControl.jsoData[ix];
@@ -172,7 +175,7 @@ const wzdControl = {
       case wzdControl.mode.IMAGES:
         wzdControl.jsoData.forEach((itm, ix) => {
           let onClick = `onclick="wzdControl.selectItem(${ix})`;
-          bodyIx = _getBodyIx(itm.bodyId, `<div class="row ${wzdControl.getColClasses(itm.bodyId)}">`);
+          bodyIx = _getBodyIx(itm.bodyId, `<div class="row ${wzdControl.getColClasses(/** @type {string} */(itm.bodyId))}">`);
           aHtml[bodyIx] +=
             `<div class="col ${sAlign} mb-3">` +
             `<button id=${wzdControl.getBtnId(ix)} class="mb-2 btn btn-info bg-gradient" type="button" style="height:4.2em; width:100%" ${onClick}">` +
@@ -209,7 +212,7 @@ const wzdControl = {
     return false;
   },
 
-  /** @private */
+  /** @protected */
   gotoNextPage: () => {
     let sHref = '';
     let jsBtn
@@ -237,11 +240,32 @@ const wzdControl = {
     if (sHref) setTimeout(() => { window.location.href = sHref }, 0);
   },
 
+  /** @protected */
+  displayHelp: () => {
+    wzdControl.fetchObject(
+      wzdControl.helpCallback,
+      (oData) => {
+        (wzdControl.modalReady()) ?  // @ts-ignore mdlControl
+          mdlControl.displayHelp(oData.text, wzdControl.getTitle(oData.title)) :
+          wzdControl.messageInfo('O recurso de exibição de Ajuda, não está disponível no momento.')
+      },
+      'No momento, não temos ajuda para este tópico'
+    );
+  },
+
+  /**
+   * Return true if the f is a function
+   * @param {function} f
+   * @returns {boolean}
+   * @public
+   */
+  paramIsFunction: (f) => (typeof f === 'function'),
+
   /** @public */
   messageInfo: (sMsg, sTitle) => {
     if (wzdControl.modalReady()) {
       // @ts-ignore mdlControl
-      mdlControl.message(sMsg, sTitle)
+      mdlControl.messageInfo(sMsg, wzdControl.getTitle(sTitle))
     } else {
       alert(sMsg)
     }
@@ -252,9 +276,9 @@ const wzdControl = {
     if (fOnError) { fOnError(); }
     if (wzdControl.modalReady()) {
       // @ts-ignore mdlControl
-      mdlControl.messageError(sMsg, sTitle)
+      mdlControl.messageError(sMsg, wzdControl.getTitle(sTitle))
     } else {
-      wzdControl.messageInfo(sMsg, sTitle)
+      wzdControl.messageInfo(sMsg, wzdControl.getTitle(sTitle))
     }
   },
 
@@ -295,6 +319,36 @@ const wzdControl = {
   mode: { BUTTONS: 1, IMAGES: 2, INFO: 3, CUSTOM: 4 },
 
   /**
+   * Fetch jSon object from the server
+   * @param {string} sCallback
+   * @param {function( object )} fSuccess
+   * @param {function | string} fFailure callback function | error string
+   * @public
+   */
+
+  fetchObject: async (sCallback, fSuccess, fFailure) => {
+    const _f = (f, p) => wzdControl.paramIsFunction(f) ? (f(p) || true) : false;
+    const _e = (r) => wzdControl.messageError(fFailure + ` [status: ${r.status}].`);
+    await fetch(sCallback)
+      .then((rsp) => {
+        if (!rsp.ok) { return _e(rsp) }
+        const _get = async () => {
+          try {
+            const jsoData = await rsp.json();
+            if (rsp.ok) {
+              _f(fSuccess, jsoData);
+            } else {
+              _e(rsp)
+            }
+          } catch (e) {
+            wzdControl.messageError(`<p>Houve um erro ao recuperar as informações recebidas.</p><p><small><b>Informação técnica</b> ${e.message}.</small></p>`);
+          }
+        }
+        _get();
+      })
+  },
+
+  /**
    * Initialize wizard's page
    * @param {wzdConfig} jsonConfig
    * @public
@@ -304,7 +358,7 @@ const wzdControl = {
     wzdControl.displayMode = jsonConfig.mode;
     wzdControl.fOnNext = jsonConfig.onNext || null;
     wzdControl.nextPageHref = (jsonConfig.nextPage || '').trim();
-    wzdControl.help = jsonConfig.help || '';
+    wzdControl.helpCallback = jsonConfig.help || '';
     wzdControl.path = (jsonConfig.path || '../../static/assets/img/wizard/').trim();
     wzdControl.multiSelect = jsonConfig.multiSelect || false;
     wzdControl.alignText = jsonConfig.alignText || ((jsonConfig.mode == wzdControl.mode.INFO) ? 'left' : 'center');
@@ -312,6 +366,7 @@ const wzdControl = {
     setTimeout(() => wzdControl.display(), 0);
     // don't use try catch, if an error occurs, better leave button disabled
     /** @type {HTMLButtonElement} */ (wzdControl.ge('idWzdBtnOk')).disabled = false;
+    /** @type {HTMLButtonElement} */ (wzdControl.ge('idWzdBtnHelp')).disabled = (wzdControl.helpCallback == '');
   },
 
 }

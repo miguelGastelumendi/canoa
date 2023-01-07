@@ -40,7 +40,7 @@
          eleMdl.addEventListener(
             'hidden.bs.modal',
             e => {
-               eleHdr.classList.remove(sStyleClass);
+               eleHdr.classList.remove(...sStyleClass.split(' '));
                if (fOnClose) { fOnClose(); }
             }
          );
@@ -75,7 +75,7 @@
        */
        displayHelp: (sHtmlHelp, sTitle) => {
          // TODO: set scroll bar to body
-         mdlControl.message(htmlHelp, sTitle, { style: 'info', icon: 'help' });
+         mdlControl.message(sHtmlHelp, sTitle, { style: 'info', icon: 'help' });
       },
 
    }

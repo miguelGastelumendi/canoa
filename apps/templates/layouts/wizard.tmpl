@@ -54,9 +54,8 @@
          <!-- Footer -->
          <div class="wzdFooter">
             <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
-            <button id="idWzdBtnHelp" class="wzdBtnHelp btn btn-outline-info" type="button" disabled= "true" onclick="wzdControl.help();">Ajuda</button>
-            {#  Se mudar caption do botão, mudar também nas instruções de apps\templates\home\rsp-projectStart.html #}
-            <button id="idWzdBtnOk" class="wzdBtnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage();">Próximo</button>
+            <button id="idWzdBtnHelp" class="wzdBtnHelp btn btn-outline-info" type="button" disabled= "true" onclick="wzdControl.displayHelp()">Ajuda</button>
+            <button id="idWzdBtnOk" class="wzdBtnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage()"><span class="wzdBtnNextText"></span></button>
          </div>
          <!-- Footer end -->
 

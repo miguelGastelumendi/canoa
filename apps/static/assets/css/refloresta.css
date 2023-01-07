@@ -58,24 +58,18 @@ body {
   padding: 0.1em 0px;
 }
 
-.wzdBtnNext {
+.wzdBtnNext, .wzdBtnHelp{
   width: 6em;
   margin: 0.5rem 0.5rem;
 }
 
 .wzdBtnNextText::after {
+  width: 6em;
   content: 'Próximo';
 }
 
-/* mgd ta valendo?
-.rfsContainer{
-  margin-top: 4% !important;
-  width: 52%;
-  background: var(--bs-gray-200);
-  padding: 0.5em;
-  margin: 0 auto;
-  border-radius: 15px;
-  font-size: 10px;
+.wzdBtnOpensModal::after {
+  content: '\00A0\00A0\2197';
 }
-*/
+
 /*~*/
