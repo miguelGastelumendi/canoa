@@ -272,13 +272,13 @@ const wzdControl = {
   },
 
   /** @public */
-  messageError: (sMsg, sTitle, fOnError) => {
+  messageError: (sMsg, sTitle, sError, fOnError) => {
     if (fOnError) { fOnError(); }
     if (wzdControl.modalReady()) {
       // @ts-ignore mdlControl
-      mdlControl.messageError(sMsg, wzdControl.getTitle(sTitle))
+      mdlControl.messageError(sMsg, wzdControl.getTitle(sTitle), sError)
     } else {
-      wzdControl.messageInfo(sMsg, wzdControl.getTitle(sTitle))
+      wzdControl.messageInfo(sMsg + '\n\n' + sError, wzdControl.getTitle(sTitle))
     }
   },
 
@@ -328,7 +328,7 @@ const wzdControl = {
 
   fetchObject: async (sCallback, fSuccess, fFailure) => {
     const _f = (f, p) => wzdControl.paramIsFunction(f) ? (f(p) || true) : false;
-    const _e = (r) => wzdControl.messageError(fFailure + ` [status: ${r.status}].`);
+    const _e = (r) => wzdControl.messageError(fFailure, '', `[status: ${r.status}].`);
     await fetch(sCallback)
       .then((rsp) => {
         if (!rsp.ok) { return _e(rsp) }
@@ -341,7 +341,7 @@ const wzdControl = {
               _e(rsp)
             }
           } catch (e) {
-            wzdControl.messageError(`<p>Houve um erro ao recuperar as informações recebidas.</p><p><small><b>Informação técnica</b> ${e.message}.</small></p>`);
+            wzdControl.messageError('Houve um erro ao recuperar as informações recebidas.', '', e.message);
           }
         }
         _get();

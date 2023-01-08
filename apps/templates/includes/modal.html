@@ -1,7 +1,7 @@
 <!-- === Modal window, call userMessage( sMsg, sTitle, oOptions, fOnClose ) === -->
 <div id="mdlWindow" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
    aria-hidden="true">
-   <div class="modal-dialog">
+   <div id="mdlDialog" class="modal-dialog">
       <div class="modal-content">
          <div id="mdlHeader" class="modal-header">
             <h1 id="mdlTitle" class="modal-title fs-5"></h1>
@@ -9,7 +9,9 @@
          </div>
          <div id="mdlMessage" class="modal-body"></div>
          <div id="mdlFooter" class="modal-footer">
-            <button type="button" class="btn btn-primary" style="min-width: 6em;" data-bs-dismiss="modal">OK</button>
+            <div id="mdTechnical" class="mdlTechnical"></div>
+            <button id="mdlBtnClose" type="button" class="btn" style="min-width: 6em;"
+               data-bs-dismiss="modal">Fechar</button>
          </div>
       </div>
    </div>
@@ -17,8 +19,18 @@
 
 <script>
    const mdlControl = {
-      /** @private */
+      /** @private GetElement*/
       ge: (sId) => document.getElementById(sId),
+
+      /** @private CustomizeElement */
+      ce: (aEle, bAdd) => {
+         aEle.forEach(e => {
+            if (e.class == '') return;
+            const ecc = mdlControl.ge(e.id).classList;
+            const cl = e.class.split(' ');
+            bAdd? ecc.add(...cl) : ecc.remove(...cl);
+         });
+      },
 
       /**
        * @param {string} sHtmlMessage Message.  Don't use <br> instead use <p></p>
@@ -30,17 +42,22 @@
       message: (sHtmlMessage, sTitle = 'Refloresta SP', oOptions = {}, fOnClose = null) => {
          const sStyle = oOptions.style ? oOptions.style : 'info';
          const sIcon = oOptions.icon ? oOptions.icon : sStyle;
-         const sStyleClass = sStyle ? `alert-${sStyle} text-${sStyle}` : '';
+         const sDlgCfg = oOptions.dlgCfg ? oOptions.dlgCfg : '';
+         const sStyleHead = sStyle ? `alert-${sStyle} text-${sStyle}` : '';
+         const sStyleBtn = sStyle ? `btn-outline-${sStyle}` : '';
+         // Text
          mdlControl.ge('mdlTitle').innerText = sTitle;
+         mdlControl.ge('mdTechnical').innerText = oOptions.tech;
          mdlControl.ge('mdlMessage').innerHTML = sHtmlMessage ? sHtmlMessage : 'Mensagem não disponível.';
-         const eleHdr = mdlControl.ge('mdlHeader');
-         eleHdr.classList.add(...sStyleClass.split(' '));
+         // Customize classes
+         const aCostume = [{ id: 'mdlBtnClose', class: sStyleBtn }, { id: 'mdlHeader', class: sStyleHead }, { id: 'mdlDialog', class: sDlgCfg }];
+         mdlControl.ce(aCostume, true);
          const eleMdl = mdlControl.ge('mdlWindow');
          const mdlWindow = new bootstrap.Modal(eleMdl, { backdrop: 'static' });
          eleMdl.addEventListener(
             'hidden.bs.modal',
             e => {
-               eleHdr.classList.remove(...sStyleClass.split(' '));
+               mdlControl.ce(aCostume, false);
                if (fOnClose) { fOnClose(); }
             }
          );
@@ -61,10 +78,11 @@
        * Displays a modal error window
        * @param {string} sHtmlMessage Mensagem. Don't use <br> instead use <p></p>
        * @param {string} [sTitle] Título da janela
+       * @param {string} [sTechnical] '' Technical info (goes on footer, can be hidden using css)
        * @public
        */
-      messageError: (sHtmlMessage, sTitle) => {
-         mdlControl.message(sHtmlMessage, sTitle, { style: 'danger' });
+      messageError: (sHtmlMessage, sTitle, sTechnical = '') => {
+         mdlControl.message(sHtmlMessage, sTitle, { style: 'danger', tech: sTechnical });
       },
 
       /**
@@ -73,9 +91,9 @@
        * @param {string} [sTitle] Título da janela
        * @public
        */
-       displayHelp: (sHtmlHelp, sTitle) => {
+      displayHelp: (sHtmlHelp, sTitle) => {
          // TODO: set scroll bar to body
-         mdlControl.message(sHtmlHelp, sTitle, { style: 'info', icon: 'help' });
+         mdlControl.message(sHtmlHelp, sTitle, { style: 'success', icon: 'help', dlgCfg: 'modal-lg' });
       },
 
    }
