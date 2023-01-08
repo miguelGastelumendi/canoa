@@ -79,7 +79,8 @@ def route_template(template):
                                        projects=dbquery.getListDictResultset(
                                            f"select descProjeto as caption, id from Projeto p "
                                            f"where idUser = {current_user.id}"
-                                           f"order by descProjeto"))
+                                           f"order by descProjeto")
+                                       , **helper.getFormText('rsp-selectProject'))
 
             if segment == 'rsp-projectLocation.html':
                 return render_template("home/" + template,
@@ -94,21 +95,24 @@ def route_template(template):
                 return render_template("home/" + template,
                                        goals=dbquery.getListDictResultset(f"select desFinalidade as caption, id " # desFinalidade: typo
                                                                           f"from Finalidade "
-                                                                          f"order by orderby"))
+                                                                          f"order by orderby")
+                                       , **helper.getFormText('rsp-projectLocation'))
 
             elif segment == 'rsp-plantDistribution.html':
                 # TODO: number of número de módulos fiscais validation
                 idFinalidade = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idFinalidade = {idFinalidade} "
                                    f"where id = {session['_projeto_id']}")
-                render_template("home/" + template, segment=segment)
+                render_template("home/" + template, segment=segment
+                                , **helper.getFormText('rsp-plantDistribution'))
 
 
             elif segment == 'rsp-relief.html':
                 idModeloPlantio = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idModeloPlantio = {idModeloPlantio} "
                                    f"where id = {session['_projeto_id']}")
-                render_template("home/" + template, segment=segment)
+                render_template("home/" + template, segment=segment
+                                , **helper.getFormText('rsp-relief'))
 
             elif segment == "rsp-mecanization.html":
                 idTopografia = request.args.get('id')

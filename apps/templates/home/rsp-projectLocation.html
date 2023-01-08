@@ -7,21 +7,21 @@
   <div class="accordion-item">
     <h2 class="accordion-header">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdLocation">
-        {{ selectMethod }}
+        {{ selectMethod|safe }}
       </button>
     </h2>
     <div id="bdLocation" class="accordion-collapse collapse" data-bs-parent="#acData">
       <div class="accordion-body">
         <div class="d-grid gap-2">
           <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal" data-bs-target="#mdlLocation">
-            <span class="wzdBtnOpensModal">{{ countyFitofisionomy }}</span>
+            {{ countyFitofisionomy|safe }}
           </button>
           <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal"
             data-bs-target="#mdlLatLong">
-            <span class="wzdBtnOpensModal">{{ latLong }}</span>
+            {{ latLon|safe }}
           </button>
           <button type="button" class="btn btn-info bg-gradient mx-5" data-bs-toggle="modal" data-bs-target="#mdlCAR">
-            <span class="wzdBtnOpensModal">{{ car }}</span>
+            {{ car|safe }}
           </button>
         </div>
       </div>
@@ -33,7 +33,7 @@
     <h2 class="accordion-header" id="hdProject">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bdProject"
         aria-expanded="true" aria-controls="bdProject">
-            {{ projectNameAreas }}
+            {{ projectNameAreas|safe }}
       </button>
     </h2>
     <!-- add class `show` to start open -->
@@ -41,21 +41,21 @@
       <div class="accordion-body">
         <div class="container" width="60%">
           <div class="row mb-3">
-            <label for="projectName" class="col-sm-4 col-form-label">{{ projectName }}</label>
+            <label for="projectName" class="col-sm-4 col-form-label">{{ projectName|safe }}</label>
             <div class="col-sm-8">
-              <input id="projectName" class="form-control" type="text" title="{{ projectNameDesc }}">
+              <input id="projectName" class="form-control" type="text" title="{{ projectNameDesc|safe }}">
             </div>
           </div>
           <div class="row mb-3">
-            <label for="projectArea" class="col-sm-4 col-form-label">{{ projectArea }}</label>
+            <label for="projectArea" class="col-sm-4 col-form-label">{{ projectArea|safe }}</label>
             <div class="col-sm-8">
-              <input id="projectArea" class="form-control" type="number" title="{{ projectAreaDesc }}">
+              <input id="projectArea" class="form-control" type="number" title="{{ projectAreaDesc|safe }}">
             </div>
           </div>
           <div class="row mb-3">
-            <label for="propertyArea" class="col-sm-4 col-form-label">{{ farmArea }}</label>
+            <label for="propertyArea" class="col-sm-4 col-form-label">{{ farmArea|safe }}</label>
             <div class="col-sm-8">
-              <input id="propertyArea" class="form-control" type="number" title="{{ farmAreaDesc }}">
+              <input id="propertyArea" class="form-control" type="number" title="{{ farmAreaDesc|safe }}">
             </div>
           </div>
         </div>
@@ -83,28 +83,28 @@
   <div class="modal-dialog modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="h6 modal-title">{{ countyFitoFisionomyDesc }}</h2>
+        <h2 class="h6 modal-title">{{ countyFitoFisionomyDesc|safe }}</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <p>
           <select id="municipio" class="form-select" onchange="locChange(this.id)">
-            <option value=" -1" hidden selected> {{ firstSelectCounty }}</option>
-            {% for key, value in municipios.items() %}<option value=" {{ key }}">{{ value }}</option>{% endfor %}
+            <option value=" -1" hidden selected> {{ firstSelectCounty|safe }}</option>
+            {% for key, value in municipios.items() %}<option value=" {{ key|safe }}">{{ value|safe }}</option>{% endfor %}
           </select>
         </p>
         <select id="fito_ecologica" class="form-select" disabled="true" onchange="locChange(this.id)">
           <option value="-1" selected>
-            {{ thenFitoFisionomy }}
+            {{ thenFitoFisionomy|safe }}
           </option>
-          {% for key, value in fito_municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+          {% for key, value in fito_municipios.items() %}<option value="{{ key|safe }}">{{ value|safe }}</option>{% endfor %}
         </select>
       </div>
       <div class="modal-footer">
         <button id="okLocation" class="btn btn-primary" type="button" data-bs-dismiss="modal"
-          disabled="true">{{ ok }}</button>
+          disabled="true">{{ ok|safe }}</button>
         <!--se não tem id, não atualiza, deixar assim  -->
-        <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">{{ close }}</button>
+        <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">{{ close|safe }}</button>
       </div>
     </div>
   </div>
@@ -115,17 +115,17 @@
   <div class="modal-dialog modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="h6 modal-title">{{ informProjectCoordinates }}</h2>
+        <h2 class="h6 modal-title">{{ informProjectCoordinates|safe }}</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <input id="lat_long" class="form-control" type="text"
-          placeholder="{{ latLonPlaceholder }}"
+          placeholder="{{ latLonPlaceholder|safe }}"
           pattern="/-(19|2[0-5])(\.[0-9]{1,6}),-(4[4-9]|5[0-3])(\.[0-9]{1,6})/" />
       </div>
       <div class="modal-footer">
-        <button id='okLatLong' class="btn btn-primary" type="button" data-bs-dismiss="modal">{{ ok }}</button>
-        <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">{{ close }}</button>
+        <button id='okLatLong' class="btn btn-primary" type="button" data-bs-dismiss="modal">{{ ok|safe }}</button>
+        <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">{{ close|safe }}</button>
       </div>
     </div>
   </div>
@@ -136,21 +136,21 @@
   <div class="modal-dialog modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="h6 modal-title">{{ informCAR }}</h2>
+        <h2 class="h6 modal-title">{{ informCAR|safe }}</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
       </div>
       <div class="modal-footer">
-        <button id="okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">{{ ok }}</button>
-        <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">{{ close }}</button>
+        <button id="okCAR" class="btn btn-primary" type="button" data-bs-dismiss="modal">{{ ok|safe }}</button>
+        <button class="btn btn-secundary" type="button" data-bs-dismiss="modal">{{ close|safe }}</button>
       </div>
     </div>
   </div>
 </div>
 <!-- ====== End Modals ====== -->
-{{ super() }}
+{{ super()|safe }}
 {% endblock htmlHelpers %}
 
 {% block wizardScripts %}
@@ -197,7 +197,7 @@
   const selMun = _ge('municipio');
   const selFito = _ge('fito_ecologica');
 
-  // const projectId = {{ projectId }};
+  // const projectId = {{ projectId|safe }};
   const projectData = {
     sIdMunicipio: ' 526'
   }
@@ -313,7 +313,7 @@
         if (rsp.ok) {
           window.location.href = 'rsp-goal.html'
         } else {
-          wzdControl.messageError(`{{ cantSaveMessage }} ${rsp.status}].`);
+          wzdControl.messageError(`{{ cantSaveMessage|safe }} ${rsp.status}].`);
         }
       });
   }
