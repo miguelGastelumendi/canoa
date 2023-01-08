@@ -51,8 +51,8 @@ def getListDictResultset(sql):
     return ret
 
 
-def getJSONResultset(sql):
-    return executeSQL(sql).first()[0]
+def getJSONStrResultset(sql):
+    return json.dumps(getListDictResultset(sql)[0])
 
 
 def getDataframeResultset(sql):

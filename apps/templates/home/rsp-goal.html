@@ -1,10 +1,5 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block title %}Projetos{% endblock %}
-
-{% block wizardDescription %}Finalidade{% endblock %}
-{% block wizardInstructions %}Selecione a finalidade do projeto{% endblock %}
-
 {% block wizardConfig %}
 <script>
   const jsBtn = {{ goals|tojson }};
