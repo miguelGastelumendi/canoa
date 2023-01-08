@@ -96,28 +96,31 @@ def route_template(template):
                                        goals=dbquery.getListDictResultset(f"select desFinalidade as caption, id " # desFinalidade: typo
                                                                           f"from Finalidade "
                                                                           f"order by orderby")
-                                       , **helper.getFormText('rsp-projectLocation'))
+                                       , **helper.getFormText('rsp-goal'))
 
             elif segment == 'rsp-plantDistribution.html':
                 # TODO: number of número de módulos fiscais validation
                 idFinalidade = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idFinalidade = {idFinalidade} "
                                    f"where id = {session['_projeto_id']}")
-                render_template("home/" + template, segment=segment
-                                , **helper.getFormText('rsp-plantDistribution'))
+                return render_template("home/" + template
+                                , **helper.getFormText('rsp-projectLocation'))
 
 
             elif segment == 'rsp-relief.html':
                 idModeloPlantio = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idModeloPlantio = {idModeloPlantio} "
                                    f"where id = {session['_projeto_id']}")
-                render_template("home/" + template, segment=segment
+                return render_template("home/" + template
                                 , **helper.getFormText('rsp-relief'))
 
             elif segment == "rsp-mecanization.html":
                 idTopografia = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idTopografia = {idTopografia} "
                                    f"where id = {session['_projeto_id']}")
+
+                return render_template("home/" + template,
+                                **helper.getFormText('rsp-mecanization'))
 
             elif segment == 'rsp-combinations.html':
                 #return render_template("home/rsp-relief.html", segment="rsp-relief.html")
@@ -136,7 +139,6 @@ def route_template(template):
                 projectData = ui_projectData.getProjectData(session['_projeto_id'])
                 return render_template("home/" + template, projectData=projectData)
 
-        return render_template("home/" + template, segment=helper.get_segment(template))
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
     except Exception as e:
