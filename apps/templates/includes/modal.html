@@ -7,9 +7,9 @@
             <h1 id="mdlTitle" class="modal-title fs-5"></h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
-         <div id="mdlMessage" class="modal-body"></div>
+         <div id="mdlBody" class="modal-body"></div>
          <div id="mdlFooter" class="modal-footer">
-            <div id="mdTechnical" class="mdlTechnical"></div>
+            <div id="mdlTechnical" class="mdl-technical visually-hidden"></div>
             <button id="mdlBtnClose" type="button" class="btn" style="min-width: 6em;"
                data-bs-dismiss="modal">Fechar</button>
          </div>
@@ -47,8 +47,8 @@
          const sStyleBtn = sStyle ? `btn-outline-${sStyle}` : '';
          // Text
          mdlControl.ge('mdlTitle').innerText = sTitle;
-         mdlControl.ge('mdTechnical').innerText = oOptions.tech;
-         mdlControl.ge('mdlMessage').innerHTML = sHtmlMessage ? sHtmlMessage : 'Mensagem não disponível.';
+         //TODO mdlControl.ge('mdlTechnical').innerText = oOptions.tech || '';
+         mdlControl.ge('mdlBody').innerHTML = sHtmlMessage ? sHtmlMessage : 'Mensagem não disponível.';
          // Customize classes
          const aCostume = [{ id: 'mdlBtnClose', class: sStyleBtn }, { id: 'mdlHeader', class: sStyleHead }, { id: 'mdlDialog', class: sDlgCfg }];
          mdlControl.ce(aCostume, true);
@@ -92,8 +92,7 @@
        * @public
        */
       displayHelp: (sHtmlHelp, sTitle) => {
-         // TODO: set scroll bar to body
-         mdlControl.message(sHtmlHelp, sTitle, { style: 'success', icon: 'help', dlgCfg: 'modal-lg' });
+         mdlControl.message(sHtmlHelp, sTitle, { style: 'success', icon: 'help', dlgCfg: 'modal-lg modal-dialog-scrollable' });
       },
 
    }
