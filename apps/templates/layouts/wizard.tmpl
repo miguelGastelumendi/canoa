@@ -16,16 +16,16 @@
 
    {# The `block wizardBody` is inside #}
    <!-- ==== Wizard ==== -->
-   <div class="wzdBackdrop">
+   <div class="wzd-backdrop">
 
       <!-- ==== Container ==== -->
-      <div class="wzdContainer container">
+      <div class="wzd-container container">
 
          <!-- Header -->
-         <div class="wzdHeader">
+         <div class="wzd-header">
             <table>
             <tr>
-               <td class="wzdLogo"></td>
+               <td class="wzd-logo"></td>
                <td>
                   <h6 id="wzdDescription" class="alert-heading">
                   {% block wizardDescription %} {{ wzdDescription }} {% endblock %}
@@ -40,7 +40,7 @@
          <!-- Header end -->
 
          <!-- Body -->
-         <div id="idWzdBody" class="wzdBody">
+         <div id="wzdBody" class="wzd-body">
 
          <!-- === User Area === -->
          {% block wizardBody %}
@@ -52,10 +52,10 @@
          <!-- Body end -->
 
          <!-- Footer -->
-         <div class="wzdFooter">
-            <div id= "idWzdUsDisplay" class="wzdUsDisplay visually-hidden"></div>
-            <button id="idWzdBtnHelp" class="wzdBtnHelp btn btn-outline-info" type="button" disabled= "true" onclick="wzdControl.displayHelp()">Ajuda</button>
-            <button id="idWzdBtnOk" class="wzdBtnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage()"><span class="wzdBtnNextText"></span></button>
+         <div class="wzd-footer">
+            <div id= "wzdSelectedItem" class="wzd-selectedItem visually-hidden"></div>
+            <button id="wzdBtnHelp" class="wzd-btnHelp btn btn-outline-success" type="button" disabled= "true" onclick="wzdControl.displayHelp()">Ajuda</button>
+            <button id="wzdBtnOk" class="wzd-btnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage()"><span class="wzd-btnNextText"></span></button>
          </div>
          <!-- Footer end -->
 

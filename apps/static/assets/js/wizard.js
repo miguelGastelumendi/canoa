@@ -1,8 +1,8 @@
 /**
  * @preserve
  * Wizard js
- * version 1.5.0
- * 2022.12.22--29 / 2023.01.03--06
+ * version 1.6.0
+ * 2022.12.22--29 / 2023.01.03--07.2
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -25,7 +25,7 @@
 
 /**
  * @typedef {Object} wzdItem
- * @property {string} [bodyId = "idWzdBody"] parent ID element of the buttons
+ * @property {string} [bodyId = "wzdBody"] parent ID element of the buttons
  * @property {string} text buttons text, if nul/undef caption is used
  * @property {string} caption display on selection
  * @property {number} id item`s ID, if informed, it is sent as a parameter
@@ -137,7 +137,7 @@ const wzdControl = {
   display: () => {
     const aBody = []; // array with the IDs of each body (parent's ids)
     const aHtml = []; // HTML for each parent body
-    wzdControl.jsoData.forEach(itm => { if (!itm.bodyId) itm.bodyId = 'idWzdBody' }); // default body's ID
+    wzdControl.jsoData.forEach(itm => { if (!itm.bodyId) itm.bodyId = 'wzdBody' }); // default body's ID
     const _getBodyIx = (sBodyId, sOpenDiv) => {
       let id = aBody.indexOf(sBodyId);
       if (id < 0) {
@@ -272,13 +272,13 @@ const wzdControl = {
   },
 
   /** @public */
-  messageError: (sMsg, sTitle, fOnError) => {
+  messageError: (sMsg, sTitle, sError, fOnError) => {
     if (fOnError) { fOnError(); }
     if (wzdControl.modalReady()) {
       // @ts-ignore mdlControl
-      mdlControl.messageError(sMsg, wzdControl.getTitle(sTitle))
+      mdlControl.messageError(sMsg, wzdControl.getTitle(sTitle), sError)
     } else {
-      wzdControl.messageInfo(sMsg, wzdControl.getTitle(sTitle))
+      wzdControl.messageInfo(sMsg + '\n\n' + sError, wzdControl.getTitle(sTitle))
     }
   },
 
@@ -302,7 +302,7 @@ const wzdControl = {
    * @public
    */
   displaySelected: (sHtml) => {
-    const eleUsDisplay = wzdControl.ge('idWzdUsDisplay');
+    const eleUsDisplay = wzdControl.ge('wzdSelectedItem');
     eleUsDisplay.innerHTML = '' + sHtml;
     if (sHtml) {
       eleUsDisplay.classList.remove('visually-hidden');
@@ -328,7 +328,7 @@ const wzdControl = {
 
   fetchObject: async (sCallback, fSuccess, fFailure) => {
     const _f = (f, p) => wzdControl.paramIsFunction(f) ? (f(p) || true) : false;
-    const _e = (r) => wzdControl.messageError(fFailure + ` [status: ${r.status}].`);
+    const _e = (r) => wzdControl.messageError(fFailure, '', `Status: ${r.status}].`);
     await fetch(sCallback)
       .then((rsp) => {
         if (!rsp.ok) { return _e(rsp) }
@@ -341,7 +341,7 @@ const wzdControl = {
               _e(rsp)
             }
           } catch (e) {
-            wzdControl.messageError(`<p>Houve um erro ao recuperar as informações recebidas.</p><p><small><b>Informação técnica</b> ${e.message}.</small></p>`);
+            wzdControl.messageError('Houve um erro ao recuperar as informações recebidas.', '', e.message);
           }
         }
         _get();
@@ -365,8 +365,8 @@ const wzdControl = {
     if (!wzdControl.path.endsWith('/')) wzdControl.path += '/';
     setTimeout(() => wzdControl.display(), 0);
     // don't use try catch, if an error occurs, better leave button disabled
-    /** @type {HTMLButtonElement} */ (wzdControl.ge('idWzdBtnOk')).disabled = false;
-    /** @type {HTMLButtonElement} */ (wzdControl.ge('idWzdBtnHelp')).disabled = (wzdControl.helpCallback == '');
+    /** @type {HTMLButtonElement} */ (wzdControl.ge('wzdBtnOk')).disabled = false;
+    /** @type {HTMLButtonElement} */ (wzdControl.ge('wzdBtnHelp')).disabled = (wzdControl.helpCallback == '');
   },
 
 }

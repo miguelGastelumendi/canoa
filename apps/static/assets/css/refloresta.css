@@ -2,36 +2,37 @@
 /* Miguel Gastelumendi -- mgd */
 
 body {
-   background-image: url(../img/pages/1440_Tree-tops.jpg);
-   background-repeat: no-repeat;
-   background-attachment: fixed;
-   background-size: cover;
+  background-image: url(../img/pages/1440_Tree-tops.jpg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
 }
 
-.wzdBackdrop {
+.wzd-backdrop {
   margin-top: 2%
 }
 
-.wzdContainer {
+.wzd-container {
   padding: 0px;
 }
 
 /* Header: Left: logo, right: Title / sub title */
-.wzdHeader{
+.wzd-header {
   width: 100%;
   background-color: var(--bs-gray-300);
   padding: 1rem 1rem;
   border-radius: 15px 15px 0 0;
 }
 
-.wzdLogo {
+.wzd-logo {
   background: url(../img/logo-wzd.png) no-repeat center top;
-  height: 52px;  /* this is important */
+  height: 52px;
+  /* this is important */
   width: 52px;
 }
 
 /* Body: specific for each wizard */
-.wzdBody {
+.wzd-body {
   width: 100%;
   padding: 1.2em 0.5em;
   background-color: var(--bs-gray-500);
@@ -42,7 +43,7 @@ body {
 }
 
 /* Footer: a Ok button and display selected info */
-.wzdFooter {
+.wzd-footer {
   width: 100%;
   text-align: center;
   background-color: var(--bs-gray-400);
@@ -50,7 +51,7 @@ body {
 }
 
 /* User Selection Display area (inside Footer) */
-.wzdUsDisplay {
+.wzd-selectedItem {
   width: 100%;
   border-top: 1px solid var(--bs-gray-600);
   text-align: center;
@@ -58,18 +59,35 @@ body {
   padding: 0.1em 0px;
 }
 
-.wzdBtnNext, .wzdBtnHelp{
+.wzd-btnNext,
+.wzd-btnHelp {
   width: 6em;
   margin: 0.5rem 0.5rem;
 }
 
-.wzdBtnNextText::after {
+.wzd-btnNextText::after {
   width: 6em;
   content: 'Próximo';
 }
 
-.wzdBtnOpensModal::after {
+.wzd-btnOpensModal::after {
   content: '\00A0\00A0\2197';
 }
+
+/* Footer text */
+.mdl-technical {
+  width: 100%;
+  text-align: left;
+  background-color: var(--bs-danger-backg);
+  border: 1px solid var(--bs-gray-600);
+  color: var(--bs-gray-600);
+  font-size: smaller;
+  padding: 0.2rem;
+}
+
+.mdl-technical::before {
+  content: '\26A0\00A0\00A0';
+}
+
 
 /*~*/
