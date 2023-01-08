@@ -195,7 +195,8 @@ const wzdControl = {
   selectionReady: (o) => {
     let i;
     const k = wzdControl.groups.length;
-    if (!wzdControl.multiSelect) {
+    /** Mauro **/
+    if (!wzdControl.multiSelect && wzdControl.mode != wzdControl.mode.INFO) {
       o.msg = 'Por favor, selecione uma das opções.';
       return (wzdControl.selectedItemIx >= 0);
     } else if (!wzdControl.nextPageHref) {
@@ -219,7 +220,8 @@ const wzdControl = {
     let o = { msg: '' };
     if (wzdControl.fOnNext && !wzdControl.fOnNext()) {
       // Not this time 8-|
-    } else if (wzdControl.displayMode == wzdControl.mode.CUSTOM) {
+      // Mauro 08/01/23
+    } else if (wzdControl.displayMode == wzdControl.mode.CUSTOM || wzdControl.displayMode == wzdControl.mode.INFO) {
       sHref = wzdControl.nextPageHref;
     } else if (wzdControl.jsoData.length == 0) {
       wzdControl.messageError(`Não exitem items para selecionar.`)

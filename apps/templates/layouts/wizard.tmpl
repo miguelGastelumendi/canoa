@@ -1,7 +1,7 @@
 {# files are relative to ./templates #}
 {% extends "layouts/base-refloresta.tmpl" %}
 
-{% block wizardPageTitle %}{{ pageTitle }}{% endblock %}
+{% block wizardPageTitle %}{{ pageTitle|safe }}{% endblock %}
 
 
 {% block content %}
@@ -28,7 +28,7 @@
                <td class="wzd-logo"></td>
                <td>
                   <h6 id="wzdDescription" class="alert-heading">
-                  {% block wizardDescription %} {{ wzdDescription }} {% endblock %}
+                  {% block wizardDescription %} {{ wzdDescription|safe }} {% endblock %}
                   </h6>
                   <div id="wzdInstructions">
                   {% block wizardInstructions %} {{ wzdInstructions }} {% endblock %}

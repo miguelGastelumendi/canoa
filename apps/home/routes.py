@@ -7,11 +7,11 @@ from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-import apps.home.ui_map as ui_map
+import apps.home.ui_projectLocation as ui_projectLocation
 import apps.home.ui_plantdistribution as ui_plantdistribution
 import apps.home.dbquery as dbquery
 import apps.home.ui_combination as ui_combination
-import apps.home.ui_projectData as ui_projectData
+import apps.home.ui_projectEnd as ui_projectEnd
 from flask import session
 from apps.home import helper
 from flask_login import current_user
@@ -31,7 +31,7 @@ def route_callback(endpoint):
     args = request.args
     callerID = args.get('callerID')
     if callerID == 'mapSP':
-        return ui_map.getMapSP()
+        return ui_projectLocation.getMapSP()
     idFito = int(args.get('idFito')) if callerID in ['fito_ecologica', 'saveProject'] else -1
     latlong = args.get('latlong')
     CAR = args.get('CAR')
@@ -40,23 +40,23 @@ def route_callback(endpoint):
             idMunicipio = int(args.get('idMunicipio'))
         except:
             idMunicipio = -1
-        return ui_map.getMapFitoMunicipio(callerID,
-                                          idMunicipio,
-                                          idFito,
-                                          latlong,
-                                          CAR)
+        return ui_projectLocation.getMapFitoMunicipio(callerID,
+                                                      idMunicipio,
+                                                      idFito,
+                                                      latlong,
+                                                      CAR)
     elif endpoint == 'saveProject':
         projectName = args.get('ProjectName')
         if projectName == '':
             session['_projeto_id'] = 97
             return "Ok"
-        projeto_id = ui_map.saveProject(session['_user_id'],
-                                        args.get('ProjectName'),
-                                        args.get('ProjectArea'),
-                                        args.get('PropertyArea'),
-                                        idFito,
-                                        latlong,
-                                        CAR)
+        projeto_id = ui_projectLocation.saveProject(session['_user_id'],
+                                                    args.get('ProjectName'),
+                                                    args.get('ProjectArea'),
+                                                    args.get('PropertyArea'),
+                                                    idFito,
+                                                    latlong,
+                                                    CAR)
         session['_projeto_id'] = projeto_id
     elif endpoint == 'help':
         return helper.getHelpText(args.get('id'))
@@ -83,19 +83,21 @@ def route_template(template):
                                        , **helper.getFormText('rsp-selectProject'))
 
             if segment == 'rsp-projectLocation.html':
+                projectId = (int(request.args['id']) if 'id' in request.args else -1)
+                #if projectId > -1:
                 return render_template("home/" + template,
-                                       municipios=ui_map.getListaMunicipios()
-                                       , fito_municipios=ui_map.getListaFito(None)
-                                       , projectId=(request.args['id'] if 'id' in request.args else -1)
+                                       municipios=ui_projectLocation.getListaMunicipios()
+                                       , fito_municipios=ui_projectLocation.getListaFito(None)
                                        , **helper.getFormText('rsp-projectLocation')
-                                       # , map=ui_map.getMapSP()
+                                       # , map=ui_projectLocation.getMapSP()
                                        )
 
             elif segment == 'rsp-goal.html':
                 return render_template("home/" + template,
-                                       goals=dbquery.getListDictResultset(f"select desFinalidade as caption, id " # desFinalidade: typo
-                                                                          f"from Finalidade "
-                                                                          f"order by orderby")
+                                       goals=dbquery.getListDictResultset(
+                                           f"select desFinalidade as caption, id "  # desFinalidade: typo
+                                           f"from Finalidade "
+                                           f"order by orderby")
                                        , **helper.getFormText('rsp-goal'))
 
             elif segment == 'rsp-plantDistribution.html':
@@ -104,7 +106,7 @@ def route_template(template):
                 dbquery.executeSQL(f"update Projeto set idFinalidade = {idFinalidade} "
                                    f"where id = {session['_projeto_id']}")
                 return render_template("home/" + template
-                                , **helper.getFormText('rsp-projectLocation'))
+                                       , **helper.getFormText('rsp-projectLocation'))
 
 
             elif segment == 'rsp-relief.html':
@@ -112,7 +114,7 @@ def route_template(template):
                 dbquery.executeSQL(f"update Projeto set idModeloPlantio = {idModeloPlantio} "
                                    f"where id = {session['_projeto_id']}")
                 return render_template("home/" + template
-                                , **helper.getFormText('rsp-relief'))
+                                       , **helper.getFormText('rsp-relief'))
 
             elif segment == "rsp-mecanization.html":
                 idTopografia = request.args.get('id')
@@ -120,10 +122,13 @@ def route_template(template):
                                    f"where id = {session['_projeto_id']}")
 
                 return render_template("home/" + template,
-                                **helper.getFormText('rsp-mecanization'))
+                                       mecanization=dbquery.getListDictResultset(
+                                           f"select nomeMecanizacao as caption, id "  # desFinalidade: typo
+                                           f"from MecanizacaoNivel "),
+                                       **helper.getFormText('rsp-mecanization'))
 
             elif segment == 'rsp-combinations.html':
-                #return render_template("home/rsp-relief.html", segment="rsp-relief.html")
+                # return render_template("home/rsp-relief.html", segment="rsp-relief.html")
                 idMecanizacaoNivel = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idMecanizacaoNivel = {idMecanizacaoNivel} "
                                    f"where id = {session['_projeto_id']}")
@@ -135,9 +140,9 @@ def route_template(template):
                                        noData=noData)
 
             elif segment == 'rsp-projectEnd.html':
-                ui_projectData.updateProjectData(session['_projeto_id'], request.args['id'])
-                projectData = ui_projectData.getProjectData(session['_projeto_id'])
-                return render_template("home/" + template, projectData=projectData)
+                #                ui_projectData.updateProjectData(session['_projeto_id'], request.args['id'])
+                projectData, combinations = ui_projectEnd.getProjectData(session['_projeto_id'], request.args['id'])
+                return render_template("home/" + template, combinations=combinations, **projectData)
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404

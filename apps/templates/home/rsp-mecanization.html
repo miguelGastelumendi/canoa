@@ -2,10 +2,7 @@
 
 {% block wizardConfig %}
 <script>
-  const jsBtn = [
-    { caption: '{{moreMecanization}}', id: 1 },
-    { caption: '{{lessMecanization}}', id: 2 }
-  ];
+  const jsBtn = {{ mecanization|tojson }};
   wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-combinations.html' });
 </script>
 {% endblock %}

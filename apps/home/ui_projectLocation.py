@@ -205,7 +205,12 @@ def saveProject(userId: str,
                 CAR: str):
     # dbquery.executeSQL("delete from ProjetoPreferencias; delete from Projeto")
 
-    dbquery.executeSQL(f"INSERT INTO Projeto(idUser, descProjeto, CAR, idMunicipioFito, dtCriacao, dtAtualizacao) "
-                       f"VALUES ({userId}, '{projectName}', '{CAR}', {idFito}, GETDATE(), GETDATE())")
+    dbquery.executeSQL(f"INSERT INTO Projeto(idUser, descProjeto, CAR, idMunicipioFito, AreaProjeto, AreaPropriedade,"
+                       f" dtCriacao, dtAtualizacao) "
+                       f"VALUES ({userId}, '{projectName}', '{CAR}', {idFito}, {projectArea}, {propertyArea},"
+                       f"GETDATE(), GETDATE())")
     project_id = dbquery.getLastId('Projeto')
     return project_id
+
+def getProjectData(projectId):
+    pass

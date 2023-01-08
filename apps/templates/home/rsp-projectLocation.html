@@ -43,19 +43,19 @@
           <div class="row mb-3">
             <label for="projectName" class="col-sm-4 col-form-label">{{ projectName|safe }}</label>
             <div class="col-sm-8">
-              <input id="projectName" class="form-control" type="text" title="{{ projectNameDesc|safe }}">
+              <input id="projectName" class="form-control" type="text" title="{{ projectNameDesc|safe }} value={{ projectNameValue }}">
             </div>
           </div>
           <div class="row mb-3">
             <label for="projectArea" class="col-sm-4 col-form-label">{{ projectArea|safe }}</label>
             <div class="col-sm-8">
-              <input id="projectArea" class="form-control" type="number" title="{{ projectAreaDesc|safe }}">
+              <input id="projectArea" class="form-control" type="number" title="{{ projectAreaDesc|safe }} value={{ projectAreaValue }}">
             </div>
           </div>
           <div class="row mb-3">
             <label for="propertyArea" class="col-sm-4 col-form-label">{{ farmArea|safe }}</label>
             <div class="col-sm-8">
-              <input id="propertyArea" class="form-control" type="number" title="{{ farmAreaDesc|safe }}">
+              <input id="propertyArea" class="form-control" type="number" title="{{ farmAreaDesc|safe }} value={{ propertyAreaValue }}">
             </div>
           </div>
         </div>
@@ -88,9 +88,10 @@
       </div>
       <div class="modal-body">
         <p>
-          <select id="municipio" class="form-select" onchange="locChange(this.id)">
+          <select id="municipio" class="form-select" onchange="locChange(this.id)" >
             <option value=" -1" hidden selected> {{ firstSelectCounty|safe }}</option>
             {% for key, value in municipios.items() %}<option value=" {{ key|safe }}">{{ value|safe }}</option>{% endfor %}
+             {{ 'selected' if key == selectedCountyId }}
           </select>
         </p>
         <select id="fito_ecologica" class="form-select" disabled="true" onchange="locChange(this.id)">

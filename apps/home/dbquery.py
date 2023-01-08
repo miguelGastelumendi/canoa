@@ -50,6 +50,13 @@ def getListDictResultset(sql):
         ret.append(dic)
     return ret
 
+def getDictFieldNamesValuesResultset(sql):
+    df = getDataframeResultset(sql)
+    row = df.iloc[0]
+    dic = {}
+    for i in range(len(row)):
+        dic[df.columns[i]] = row[i]
+    return dic
 
 def getJSONStrResultset(sql):
     return json.dumps(getListDictResultset(sql)[0])
