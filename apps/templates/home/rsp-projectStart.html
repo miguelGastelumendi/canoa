@@ -1,17 +1,13 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block title %}Projetos{% endblock %}
-
-{% block wizardDescription %}Projetos{% endblock %}
-{% block wizardInstructions %}Selecione a opção desejada e confirme clicando no botão <br>Ok</br>{% endblock %}
-
 {% block wizardConfig %}
 <script>
   const jsBtn = [
-    { caption: 'Criar um novo projeto', href: 'rsp-projectLocation.html' },
-    { caption: 'Consultar projeto existente criado por você', href: 'rsp-selectProject.html' }
+    { caption: '{{ createProject }}', href: 'rsp-projectLocation.html' },
+    { caption: '{{ updateProject }}', href: 'rsp-selectProject.html' }
   ];
-  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS });
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS,
+      help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html','')}`});
 </script>
 {% endblock %}
 

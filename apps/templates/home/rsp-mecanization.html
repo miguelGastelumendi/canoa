@@ -1,16 +1,8 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block title %}Projetos{% endblock %}
-
-{% block wizardDescription %}Plantação{% endblock %}
-{% block wizardInstructions %}Selecione a forma em que será plantado{% endblock %}
-
 {% block wizardConfig %}
 <script>
-  const jsBtn = [
-    { caption: '+ Manual', id: 1 },
-    { caption: '+ Mecanizada', id: 2 }
-  ];
+  const jsBtn = {{ mecanization|tojson }};
   wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-combinations.html' });
 </script>
 {% endblock %}

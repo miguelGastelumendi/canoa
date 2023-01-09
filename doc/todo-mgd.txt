@@ -1,5 +1,7 @@
 Tarefas
 
+      3) Wizard, [Próxima] no lugar de [Ok] ?
+
       4) rsp-projeto_localizacao.html
          O tamanho do mapa parece que já vem fixado
          Se o tamanho do browser muda, o mapa fica igual de tamanho.

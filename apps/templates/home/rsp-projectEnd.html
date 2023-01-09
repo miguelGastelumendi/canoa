@@ -1,27 +1,20 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block title %}{% endblock %}
-
-{% block wizardDescription %}Finalidade{% endblock %}
-{% block wizardInstructions %}Selecione a atividade segundo os critérios{% endblock %}
-
 {% block wizardConfig %}
 <script>
   const jsBtn = [
     { caption:
-            '<b>Dados do projeto criado/alterado</b><br><br>' +
-            '<b>Nome:</b> { projectData.nomeProjeto }<br>' +
-            '<b>Autor:</b> { currentuser.username }<br>' +
-            '<b>E-mail:</b> { currentuser.email }<br>' +
-            '<b>Finalidade:</b> { projectData.descFinalidade }<br>' +
-            '<b>Distribuição de plantio: { projectData.descModelo </b>' +
-            '<b>Declividade:</b> { projectData.nomeTopografia } - { projectData.descTopografia }' +
-            '<b>Nível de mecanização:</b> { projectData.nomeMecanização }' +
-            '<b>(dados das faixas selecionadas)</b>',
+'<b>Dados do projeto criado/alterado</b><br><br>' +
+            '<b>Nome:</b> {{ descProjeto }} <br>' +
+            '<b>Autor:</b> {{ current_user.username }}<br>' +
+            '<b>E-mail:</b> {{ current_user.email }}<br>' +
+            '<b>Finalidade:</b> {{ desFinalidade }}<br>' +
+            '<b>Distribuição de plantio:</b> {{ nomeModelo }}<br>' +
+            '<b>Declividade:</b> {{ NomeTopografia }} - {{ descTopografia }}</br>' +
+            '<b>Nível de mecanização:</b> {{ nomeMecanizacao }}<br>',
         href: 'rsp-ProjectStart.html' },
-    { caption: 'Área de uso alternativo do solo', href: 'rsp-plantDistribution.html?id=2' }
   ];
-  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS });
+  wzdControl.initPage({ data: jsBtn,mode: wzdControl.mode.INFO, nextPage: 'rsp-projectStart.html' });
 </script>
 {% endblock %}
 

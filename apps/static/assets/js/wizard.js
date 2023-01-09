@@ -1,8 +1,8 @@
 /**
  * @preserve
  * Wizard js
- * version 1.4.0
- * 2022.12.22--29 / 2023.01.03--04
+ * version 1.6.0
+ * 2022.12.22--29 / 2023.01.03--07.2
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -25,7 +25,7 @@
 
 /**
  * @typedef {Object} wzdItem
- * @property {string} [bodyId = "idWzdBody"] parent ID element of the buttons
+ * @property {string} [bodyId = "wzdBody"] parent ID element of the buttons
  * @property {string} text buttons text, if nul/undef caption is used
  * @property {string} caption display on selection
  * @property {number} id item`s ID, if informed, it is sent as a parameter
@@ -41,6 +41,7 @@
  * @property {fOnNext?} onNext callback on Next button
  * @property {string?} nextPage address of next page
  * @property {string?} path to wzdItem.fileName
+ * @property {string?} [help] callback function to fetch help html text (use <p></p> instead of <br>)
  * @property {string?} [alignText = 'center'] buttons text alignment [center|start|end]
  * @property {boolean?} [multiSelect=false] allow selected item per group
  */
@@ -63,6 +64,7 @@ const wzdControl = {
   jsoData: [],
   /** @type {fOnNext?} */
   fOnNext: null,
+  helpCallback: '', // fetch server help address
 
   ge: (/** @type {string} */ sId) => /** @type{HTMLElement} */(document.getElementById(sId)),
   getBtn: (/** @type {number} */ ix) => wzdControl.ge(wzdControl.getBtnId(ix)),
@@ -77,6 +79,8 @@ const wzdControl = {
     return sCols;
   },
   getSelectedCount: () => (wzdControl.multiSelect ? wzdControl.groups.filter(grp => (grp.selected >= 0)).length : ((wzdControl.selectedItemIx < 0) ? 0 : 1)),
+
+  getTitle: (sDefault) => (sDefault ? sDefault : wzdControl.ge('wzdDescription').innerText),
 
   getGroupItemByIx: (/** @type {number} */ ix) => {
     const itm = wzdControl.jsoData[ix];
@@ -133,7 +137,7 @@ const wzdControl = {
   display: () => {
     const aBody = []; // array with the IDs of each body (parent's ids)
     const aHtml = []; // HTML for each parent body
-    wzdControl.jsoData.forEach(itm => { if (!itm.bodyId) itm.bodyId = 'idWzdBody' }); // default body's ID
+    wzdControl.jsoData.forEach(itm => { if (!itm.bodyId) itm.bodyId = 'wzdBody' }); // default body's ID
     const _getBodyIx = (sBodyId, sOpenDiv) => {
       let id = aBody.indexOf(sBodyId);
       if (id < 0) {
@@ -171,7 +175,7 @@ const wzdControl = {
       case wzdControl.mode.IMAGES:
         wzdControl.jsoData.forEach((itm, ix) => {
           let onClick = `onclick="wzdControl.selectItem(${ix})`;
-          bodyIx = _getBodyIx(itm.bodyId, `<div class="row ${wzdControl.getColClasses(itm.bodyId)}">`);
+          bodyIx = _getBodyIx(itm.bodyId, `<div class="row ${wzdControl.getColClasses(/** @type {string} */(itm.bodyId))}">`);
           aHtml[bodyIx] +=
             `<div class="col ${sAlign} mb-3">` +
             `<button id=${wzdControl.getBtnId(ix)} class="mb-2 btn btn-info bg-gradient" type="button" style="height:4.2em; width:100%" ${onClick}">` +
@@ -191,7 +195,8 @@ const wzdControl = {
   selectionReady: (o) => {
     let i;
     const k = wzdControl.groups.length;
-    if (!wzdControl.multiSelect) {
+    /** Mauro **/
+    if (!wzdControl.multiSelect && wzdControl.mode != wzdControl.mode.INFO) {
       o.msg = 'Por favor, selecione uma das opções.';
       return (wzdControl.selectedItemIx >= 0);
     } else if (!wzdControl.nextPageHref) {
@@ -208,14 +213,15 @@ const wzdControl = {
     return false;
   },
 
-  /** @private */
+  /** @protected */
   gotoNextPage: () => {
     let sHref = '';
     let jsBtn
     let o = { msg: '' };
     if (wzdControl.fOnNext && !wzdControl.fOnNext()) {
       // Not this time 8-|
-    } else if (wzdControl.displayMode == wzdControl.mode.CUSTOM) {
+      // Mauro 08/01/23
+    } else if (wzdControl.displayMode == wzdControl.mode.CUSTOM || wzdControl.displayMode == wzdControl.mode.INFO) {
       sHref = wzdControl.nextPageHref;
     } else if (wzdControl.jsoData.length == 0) {
       wzdControl.messageError(`Não exitem items para selecionar.`)
@@ -236,24 +242,45 @@ const wzdControl = {
     if (sHref) setTimeout(() => { window.location.href = sHref }, 0);
   },
 
+  /** @protected */
+  displayHelp: () => {
+    wzdControl.fetchObject(
+      wzdControl.helpCallback,
+      (oData) => {
+        (wzdControl.modalReady()) ?  // @ts-ignore mdlControl
+          mdlControl.displayHelp(oData.text, wzdControl.getTitle(oData.title)) :
+          wzdControl.messageInfo('O recurso de exibição de Ajuda, não está disponível no momento.')
+      },
+      'No momento, não temos ajuda para este tópico'
+    );
+  },
+
+  /**
+   * Return true if the f is a function
+   * @param {function} f
+   * @returns {boolean}
+   * @public
+   */
+  paramIsFunction: (f) => (typeof f === 'function'),
+
   /** @public */
   messageInfo: (sMsg, sTitle) => {
     if (wzdControl.modalReady()) {
       // @ts-ignore mdlControl
-      mdlControl.message(sMsg, sTitle)
+      mdlControl.messageInfo(sMsg, wzdControl.getTitle(sTitle))
     } else {
       alert(sMsg)
     }
   },
 
   /** @public */
-  messageError: (sMsg, sTitle, fOnError) => {
+  messageError: (sMsg, sTitle, sError, fOnError) => {
     if (fOnError) { fOnError(); }
     if (wzdControl.modalReady()) {
       // @ts-ignore mdlControl
-      mdlControl.messageError(sMsg, sTitle)
+      mdlControl.messageError(sMsg, wzdControl.getTitle(sTitle), sError)
     } else {
-      wzdControl.messageInfo(sMsg, sTitle)
+      wzdControl.messageInfo(sMsg + '\n\n' + sError, wzdControl.getTitle(sTitle))
     }
   },
 
@@ -277,7 +304,7 @@ const wzdControl = {
    * @public
    */
   displaySelected: (sHtml) => {
-    const eleUsDisplay = wzdControl.ge('idWzdUsDisplay');
+    const eleUsDisplay = wzdControl.ge('wzdSelectedItem');
     eleUsDisplay.innerHTML = '' + sHtml;
     if (sHtml) {
       eleUsDisplay.classList.remove('visually-hidden');
@@ -294,6 +321,36 @@ const wzdControl = {
   mode: { BUTTONS: 1, IMAGES: 2, INFO: 3, CUSTOM: 4 },
 
   /**
+   * Fetch jSon object from the server
+   * @param {string} sCallback
+   * @param {function( object )} fSuccess
+   * @param {function | string} fFailure callback function | error string
+   * @public
+   */
+
+  fetchObject: async (sCallback, fSuccess, fFailure) => {
+    const _f = (f, p) => wzdControl.paramIsFunction(f) ? (f(p) || true) : false;
+    const _e = (r) => wzdControl.messageError(fFailure, '', `Status: ${r.status}].`);
+    await fetch(sCallback)
+      .then((rsp) => {
+        if (!rsp.ok) { return _e(rsp) }
+        const _get = async () => {
+          try {
+            const jsoData = await rsp.json();
+            if (rsp.ok) {
+              _f(fSuccess, jsoData);
+            } else {
+              _e(rsp)
+            }
+          } catch (e) {
+            wzdControl.messageError('Houve um erro ao recuperar as informações recebidas.', '', e.message);
+          }
+        }
+        _get();
+      })
+  },
+
+  /**
    * Initialize wizard's page
    * @param {wzdConfig} jsonConfig
    * @public
@@ -303,13 +360,15 @@ const wzdControl = {
     wzdControl.displayMode = jsonConfig.mode;
     wzdControl.fOnNext = jsonConfig.onNext || null;
     wzdControl.nextPageHref = (jsonConfig.nextPage || '').trim();
+    wzdControl.helpCallback = jsonConfig.help || '';
     wzdControl.path = (jsonConfig.path || '../../static/assets/img/wizard/').trim();
     wzdControl.multiSelect = jsonConfig.multiSelect || false;
     wzdControl.alignText = jsonConfig.alignText || ((jsonConfig.mode == wzdControl.mode.INFO) ? 'left' : 'center');
     if (!wzdControl.path.endsWith('/')) wzdControl.path += '/';
     setTimeout(() => wzdControl.display(), 0);
     // don't use try catch, if an error occurs, better leave button disabled
-    /** @type {HTMLButtonElement} */ (wzdControl.ge('idWzdBtnOk')).disabled = false;
+    /** @type {HTMLButtonElement} */ (wzdControl.ge('wzdBtnOk')).disabled = false;
+    /** @type {HTMLButtonElement} */ (wzdControl.ge('wzdBtnHelp')).disabled = (wzdControl.helpCallback == '');
   },
 
 }
