@@ -97,7 +97,7 @@
         <p>
           <select id="municipio" class="form-select" onchange="locChange(this.id)">
             <option value=" -1" hidden selected>(Primeiro selecione o Município)</option>
-            {% for key, value in municipios.items() %}<option value=" {{ key }}">{{ value }}</option>{% endfor %}
+            {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
           </select>
         </p>
         <select id="fito_ecologica" class="form-select" disabled="true" onchange="locChange(this.id)">
@@ -203,16 +203,26 @@
 
   const selMun = _ge('municipio');
   const selFito = _ge('fito_ecologica');
+  let latlong = _ge("lat_long");
+  let CAR = _ge("CAR");
 
   // const projectId = {{ projectId }};
   const projectData = {
-    sIdMunicipio: ' 526'
+    sIdMunicipio: '294',
+    // sIdFito: '526',
+    sLatLong: '-22,9 -44,9',
+    sCar: '1'
   }
-  //funcionou por causa do espaço antes do numeral em string 
+
   if(projectData){
-    setTimeout(() =>{
+    // setTimeout(() =>{
+      bFetching = true;
       selMun.value = projectData.sIdMunicipio;
-    }, 5000)
+      // selFito.value = projectData.sIdFito;
+      latlong.value = projectData.sLatLong;
+      // CAR.value = projectData.sCar;
+      bFetching = false;
+    // }, 5000)
   }
 
 
