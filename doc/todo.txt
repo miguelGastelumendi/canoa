@@ -73,3 +73,30 @@ a-
   6. Comentário do Miguel em Combinações:
        // Mauro: aqui seria bacana que isto estives num fetch
        // removi sem permissão delas : "<b>Financeiro</b><br>" e coloquei <hr>
+
+
+ 10/01/23
+Framework:
+
+ 1. Passar os botões de navegação pra cima
+ 2. Colocar botão de voltar
+ 3. Mostrar as escolhas já feitas quando voltar.
+ 4. Colocar os textos destes no banco
+ 5. Tirar o logo do wizard. O logo deste deve ir pra barra de cima no lugar do que está lá, acho que seria legal mudar a cor da barra. Pedro, escolha uma cor adequada.
+ 6. Tirar ou dexar opcional o segundo texto do cabeçalho do wizard.
+ 7. Mostrar as escolhas já feitas quando voltar.
+ 8. Tela de imagem: deixar só a imagem (opcionalmente).
+ 9. Possibilidade de help por controle.
+
+
+Telas de login:
+
+registrar
+ 1. tirar as strings do Themesberg
+ 2. Passar os textos para o banco
+ 3. aceitar os termos é obrigatoria (os termos devem vir do banco numa modal).
+
+2) login
+colocar os textos no banco
+
+3) usuario logado - aparecer na barra superior

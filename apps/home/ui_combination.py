@@ -20,7 +20,7 @@ def getCombinations(idProjeto):
         f"vfc.idTopografia = p.idTopografia and "
         f"vfc.idMecanizacaoNivel = p.idMecanizacaoNivel "
         f"inner join FaixaTipo ft on ft.id =  mf2.idFaixaTipo "
-        f"and p.id = {idProjeto} "
+        f"where p.id = {idProjeto} "
         f"order by idFaixaTipo,TIR DESC ")
     uniques = df.groupby(['nomeFaixa','idFaixaTipo'], as_index=False).count()
     return df, uniques[['nomeFaixa','idFaixaTipo']], len(df) == 0
