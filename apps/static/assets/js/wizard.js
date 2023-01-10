@@ -182,6 +182,7 @@ const wzdControl = {
             (itm.text ? itm.text : itm.caption) +
             '</button>' +
             `<a ${onClick}"> <img src="${wzdControl.path}${itm.fileName}" alt="${itm.fileName ? itm.fileName : 'Imagem não disponível'}"></a>` +
+            '<i style="font-size: 23px; margin: 10px; color: white; cursor: pointer;" class="far fa-question-circle"></i>' +
             '</div>';
         });
         break;

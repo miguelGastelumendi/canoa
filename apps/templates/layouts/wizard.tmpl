@@ -23,19 +23,23 @@
 
          <!-- Header -->
          <div class="wzd-header">
-            <table>
-            <tr>
-               <td class="wzd-logo"></td>
-               <td>
+            
+               <!-- <td class="wzd-logo"></td> -->
+               <div>
                   <h6 id="wzdDescription" class="alert-heading">
                   {% block wizardDescription %} {{ wzdDescription|safe }} {% endblock %}
                   </h6>
-                  <div id="wzdInstructions">
-                  {% block wizardInstructions %} {{ wzdInstructions }} {% endblock %}
-                  </div>
-               </td>
-            </tr>
-            </table>
+                  <!-- 
+                     <div id="wzdInstructions">
+                        {% block wizardInstructions %} {{ wzdInstructions }} {% endblock %}
+                     </div>
+                  -->
+               </div>
+               <div>
+                  <button id="wzdBtnHelp" class="wzd-btnHelp btn btn-outline-success" type="button" disabled= "true" onclick="wzdControl.displayHelp()">Ajuda</button>
+                  <button id="wzdBtnOk" class="wzd-btnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage()"><span class="wzd-btnNextText"></span></button>
+               </div>
+            
          </div>
          <!-- Header end -->
 
@@ -54,8 +58,6 @@
          <!-- Footer -->
          <div class="wzd-footer">
             <div id= "wzdSelectedItem" class="wzd-selectedItem visually-hidden"></div>
-            <button id="wzdBtnHelp" class="wzd-btnHelp btn btn-outline-success" type="button" disabled= "true" onclick="wzdControl.displayHelp()">Ajuda</button>
-            <button id="wzdBtnOk" class="wzd-btnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage()"><span class="wzd-btnNextText"></span></button>
          </div>
          <!-- Footer end -->
 
