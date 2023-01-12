@@ -40,15 +40,12 @@
         </div>
         <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
           <li>
-            <a
-            href="#"
-            class="nav-link dropdown-toggle"
-            data-bs-toggle="dropdown"
-            id="supportDropdown"
-            aria-expanded="false"
+            <button
+            onclick="goBack()"
+            style="background: none; border: none; color: white;"
           >
           <i class="fas fa-long-arrow-left"></i>&nbsp;&nbsp;Voltar
-          </a>
+            </button>
           </li>
           <li class="nav-item dropdown">
             <a
@@ -118,3 +115,9 @@
     </div>
   </nav>
 </header>
+
+<script>
+function goBack() {
+    window.history.back()
+}
+</script>

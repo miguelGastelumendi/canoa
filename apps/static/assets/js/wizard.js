@@ -178,11 +178,10 @@ const wzdControl = {
           bodyIx = _getBodyIx(itm.bodyId, `<div class="row ${wzdControl.getColClasses(/** @type {string} */(itm.bodyId))}">`);
           aHtml[bodyIx] +=
             `<div class="col ${sAlign} mb-3">` +
-            `<button id=${wzdControl.getBtnId(ix)} class="mb-2 btn btn-info bg-gradient" type="button" style="height:4.2em; width:100%" ${onClick}">` +
-            (itm.text ? itm.text : itm.caption) +
-            '</button>' +
+            `<button id=${wzdControl.getBtnId(ix)} class="btn bg-gradient" type="button" style="background: none;" ${onClick}">` +
             `<a ${onClick}"> <img src="${wzdControl.path}${itm.fileName}" alt="${itm.fileName ? itm.fileName : 'Imagem não disponível'}"></a>` +
-            '<i style="font-size: 23px; margin: 10px; color: white; cursor: pointer;" class="far fa-question-circle"></i>' +
+            '</button>' +
+            '<span class="btnHelper"><i style="font-size: 23px; margin: 10px; color: white; cursor: pointer;" class="far fa-question-circle"></i></span>' +
             '</div>';
         });
         break;
