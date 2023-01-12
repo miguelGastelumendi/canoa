@@ -79,14 +79,17 @@ a-
 Framework:
 
  1. Passar os botões de navegação pra cima
- 2. Colocar botão de voltar
+ 2. Colocar botão de voltar. Textos dos botões serão obrigatórios e, caso comecem com !, ficarão desabilitados.
  3. Mostrar as escolhas já feitas quando voltar.
  4. Colocar os textos destes no banco
  5. Tirar o logo do wizard. O logo deste deve ir pra barra de cima no lugar do que está lá, acho que seria legal mudar a cor da barra. Pedro, escolha uma cor adequada.
  6. Tirar ou dexar opcional o segundo texto do cabeçalho do wizard.
- 7. Mostrar as escolhas já feitas quando voltar.
  8. Tela de imagem: deixar só a imagem (opcionalmente).
  9. Possibilidade de help por controle.
+
+Comments sobre esses ítens:
+
+ 3. Acho que ele volta às vezes reconhecendo o que tava, às vezes não. Pode ter a ver com o cache.
 
 
 Telas de login:

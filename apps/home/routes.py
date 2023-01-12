@@ -66,6 +66,7 @@ def route_callback(endpoint):
 @blueprint.route('/<template>')
 @login_required
 def route_template(template):
+    projectId = -1
     try:
         if template.find('.html') > -1:
             # Detect the current page
@@ -74,22 +75,35 @@ def route_template(template):
             if segment == 'rsp-projectStart.html':
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-projectStart'))
+
             if segment == 'rsp-selectProject.html':
                 return render_template("home/" + template,
                                        projects=dbquery.getListDictResultset(
                                            f"select descProjeto as caption, id from Projeto p "
                                            f"where idUser = {current_user.id}"
-                                           f"order by descProjeto")
-                                       , **helper.getFormText('rsp-selectProject'))
+                                           f"order by descProjeto"),
+                                       **helper.getFormText('rsp-selectProject'))
 
-            if segment == 'rsp-projectLocation.html':
-                projectId = (int(request.args['id']) if 'id' in request.args else -1)
-                #if projectId > -1:
+            if segment == 'rsp-projectName.html':
+                if 'id' in request.args.keys():
+                    projectId = int(request.args['id'])
+                if projectId > -1:
+                    projectName = dbquery.getValueFromDb(f"select descProjeto from Projeto where id = {projectId}")
+                else:
+                    projectName = ''
+                return render_template("home/" + template,
+                                       projectNameValue=projectName,
+                                       **helper.getFormText('rsp-projectName'))
+
+            if segment == 'rsp-locationMethodSelect.html':
+                return render_template("home/" + template,
+                                       **helper.getFormText('rsp-locationMethodSelect'))
+
+            if segment == 'rsp-locationCountyFitofisionomy.html':
                 return render_template("home/" + template,
                                        municipios=ui_projectLocation.getListaMunicipios()
                                        , fito_municipios=ui_projectLocation.getListaFito(None)
-                                       , **helper.getFormText('rsp-projectLocation')
-                                       # , map=ui_projectLocation.getMapSP()
+                                       , **helper.getFormText('rsp-locationCountyFitofisionomy')
                                        )
 
             elif segment == 'rsp-goal.html':
