@@ -2,11 +2,11 @@
 
 {% block wizardBody %}
     <form>
-        <div class="container" width="60%">
+        <div class="container" width="60%" action="/callback/projectName" method="GET">
           <div class="row mb-3">
             <label for="projectName" class="col-sm-4 col-form-label">{{ projectNameDesc|safe }}</label>
             <div class="col-sm-8">
-              <input id="projectName" class="form-control" type="text" title="{{ projectNameDesc|safe }}" value="{{ projectNameValue }}">
+              <input id="projectName" name="projectName" class="form-control" type="text" title="{{ projectNameDesc|safe }}" value="{{ projectNameValue }}">
             </div>
           </div>
         </div>
