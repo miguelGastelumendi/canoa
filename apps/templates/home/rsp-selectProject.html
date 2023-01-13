@@ -3,7 +3,7 @@
 {% block wizardConfig %}
 <script>
   const jsBtn = {{ projects|tojson }};
-  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-projectLocation.html' });
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-projectName.html' });
 </script>
 {% endblock %}
 
