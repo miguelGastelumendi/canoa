@@ -116,12 +116,12 @@ const wzdControl = {
 
 
     let eleBtn = wzdControl.getBtn(ix);
-    eleBtn.classList.remove('btn-info');
-    eleBtn.classList.add('btn-warning');
+    eleBtn.classList.remove('btn-outline-success');
+    eleBtn.classList.add('btn-success');
     if (iLastSelectedIx >= 0) {
       eleBtn = wzdControl.getBtn(iLastSelectedIx);
-      eleBtn.classList.remove('btn-warning');
-      eleBtn.classList.add('btn-info');
+      eleBtn.classList.remove('btn-success');
+      eleBtn.classList.add('btn-outline-success');
     }
     // save
     if (wzdControl.multiSelect) {
@@ -156,7 +156,7 @@ const wzdControl = {
         wzdControl.jsoData.forEach((itm, ix) => {
           bodyIx = _getBodyIx(itm.bodyId, '<div class="d-grid gap-2">');
           aHtml[bodyIx] +=
-            `<button id="${wzdControl.getBtnId(ix)}" class="btn btn-info bg-gradient ${sAlign} mx-5" type="button" onclick="wzdControl.selectItem(${ix})">` +
+            `<button id="${wzdControl.getBtnId(ix)}" class="btn bg-gradient btn-outline-success ${sAlign} mx-5" type="button" onclick="wzdControl.selectItem(${ix})">` +
             (itm.text ? itm.text : itm.caption) +
             '</button>';
         });
@@ -254,6 +254,11 @@ const wzdControl = {
       'No momento, não temos ajuda para este tópico'
     );
   },
+
+    /** @protected */
+    goBack: () => {
+        window.history.back()
+    },
 
   /**
    * Return true if the f is a function
