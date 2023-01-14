@@ -91,7 +91,7 @@ def route_template(template):
                     projectName = dbquery.getValueFromDb(f"select descProjeto from Projeto where id = {projectId}")
                 else:
                     projectName = ''
-                return render_template("home/" + template,
+                return render_template("home/rsp-projectName.html",
                                        projectNameValue=projectName,
                                        **helper.getFormText('rsp-projectName'))
 
