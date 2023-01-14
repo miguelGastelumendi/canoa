@@ -1,23 +1,48 @@
 {% extends "layouts/wizard.tmpl" %}
 
 {% block wizardBody %}
-    <form>
-        <div class="container" width="60%" action="/callback/projectName" method="GET">
-          <div class="row mb-3">
-            <label for="projectName" class="col-sm-4 col-form-label">{{ projectNameDesc|safe }}</label>
-            <div class="col-sm-8">
-              <input id="projectName" name="projectName" class="form-control" type="text" title="{{ projectNameDesc|safe }}" value="{{ projectNameValue }}">
-            </div>
-          </div>
-        </div>
-    <input type="submit" value="Confirmar" />
-    </form>
+<form id="pnForm" action='/callback/projectName'>
+  <div class="container" width="60%">
+    <div class="row mb-3">
+      <label for="projectName" class="col-sm-4 col-form-label">{{ projectNameDesc|safe }}</label>
+      <div class="col-sm-8">
+        <input id="projectName" name="projectName" class="form-control" type="text" title="{{ projectNameDesc|safe }}"
+          value="{{ projectNameValue }}">
+      </div>
+    </div>
+  </div>
+
+  <!-- <input type="submit" value="Confirmar" /> -->
+</form>
 {% endblock wizardBody %}
 
 {% block wizardConfig %}
 <script>
-  wzdControl.initPage({ mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-locationMethodSelect.html',
-                        help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html','')}`});
+  let sAction = '/callback/projectName';
+  const sendData = () => { // mgd 2023.11.13
+    let sParams = '?';
+    for (const [key, value] of new FormData(wzdControl.ge('pnForm'))) {
+      sParams += `${key}=${value}&`;
+    }
+    const fSuccess = (sRsp) => {
+      if (sRsp.toUpperCase() == 'OK') {
+        window.location = wzdControl.nextPageHref
+      } else {
+        wzdControl.messageError(sRsp);
+      }
+    }
+    wzdControl.fetchObject(sAction + sParams.slice(0, -1), fSuccess, 'Não foi possível salvar o nome do projeto.', { type: 'text' });
+    return false;
+  }
+
+  wzdControl.initPage({
+    mode: wzdControl.mode.CUSTOM,
+    nextPage: 'rsp-locationMethodSelect.html',
+    onNext: () => { sendData(); return false; },
+    help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`,
+  });
+
+
 </script>
 {% endblock %}
 

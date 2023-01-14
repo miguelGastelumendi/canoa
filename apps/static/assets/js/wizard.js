@@ -14,14 +14,6 @@
  * @returns {boolean}
  */
 
-/**
- * @typedef {Object} wzdControl
- * @property {Function} initPage
- * @property {Function} messageInfo
- * @property {Function} messageError
- * :
- * :
- */
 
 /**
  * @typedef {Object} wzdItem
@@ -51,6 +43,19 @@
  * @property {string} bodyId the ID of the parent element (this is an 'index' to wzdConfig<wzdItem>.bodyId
  * @property {number} selected If multiSelect: select button ix or -1 : see selectedIx
  */
+
+/**
+ * @typedef {Object} wzdControl
+ * @property {Function} initPage
+ * @property {Function} messageInfo
+ * @property {Function} messageError
+ * @property {fOnNext} fOnNext
+ * :
+ * @property {string?} nextPageHref address of next page
+ *
+ */
+
+
 
 const wzdControl = {
   multiSelect: false,
@@ -255,10 +260,10 @@ const wzdControl = {
     );
   },
 
-    /** @protected */
-    goBack: () => {
-        window.history.back()
-    },
+  /** @public */
+  goBack: () => {
+    window.history.back()
+  },
 
   /**
    * Return true if the f is a function
@@ -330,18 +335,21 @@ const wzdControl = {
    * @param {string} sCallback
    * @param {function( object )} fSuccess
    * @param {function | string} fFailure callback function | error string
+   * @param {Object} options = { data: {}, type: 'text'|'json'}
    * @public
    */
 
-  fetchObject: async (sCallback, fSuccess, fFailure) => {
+  fetchObject: async (sCallback, fSuccess, fFailure, options = {}) => {
+    const typText = 'text';
+    const typJson = 'json';
     const _f = (f, p) => wzdControl.paramIsFunction(f) ? (f(p) || true) : false;
     const _e = (r) => wzdControl.messageError(fFailure, '', `Status: ${r.status}].`);
-    await fetch(sCallback)
+    await fetch(sCallback, options.data || {})
       .then((rsp) => {
         if (!rsp.ok) { return _e(rsp) }
         const _get = async () => {
           try {
-            const jsoData = await rsp.json();
+            const jsoData = await (((options.type || typJson) == typJson) ? rsp.json() : rsp.text());
             if (rsp.ok) {
               _f(fSuccess, jsoData);
             } else {
