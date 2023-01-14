@@ -29,7 +29,6 @@
                   <span id="wzdDescription" class="alert-heading">
                   {% block wizardDescription %} {{ wzdDescription|safe }} {% endblock %}
                   </span>
-               <button id="wzdBtnHelp" class="wzd-btnHelp btn btn-outline-success" type="button" disabled= "true" onclick="wzdControl.displayHelp()">Ajuda</button>
                   <!-- 
                      <div id="wzdInstructions">
                         {% block wizardInstructions %} {{ wzdInstructions }} {% endblock %}
@@ -37,7 +36,8 @@
                   -->
                </div>
                <div>
-                  <button onclick="wzdControl.goBack()" class="btn btn-outline-primary"><i class="fas fa-long-arrow-left"></i>&nbsp;&nbsp;Voltar </button>
+                  <button id="wzdBtnHelp" class="wzd-btnHelp btn btn-outline-success" type="button" disabled= "true" onclick="wzdControl.displayHelp()">Ajuda</button>
+                  <button onclick="wzdControl.goBack()" class="btn btn-outline-primary">Voltar </button>
                   <button id="wzdBtnOk" class="wzd-btnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage()"><span class="wzd-btnNextText"></span></button>
                </div>
          
