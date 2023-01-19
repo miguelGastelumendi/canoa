@@ -23,13 +23,13 @@
 
          <!-- Header -->
          <div class="wzd-header">
-            
+
                <!-- <td class="wzd-logo"></td> -->
                <div>
                   <span id="wzdDescription" class="alert-heading">
                   {% block wizardDescription %} {{ wzdDescription|safe }} {% endblock %}
                   </span>
-                  <!-- 
+                  <!--
                      <div id="wzdInstructions">
                         {% block wizardInstructions %} {{ wzdInstructions }} {% endblock %}
                      </div>
@@ -40,7 +40,7 @@
                   <button onclick="wzdControl.goBack()" class="btn btn-outline-primary">Voltar </button>
                   <button id="wzdBtnOk" class="wzd-btnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage()"><span class="wzd-btnNextText"></span></button>
                </div>
-         
+
          </div>
          <!-- Header end -->
 
