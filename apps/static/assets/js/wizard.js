@@ -1,8 +1,8 @@
 /**
  * @preserve
  * Wizard js
- * version 1.6.0
- * 2022.12.22--29 / 2023.01.03--07.2
+ * version 1.7.0
+ * 2022.12.22--29 / 2023.01.03--07,23 /
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -335,11 +335,12 @@ const wzdControl = {
    * @param {string} sCallback
    * @param {function( object )} fSuccess
    * @param {function | string} fFailure callback function | error string
+   * @param {function( object )} [fAlways] TODO
    * @param {Object} options = { data: {}, type: 'text'|'json'}
    * @public
    */
 
-  fetchObject: async (sCallback, fSuccess, fFailure, options = {}) => {
+  fetchObject: async (sCallback, fSuccess, fFailure, fAlways, options = {}) => {
     const typText = 'text';
     const typJson = 'json';
     const _f = (f, p) => wzdControl.paramIsFunction(f) ? (f(p) || true) : false;

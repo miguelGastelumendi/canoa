@@ -31,7 +31,7 @@
         wzdControl.messageError(sRsp);
       }
     }
-    wzdControl.fetchObject(sAction + sParams.slice(0, -1), fSuccess, 'Não foi possível salvar o nome do projeto.', { type: 'text' });
+    wzdControl.fetchObject(sAction + sParams.slice(0, -1), fSuccess, 'Não foi possível salvar o nome do projeto.', null, { type: 'text' });
     return false;
   }
 

@@ -1,55 +1,116 @@
 {% extends "layouts/wizard.tmpl" %}
 
 {% block wizardBody %}
-    <div class="row mb-3">
-      <select id="municipio" class="form-select" onchange="locChange(this.id)">
-        <option value=" -1" hidden selected>(Primeiro selecione o Município)</option>
-        {% for key, value in municipios.items() %}<option value=" {{ key }}">{{ value }}</option>{% endfor %}
-      </select>
-    </div>
+<div class="row mb-3">
+  <label for="municipio">{{ countyFitoFisionomyDesc|safe }}</label>
+  <select id="municipio" class="form-select" onchange="muniChanged()">
+    <option value="-1" disabled selected>(Primeiro selecione o Município)</option>
+    {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+  </select>
+</div>
 
-    <div class="row mb-3">
-      <!-- Perdro que textos são estes? -->
-      {{ countyFitoFisionomyDesc|safe }}
-      {{ thenFitoFisionomy|safe }}
-      <select id="fito_ecologica" class="form-select" disabled="true" onchange="locChange(this.id)">
-        <option value="-1" selected>
-          {% for key, value in fito_municipios.items() %}<option value="{{ key|safe }}">{{ value|safe }}</option>{% endfor %}
-        </option>
-      </select>
-    </div>
-    <div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
-      <div id="mapArea" class="chart" style="height: 100%; width: 100%;"><!-- TODO spinner visibility: hidden;" -->
-      </div>
-    </div>
+<div class="row mb-3">
+  <label for="fito_ecologica">{{ thenFitoFisionomy|safe }}</label>
+  <select id="fito_ecologica" class="form-select" disabled="true" onchange="fitoChanged()">
+    <option value="-1" selected>
+      {% for key, value in fito_municipios.items() %}
+    <option value="{{ key|safe }}">{{ value|safe }}</option>{% endfor %}
+    </option>
+  </select>
+</div>
+<div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
+  <div id="mapArea" class="chart" style="height: 100%; width: 100%;"><!-- TODO spinner visibility: hidden;" -->
+  </div>
+</div>
 {% endblock wizardBody %}
 
 {% block wizardConfig %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
+  const selMuni = wzdControl.ge('municipio');
+  const selFito = wzdControl.ge('fito_ecologica');
+  const eleMap = wzdControl.ge('mapArea');
 
-  const _ge = (sId) => document.getElementById(sId);
-  // Get element's Value
-  const _gv = (sId) => _ge(sId).value;
-  // Map's div ID
-  const sMapArea = 'mapArea';
   //-- Avoid multiple async calls
   let bFetching = false;
-
+  const _setCursor = (sTo) => document.body.style.cursor = sTo ? sTo : 'default';
 
   //-- Map arrived, show it
-  let bBound = false;
   const _showMap = ( /** @type {Object} */ jsoData) => {
-    const jsData = JSON.parse(jsoData);
-    Plotly.react(sMapArea, jsData, {});
-    if (!bBound) _ge(sMapArea).on('plotly_afterplot', () => document.body.style.cursor = 'default');
+    if (!jsoData) { return; }
+    const jsData = JSON.parse(jsoData.Map);
+    Plotly.react(eleMap.id, jsData, {});
+    eleMap.on('plotly_afterplot', _setCursor);
   }
 
+  //--
+  const fetchFormData = (oParam, fSuccess, sError) => {
+    oParam = { ...{ callerID: '', idMunicipio: '-1', idFito: '-1', latlong: '', CAR: '' }, ...oParam };
+    sParams = '';
+    for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
+    wzdControl.fetchObject(`/callback/updateFormData?${sParams}`, fSuccess, sError);
+  }
 
+  //--
+  const fetchMapOfSP = () => {
+    fetchFormData({ callerID: 'mapSP' }, _showMap, 'Não foi possível obter o mapa.');
+  }
+  //-- instructions or or error
+  const setFitoMsg = (sMsg) => selFito.innerHTML = `<option value="-1" disabled selected>(${sMsg})</option>`;
+
+  //-- Muni changed, fetch fitos
+  const fetchFitosForMuni = (sMuniId) => {
+    // TODO disable select until return
+    const _loadFito = (jsoData) => {
+      const oFitos = JSON.parse(jsoData.FitoMunicipio);
+      let sOptions = '';
+      if (selFito.disabled = (Object.keys(oFitos).length == 0)) {
+        setFitoMsg('Sem fitofisionomias no município.');
+      } else {
+        for (const sKey in oFitos) { sOptions += `<option value='${sKey}'>${oFitos[sKey]}</option>` };
+      }
+      selFito.innerHTML = sOptions;
+      _showMap(jsoData);
+      locaChanged();
+    }
+    fetchFormData({ callerID: selMuni.id, idMunicipio: sMuniId }, _loadFito, 'Não foi possível obter os fito do Município.');
+  }
+
+  //--
+  const muniChanged = () => {
+    setFitoMsg('Logo, a fitofisionomia)');
+    if (parseInt(selMuni.value) >= 0) {
+      fetchFitosForMuni(selMuni.value);
+    }
+  }
+
+  const fitoChanged = () => {
+    locaChanged();
+  }
+
+  //-- Muni or Fito changed, update wizard display
+  const locaChanged = () => {
+    let sSelected = wzdControl.getSelectedTextFrom(selMuni);
+    if (sSelected != '') {
+      let sFito = wzdControl.getSelectedTextFrom(selFito);
+      sSelected = 'Localidade selecionada: <b>' +
+        sSelected +
+        (sFito ? `, <i>${sFito}</i>` : '') +
+        '</b>';
+    }
+    wzdControl.displaySelected(sSelected)
+  }
+
+  const updateFormData = (sId) => {
+    _setCursor();
+  }
 
   wzdControl.initPage({
     mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-locationMethodSelect.html',
     help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
+  window.addEventListener("load", () => { (parseInt(selMuni.value) < 0) ? fetchMapOfSP() : updateFormData(selMuni.id) });
+  document.body.style.cursor = 'progress';
 </script>
 {% endblock %}
 
