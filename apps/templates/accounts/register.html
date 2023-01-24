@@ -19,12 +19,12 @@ endblock %}
             class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 p-lg-5 w-100 fmxw-500"
           >
             <div class="text-center text-md-center mb-4 mt-md-0">
-              <h1 class="mb-0 h3">Cadastro</h1>
+              <h1 class="mb-0 h3">{{ title }}</h1>
               <br />
               <span>
                 {% if msg %}
                 <div class="alert alert-danger">{{ msg | safe }}</div>
-                {% else %} Add your credentials {% endif %}
+                {% else %} {{ addCredentials }} {% endif %}
               </span>
             </div>
 
@@ -34,7 +34,7 @@ endblock %}
               {{ form.hidden_tag() }}
 
               <div class="form-group mb-4">
-                <label for="email">Usuário</label>
+                <label for="email">{{ userName }}</label>
                 <div class="input-group">
                   <span class="input-group-text" id="basic-addon1"
                     ><span class="fas fa-user"></span
@@ -44,7 +44,7 @@ endblock %}
               </div>
               <!-- Form -->
               <div class="form-group mb-4">
-                <label for="email">E-mail</label>
+                <label for="email">{{ email }}</label>
                 <div class="input-group">
                   <span class="input-group-text" id="basic-addon3"
                     ><span class="fas fa-envelope"></span
@@ -56,7 +56,7 @@ endblock %}
               <div class="form-group">
                 <!-- Form -->
                 <div class="form-group mb-4">
-                  <label for="password">Senha</label>
+                  <label for="password">{{ password }}</label>
                   <div class="input-group">
                     <span class="input-group-text" id="basic-addon4"
                       ><span class="fas fa-unlock-alt"></span
@@ -76,7 +76,7 @@ endblock %}
                       onclick="acceptTerms()"
                     />
                     <label class="form-check-label mb-0" for="remember">
-                      Aceitar os
+                      Aceite os
                       <a
                         class="fw-bold text-underline"
                         href="https://www.uol.com.br"
@@ -89,7 +89,7 @@ endblock %}
                     <a
                       href="{{ url_for('authentication_blueprint.login') }}"
                       class="text-right"
-                      >Login</a
+                      >{{ login }}</a
                     >
                   </div>
                 </div>

@@ -1,0 +1,45 @@
+{% extends "layouts/wizard.tmpl" %}
+
+{% block wizardBody %}
+    <form>
+        <div class="container" width="60%">
+          <div class="row mb-3">
+        <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
+          </div>
+        </div>
+        <div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
+        <div id="mapArea" class="chart" style="height: 100%; width: 100%;"><!-- TODO spinner visibility: hidden;" -->
+    </div>
+    </div>
+    </form>
+{% endblock wizardBody %}
+
+{% block wizardConfig %}
+<script>
+
+  const _ge = (sId) => document.getElementById(sId);
+  // Get element's Value
+  const _gv = (sId) => _ge(sId).value;
+  // Map's div ID
+  const sMapArea = 'mapArea';
+  //-- Avoid multiple async calls
+  let bFetching = false;
+
+
+  //-- Map arrived, show it
+  let bBound = false;
+  const _showMap = ( /** @type {Object} */ jsoData) => {
+    const jsData = JSON.parse(jsoData);
+    Plotly.react(sMapArea, jsData, {});
+    if (!bBound) _ge(sMapArea).on('plotly_afterplot', () => document.body.style.cursor = 'default');
+  }
+
+
+
+  wzdControl.initPage({ mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-goal.html',
+                        help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html','')}`});
+  window.addEventListener("load", () => { if (parseInt(selMun.value) < 0) _fetchMapSp(); else updateFormData(selMun.id); });
+</script>
+{% endblock %}
+
+{# eof #}
