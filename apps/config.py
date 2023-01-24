@@ -30,9 +30,8 @@ engine = create_engine(connection_url)
 
     Original string:
     SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://<USER>:<PASSWORD>@<SERVER>:/APPSPEED?driver=ODBC+Driver+18+for+SQL+Server'
-    mgd: apagou os string connections
-    SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://?odbc_connect=DRIVER%3D%7BODBC+Driver+17+for+SQL+Server%7D%3B<SERVER>%3D<SERVER><PASSWORD>'
-    '''
+    mgd: 'apagou os string connections'
+'''
     SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
