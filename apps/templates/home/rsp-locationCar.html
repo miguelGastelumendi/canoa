@@ -40,14 +40,16 @@
   }
 
   //--
-  const fetchFormData = (jsoData) => {
-    let sParams = 'CAR=' + selCar.value;
-    wzdControl.fetchObject(`/callback/rsp-locationCar?${sParams}`, _showMap(jsoData), 'CAR inválido');
-  }
-  // const fetchFormData = (oParam, fSuccess, sError) => {
+  // const fetchFormData = (jsoData) => {
   //   let sParams = 'CAR=' + selCar.value;
-  //   wzdControl.fetchObject(`/callback/rsp-locationCar?${sParams}`, fSuccess, sError);
+  //   wzdControl.fetchObject(`/callback/rsp-locationCar?${sParams}`, _showMap(jsoData), 'CAR inválido');
   // }
+  const fetchFormData = (oParam, fSuccess, sError) => {
+    oParam = { ...{ callerID: '',  CAR: selCar.value }, ...oParam };
+    sParams = '';
+    for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
+    wzdControl.fetchObject(`/callback/rsp-locationCar?${sParams}`, fSuccess, sError);
+  }
 
   //--
   const fetchMapOfSP = () => {
@@ -58,7 +60,7 @@
     const _loadFito = (jsoData) => {
       _showMap(jsoData);
     }
-    fetchFormData({ callerID: selCar.value }, _loadFito, 'CAR inválido');
+    fetchFormData({ callerID: selCar.id }, _loadFito, 'CAR inválido');
   }
 
   wzdControl.initPage({
