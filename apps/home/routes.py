@@ -45,6 +45,16 @@ def route_callback(endpoint):
                                                       idFito,
                                                       latlong,
                                                       CAR)
+
+    elif endpoint == 'rsp-locationCar':
+        try:
+            CAR = int(args.get('CAR'))
+            pCAr = ui_projectLocation.getCAR(CAR)
+        except:
+            pCAr = None
+        return ui_projectLocation.getMapCAR(pCAr)
+
+
     elif endpoint == 'saveProject':
         projectName = args.get('ProjectName')
         if projectName == '':
@@ -104,6 +114,18 @@ def route_template(template):
                                        municipios=ui_projectLocation.getListaMunicipios()
                                        , fito_municipios=ui_projectLocation.getListaFito(None)
                                        , **helper.getFormText('rsp-locationCountyFitofisionomy')
+                                       )
+                                       
+            if segment == 'rsp-locationLatLon.html':
+                return render_template("home/" + template,
+                                       projectLat=ui_projectLocation.getListaFito(None) #getLat
+                                       , projectLong=ui_projectLocation.getListaFito(None) #getLong
+                                       , **helper.getFormText('rsp-locationLatLon')
+                                       )
+            
+            if segment == 'rsp-locationCar.html':
+                return render_template("home/" + template
+                                       , **helper.getFormText('rsp-locationCar')
                                        )
 
             elif segment == 'rsp-goal.html':
