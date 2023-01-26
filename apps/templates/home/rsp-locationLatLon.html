@@ -1,0 +1,77 @@
+{% extends "layouts/wizard.tmpl" %}
+
+{% block wizardDescription %}Informe a Latitude e longitude da localização{% endblock %}
+
+
+{% block wizardBody %}
+<div class="container" width="60%">
+  <div class="row mb-3">
+    <label for="projectLat" class="col-sm-3 col-form-label">Latitude</label>
+    <div class="col-sm-4 mb-3">
+      <input id="projectLat" name="projectLat" class="form-control" type="text" title="Latitude"
+         placeholder="ex: -21.0845"> 
+         <!-- add in input value="{{ projectLatValue }}" -->
+    </div>
+    <div style="display: flex; align-items: center;">
+      <label for="projectLong" class="col-sm-3 col-form-label">Logintude</label>
+      <div class="col-sm-4">
+        <input id="projectLong" name="projectLong" class="form-control" type="text" title="Logintude"
+           placeholder="ex: -50.1416">
+          <!-- add in input value="{{ projectLongValue }}" -->
+      </div>
+     <button type="button" class="wzd-btnNext btn btn-outline-success">Ok</button>
+    </div>
+  </div>
+</div>
+<div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
+  <div id="mapArea" class="chart" style="height: 100%; width: 100%;"><!-- TODO spinner visibility: hidden;" -->
+  </div>
+</div>
+{% endblock wizardBody %}
+
+{% block wizardConfig %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+  const selLat = wzdControl.ge('projectLat');
+  const selLong = wzdControl.ge('projectLong');
+  const eleMap = wzdControl.ge('mapArea');
+
+  //-- Avoid multiple async calls
+  let bFetching = false;
+  const _setCursor = (sTo) => document.body.style.cursor = sTo ? sTo : 'default';
+
+  //-- Map arrived, show it
+  const _showMap = ( /** @type {Object} */ jsoData) => {
+    if (!jsoData) { return; }
+    const jsData = JSON.parse(jsoData.Map);
+    Plotly.react(eleMap.id, jsData, {});
+    eleMap.on('plotly_afterplot', _setCursor);
+  }
+
+  //--
+  const fetchFormData = (oParam, fSuccess, sError) => {
+    oParam = { ...{ callerID: '', idMunicipio: '-1', idFito: '-1', latlong: '', CAR: '' }, ...oParam };
+    sParams = '';
+    for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
+    wzdControl.fetchObject(`/callback/updateFormData?${sParams}`, fSuccess, sError);
+  }
+
+  //--
+  const fetchMapOfSP = () => {
+    fetchFormData({ callerID: 'mapSP' }, _showMap, 'Não foi possível obter o mapa.');
+  }
+
+  const updateFormData = (sId) => {
+    _setCursor();
+  }
+
+  wzdControl.initPage({
+    mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-locationMethodSelect.html',
+    help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
+  });
+  window.addEventListener("load", () => { (parseInt(selLat.value) < 0) ? fetchMapOfSP() : updateFormData(selLat.id) });
+  document.body.style.cursor = 'progress';
+</script>
+{% endblock %}
+
+{# eof #}
