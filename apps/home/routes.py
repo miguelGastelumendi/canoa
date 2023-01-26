@@ -15,6 +15,7 @@ import apps.home.ui_projectEnd as ui_projectEnd
 from flask import session
 from apps.home import helper
 from flask_login import current_user
+import re
 
 
 @blueprint.route('/index')
@@ -30,9 +31,15 @@ def route_callback(endpoint):
         if not '_projeto_id' in session.keys():
             session['_projeto_id'] = ui_projectSupport.createProject(current_user.id, request.args['projectName'])
         else:
-            ui_projectSupport.updateProject(session['_projeto_id'], descProjeto=request.args['projectName'])
+            try:
+                ui_projectSupport.updateProject(session['_projeto_id'], descProjeto=request.args['projectName'])
+            except Exception as e:
+                if '23000' in re.split('\W+', e.args[0]):
+                    return helper.getErrorMessage('projectNameMustBeUnique')
     if endpoint == 'getDistribution':
         return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
+    if endpoint == 'locationCAR':
+        return ui_projectSupport.getMapCAR(request.args.get('CAR'))
     args = request.args
     callerID = args.get('callerID')
     if callerID == 'mapSP':

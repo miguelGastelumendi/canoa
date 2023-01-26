@@ -22,8 +22,13 @@ def get_segment(request):
     except:
         return None
 
-def getFormText(nomeTela: str):
-    return dbquery.getDictResultset(f"select tag, Texto from appSuporteTela where nomeTela = '{nomeTela}'")
+def getFormText(form: str):
+    return dbquery.getDictResultset(f"select tag, Texto from appSuporteTela where nomeTela = '{form}' or nomeTela = 'wizard'")
 
-def getHelpText(nomeTela: str):
-    return dbquery.getJSONStrResultset(f"select Texto as text, 'Ajuda' as title from appSuporteTela where nomeTela = '{nomeTela}' and tag = 'help'")
+def getHelpText(form: str):
+    return dbquery.getJSONStrResultset(
+        f"select Texto as text, 'Ajuda' as title from appSuporteTela where nomeTela = '{form}' and tag = 'help'")
+
+def getErrorMessage(tag: str):
+    return dbquery.getValueFromDb(
+        f"select Texto as text, 'Ajuda' as title from appSuporteTela where nomeTela = 'errorMessage' and tag = '{tag}'")

@@ -29,9 +29,10 @@
                   </span>
                </div>
                <div>
-                  <button id="wzdBtnHelp" class="wzd-btnHelp btn btn-outline-success" type="button" disabled= "true" onclick="wzdControl.displayHelp()">Ajuda</button>
-                  <button onclick="wzdControl.goBack()" class="btn btn-outline-primary">Voltar </button>
-                  <button id="wzdBtnOk" class="wzd-btnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage()"><span class="wzd-btnNextText"></span></button>
+                  <button id="wzdBtnHelp" class="wzd-btnHelp btn btn-outline-success" type="button" disabled= "true" onclick="wzdControl.displayHelp()">
+                      {{ help }}</button>
+                  <button onclick="wzdControl.goBack()" class="btn btn-outline-primary">{{ previous }} </button>
+                  <button id="wzdBtnOk" class="wzd-btnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage()">{{ next }}</button>
                </div>
 
          </div>

@@ -1,44 +1,74 @@
 {% extends "layouts/wizard.tmpl" %}
 
+{% block wizardDescription %}Informe o CAR da localização{% endblock %}
+
+
 {% block wizardBody %}
-    <form>
-        <div class="container" width="60%">
-          <div class="row mb-3">
-        <input id="CAR" class="form-control" type="text" placeholder="Digite o CAR" />
-          </div>
-        </div>
-        <div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
-        <div id="mapArea" class="chart" style="height: 100%; width: 100%;"><!-- TODO spinner visibility: hidden;" -->
+<div class="container" width="60%">
+  <div class="row mb-3" >
+    <div style="display: flex; align-items: center;">
+      <label for="CAR" class="col-sm-3 col-form-label">CAR</label>
+      <div class="col-sm-4">
+        <input id="CAR" name="CAR" class="form-control" type="text" title="CAR">
+      </div>
+      <button type="button" class="wzd-btnNext btn btn-outline-success" onclick="fetchFitosForMuni()">Ok</button>
     </div>
-    </div>
-    </form>
+  </div>
+</div>
+<div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
+  <div id="mapArea" class="chart" style="height: 100%; width: 100%;"><!-- TODO spinner visibility: hidden;" -->
+  </div>
+</div>
 {% endblock wizardBody %}
 
 {% block wizardConfig %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
+  const selCar = wzdControl.ge('CAR');
+  const eleMap = wzdControl.ge('mapArea');
 
-  const _ge = (sId) => document.getElementById(sId);
-  // Get element's Value
-  const _gv = (sId) => _ge(sId).value;
-  // Map's div ID
-  const sMapArea = 'mapArea';
   //-- Avoid multiple async calls
   let bFetching = false;
-
+  const _setCursor = (sTo) => document.body.style.cursor = sTo ? sTo : 'default';
 
   //-- Map arrived, show it
-  let bBound = false;
   const _showMap = ( /** @type {Object} */ jsoData) => {
-    const jsData = JSON.parse(jsoData);
-    Plotly.react(sMapArea, jsData, {});
-    if (!bBound) _ge(sMapArea).on('plotly_afterplot', () => document.body.style.cursor = 'default');
+    if (!jsoData) { return; }
+    const jsData = JSON.parse(jsoData.Map);
+    Plotly.react(eleMap.id, jsData, {});
+    eleMap.on('plotly_afterplot', _setCursor);
   }
 
+  //--
+  // const fetchFormData = (jsoData) => {
+  //   let sParams = 'CAR=' + selCar.value;
+  //   wzdControl.fetchObject(`/callback/rsp-locationCar?${sParams}`, _showMap(jsoData), 'CAR inválido');
+  // }
+  const fetchFormData = (oParam, fSuccess, sError) => {
+    oParam = { ...{ callerID: '',  CAR: selCar.value }, ...oParam };
+    sParams = '';
+    for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
+    wzdControl.fetchObject(`/callback/locationCAR?${sParams}`, fSuccess, sError);
+  }
 
+  //--
+  const fetchMapOfSP = () => {
+    fetchFormData({ callerID: 'mapSP' }, _showMap, 'Não foi possível obter o mapa.');
+  }
 
-  wzdControl.initPage({ mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-goal.html',
-                        help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html','')}`});
-  window.addEventListener("load", () => { if (parseInt(selMun.value) < 0) _fetchMapSp(); else updateFormData(selMun.id); });
+  const fetchFitosForMuni = () => {
+    const _loadFito = (jsoData) => {
+      _showMap(jsoData);
+    }
+    fetchFormData({ callerID: selCar.id }, _loadFito, 'CAR inválido');
+  }
+
+  wzdControl.initPage({
+    mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-locationMethodSelect.html',
+    help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
+  });
+  window.addEventListener("load", () => { (parseInt(selCar.value) < 0) ? fetchMapOfSP() : updateFormData(selCar.id) });
+  document.body.style.cursor = 'progress';
 </script>
 {% endblock %}
 
