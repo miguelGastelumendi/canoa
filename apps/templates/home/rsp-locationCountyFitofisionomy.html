@@ -7,7 +7,7 @@
 <div class="row mb-3">
   <label for="municipio">{{ countyFitoFisionomyDesc|safe }}</label>
   <select id="municipio" class="form-select" onchange="muniChanged()">
-    <option value="-1" disabled selected>(Primeiro selecione o Município)</option>
+    <option value="-1" disabled selected>{{ firstSelectCounty }}</option>
     {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
   </select>
 </div>
@@ -81,7 +81,7 @@
 
   //--
   const muniChanged = () => {
-    setFitoMsg('Logo, a fitofisionomia)');
+    setFitoMsg('{{ thenFitoFisionomy }}');
     if (parseInt(selMuni.value) >= 0) {
       fetchFitosForMuni(selMuni.value);
     }

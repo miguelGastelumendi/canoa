@@ -103,3 +103,7 @@ registrar
 colocar os textos no banco
 
 3) usuario logado - aparecer na barra superior
+
+24/01/23:
+   Botão de próximo
+   Como retornar mensagem de erro no wizard.

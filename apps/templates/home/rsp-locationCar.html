@@ -48,7 +48,7 @@
     oParam = { ...{ callerID: '',  CAR: selCar.value }, ...oParam };
     sParams = '';
     for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
-    wzdControl.fetchObject(`/callback/rsp-locationCar?${sParams}`, fSuccess, sError);
+    wzdControl.fetchObject(`/callback/locationCAR?${sParams}`, fSuccess, sError);
   }
 
   //--
