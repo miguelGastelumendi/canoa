@@ -36,10 +36,13 @@ def route_callback(endpoint):
             except Exception as e:
                 if '23000' in re.split('\W+', e.args[0]):
                     return helper.getErrorMessage('projectNameMustBeUnique')
-    if endpoint == 'getDistribution':
-        return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
     if endpoint == 'locationCAR':
         return ui_projectSupport.getMapCAR(request.args.get('CAR'))
+    if endpoint == 'locationLatLon':
+        return ui_projectSupport.getMapLatLon(request.args.get('lat'), request.args.get('lon'))
+    if endpoint == 'getDistribution':
+        return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
+
     args = request.args
     callerID = args.get('callerID')
     if callerID == 'mapSP':
@@ -52,45 +55,13 @@ def route_callback(endpoint):
             idMunicipio = int(args.get('idMunicipio'))
         except:
             idMunicipio = -1
-<<<<<<< HEAD
-        return ui_projectLocation.getMapFitoMunicipio(callerID,
-                                                      idMunicipio,
-                                                      idFito,
-                                                      latlong,
-                                                      CAR)
-
-    elif endpoint == 'rsp-locationCar':
-        try:
-            CAR = int(args.get('CAR'))
-            pCAr = ui_projectLocation.getCAR(CAR)
-        except:
-            pCAr = None
-        return ui_projectLocation.getMapCAR(pCAr)
-
-    elif endpoint == 'rsp-locationLatLong':
-        try:
-            latlong = args.get('latlong')
-        except:
-            latlong = -1
-        return ui_projectLocation.getMapFitoMunicipio(callerID,
-                                                      idMunicipio,
-                                                      idFito,
-                                                      latlong,
-                                                      CAR)
-
-
-=======
         return ui_projectSupport.getMapFitoMunicipio(callerID,
                                                      idMunicipio,
                                                      idFito,
                                                      latlong,
                                                      CAR)
->>>>>>> f62c73b4c395f010cc5f7becc1404fae17ca0929
     elif endpoint == 'saveProject':
         projectName = args.get('ProjectName')
-        if projectName == '':
-            session['_projeto_id'] = 97
-            return "Ok"
         projeto_id = ui_projectSupport.saveProject(session['_user_id'],
                                                    args.get('ProjectName'),
                                                    args.get('ProjectArea'),
@@ -114,6 +85,7 @@ def route_template(template):
             segment = helper.get_segment(request)
             # if segment.startswith('testeJinja'):
             if segment == 'rsp-projectStart.html':
+                session['_projeto_id'] = -1
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-projectStart'))
 
@@ -146,13 +118,8 @@ def route_template(template):
                                        , fito_municipios=ui_projectSupport.getListaFito(None)
                                        , **helper.getFormText('rsp-locationCountyFitofisionomy')
                                        )
-<<<<<<< HEAD
-                                       
-            if segment == 'rsp-locationLatLong.html':
-=======
 
             if segment == 'rsp-locationLatLon.html':
->>>>>>> f62c73b4c395f010cc5f7becc1404fae17ca0929
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-locationLatLon'))
 

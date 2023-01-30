@@ -52,6 +52,27 @@ def getCAR(CAR: str):
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
     return df, gjson, centroid, zoom
 
+def getLatLon(lat: str, lon: str):
+    whereFito = f"where mf.geom.STIntersects((geometry::STPointFromText('POINT ({lon} {lat})', 4326)))=1"
+    fito = dbquery.getDataframeResultset(
+        f"select mf.id,concat(m.nomeMunicipio,'/',descFitoFisionomia) as label,ff.color "
+        f"from MunicipioFito mf "
+        f"inner join Municipio m "
+        f"on mf.idMunicipio = m.id "
+        f"inner join FitoFisionomia ff "
+        f"on mf.idFitoFisionomia = ff.id "
+        f"{whereFito} ")
+    features = [json.loads(x) for x in dbquery.getListResultset(
+        f"select geomtext from MunicipioFito mf {whereFito}")]
+    centroid_extent_polytype = dbquery.executeSQL(
+        f"select Centroid.STY as Longitude, Centroid.STX as Latitude, extent, geometrytype from "
+        f"(select geom.STCentroid() as Centroid, geom.STEnvelope().STAsText() as extent "
+        f",geom.STGeometryType() as geometrytype "
+        f"from MunicipioFito mf {whereFito}) a").first()
+    color = fito.set_index('id').to_dict()['color']
+    gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
+    return fito, gjson, centroid, zoom, color
+
 
 def getMunicipio(idMunicipio: int):
     df = dbquery.getDataframeResultset(
@@ -183,6 +204,16 @@ def getMapCAR(pCAR: str = ''):
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
 
+def getMapLatLon(lat: str, lon: str):
+    CAR, geo, centroid, zoom = getLatLon(lat, lon)
+    fig = px.choropleth_mapbox(CAR, geojson=geo,
+                               locations=CAR.id, featureidkey="properties.id",
+                               center=centroid,
+                               hover_name=CAR.CAR.tolist(), hover_data={'id': False},
+                               mapbox_style="carto-positron", zoom=zoom,
+                               opacity=0.4)
+    graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
+    return graphJSON
 
 def getMapSP():
     SP, geo, centroid, zoom = getSP()
