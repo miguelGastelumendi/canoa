@@ -22,13 +22,13 @@
       <div class="wzd-container container">
 
          <!-- Header -->
-         <div class="wzd-header">
+         <div class="wzd-header row row-cols-1 row-cols-sm-2 row-cols-md-3">
                <div>
                   <span id="wzdDescription" class="alert-heading">
                   {% block wizardDescription %} {{ wzdDescription|safe }} {% endblock %}
                   </span>
                </div>
-               <div>
+               <div class="">
                   <button id="wzdBtnHelp" class="wzd-btnHelp btn btn-outline-success" type="button" disabled= "true" onclick="wzdControl.displayHelp()">Ajuda</button>
                   <button onclick="wzdControl.goBack()" class="btn btn-outline-primary">Voltar </button>
                   <button id="wzdBtnOk" class="wzd-btnNext btn btn-outline-primary" type="button" disabled= "true" onclick="wzdControl.gotoNextPage()"><span class="wzd-btnNextText"></span></button>
