@@ -55,40 +55,11 @@ def route_callback(endpoint):
             idMunicipio = int(args.get('idMunicipio'))
         except:
             idMunicipio = -1
-<<<<<<< HEAD
-        return ui_projectLocation.getMapFitoMunicipio(callerID,
-                                                      idMunicipio,
-                                                      idFito,
-                                                      latlong,
-                                                      CAR)
-
-    elif endpoint == 'rsp-locationCar':
-        try:
-            CAR = int(args.get('CAR'))
-            pCAr = ui_projectLocation.getCAR(CAR)
-        except:
-            pCAr = None
-        return ui_projectLocation.getMapCAR(pCAr)
-
-    elif endpoint == 'rsp-locationLatLong':
-        try:
-            latlong = args.get('latlong')
-        except:
-            latlong = -1
-        return ui_projectLocation.getMapFitoMunicipio(callerID,
-                                                      idMunicipio,
-                                                      idFito,
-                                                      latlong,
-                                                      CAR)
-
-
-=======
         return ui_projectSupport.getMapFitoMunicipio(callerID,
                                                      idMunicipio,
                                                      idFito,
                                                      latlong,
                                                      CAR)
->>>>>>> f62c73b4c395f010cc5f7becc1404fae17ca0929
     elif endpoint == 'saveProject':
         projectName = args.get('ProjectName')
         projeto_id = ui_projectSupport.saveProject(session['_user_id'],
@@ -147,13 +118,8 @@ def route_template(template):
                                        , fito_municipios=ui_projectSupport.getListaFito(None)
                                        , **helper.getFormText('rsp-locationCountyFitofisionomy')
                                        )
-<<<<<<< HEAD
-                                       
-            if segment == 'rsp-locationLatLong.html':
-=======
 
             if segment == 'rsp-locationLatLon.html':
->>>>>>> f62c73b4c395f010cc5f7becc1404fae17ca0929
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-locationLatLon'))
 
