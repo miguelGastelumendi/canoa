@@ -7,7 +7,7 @@
 <div class="container" width="60%">
   <div class="row mb-3">
     <label for="municipio" class="col-sm-4 col-form-label">{{ countyFitoFisionomyDesc|safe }}</label>
-    <select id="municipio" class="col-sm-4" onchange="muniChanged()">
+    <select id="municipio" class="col-sm-4 form-select" onchange="muniChanged()">
       <option value="-1" disabled selected>{{ firstSelectCounty }}</option>
       {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
     </select>
@@ -15,7 +15,7 @@
 
   <div class="row mb-3">
     <label for="fito_ecologica" class="col-sm-4 col-form-label">{{ thenFitoFisionomy|safe }}</label>
-    <select id="fito_ecologica" class="col-sm-4" disabled="true" onchange="fitoChanged()">
+    <select id="fito_ecologica" class="col-sm-4 col-form-select " disabled="true" onchange="fitoChanged()">
       <option value="-1" selected>
         {% for key, value in fito_municipios.items() %}
       <option value="{{ key|safe }}">{{ value|safe }}</option>{% endfor %}
