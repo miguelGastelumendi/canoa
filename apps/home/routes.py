@@ -36,10 +36,13 @@ def route_callback(endpoint):
             except Exception as e:
                 if '23000' in re.split('\W+', e.args[0]):
                     return helper.getErrorMessage('projectNameMustBeUnique')
-    if endpoint == 'getDistribution':
-        return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
     if endpoint == 'locationCAR':
         return ui_projectSupport.getMapCAR(request.args.get('CAR'))
+    if endpoint == 'locationLatLon':
+        return ui_projectSupport.getMapLatLon(request.args.get('lat'), request.args.get('lon'))
+    if endpoint == 'getDistribution':
+        return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
+
     args = request.args
     callerID = args.get('callerID')
     if callerID == 'mapSP':
@@ -59,9 +62,6 @@ def route_callback(endpoint):
                                                      CAR)
     elif endpoint == 'saveProject':
         projectName = args.get('ProjectName')
-        if projectName == '':
-            session['_projeto_id'] = 97
-            return "Ok"
         projeto_id = ui_projectSupport.saveProject(session['_user_id'],
                                                    args.get('ProjectName'),
                                                    args.get('ProjectArea'),
@@ -85,6 +85,7 @@ def route_template(template):
             segment = helper.get_segment(request)
             # if segment.startswith('testeJinja'):
             if segment == 'rsp-projectStart.html':
+                session['_projeto_id'] = -1
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-projectStart'))
 

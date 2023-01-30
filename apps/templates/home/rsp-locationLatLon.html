@@ -19,7 +19,7 @@
            placeholder="ex: -50.1416">
           <!-- add in input value="{{ projectLongValue }}" -->
       </div>
-     <button type="button" class="wzd-btnNext btn btn-outline-success" onclick="fetchFitosForMuni()">Ok</button>
+     <button type="button" class="wzd-btnNext btn btn-outline-success" onclick="fetchFitoForLatLon()">Ok</button>
     </div>
   </div>
 </div>
@@ -50,10 +50,10 @@
 
   //--
   const fetchFormData = (oParam, fSuccess, sError) => {
-    oParam = { ...{ callerID: '', idMunicipio: '-1', idFito: '-1', latlong: '', CAR: '' }, ...oParam };
+    oParam = { ...{ callerID: '', lat: selLat.value, lon: selLong.value }, ...oParam };
     sParams = '';
     for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
-    wzdControl.fetchObject(`/callback/updateFormData?${sParams}`, fSuccess, sError);
+    wzdControl.fetchObject(`/callback/locationLatLon?${sParams}`, fSuccess, sError);
   }
 
   //--
@@ -63,6 +63,14 @@
 
   const updateFormData = (sId) => {
     _setCursor();
+  }
+
+
+    const fetchFitoForLatLon = () => {
+    const _loadFito = (jsoData) => {
+      _showMap(jsoData);
+    }
+    fetchFormData({ callerID: selLat.id,  }, _loadFito, 'Cordenadas inválidas');
   }
 
   wzdControl.initPage({
