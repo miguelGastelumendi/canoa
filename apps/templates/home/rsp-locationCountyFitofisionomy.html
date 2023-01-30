@@ -4,22 +4,24 @@
 
 
 {% block wizardBody %}
-<div class="row mb-3">
-  <label for="municipio">{{ countyFitoFisionomyDesc|safe }}</label>
-  <select id="municipio" class="form-select" onchange="muniChanged()">
-    <option value="-1" disabled selected>{{ firstSelectCounty }}</option>
-    {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
-  </select>
-</div>
+<div class="container" width="60%">
+  <div class="row mb-3">
+    <label for="municipio" class="col-sm-4 col-form-label">{{ countyFitoFisionomyDesc|safe }}</label>
+    <select id="municipio" class="form-select" onchange="muniChanged()">
+      <option value="-1" disabled selected>{{ firstSelectCounty }}</option>
+      {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
+    </select>
+  </div>
 
-<div class="row mb-3">
-  <label for="fito_ecologica">{{ thenFitoFisionomy|safe }}</label>
-  <select id="fito_ecologica" class="form-select" disabled="true" onchange="fitoChanged()">
-    <option value="-1" selected>
-      {% for key, value in fito_municipios.items() %}
-    <option value="{{ key|safe }}">{{ value|safe }}</option>{% endfor %}
-    </option>
-  </select>
+  <div class="row mb-3">
+    <label for="fito_ecologica" class="col-sm-4 col-form-label">{{ thenFitoFisionomy|safe }}</label>
+    <select id="fito_ecologica" class="form-select" disabled="true" onchange="fitoChanged()">
+      <option value="-1" selected>
+        {% for key, value in fito_municipios.items() %}
+      <option value="{{ key|safe }}">{{ value|safe }}</option>{% endfor %}
+      </option>
+    </select>
+  </div>
 </div>
 <div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
   <div id="mapArea" class="chart" style="height: 100%; width: 100%;"><!-- TODO spinner visibility: hidden;" -->
@@ -34,8 +36,6 @@
   const selFito = wzdControl.ge('fito_ecologica');
   const eleMap = wzdControl.ge('mapArea');
 
-  //-- Avoid multiple async calls
-  let bFetching = false;
   const _setCursor = (sTo) => document.body.style.cursor = sTo ? sTo : 'default';
 
   //-- Map arrived, show it
@@ -64,7 +64,7 @@
   //-- Muni changed, fetch fitos
   const fetchFitosForMuni = (sMuniId) => {
     // TODO disable select until return
-    const _loadFito = (jsoData) => {
+    const _loadFitoOptions = (jsoData) => {
       const oFitos = JSON.parse(jsoData.FitoMunicipio);
       let sOptions = '';
       if (selFito.disabled = (Object.keys(oFitos).length == 0)) {
@@ -76,7 +76,7 @@
       _showMap(jsoData);
       locaChanged();
     }
-    fetchFormData({ callerID: selMuni.id, idMunicipio: sMuniId }, _loadFito, 'Não foi possível obter os fito do Município.');
+    fetchFormData({ callerID: selMuni.id, idMunicipio: sMuniId }, _loadFitoOptions, 'Não foi possível obter os fito do Município.');
   }
 
   //--
@@ -88,7 +88,12 @@
   }
 
   const fitoChanged = () => {
-    locaChanged();
+    if (parseInt(selFito.value) < 0) { return; }
+    const _loadFitoMapa = (jsoData) => {
+      _showMap(jsoData);
+      locaChanged();
+    }
+    fetchFormData({ callerID: selFito.id, idMunicipio: selMuni.value, idFito: selFito.value }, _loadFitoMapa, 'Não foi possível obter o mapa da fitofisionomia.');
   }
 
   //-- Muni or Fito changed, update wizard display
