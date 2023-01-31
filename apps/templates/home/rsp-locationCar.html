@@ -9,7 +9,7 @@
     <div style="display: flex; align-items: center;">
       <label for="CAR" class="col-sm-3 col-form-label">CAR</label>
       <div class="col-sm-4">
-        <input id="CAR" name="CAR" class="form-control" type="text" title="CAR">
+        <input id="CAR" name="CAR" class="form-control" type="text" title="CAR" value="0">
       </div>
       <button type="button" class="wzd-btnNext btn btn-outline-success" onclick="fetchFitosForCAR()">Ok</button>
     </div>
@@ -39,13 +39,8 @@
     eleMap.on('plotly_afterplot', _setCursor);
   }
 
-  //--
-  // const fetchFormData = (jsoData) => {
-  //   let sParams = 'CAR=' + selCar.value;
-  //   wzdControl.fetchObject(`/callback/rsp-locationCar?${sParams}`, _showMap(jsoData), 'CAR inválido');
-  // }
   const fetchFormData = (oParam, fSuccess, sError) => {
-    oParam = { ...{ callerID: '',  CAR: selCar.value }, ...oParam };
+    oParam = { ...{ callerID: '', idMunicipio: '-1', idFito: '-1', latlong: '', CAR: selCar.value }, ...oParam };
     sParams = '';
     for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
     wzdControl.fetchObject(`/callback/locationCAR?${sParams}`, fSuccess, sError);
@@ -63,11 +58,15 @@
     fetchFormData({ callerID: selCar.id }, _loadFito, 'CAR inválido');
   }
 
+  const updateFormData = (sId) => {
+    _setCursor();
+  }
+
   wzdControl.initPage({
     mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-locationMethodSelect.html',
     help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
-  window.addEventListener("load", () => { (parseInt(selCar.value) < 0) ? fetchMapOfSP() : updateFormData(selCar.id) });
+  window.addEventListener("load", () => { (parseInt(selCar.value) <= 0) ? fetchMapOfSP() : updateFormData(selCar.id) });
   document.body.style.cursor = 'progress';
 </script>
 {% endblock %}

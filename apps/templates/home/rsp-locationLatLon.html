@@ -9,13 +9,13 @@
     <label for="lat" class="col-sm-3 col-form-label">Latitude</label>
     <div class="col-sm-4 mb-3">
       <input id="lat" name="lat" class="form-control" type="text" title="Latitude"
-         placeholder="ex: -21.0845"> 
+         placeholder="ex: -21.0845" value="0"> 
         
     </div>
     <div style="display: flex; align-items: center;">
-      <label for="long" class="col-sm-3 col-form-label">Logintude</label>
+      <label for="lon" class="col-sm-3 col-form-label">Logintude</label>
       <div class="col-sm-4">
-        <input id="long" name="long" class="form-control" type="text" title="Logintude"
+        <input id="lon" name="lon" class="form-control" type="text" title="Logintude"
            placeholder="ex: -50.1416">
           
       </div>
@@ -33,7 +33,7 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
   const selLat = wzdControl.ge('lat');
-  const selLong = wzdControl.ge('long');
+  const selLong = wzdControl.ge('lon');
   const eleMap = wzdControl.ge('mapArea');
 
   //-- Avoid multiple async calls
@@ -53,7 +53,7 @@
     oParam = { ...{ callerID: '', idMunicipio: '-1', idFito: '-1',  latlong: selLat.value + selLong.value, CAR: ''}, ...oParam };
     sParams = '';
     for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
-    wzdControl.fetchObject(`/callback/rsp-locationLatLong?${sParams}`, fSuccess, sError);
+    wzdControl.fetchObject(`/callback/rsp-locationLatLon?${sParams}`, fSuccess, sError);
   }
 
   //--
@@ -68,11 +68,15 @@
     fetchFormData({ callerID: selLat.id + selLong.id }, _loadFito, 'Localização não encontrada');
   }
 
+  const updateFormData = (sId) => {
+    _setCursor();
+  }
+
   wzdControl.initPage({
     mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-locationMethodSelect.html',
     help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
-  window.addEventListener("load", () => { (parseInt(selLat.value) < 0) ? fetchMapOfSP() : updateFormData(selLat.id) });
+  window.addEventListener("load", () => { (parseInt(selLat.value) <= 0) ? fetchMapOfSP() : updateFormData(selLat.id) });
   document.body.style.cursor = 'progress';
 </script>
 {% endblock %}
