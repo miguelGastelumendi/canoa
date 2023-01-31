@@ -63,7 +63,7 @@
   }
 
   wzdControl.initPage({
-    mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-locationMethodSelect.html',
+    mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-goal.html',
     help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
   window.addEventListener("load", () => { (selCar.value === "") ? fetchMapOfSP() : updateFormData(selCar.id) });

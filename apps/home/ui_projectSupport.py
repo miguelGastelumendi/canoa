@@ -205,11 +205,11 @@ def getMapCAR(pCAR: str = ''):
     return graphJSON
 
 def getMapLatLon(lat: str, lon: str):
-    CAR, geo, centroid, zoom = getLatLon(lat, lon)
-    fig = px.choropleth_mapbox(CAR, geojson=geo,
-                               locations=CAR.id, featureidkey="properties.id",
+    fito, gjson, centroid, zoom, color = getLatLon(lat, lon)
+    fig = px.choropleth_mapbox(fito, geojson=gjson,
+                               locations=fito.id, featureidkey="properties.id",
                                center=centroid,
-                               hover_name=CAR.CAR.tolist(), hover_data={'id': False},
+                               hover_name="label", hover_data={'id': False},
                                mapbox_style="carto-positron", zoom=zoom,
                                opacity=0.4)
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
@@ -237,23 +237,6 @@ def updateProject(projectId: int, **data):
         sql += f"{key} = '{data[key]}',"
     sql = sql[:-1] + f" WHERE id = {projectId}"
     dbquery.executeSQL(sql)
-
-def saveProject(userId: str,
-                projectName: str,
-                projectArea,
-                propertyArea,
-                idFito: int,
-                latlong: str,
-                CAR: str):
-    # dbquery.executeSQL("delete from ProjetoPreferencias; delete from Projeto")
-
-    dbquery.executeSQL(f"INSERT INTO Projeto(idUser, descProjeto, CAR, idMunicipioFito, AreaProjeto, AreaPropriedade,"
-                       f" dtCriacao, dtAtualizacao) "
-                       f"VALUES ({userId}, '{projectName}', '{CAR}', {idFito}, {projectArea}, {propertyArea},"
-                       f"GETDATE(), GETDATE())")
-    project_id = dbquery.getLastId('Projeto')
-    return project_id
-
 def updateProjectData(project_id: str, selectedCombinations: str):
     return dbquery.getDictResultset(
             f"select ft.nomeFaixa, "

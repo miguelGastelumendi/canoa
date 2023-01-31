@@ -4,7 +4,7 @@ def getCombinations(idProjeto):
     df = dbquery.getDataframeResultset(
         f"select CONCAT('Escolha uma entre as opções para a faixa ',ft.nomeFaixa,'. Valores em R$/',cast(ft.AreaFaixa as decimal(10,2)),' m².') as nomeFaixa, "
         f"vfc.idFaixaTipo,  vfc.idCombinacao, vfc.Especies, "
-        f"case when vfc.TIR < 0 then RAND()*0.01 + 0.13 else vfc.TIR end as TIR, vfc.payback, vfc.InvNecessario, VTLiquido, vfc.VPLiquido "
+        f"case when vfc.TIR < 0 then RAND()*0.01 + 0.13 else vfc.TIR end as TIR, vfc.payback, vfc.InvNecessario, vfc.VTLiquido, vfc.VPLiquido "
         f"from Projeto p "
         f"inner join MunicipioFito mf "
         f"on mf.id = p.idMunicipioFito "

@@ -53,7 +53,7 @@
     oParam = { ...{ lat: selLat.value, lon: selLong.value}, ...oParam };
     sParams = '';
     for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
-    wzdControl.fetchObject(`/callback/rsp-locationLatLon?${sParams}`, fSuccess, sError);
+    wzdControl.fetchObject(`/callback/locationLatLon?${sParams}`, fSuccess, sError);
   }
 
   //--
@@ -73,7 +73,7 @@
   }
 
   wzdControl.initPage({
-    mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-locationMethodSelect.html',
+    mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-goal.html',
     help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
   window.addEventListener("load", () => { (selLat.value == "") ? fetchMapOfSP() : updateFormData(selLat.id) });

@@ -27,8 +27,12 @@ def index():
 @blueprint.route('/callback/<endpoint>')
 @login_required
 def route_callback(endpoint):
+    args = request.args
+    callerID = args.get('callerID')
+    if callerID == 'mapSP':
+        return ui_projectSupport.getMapSP()
     if endpoint == 'projectName':
-        if not '_projeto_id' in session.keys():
+        if not '_projeto_id' in session.keys() or session['_projeto_id'] == -1:
             session['_projeto_id'] = ui_projectSupport.createProject(current_user.id, request.args['projectName'])
         else:
             try:
@@ -36,17 +40,14 @@ def route_callback(endpoint):
             except Exception as e:
                 if '23000' in re.split('\W+', e.args[0]):
                     return helper.getErrorMessage('projectNameMustBeUnique')
+        return "Ok"
     if endpoint == 'locationCAR':
         return ui_projectSupport.getMapCAR(request.args.get('CAR'))
     if endpoint == 'locationLatLon':
         return ui_projectSupport.getMapLatLon(request.args.get('lat'), request.args.get('lon'))
     if endpoint == 'getDistribution':
-        return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
+            return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
 
-    args = request.args
-    callerID = args.get('callerID')
-    if callerID == 'mapSP':
-        return ui_projectSupport.getMapSP()
     idFito = int(args.get('idFito')) if callerID in ['fito_ecologica', 'saveProject'] else -1
     latlong = args.get('latlong')
     CAR = args.get('CAR')
@@ -55,21 +56,20 @@ def route_callback(endpoint):
             idMunicipio = int(args.get('idMunicipio'))
         except:
             idMunicipio = -1
-        return ui_projectSupport.getMapFitoMunicipio(callerID,
-                                                     idMunicipio,
-                                                     idFito,
-                                                     latlong,
-                                                     CAR)
-    elif endpoint == 'saveProject':
-        projectName = args.get('ProjectName')
-        projeto_id = ui_projectSupport.saveProject(session['_user_id'],
-                                                   args.get('ProjectName'),
-                                                   args.get('ProjectArea'),
-                                                   args.get('PropertyArea'),
-                                                   idFito,
-                                                   latlong,
-                                                   CAR)
-        session['_projeto_id'] = projeto_id
+        try:
+            idFito = int(args.get('idFito'))
+        except:
+            idFito = -1
+        if idFito > -1:
+            ui_projectSupport.updateProject(session['_projeto_id'],
+                                            **{'idMunicipioFito': idFito, 'CAR': CAR})
+            return ui_projectSupport.getMapFitoMunicipio(callerID,
+                                                         idMunicipio,
+                                                         idFito,
+                                                         latlong,
+                                                         CAR)
+
+
     elif endpoint == 'help':
         return helper.getHelpText(args.get('id'))
     return "Ok"
@@ -102,6 +102,7 @@ def route_template(template):
                     projectId = int(request.args['id'])
                 if projectId > -1:
                     projectName = dbquery.getValueFromDb(f"select descProjeto from Projeto where id = {projectId}")
+                    session['_projeto_id'] = projectId
                 else:
                     projectName = ''
                 return render_template("home/rsp-projectName.html",
@@ -141,7 +142,7 @@ def route_template(template):
                 dbquery.executeSQL(f"update Projeto set idFinalidade = {idFinalidade} "
                                    f"where id = {session['_projeto_id']}")
                 return render_template("home/" + template
-                                       , **helper.getFormText('rsp-projectLocation'))
+                                       , **helper.getFormText('rsp-plantDistribution'))
 
 
             elif segment == 'rsp-relief.html':
@@ -172,12 +173,14 @@ def route_template(template):
                 return render_template("home/" + template,
                                        strips=strips,
                                        combinations=combinations,
-                                       noData=noData)
+                                       noData=noData,
+                                       **helper.getFormText('rsp-combinations'))
 
             elif segment == 'rsp-projectEnd.html':
                 #                ui_projectData.updateProjectData(session['_projeto_id'], request.args['id'])
                 projectData, combinations = ui_projectEnd.getProjectData(session['_projeto_id'], request.args['id'])
-                return render_template("home/" + template, combinations=combinations, **projectData)
+                return render_template("home/" + template, combinations=combinations, **projectData,
+                                       **helper.getFormText('rsp-projectEnd'))
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404

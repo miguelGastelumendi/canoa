@@ -32,7 +32,7 @@ def getProjectData(project_id: str, selectedCombinations: str):
     combinations = dbquery.getDataframeResultset(
         f"select ft.nomeFaixa, "
         f"vfc.idFaixaTipo,  vfc.idCombinacao, vfc.Especies, round(case when vfc.TIR < 0 then RAND()*0.01 + 0.13 else vfc.TIR end,2) as TIR, "
-        f"round(vfc.payback,2) as payback, round(vfc.InvNecessario,2) as InvNecessario, round(VTLiquido,2) as VTLiquido, round(vfc.VPLiquido,2) as VPLiquido "
+        f"round(vfc.payback,2) as payback, round(vfc.InvNecessario,2) as InvNecessario, round(vfc.VTLiquido,2) as VTLiquido, round(vfc.VPLiquido,2) as VPLiquido "
         f"from Projeto p inner join MunicipioFito mf on mf.id = p.idMunicipioFito "
         f"inner join Municipio m on m.id = mf.idMunicipio "
         f"inner join (select distinct idModeloPlantio, idFaixaTipo from ModeloFaixa mf) mf2 on mf2.idModeloPlantio = p.idModeloPlantio "
