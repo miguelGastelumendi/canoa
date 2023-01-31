@@ -7,7 +7,7 @@
 <div class="container" width="60%">
   <div class="row mb-3">
     <label for="lat" class="col-sm-3 col-form-label">Latitude</label>
-    <div class="col-sm-4 mb-3">
+    <div class="col-sm-4 mb-3 p-1">
       <input id="lat" name="lat" class="form-control" type="text" title="Latitude"
          placeholder="ex: -21.0845"> 
         
@@ -50,7 +50,7 @@
 
   //--
   const fetchFormData = (oParam, fSuccess, sError) => {
-    oParam = { ...{ callerID: '', idMunicipio: '-1', idFito: '-1',  latlong: selLat.value + selLong.value, CAR: ''}, ...oParam };
+    oParam = { ...{ lat: selLat.value, lon: selLong.value}, ...oParam };
     sParams = '';
     for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
     wzdControl.fetchObject(`/callback/rsp-locationLatLon?${sParams}`, fSuccess, sError);
