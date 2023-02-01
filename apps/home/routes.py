@@ -41,6 +41,16 @@ def route_callback(endpoint):
                 if '23000' in re.split('\W+', e.args[0]):
                     return helper.getErrorMessage('projectNameMustBeUnique')
         return "Ok"
+    if endpoint == 'rsp-areas':
+        if not '_projeto_id' in session.keys() or session['_projeto_id'] == -1:
+            session['_projeto_id'] = ui_projectSupport.createProject(current_user.id, request.args['rsp-areas'])
+        else:
+            try:
+                ui_projectSupport.updateProject(session['_projeto_id'], descProjeto=request.args['rsp-areas'])
+            except Exception as e:
+                if '23000' in re.split('\W+', e.args[0]):
+                    return helper.getErrorMessage('projectNameMustBeUnique')
+        return "Ok"
     if endpoint == 'locationCAR':
         return ui_projectSupport.getMapCAR(request.args.get('CAR'))
     if endpoint == 'locationLatLon':
@@ -108,6 +118,18 @@ def route_template(template):
                 return render_template("home/rsp-projectName.html",
                                        projectNameValue=projectName,
                                        **helper.getFormText('rsp-projectName'))
+
+            if segment == 'rsp-areas.html':
+                if 'id' in request.args.keys():
+                    projectId = int(request.args['id'])
+                if projectId > -1:
+                    projectName = dbquery.getValueFromDb(f"select descProjeto from Projeto where id = {projectId}")
+                    session['_projeto_id'] = projectId
+                else:
+                    projectName = ''
+                return render_template("home/rsp-areas.html",
+                                       projectNameValue=projectName,
+                                       **helper.getFormText('rsp-areas'))
 
             if segment == 'rsp-locationMethodSelect.html':
                 return render_template("home/" + template,
