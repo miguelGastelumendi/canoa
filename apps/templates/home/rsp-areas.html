@@ -27,9 +27,29 @@
 
 {% block wizardConfig %}
 <script>
+
+let sAction = '/callback/rsp-areas';
+  const sendData = () => { // mgd 2023.11.13
+    let sParams = '?';
+    for (const [key, value] of new FormData(wzdControl.ge('pnForm'))) {
+      sParams += `${key}=${value}&`;
+    }
+    const fSuccess = (sRsp) => {
+      if (sRsp.toUpperCase() == 'OK') {
+        window.location = wzdControl.nextPageHref
+      } else {
+        wzdControl.messageError(sRsp);
+      }
+    }
+    wzdControl.fetchObject(sAction + sParams.slice(0, -1), fSuccess, 'Erro nas medidas fornecidas.', null, { type: 'text' });
+    return false;
+  }
+
   wzdControl.initPage({
     mode: wzdControl.mode.CUSTOM,
     nextPage: 'rsp-goal.html',
+    onNext: () => { sendData(); return false; },
+    help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
 
 
