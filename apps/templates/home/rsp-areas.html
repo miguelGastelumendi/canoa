@@ -1,0 +1,39 @@
+{% extends "layouts/wizard.tmpl" %}
+  
+{% block wizardDescription %}Informe as medidas do projeto e propriedade (ha){% endblock %}
+
+{% block wizardBody %}
+<form id="pnForm">
+  <div class="container" width="60%">
+    <div class="row mb-3">
+      <label for="propertyArea" class="col-sm-4 col-form-label">Área da Propriedade</label>
+      <div class="col-sm-8">
+        <input id="propertyArea" name="propertyArea" class="form-control" type="number" title="Área da Propriedade"
+          placeholder="10.0 ha">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label for="projectArea" class="col-sm-4 col-form-label">Área do Projeto</label>
+      <div class="col-sm-8">
+        <input id="projectArea" name="projectArea" class="form-control" type="number" title="Área do Projeto"
+          placeholder="2.0 ha">
+      </div>
+    </div>
+  </div>
+
+  <!-- <input type="submit" value="Confirmar" /> -->
+</form>
+{% endblock wizardBody %}
+
+{% block wizardConfig %}
+<script>
+  wzdControl.initPage({
+    mode: wzdControl.mode.CUSTOM,
+    nextPage: 'rsp-goal.html',
+  });
+
+
+</script>
+{% endblock %}
+
+{# eof #}
