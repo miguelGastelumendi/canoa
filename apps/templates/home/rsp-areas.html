@@ -1,21 +1,21 @@
 {% extends "layouts/wizard.tmpl" %}
   
-{% block wizardDescription %}Informe as medidas do projeto e propriedade (ha){% endblock %}
+{% block wizardDescription %}{{ formTitle }}{% endblock %}
 
 {% block wizardBody %}
 <form id="pnForm">
   <div class="container" width="60%">
     <div class="row mb-3">
-      <label for="propertyArea" class="col-sm-4 col-form-label">Área da Propriedade</label>
+      <label for="propertyArea" class="col-sm-4 col-form-label">{{ propertyArea }}</label>
       <div class="col-sm-8">
-        <input id="propertyArea" name="propertyArea" class="form-control" type="number" title="Área da Propriedade"
+        <input id="propertyArea" name="propertyArea" class="form-control" type="number" title="{{ propertyArea }}"
           placeholder="10.0 ha">
       </div>
     </div>
     <div class="row mb-3">
-      <label for="projectArea" class="col-sm-4 col-form-label">Área do Projeto</label>
+      <label for="projectArea" class="col-sm-4 col-form-label">{{ projectArea }}</label>
       <div class="col-sm-8">
-        <input id="projectArea" name="projectArea" class="form-control" type="number" title="Área do Projeto"
+        <input id="projectArea" name="projectArea" class="form-control" type="number" title="{{  projectArea }}"
           placeholder="2.0 ha">
       </div>
     </div>
@@ -28,7 +28,7 @@
 {% block wizardConfig %}
 <script>
 
-let sAction = '/callback/rsp-areas';
+let sAction = '/callback/areas';
   const sendData = () => { // mgd 2023.11.13
     let sParams = '?';
     for (const [key, value] of new FormData(wzdControl.ge('pnForm'))) {

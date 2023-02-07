@@ -46,11 +46,14 @@ def route_callback(endpoint):
     if endpoint == 'locationLatLon':
         return ui_projectSupport.getMapLatLon(request.args.get('lat'), request.args.get('lon'))
     if endpoint == 'getDistribution':
-            return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
+        return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
+    if endpoint == 'areas':
+        if args.get('propertyArea') == '' or args.get('projectArea') == '':
+            return helper.getErrorMessage('areasMustBeInformed')
+        dbquery.executeSQL(f"UPDATE projeto SET AreaProjeto = {args.get('projectArea')}, "
+                           f"AreaPropriedade = {args.get('propertyArea')} "
+                           f"where id = {session['_projeto_id']}")
 
-    idFito = int(args.get('idFito')) if callerID in ['fito_ecologica', 'saveProject'] else -1
-    latlong = args.get('latlong')
-    CAR = args.get('CAR')
     if endpoint == 'updateFormData':
         try:
             idMunicipio = int(args.get('idMunicipio'))
@@ -62,14 +65,9 @@ def route_callback(endpoint):
             idFito = -1
         if idFito > -1:
             ui_projectSupport.updateProject(session['_projeto_id'],
-                                            **{'idMunicipioFito': idFito, 'CAR': CAR})
-            return ui_projectSupport.getMapFitoMunicipio(callerID,
-                                                         idMunicipio,
-                                                         idFito,
-                                                         latlong,
-                                                         CAR)
-
-
+                                            **{'idMunicipioFito': idFito})
+        return ui_projectSupport.getMapFitoMunicipio(idMunicipio,
+                                                     idFito)
     elif endpoint == 'help':
         return helper.getHelpText(args.get('id'))
     return "Ok"
@@ -127,6 +125,10 @@ def route_template(template):
             if segment == 'rsp-locationCAR.html':
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-locationCAR'))
+
+            if segment == 'rsp-areas.html':
+                return render_template("home/" + template,
+                                       **helper.getFormText('rsp-areas'))
 
             elif segment == 'rsp-goal.html':
                 return render_template("home/" + template,

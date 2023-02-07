@@ -50,7 +50,32 @@ def getCAR(CAR: str):
         f",geom.STGeometryType() as geometrytype "
         f"from CAR where CAR = '{CAR}') a").first()
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
+    features = [json.loads(x) for x in dbquery.getListResultset(
+        f"select geomtext from CAR where CAR = '{CAR}' union "
+        f"select geomtext from MunicipioFito where id in (select idMunicipioFito from )")]
+    centroid_extent_polytype = dbquery.executeSQL(
+        f"select Centroid.STY as Longitude, Centroid.STX as Latitude, extent, geometrytype from "
+        f"(select geom.STCentroid() as Centroid, geom.STEnvelope().STAsText() as extent "
+        f",geom.STGeometryType() as geometrytype "
+        f"from CAR where CAR = '{CAR}') a").first()
+    gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
     return df, gjson, centroid, zoom
+
+def getCAR(CAR: str):
+    CARid = dbquery.getValueFromDb(f"select id from CAR where CAR = '{CAR}'")
+    # OBJECTID+10000: step over MunicipioFito.id making the combination an unique index
+    df = dbquery.getDataframeResultset(f"select OBJECTID+10000 as id, CAR as label from CAR "
+                                       f"where id = {CARid} "
+                                       f"union "
+                                       f"select id, CONCAT(m.nomeMunicipio,'/',ff.descFitofisionomia) as label "
+                                       f"from CARMunicipioFito cf "
+                                       f"inner join MunicipioFito mf "
+                                       f"on cf.idMunicipioFito = mf.id " 
+                                       f"inner join Municipio m " 
+                                       f"on mf.idMunicipio = m.id " 
+                                       f"inner join FitoFisionomia ff " 
+                                       f"on mf.idFitoFisionomia = ff.id " 
+                                       f"where cf.idCAR = {CARid}")
 
 def getLatLon(lat: str, lon: str):
     whereFito = f"where mf.geom.STIntersects((geometry::STPointFromText('POINT ({lon} {lat})', 4326)))=1"
@@ -122,29 +147,10 @@ def getSP():
     return df, gjson, centroid, zoom
 
 
-def getFitoMunicipio(callerID: str, idMunicipio:
-int, idFito: int, latlong: str, CAR: str):
-    if CAR != '':
-        whereFito = (f"where mf.id in (select mf.id from car c \n"
-                     f"inner join MunicipioFito mf \n"
-                     f"on c.idMunicipio = mf.idMunicipio \n"
-                     f"where car = '{CAR}' \n"
-                     f"and c.geom.STIntersects(mf.geom) = 1)")
-        area = f"{dbquery.getValueFromDb(f'select area from CAR where car = {CAR}'):.4f}".replace('.', ',')
-    elif latlong != '':
-        lat, long = latlong.split(' ')
-        lat = lat.replace(',', '.').replace('S', '')
-        long = long.replace(',', '.').replace('S', '')
-        if not lat.startswith('-'):
-            lat = '-' + lat
-        if not long.startswith('-'):
-            long = '-' + long
-        whereFito = f"where mf.geom.STIntersects((geometry::STPointFromText('POINT ({long} {lat})', 4326)))=1"
-        area = ''
-    else:
-        whereFito = (f"where mf.idMunicipio = {idMunicipio} " +
-                     (f"and mf.id = {idFito}" if idFito > -1 else ""))
-        area = ''
+def getFitoMunicipio(idMunicipio:int, idFito: int):
+    whereFito = (f"where mf.idMunicipio = {idMunicipio} " +
+                 (f"and mf.id = {idFito}" if idFito > -1 else ""))
+    area = ''
     fito = dbquery.getDataframeResultset(
         f"select mf.id,concat(m.nomeMunicipio,'/',descFitoFisionomia) as label,ff.color "
         f"from MunicipioFito mf "
@@ -165,13 +171,9 @@ int, idFito: int, latlong: str, CAR: str):
     return fito, gjson, centroid, zoom, color, area
 
 
-def getMapFitoMunicipio(callerID: str,
-                        idMunicipio: int,
-                        idFito: int,
-                        latlong: str,
-                        CAR: str):
-    fito, geo, centroid, zoom, color, area = getFitoMunicipio(callerID,
-                                                              idMunicipio, idFito, latlong, CAR)
+def getMapFitoMunicipio(idMunicipio: int,
+                        idFito: int):
+    fito, geo, centroid, zoom, color, area = getFitoMunicipio(idMunicipio, idFito)
     fig = px.choropleth_mapbox(fito, geojson=geo, color=fito.color.tolist(),
                                locations=fito.id, featureidkey="properties.id",
                                center=centroid,
