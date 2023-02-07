@@ -32,14 +32,14 @@ def route_callback(endpoint):
     if callerID == 'mapSP':
         return ui_projectSupport.getMapSP()
     if endpoint == 'projectName':
-        if not '_projeto_id' in session.keys() or session['_projeto_id'] == -1:
-            session['_projeto_id'] = ui_projectSupport.createProject(current_user.id, request.args['projectName'])
-        else:
-            try:
+        try:
+            if not '_projeto_id' in session.keys() or session['_projeto_id'] == -1:
+                session['_projeto_id'] = ui_projectSupport.createProject(current_user.id, request.args['projectName'])
+            else:
                 ui_projectSupport.updateProject(session['_projeto_id'], descProjeto=request.args['projectName'])
-            except Exception as e:
-                if '23000' in re.split('\W+', e.args[0]):
-                    return helper.getErrorMessage('projectNameMustBeUnique')
+        except Exception as e:
+            if '23000' in re.split('\W+', e.args[0]):
+                return helper.getErrorMessage('projectNameMustBeUnique')
         return "Ok"
     if endpoint == 'rsp-areas':
         try:
@@ -117,18 +117,6 @@ def route_template(template):
                                        projectNameValue=projectName,
                                        **helper.getFormText('rsp-projectName'))
 
-            if segment == 'rsp-areas.html':
-                if 'id' in request.args.keys():
-                    projectId = int(request.args['id'])
-                if projectId > -1:
-                    projectName = dbquery.getValueFromDb(f"select descProjeto from Projeto where id = {projectId}")
-                    session['_projeto_id'] = projectId
-                else:
-                    projectName = ''
-                return render_template("home/rsp-areas.html",
-                                       projectNameValue=projectName,
-                                       **helper.getFormText('rsp-areas'))
-
             if segment == 'rsp-locationMethodSelect.html':
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-locationMethodSelect'))
@@ -149,7 +137,7 @@ def route_template(template):
                                        **helper.getFormText('rsp-locationCAR'))
 
             if segment == 'rsp-areas.html':
-                return render_template("home/" + template,
+                return render_template("home/rsp-areas.html",
                                        **helper.getFormText('rsp-areas'))
 
             elif segment == 'rsp-goal.html':
