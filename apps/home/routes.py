@@ -42,14 +42,14 @@ def route_callback(endpoint):
                     return helper.getErrorMessage('projectNameMustBeUnique')
         return "Ok"
     if endpoint == 'rsp-areas':
-        if not '_projeto_id' in session.keys() or session['_projeto_id'] == -1:
-            session['_projeto_id'] = ui_projectSupport.createProject(current_user.id, request.args['rsp-areas'])
-        else:
-            try:
+        try:
+            if not '_projeto_id' in session.keys() or session['_projeto_id'] == -1:
+                session['_projeto_id'] = ui_projectSupport.createProject(current_user.id, request.args['rsp-areas'])
+            else:
                 ui_projectSupport.updateProject(session['_projeto_id'], descProjeto=request.args['rsp-areas'])
-            except Exception as e:
-                if '23000' in re.split('\W+', e.args[0]):
-                    return helper.getErrorMessage('projectNameMustBeUnique')
+        except Exception as e:
+            if '23000' in re.split('\W+', e.args[0]):
+                return helper.getErrorMessage('projectNameMustBeUnique')
         return "Ok"
     if endpoint == 'locationCAR':
         return ui_projectSupport.getMapCAR(request.args.get('CAR'))
