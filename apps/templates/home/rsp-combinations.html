@@ -30,7 +30,7 @@
   {% for _, combination in combinations.iterrows() %}
   jsoData.push({
     bodyId: "body{{ combination.idFaixaTipo }}",
-    id: "{{ combination.idCombinacao }}",
+    id: "{{ combination.idFluxoCaixa }}",
     caption: "Combinação {{ combination.Especies }}",
     text: '<div class="text-center">{{ combination.Especies }}</div><hr><b>TIR:</b> {{ "%.4f"|format(combination.TIR) }}<br>' +
       '<b>Pay-back:</b> {{ combination.payback }} anos<br>' +

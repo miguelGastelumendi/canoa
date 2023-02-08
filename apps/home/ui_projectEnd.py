@@ -40,6 +40,6 @@ def getProjectData(project_id: str, selectedCombinations: str):
         f"and vfc.idRegiaoAdm = m.idRegiaoAdm and vfc.idTopografia = p.idTopografia and vfc.idMecanizacaoNivel = p.idMecanizacaoNivel "
         f"inner join FaixaTipo ft on ft.id =  mf2.idFaixaTipo "
         f"where p.id = {project_id} "
-        f"and vfc.idCombinacao in ({selectedCombinations.replace('-',',')})")
+        f"and vfc.idFluxoCaixa in ('{selectedCombinations}')")
 
     return projectData, combinations

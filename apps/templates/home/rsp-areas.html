@@ -1,10 +1,11 @@
 {% extends "layouts/wizard.tmpl" %}
   
-{% block wizardDescription %}Informe as medidas do projeto e propriedade (ha){% endblock %}
+{% block wizardDescription %}{{ formTitle }}{% endblock %}
 
 {% block wizardBody %}
 <form id="pnForm">
   <div class="container" width="60%">
+<<<<<<< HEAD
     <div class="row mb-3" style="display: flex; align-items: center; justify-content: center;">
       <button type="button" class="btn btn-info" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center;" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="texto de ajuda">?</button>
       <label for="propertyArea" class="col-sm-2 col-form-label">Área da Propriedade</label>
@@ -19,6 +20,20 @@
       <div class="col-sm-4">
         <input id="projectArea" name="projectArea" class="form-control" type="number" title="Área do Projeto"
           placeholder="ex: 2.0 ha">
+=======
+    <div class="row mb-3">
+      <label for="propertyArea" class="col-sm-4 col-form-label">{{ propertyArea }}</label>
+      <div class="col-sm-8">
+        <input id="propertyArea" name="propertyArea" class="form-control" type="number" title="{{ propertyArea }}"
+          placeholder="10.0 ha">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label for="projectArea" class="col-sm-4 col-form-label">{{ projectArea }}</label>
+      <div class="col-sm-8">
+        <input id="projectArea" name="projectArea" class="form-control" type="number" title="{{  projectArea }}"
+          placeholder="2.0 ha">
+>>>>>>> 32ff71015e4072b72e1ca1797f7f3730c1b427b4
       </div>
     </div>
   </div>
@@ -30,7 +45,7 @@
 {% block wizardConfig %}
 <script>
 
-let sAction = '/callback/rsp-areas';
+let sAction = '/callback/areas';
   const sendData = () => { // mgd 2023.11.13
     let sParams = '?';
     for (const [key, value] of new FormData(wzdControl.ge('pnForm'))) {
