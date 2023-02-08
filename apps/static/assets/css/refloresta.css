@@ -8,6 +8,10 @@ body {
   background-size: cover;
 }
 
+::-webkit-input-placeholder {
+   font-style: italic;
+}
+
 .wzd-backdrop {
   margin-top: 2%;
 }
