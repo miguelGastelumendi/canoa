@@ -30,6 +30,7 @@
  * @typedef {Object} wzdConfig
  * @property {Array<wzdItem>} data array of json items
  * @property {number} mode see wzdControl.mode
+ * @property {boolean} helper see wzdControl.helper
  * @property {fOnNext?} onNext callback on Next button
  * @property {string?} nextPage address of next page
  * @property {string?} path to wzdItem.fileName
@@ -58,6 +59,7 @@
 
 
 const wzdControl = {
+  helper: true,
   multiSelect: false,
   selectedItemIx: -1,
   nextPageHref: '',  // Wizard page has ony one target
@@ -159,11 +161,24 @@ const wzdControl = {
         return;
       case wzdControl.mode.BUTTONS:
         wzdControl.jsoData.forEach((itm, ix) => {
-          bodyIx = _getBodyIx(itm.bodyId, '<div class="d-grid gap-2">');
-          aHtml[bodyIx] +=
-            `<button id="${wzdControl.getBtnId(ix)}" class="btn bg-gradient btn-outline-success ${sAlign} mx-5" type="button" onclick="wzdControl.selectItem(${ix})">` +
-            (itm.text ? itm.text : itm.caption) +
-            '</button>';
+          bodyIx = _getBodyIx(itm.bodyId, '<div class="d-grid gap-4">');
+          if(wzdControl.helper){
+            aHtml[bodyIx] +=
+            `<div>
+            <button type="button" class="btn btn-info" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center;" data-bs-placement="left" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="${itm.text}">?</button>
+                <button id="${wzdControl.getBtnId(ix)}" class="btn bg-gradient btn-outline-success ${sAlign}" style="width: 40%;" type="button" onclick="wzdControl.selectItem(${ix})">` +
+                  (itm.text ? itm.text : itm.caption) +
+                '</button>' +
+            '</div>';
+          }else{
+            aHtml[bodyIx] +=
+            `<div>
+                <button id="${wzdControl.getBtnId(ix)}" class="btn bg-gradient btn-outline-success ${sAlign}" style="width: 40%;" type="button" onclick="wzdControl.selectItem(${ix})">` +
+                  (itm.text ? itm.text : itm.caption) +
+                '</button>' +
+            '</div>';
+          }
+          
         });
         break;
       case wzdControl.mode.INFO:

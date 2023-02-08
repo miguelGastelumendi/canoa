@@ -5,18 +5,20 @@
 {% block wizardBody %}
 <form id="pnForm">
   <div class="container" width="60%">
-    <div class="row mb-3">
-      <label for="propertyArea" class="col-sm-4 col-form-label">Área da Propriedade</label>
-      <div class="col-sm-8">
+    <div class="row mb-3" style="display: flex; align-items: center; justify-content: center;">
+      <button type="button" class="btn btn-info" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center;" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="texto de ajuda">?</button>
+      <label for="propertyArea" class="col-sm-2 col-form-label">Área da Propriedade</label>
+      <span class="col-sm-4">
         <input id="propertyArea" name="propertyArea" class="form-control" type="number" title="Área da Propriedade"
-          placeholder="10.0 ha">
-      </div>
+          placeholder="ex: 10.0 ha">
+      </span>
     </div>
-    <div class="row mb-3">
-      <label for="projectArea" class="col-sm-4 col-form-label">Área do Projeto</label>
-      <div class="col-sm-8">
+    <div class="row mb-3" style="display: flex; align-items: center; justify-content: center;">
+      <button type="button" class="btn btn-info" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center;" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="texto de ajuda">?</button>
+      <label for="projectArea" class="col-sm-2 col-form-label">Área do Projeto</label>
+      <div class="col-sm-4">
         <input id="projectArea" name="projectArea" class="form-control" type="number" title="Área do Projeto"
-          placeholder="2.0 ha">
+          placeholder="ex: 2.0 ha">
       </div>
     </div>
   </div>
