@@ -5,9 +5,9 @@
 {% block wizardConfig %}
 <script>
   const jsBtn = [
-    { caption: '{{ countyFitofisionomy }}', href: 'rsp-locationCountyFitofisionomy.html'},
+    { caption: '{{ countyFitofisionomy }}', href: 'rsp-locationCountyFitofisionomy.html', hint: 'abcd'},
     { caption: '{{ latLon }}',  href: 'rsp-locationLatLon.html'},
-    { caption: '{{ car }}', href: 'rsp-locationCAR.html'}
+    { caption: '{{ car }}', href: 'rsp-locationCAR.html', hint: 'teste CAR'}
   ];
   wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS});
 </script>
