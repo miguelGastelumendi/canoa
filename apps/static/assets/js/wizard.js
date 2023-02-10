@@ -165,7 +165,7 @@ const wzdControl = {
           if(wzdControl.helper){
             aHtml[bodyIx] +=
             `<div>
-            <button type="button" class="btn btn-info" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center;" data-bs-placement="left" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="${itm.text}">?</button>
+            <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-placement="left" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="${itm.text}">?</button>
                 <button id="${wzdControl.getBtnId(ix)}" class="btn bg-gradient btn-outline-success ${sAlign}" style="width: 40%;" type="button" onclick="wzdControl.selectItem(${ix})">` +
                   (itm.text ? itm.text : itm.caption) +
                 '</button>' +
