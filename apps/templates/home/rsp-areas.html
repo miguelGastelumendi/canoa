@@ -6,7 +6,7 @@
 <form id="pnForm">
   <div class="container" width="60%">
     <div class="row mb-3" style="display: flex; align-items: center; justify-content: center;">
-      <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="Texto de ajuda">?</button>
+      <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="{{ helpPropertyArea }}">?</button>
       <label for="propertyArea" class="col-sm-2 col-form-label" style="white-space: nowrap; width: 20%;">{{ propertyArea }}</label>
       <span class="col-sm-4">
         <input id="propertyArea" name="propertyArea" class="form-control" type="number" title="{{ propertyArea }}"
@@ -14,7 +14,7 @@
       </span>
     </div>
     <div class="row mb-3" style="display: flex; align-items: center; justify-content: center;">
-      <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="Texto de ajuda">?</button>
+      <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="{{ helpProjectArea }}">?</button>
       <label for="projectArea" class="col-sm-2 col-form-label" style="white-space: nowrap; width: 20%;">{{ projectArea }}</label>
       <div class="col-sm-4">
         <input id="projectArea" name="projectArea" class="form-control" type="number" title="{{ projectArea }}"

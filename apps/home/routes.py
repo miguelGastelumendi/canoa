@@ -151,10 +151,10 @@ def route_template(template):
 
             elif segment == 'rsp-goal.html':
                 return render_template("home/" + template,
-                                       goals=dbquery.getListDictResultset(
-                                           f"select desFinalidade as caption, id "  # desFinalidade: typo
-                                           f"from Finalidade "
-                                           f"order by orderby")
+                                           goals=dbquery.getListDictResultset(
+                                               f"select desFinalidade as caption, id, help as hint "  # desFinalidade: typo
+                                               f"from Finalidade "
+                                               f"order by orderby")
                                        , **helper.getFormText('rsp-goal'))
 
             elif segment == 'rsp-plantDistribution.html':
