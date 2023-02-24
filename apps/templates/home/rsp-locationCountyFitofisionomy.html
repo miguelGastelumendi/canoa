@@ -6,7 +6,7 @@
 {% block wizardBody %}
 <div class="container" width="60%">
   <div class="row mb-3">
-    <label for="municipio" class="col-sm-4 col-form-label">{{ countyFitoFisionomyDesc|safe }}</label>
+    <label for="municipio" class="col-sm-4 col-form-label">{{ countySelect|safe }}</label>
     <select id="municipio" class="col-sm-4 form-select" onchange="muniChanged()">
       <option value="-1" disabled selected>{{ firstSelectCounty }}</option>
       {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
@@ -14,7 +14,7 @@
   </div>
 
   <div class="row mb-3">
-    <label for="fito_ecologica" class="col-sm-4 col-form-label">{{ thenFitoFisionomy|safe }}</label>
+    <label for="fito_ecologica" class="col-sm-4 col-form-label">{{ fitoFisionomySelect|safe }}</label>
     <select id="fito_ecologica" class="col-sm-4 form-select " disabled="true" onchange="fitoChanged()">
       <option value="-1" selected>
         {% for key, value in fito_municipios.items() %}
