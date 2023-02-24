@@ -3,8 +3,8 @@
 {% block wizardConfig %}
 <script>
   const jsBtn = [
-    { caption: '{{ createProject }}', href: 'rsp-projectName.html' },
-    { caption: '{{ updateProject }}', href: 'rsp-selectProject.html' }
+    { caption: '{{ createProject }}', href: 'rsp-projectName.html', hint: '{{ helpCreateProject }}'},
+    { caption: '{{ updateProject }}', href: 'rsp-selectProject.html', hint: '{{ helpUpdateProject }}'}
   ];
   wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, helper: true,
       help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html','')}`});

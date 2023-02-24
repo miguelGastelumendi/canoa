@@ -20,7 +20,7 @@ insert into ProjetoCombFaixa
    from v_EscolhaCombinacaoPorFaixa
  where idProjeto = 139
    and idFluxoCaixa in ('16805-ra1-t4-m2','16974-ra1-t4-m2')
- order by idFaixaTipo, TIR DESC 
+ order by idFaixaTipo, TIR DESC
 
  ---^^ daqui prá cima vc roda no app e daqui prá baixo vai ficar na PROCEDURE
  -- criar uma procedure que passa como parametro o idprojeto

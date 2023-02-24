@@ -79,7 +79,7 @@ def route_callback(endpoint):
         return ui_projectSupport.getMapFitoMunicipio(idMunicipio,
                                                      idFito)
     elif endpoint == 'help':
-        return helper.getHelpText(args.get('id'))
+        return helper.getTipText(args.get('id'))
     return "Ok"
 
 
@@ -109,7 +109,7 @@ def route_template(template):
                 if 'id' in request.args.keys():
                     projectId = int(request.args['id'])
                 if projectId > -1:
-                    projectName = dbquery.getValueFromDb(f"select descProjeto from Projeto where id = {projectId}")
+                    projectName = dbquery.getValues(f"select descProjeto from Projeto where id = {projectId}")
                     session['_projeto_id'] = projectId
                 else:
                     projectName = ''
@@ -118,8 +118,17 @@ def route_template(template):
                                        **helper.getFormText('rsp-projectName'))
 
             if segment == 'rsp-locationMethodSelect.html':
-                return render_template("home/" + template,
-                                       **helper.getFormText('rsp-locationMethodSelect'))
+                formItems = helper.getFormText('rsp-locationMethodSelect')
+                if projectId > -1:
+                    lat, lon = dbquery.getValues(f'select lat, lon from Projeto where id = {projectId}')
+                    formItems = {**{'selectedcountyFitofisionomy': lat is None,
+                                 'selectedlatLong': lat is not None},
+                                 **formItems}
+                else:
+                    formItems = {**{'selectedcountyFitofisionomy': False,
+                                 'selectedlatLong': False},
+                                 **formItems}
+                return render_template("home/" + template, **formItems)
 
             if segment == 'rsp-locationCountyFitofisionomy.html':
                 return render_template("home/" + template,

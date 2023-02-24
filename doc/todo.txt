@@ -107,3 +107,10 @@ colocar os textos no banco
 24/01/23:
    Botão de próximo
    Como retornar mensagem de erro no wizard.
+
+07/02/23:
+ 1 -  Botão de help associado a elementos da tela (botões) (href)
+ 2 -  Escolhas já feitas
+   Destacar preenchimentos exemplo
+   Uniformizar os marrons e verdes nas imagens de faixas
+   Criar texturas da cor

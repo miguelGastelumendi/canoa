@@ -62,7 +62,7 @@ def getCAR(CAR: str):
     return df, gjson, centroid, zoom
 
 def getCAR(CAR: str):
-    CARid = dbquery.getValueFromDb(f"select id from CAR where CAR = '{CAR}'")
+    CARid = dbquery.getValues(f"select id from CAR where CAR = '{CAR}'")
     # OBJECTID+10000: step over MunicipioFito.id making the combination an unique index
     df = dbquery.getDataframeResultset(f"select OBJECTID+10000 as id, CAR as label from CAR "
                                        f"where id = {CARid} "

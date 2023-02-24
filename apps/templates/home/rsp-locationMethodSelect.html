@@ -1,15 +1,16 @@
 {% extends "layouts/wizard.tmpl" %}
 
-{% block wizardDescription %}Localização{% endblock %}
+{% block wizardDescription %}{{ wzdDescription }}{% endblock %}
 
 {% block wizardConfig %}
 <script>
   const jsBtn = [
-    { caption: '{{ countyFitofisionomy }}', href: 'rsp-locationCountyFitofisionomy.html', hint: 'abcd'},
-    { caption: '{{ latLon }}',  href: 'rsp-locationLatLon.html'},
-    { caption: '{{ car }}', href: 'rsp-locationCAR.html', hint: 'teste CAR'}
+    { caption: '{{ countyFitofisionomy }}', href: 'rsp-locationCountyFitofisionomy.html', hint: '{{ helpCountyFitofisionomy }}'},
+    { caption: '{{ latLon }}',  href: 'rsp-locationLatLon.html', hint: '{{ helpLatLon }}'}
   ];
-  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS});
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS,
+      help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`,
+  });
 </script>
 {% endblock %}
 

@@ -23,12 +23,16 @@ def get_segment(request):
         return None
 
 def getFormText(form: str):
-    return dbquery.getDictResultset(f"select tag, Texto from appSuporteTela where nomeTela = '{form}' or nomeTela = 'wizard'")
+    return dbquery.getDictResultset(f"select Tag, Texto from SuporteUsuarioElemento a "
+                                    f"inner join SuporteUsuarioGrupo b "
+                                    f"on a.idSuporteUsuarioGrupo = b.id where b.Nome = '{form}' or b.Nome = 'wizard'")
 
-def getHelpText(form: str):
+def getTipText(form: str):
     return dbquery.getJSONStrResultset(
-        f"select Texto as text, 'Ajuda' as title from appSuporteTela where nomeTela = '{form}' and tag = 'help'")
+        f"select Texto as text, 'Dica' as title from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
+        f"where b.Nome = '{form}' and Tag = 'tip'")
 
 def getErrorMessage(tag: str):
-    return dbquery.getValueFromDb(
-        f"select Texto as text, 'Ajuda' as title from appSuporteTela where nomeTela = 'errorMessage' and tag = '{tag}'")
+    return dbquery.getValues(
+        f"select Tag, Texto from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
+        f"where b.Nome = 'errorMessage' and Tag = {tag}")

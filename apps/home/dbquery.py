@@ -28,14 +28,16 @@ def executeSQL(sql):
         raise e
 
 
-def getValueFromDb(sql):
+def getValues(sql):
     rows = executeSQL(sql)
-    for row in rows:
-        return row[0]
-    return None
+    try:
+        r = rows.first()
+        return r if len(r) > 1 else r[0]
+    except:
+        return None
 
 def getLastId(tabeName: str)->int:
-    return getValueFromDb(f"SELECT IDENT_CURRENT('{tabeName}')")
+    return getValues(f"SELECT IDENT_CURRENT('{tabeName}')")
 
 def getDictResultset(sql):
     return {row[0]: row[1] for row in executeSQL(sql)}
