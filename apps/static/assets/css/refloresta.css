@@ -8,7 +8,7 @@ body {
   background-size: cover;
 }
 
-.labelProjectName{
+label {
   position: absolute;
   bottom: 34px;
   background-color: white;
@@ -16,21 +16,33 @@ body {
   padding: 0 5px !important;
   width: auto !important;
   left: 36%;
+  z-index: 10;
 }
-input{
+
+.labelLocation {
+  left: 29%;
+}
+
+.labelLatLong {
+  left: 5%;
+}
+input,
+select {
   background-color: white !important;
+  position: relative !important;
 }
-.divInputProjectName{
+
+.divInputProjectName {
   width: 35%;
 }
 
 @media screen and (max-width: 992px) {
-  .divInputProjectName{
+  .divInputProjectName {
     width: 60%;
   }
 }
 ::-webkit-input-placeholder {
-   font-style: italic;
+  font-style: italic;
 }
 
 .wzd-backdrop {

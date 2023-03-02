@@ -4,18 +4,18 @@
 
 
 {% block wizardBody %}
-<div class="container" width="60%">
-  <div style="display: flex; align-items: center;">
+<div class="container" width="60%" style="display: flex; flex-direction: column; gap: 15px;">
+  <div style="display: flex; align-items: center; position: relative;">
     <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content='{{ helpLat }}'>?</button>
-    <label for="lat" class="col-sm-3 col-form-label">Latitude</label>
+    <label for="lat" class="labelLatLong col-sm-3 col-form-label">Latitude</label>
     <div class="col-sm-4">
          <input id="lat" name="lat" class="form-control" type="text" title="Latitude"
          placeholder="ex: -21.0845"> 
     </div>
   </div>
-    <div style="display: flex; align-items: center;">
+    <div style="display: flex; align-items: center; position: relative;">
       <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content='{{ helpLon }}'>?</button>
-      <label for="lon" class="col-sm-3 col-form-label">Logintude</label>
+      <label for="lon" class="labelLatLong col-sm-3 col-form-label" style="bottom: 42px">Logintude</label>
       <div class="col-sm-4">
         <input id="lon" name="lon" class="form-control" type="text" title="Logintude"
            placeholder="ex: -50.1416">
