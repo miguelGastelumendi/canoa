@@ -1,10 +1,6 @@
-{% extends "layouts/wizard.tmpl" %}
-
-{% block wizardConfig %}
+{% extends "layouts/wizard.tmpl" %} {% block wizardConfig %}
 <script>
   const jsBtn = {{ mecanization|tojson }};
-  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-combinations.html' });
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, helper: true, nextPage: 'rsp-combinations.html' });
 </script>
-{% endblock %}
-
-{# eof #}
+{% endblock %} {# eof #}

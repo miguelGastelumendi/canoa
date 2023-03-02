@@ -8,6 +8,27 @@ body {
   background-size: cover;
 }
 
+.labelProjectName{
+  position: absolute;
+  bottom: 34px;
+  background-color: white;
+  color: green;
+  padding: 0 5px !important;
+  width: auto !important;
+  left: 36%;
+}
+input{
+  background-color: white !important;
+}
+.divInputProjectName{
+  width: 35%;
+}
+
+@media screen and (max-width: 992px) {
+  .divInputProjectName{
+    width: 60%;
+  }
+}
 ::-webkit-input-placeholder {
    font-style: italic;
 }
