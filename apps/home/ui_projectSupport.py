@@ -77,16 +77,19 @@ def getCAR(CAR: str):
                                        f"on mf.idFitoFisionomia = ff.id " 
                                        f"where cf.idCAR = {CARid}")
 
-def getLatLon(lat: str, lon: str):
+def getMunicipioFitoByLatLon(lat: str, lon: str):
     whereFito = f"where mf.geom.STIntersects((geometry::STPointFromText('POINT ({lon} {lat})', 4326)))=1"
-    fito = dbquery.getDataframeResultset(
+    return whereFito, dbquery.getDataframeResultset(
         f"select mf.id,concat(m.nomeMunicipio,'/',descFitoFisionomia) as label,ff.color "
         f"from MunicipioFito mf "
         f"inner join Municipio m "
         f"on mf.idMunicipio = m.id "
         f"inner join FitoFisionomia ff "
         f"on mf.idFitoFisionomia = ff.id "
-        f"{whereFito} ")
+        f"{whereFito}")
+
+def getLatLon(lat: str, lon: str):
+    whereFito, municipioFito = getMunicipioFitoByLatLon(lat, lon)
     features = [json.loads(x) for x in dbquery.getListResultset(
         f"select geomtext from MunicipioFito mf {whereFito}")]
     centroid_extent_polytype = dbquery.executeSQL(
@@ -94,9 +97,9 @@ def getLatLon(lat: str, lon: str):
         f"(select geom.STCentroid() as Centroid, geom.STEnvelope().STAsText() as extent "
         f",geom.STGeometryType() as geometrytype "
         f"from MunicipioFito mf {whereFito}) a").first()
-    color = fito.set_index('id').to_dict()['color']
+    color = municipioFito.set_index('id').to_dict()['color']
     gjson, centroid, zoom = getGJson(centroid_extent_polytype, features)
-    return fito, gjson, centroid, zoom, color
+    return municipioFito, gjson, centroid, zoom, color
 
 
 def getMunicipio(idMunicipio: int):
