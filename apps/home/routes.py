@@ -54,7 +54,7 @@ def route_callback(endpoint):
     if endpoint == 'locationCAR':
         return ui_projectSupport.getMapCAR(request.args.get('CAR'))
     if endpoint == 'locationLatLon':
-        return ui_projectSupport.getMapLatLon(request.args.get('lat'), request.args.get('lon'))
+        return ui_projectSupport.getMapLatLon(request.args.get('projectLatValue'), request.args.get('projectLongValue'))
     if endpoint == 'getDistribution':
         return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
     if endpoint == 'areas':
