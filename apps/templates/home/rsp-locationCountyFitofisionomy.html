@@ -6,7 +6,7 @@
 {% block wizardBody %}
 <div class="container" width="60%">
   <div class="row mb-3" style="display: flex; justify-content: center; align-items: center; position: relative;">
-    <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content={{  helpcounty }}>?</button>
+    <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content={{  helpcounty }}>?</button>
     <label for="municipio" class="labelLocation col-sm-2 col-form-label">{{ countySelect|safe }}</label>
     <select id="municipio" class="col-sm-4 form-select" onchange="muniChanged()" style="width: 50%;">
       <option value="-1" disabled selected>{{ firstSelectCounty }}</option>
@@ -15,7 +15,7 @@
   </div>
 
   <div class="row mb-3" style="display: flex; justify-content: center; align-items: center; position: relative;">
-    <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content={{  helpFitofisionomy }}>?</button>
+    <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content={{  helpFitofisionomy }}>?</button>
     <label for="fito_ecologica" class="labelLocation col-sm-2 col-form-label">{{ fitoFisionomySelect|safe }}</label>
     <select id="fito_ecologica" class="col-sm-4 form-select " disabled="true" onchange="fitoChanged()" style="width: 50%;">
       <option value="-1" selected>

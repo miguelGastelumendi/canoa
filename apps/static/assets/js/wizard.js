@@ -76,7 +76,7 @@ const wzdControl = {
   getBtnHint: (/** @type {string} */ sHint) => {
     return !sHint
       ? ""
-      : `<button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-placement="left" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="${sHint}">?</button>`;
+      : `<button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" tabindex="-1" data-bs-placement="left" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="${sHint}">?</button>`;
   },
   setBody: (/** @type {string} */ sId, /** @type {string} */ sBody) =>
     (wzdControl.ge(sId).innerHTML = "" + sBody),
