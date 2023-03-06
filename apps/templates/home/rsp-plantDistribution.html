@@ -12,7 +12,10 @@
       if (jsData.length == 0) {
         wzdControl.errorMessage('Não exitem distribuições para esta configuração.');
       } else {
-        wzdControl.initPage({ data: jsData, nextPage: 'rsp-relief.html', mode: wzdControl.mode.IMAGES });
+        wzdControl.initPage({ data: jsData, nextPage: 'rsp-relief.html',
+            mode: wzdControl.mode.IMAGES,
+            help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`}
+        );
       }
     }
   }

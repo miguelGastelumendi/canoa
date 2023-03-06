@@ -14,7 +14,9 @@
             '<b>Nível de mecanização:</b> {{ nomeMecanizacao }}<br>',
         href: 'rsp-ProjectStart.html' },
   ];
-  wzdControl.initPage({ data: jsBtn,mode: wzdControl.mode.INFO, nextPage: 'rsp-projectStart.html' });
+  wzdControl.initPage({ data: jsBtn,mode: wzdControl.mode.INFO,
+      nextPage: 'rsp-projectStart.html',
+      help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`});
 </script>
 {% endblock %}
 

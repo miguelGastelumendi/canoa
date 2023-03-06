@@ -41,12 +41,10 @@ def route_callback(endpoint):
             if '23000' in re.split('\W+', e.args[0]):
                 return helper.getErrorMessage('projectNameMustBeUnique')
         return "Ok"
-    if endpoint == 'rsp-areas':
+    if endpoint == 'areas':
         try:
-            if not '_projeto_id' in session.keys() or session['_projeto_id'] == -1:
-                session['_projeto_id'] = ui_projectSupport.createProject(current_user.id, request.args['rsp-areas'])
-            else:
-                ui_projectSupport.updateProject(session['_projeto_id'], descProjeto=request.args['rsp-areas'])
+            ui_projectSupport.updateProject(session['_projeto_id'], **{'areaPropriedade': args['propertyArea'],
+                                                                       'areaProjeto': args['projectArea']})
         except Exception as e:
             if '23000' in re.split('\W+', e.args[0]):
                 return helper.getErrorMessage('projectNameMustBeUnique')
@@ -54,7 +52,10 @@ def route_callback(endpoint):
     if endpoint == 'locationCAR':
         return ui_projectSupport.getMapCAR(request.args.get('CAR'))
     if endpoint == 'locationLatLon':
-        return ui_projectSupport.getMapLatLon(request.args.get('projectLatValue'), request.args.get('projectLongValue'))
+        _, municipioFito = ui_projectSupport.getMunicipioFitoByLatLon(request.args['lat'], request.args['lon'])
+        ui_projectSupport.updateProject(session['_projeto_id'], **{'idMunicipioFito': municipioFito.id[0], 'Lat': request.args['lat'],
+                                                                   'Lon': request.args['lon']})
+        return ui_projectSupport.getMapLatLon(request.args['lat'], request.args['lon'])
     if endpoint == 'getDistribution':
         return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
     if endpoint == 'areas':

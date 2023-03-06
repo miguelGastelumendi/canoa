@@ -8,7 +8,10 @@
     { caption: ' Terreno Ondulado', id: 3, fileName: 'wzd-terrenoOndulado.png' },
     { caption: 'Terreno Montanhoso', id: 4, fileName: 'wzd-terrenoMontanhoso.png' }
   ];
-  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.IMAGES, nextPage: 'rsp-mecanization.html' });
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.IMAGES,
+      nextPage: 'rsp-mecanization.html',
+      help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`}
+  );
 </script>
 {% endblock %}
 

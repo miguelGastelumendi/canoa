@@ -6,18 +6,18 @@
 {% block wizardBody %}
 <div class="container" width="60%" style="display: flex; flex-direction: column; gap: 15px;">
   <div style="display: flex; align-items: center; position: relative;">
-    <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content='{{ helpLat }}'>?</button>
-    <label for="projectLatValue" class="labelLatLong col-sm-3 col-form-label">Latitude</label>
+    <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content='{{ helpLat }}'>?</button>
+    <label for="lat" class="labelLatLong col-sm-3 col-form-label">Latitude</label>
     <div class="col-sm-4">
-         <input id="projectLatValue" name="projectLatValue" class="form-control" type="text" title="Latitude"
+         <input id="lat" name="lat" class="form-control" type="text" title="Latitude"
          placeholder="ex: -21.0845" value="{{ projectLatValue }}">
     </div>
   </div>
     <div style="display: flex; align-items: center; position: relative;">
-      <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content='{{ helpLon }}'>?</button>
-      <label for="projectLongValue" class="labelLatLong col-sm-3 col-form-label" style="bottom: 42px">Logintude</label>
+      <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content='{{ helpLon }}'>?</button>
+      <label for="lon" class="labelLatLong col-sm-3 col-form-label" style="bottom: 42px">Logintude</label>
       <div class="col-sm-4">
-        <input id="projectLongValue" name="projectLongValue" class="form-control" type="text" title="Logintude"
+        <input id="lon" name="lon" class="form-control" type="text" title="Logintude"
            placeholder="ex: -50.1416" value="{{ projectLongValue }}">
       </div>
      <button type="button" class="wzd-btnNext btn btn-outline-success" onclick="fetchFitosForMuni()">Ok</button>
@@ -32,8 +32,8 @@
 {% block wizardConfig %}
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
-  const selLat = wzdControl.ge('projectLatValue');
-  const selLong = wzdControl.ge('projectLongValue');
+  const selLat = wzdControl.ge('lat');
+  const selLong = wzdControl.ge('lon');
   const eleMap = wzdControl.ge('mapArea');
 
   //-- Avoid multiple async calls
