@@ -19,8 +19,9 @@ endblock %}
             class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 p-lg-5 w-100 fmxw-500"
           >
             <div class="text-center text-md-center mb-4 mt-md-0">
-              <h1 class="mb-0 h3">{{ title }}</h1>
-              <br />
+              <div class="alert alert-primary" role="alert">
+                <h3 class="alert-heading">Registrar-se</h3>
+              </div>
               <span>
                 {% if msg %}
                 <div class="alert alert-danger">{{ msg | safe }}</div>
