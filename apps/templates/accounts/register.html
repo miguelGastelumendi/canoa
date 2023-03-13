@@ -34,7 +34,7 @@ endblock %}
               {{ form.hidden_tag() }}
 
               <div class="form-group mb-4">
-                <label for="email">{{ userName }}</label>
+                <label class="normalLabel" for="email">Nome de usuário</label>
                 <div class="input-group">
                   <span class="input-group-text" id="basic-addon1"
                     ><span class="fas fa-user"></span
@@ -44,7 +44,7 @@ endblock %}
               </div>
               <!-- Form -->
               <div class="form-group mb-4">
-                <label for="email">{{ email }}</label>
+                <label class="normalLabel" for="email">E-mail</label>
                 <div class="input-group">
                   <span class="input-group-text" id="basic-addon3"
                     ><span class="fas fa-envelope"></span
@@ -56,7 +56,7 @@ endblock %}
               <div class="form-group">
                 <!-- Form -->
                 <div class="form-group mb-4">
-                  <label for="password">{{ password }}</label>
+                  <label class="normalLabel" for="password">Senha</label>
                   <div class="input-group">
                     <span class="input-group-text" id="basic-addon4"
                       ><span class="fas fa-unlock-alt"></span
@@ -75,7 +75,7 @@ endblock %}
                       type="checkbox"
                       onclick="acceptTerms()"
                     />
-                    <label class="form-check-label mb-0" for="remember">
+                    <label class="normalLabel" class="form-check-label mb-0" for="remember">
                       Aceite os
                       <a
                         class="fw-bold text-underline"

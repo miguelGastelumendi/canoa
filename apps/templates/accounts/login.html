@@ -48,7 +48,7 @@
 
                                 <!-- Form Input User Name -->
                                 <div class="form-group mb-4">
-                                    <label for="username_login">Usuário</label>  <!-- mgd fix for with input id -->
+                                    <label class="normalLabel" for="username_login">Usuário</label>  <!-- mgd fix for with input id -->
                                     <div class="input-group">
                                         <span class="input-group-text" id="basic-addon1"><span class="fas fa-user"></span></span>
                                         {{ form.username(class="form-control", id="username_login") }}
@@ -58,7 +58,7 @@
                                 <div class="form-group">
                                     <!-- Form Input Password -->
                                     <div class="form-group mb-4">
-                                        <label for="pwd_login">Senha</label>    <!-- mgd fix for with input id -->
+                                        <label class="normalLabel" for="pwd_login">Senha</label>    <!-- mgd fix for with input id -->
                                         <div class="input-group">
                                             <span class="input-group-text" id="basic-addon2"><span class="fas fa-unlock-alt"></span></span>
                                             {{ form.password(class="form-control", type="password", id="pwd_login") }}
@@ -68,7 +68,7 @@
                                     <div class="d-flex justify-content-between align-items-center mb-4">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox" value="" id="remember">
-                                            <label class="form-check-label mb-0" for="remember">
+                                            <label class="normalLabel" class="form-check-label mb-0" for="remember">
                                               Lembrar meus dados
                                             </label>
                                         </div>

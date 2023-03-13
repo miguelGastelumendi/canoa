@@ -26,6 +26,12 @@ label {
 .labelLatLong {
   left: 5%;
 }
+
+.normalLabel{
+  position: initial;
+  color: black;
+}l
+
 input,
 select {
   background-color: white !important;
