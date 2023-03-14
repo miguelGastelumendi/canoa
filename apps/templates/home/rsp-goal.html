@@ -2,7 +2,7 @@
 <script>
   const jsBtn = {{ goals|tojson }};
 
-  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, helper: true,
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS,
       nextPage: 'rsp-plantDistribution.html',
       help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`});
 </script>

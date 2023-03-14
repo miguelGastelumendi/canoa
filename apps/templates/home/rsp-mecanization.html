@@ -2,7 +2,6 @@
 <script>
   const jsBtn = {{ mecanization|tojson }};
   wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS,
-      helper: true,
       nextPage: 'rsp-combinations.html',
   help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`});
 </script>
