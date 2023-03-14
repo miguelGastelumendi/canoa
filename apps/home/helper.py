@@ -35,4 +35,4 @@ def getTipText(form: str):
 def getErrorMessage(tag: str):
     return dbquery.getValues(
         f"select Tag, Texto from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
-        f"where b.Nome = 'errorMessage' and Tag = {tag}")
+        f"where b.Nome = 'errorMessage' and Tag = '{tag}'")
