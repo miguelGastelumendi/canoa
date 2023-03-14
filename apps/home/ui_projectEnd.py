@@ -1,19 +1,26 @@
 import apps.home.dbquery as dbquery
+import apps.home.updateProjectDataSQL as updateProjectDataSQL
+def replace_ocurrance(string, _from, to, num):
+    strange_char = "$&$@$$&"
+    return string.replace(_from, strange_char, num)\
+        .replace(strange_char,_from, num - 1)\
+        .replace(strange_char, to, 1)
 
 def updateProjectData(project_id: str, selectedCombinations: str):
-    return dbquery.getDictResultset(
-            f"select ft.nomeFaixa, "
-            f"vfc.idFaixaTipo,  vfc.idCombinacao, vfc.Especies, vfc.TIR, vfc.payback, vfc.InvNecessario, VTLiquido, vfc.VPLiquido "
-            f"from Projeto p "
-            f"inner join MunicipioFito mf on mf.id = p.idMunicipioFito "
-            f"inner join Municipio m on m.id = mf.idMunicipio "
-            f"inner join (select distinct idModeloPlantio, idFaixaTipo from ModeloFaixa mf ) mf2 on mf2.idModeloPlantio = p.idModeloPlantio "
-            f"inner join v_filtraCombinacoes vfc on vfc.idFaixaTipo = mf2.idFaixaTipo and vfc.idFitofisionomia = mf.idFitoFisionomia "
-                   f"and vfc.idRegiaoEco = m.idRegiaoEco and vfc.idRegiaoAdm = m.idRegiaoAdm and vfc.idTopografia = p.idTopografia and vfc.idMecanizacaoNivel = p.idMecanizacaoNivel "
-            f"inner join FaixaTipo ft on ft.id =  mf2.idFaixaTipo " 
-            f"where p.id = {project_id} "
-            f"and vfc.idCombinacao in ({selectedCombinations}) "
-            f"order by idFaixaTipo,TIR DESC")
+    selectedCombinations = replace_ocurrance(selectedCombinations,'-',"','",4)
+    dbquery.executeSQL(f"delete from ProjetoCombFaixa where idProjeto = {project_id}")
+
+    dbquery.executeSQL("insert into ProjetoCombFaixa "
+                       "(idProjeto, idFluxoCaixa, nomeFaixa, idFaixaTipo, idCombinacao, Especies,"
+                       "TIR, payback, InvNecessario, VTLiquido, VPLiquido) "
+                       "select idProjeto, idFluxoCaixa, nomeFaixa, idFaixaTipo, idCombinacao, Especies,"
+                       "TIR, payback, InvNecessario, VTLiquido, VPLiquido "
+                       "from v_EscolhaCombinacaoPorFaixa "
+                       f"where idProjeto = {project_id} "
+                       f"and idFluxoCaixa in ('{selectedCombinations}') "
+                       "order by idFaixaTipo, TIR DESC")
+    dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {project_id}")
+    dbquery.executeSQL(f"insert into listaAProcessar(idProjeto) values ({project_id})")
 
 def getProjectData(project_id: str, selectedCombinations: str):
     projectData = dbquery.getDictFieldNamesValuesResultset(

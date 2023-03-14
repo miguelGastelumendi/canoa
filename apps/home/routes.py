@@ -199,7 +199,7 @@ def route_template(template):
                                        **helper.getFormText('rsp-combinations'))
 
             elif segment == 'rsp-projectEnd.html':
-                #                ui_projectData.updateProjectData(session['_projeto_id'], request.args['id'])
+                ui_projectEnd.updateProjectData(session['_projeto_id'], request.args['id'])
                 projectData, combinations = ui_projectEnd.getProjectData(session['_projeto_id'], request.args['id'])
                 return render_template("home/" + template, combinations=combinations, **projectData,
                                        **helper.getFormText('rsp-projectEnd'))
