@@ -11,7 +11,7 @@
       <label for="municipio" class="labelLocation col-sm-2 col-form-label">{{ countySelect|safe }}</label>
       <select id="municipio" class="col-sm-4 form-select" onchange="muniChanged()" style="width: 50%;">
         <option disabled selected>- Selecione -</option>
-        <option value="-1" disabled selected>{{ firstSelectCounty }}</option>
+        <option value="-1" disabled>{{ firstSelectCounty }}</option>
         {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
       </select>
     </div>
