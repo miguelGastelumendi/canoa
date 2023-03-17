@@ -19,7 +19,8 @@
       <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content='{{ helpFitofisionomy }}'>?</button>
       <label for="fito_ecologica" class="labelLocation col-sm-2 col-form-label">{{ fitoFisionomySelect|safe }}</label>
       <select id="fito_ecologica" class="col-sm-4 form-select " disabled="true" onchange="fitoChanged()" style="width: 50%;">
-        <option value="-1" selected>
+        <option disabled selected>- Selecione -</option>
+        <option value="-1">
           {% for key, value in fito_municipios.items() %}
         <option value="{{ key|safe }}">{{ value|safe }}</option>{% endfor %}
         </option>
@@ -62,7 +63,7 @@
     fetchFormData({ callerID: 'mapSP' }, _showMap, 'Não foi possível obter o mapa.');
   }
   //-- instructions or or error
-  const setFitoMsg = (sMsg) => selFito.innerHTML = `<option value="-1" disabled selected>(${sMsg})</option>`;
+  const setFitoMsg = (sMsg) => selFito.innerHTML = `<option value="-1" disabled>Selecione a fitofisionomia</option>`;
 
   //-- Muni changed, fetch fitos
   const fetchFitosForMuni = (sMuniId) => {
@@ -73,7 +74,10 @@
       if (selFito.disabled = (Object.keys(oFitos).length == 0)) {
         setFitoMsg('Sem fitofisionomias no município.');
       } else {
-        for (const sKey in oFitos) { sOptions += `<option value='${sKey}'>${oFitos[sKey]}</option>` };
+        for (const sKey in oFitos) { sOptions += `
+          <option disabled selected>- Selecione -</option>
+          <option value='${sKey}'>${oFitos[sKey]}</option>
+          ` };
       }
       selFito.innerHTML = sOptions;
       _showMap(jsoData);
@@ -118,7 +122,6 @@
 
   wzdControl.initPage({
     mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-areas.html',
-    onNext: () => { fetchFormData(); return false; },
     help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
   window.addEventListener("load", () => { (parseInt(selMuni.value) < 0) ? fetchMapOfSP() : updateFormData(selMuni.id) });
