@@ -41,7 +41,8 @@
   {% endfor %}
   if(jsoData.length > 0){
     wzdControl.initPage( { data: jsoData, nextPage:'rsp-projectEnd.html',
-        alignText: 'start', multiSelect: true, mode: wzdControl.mode.BUTTONS } );
+        alignText: 'start', multiSelect: true, mode: wzdControl.mode.BUTTONS,
+    help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`} );
   }
 </script>
 {% endblock wizardScripts %}
