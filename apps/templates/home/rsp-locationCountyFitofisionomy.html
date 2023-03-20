@@ -10,7 +10,7 @@
       <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content='{{ helpcounty }}'>?</button>
       <label for="municipio" class="labelLocation col-sm-2 col-form-label">{{ countySelect|safe }}</label>
       <select id="municipio" class="col-sm-4 form-select" onchange="muniChanged()" style="width: 50%;">
-        <option disabled selected>- Selecione -</option>
+        <option disabled selected value="-1">- Selecione -</option>
         <option value="-1" disabled>{{ firstSelectCounty }}</option>
         {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
       </select>
