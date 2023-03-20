@@ -181,7 +181,7 @@ def route_template(template):
 
                 return render_template("home/" + template,
                                        mecanization=dbquery.getListDictResultset(
-                                           f"select nomeMecanizacao as caption, id "  # desFinalidade: typo
+                                           f"select nomeMecanizacao as caption, id, help as hint "  # desFinalidade: typo
                                            f"from MecanizacaoNivel "),
                                        **helper.getFormText('rsp-mecanization'))
 
