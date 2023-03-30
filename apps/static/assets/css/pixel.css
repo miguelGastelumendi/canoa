@@ -5000,7 +5000,8 @@ textarea.form-control-lg {
   border-radius: 1rem; }
 
 .alert-heading {
-  color: inherit; }
+  color: #5a443d; 
+}
 
 .alert-link {
   font-weight: 600; }
@@ -16206,7 +16207,7 @@ label {
   border: 0; }
 
 .alert-heading {
-  font-weight: 600; }
+  font-weight: 900; }
 
 .alert-icon {
   margin-bottom: .5rem; }

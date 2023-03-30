@@ -76,7 +76,7 @@ const wzdControl = {
   getBtnHint: (/** @type {string} */ sHint) => {
     return !sHint
       ? ""
-      : `<button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #3aaf85; border-color: #3aaf85;" tabindex="-1" data-bs-placement="left" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="${sHint}">?</button>`;
+      : `<button type="button" class="btn btnHelper" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center;" tabindex="-1" data-bs-placement="left" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="${sHint}">?</button>`;
   },
   setBody: (/** @type {string} */ sId, /** @type {string} */ sBody) =>
     (wzdControl.ge(sId).innerHTML = "" + sBody),
@@ -139,12 +139,12 @@ const wzdControl = {
     }
 
     let eleBtn = wzdControl.getBtn(ix);
-    eleBtn.classList.remove("btn-outline-success");
-    eleBtn.classList.add("btn-success");
+    eleBtn.classList.remove("btnContent");
+    eleBtn.classList.add("btnSelected");
     if (iLastSelectedIx >= 0) {
       eleBtn = wzdControl.getBtn(iLastSelectedIx);
-      eleBtn.classList.remove("btn-success");
-      eleBtn.classList.add("btn-outline-success");
+      eleBtn.classList.remove("btnSelected");
+      eleBtn.classList.add("btnContent");
     }
     // save
     if (wzdControl.multiSelect) {
@@ -184,7 +184,7 @@ const wzdControl = {
             ${wzdControl.getBtnHint(itm.hint)}
             <button id="${wzdControl.getBtnId(
               ix
-            )}" class="btn bg-gradient btn-outline-success ${sAlign}" style="width: 50%;" type="button" onclick="wzdControl.selectItem(${ix})">` +
+            )}" class="btn btnContent ${sAlign}" style="width: 50%;" type="button" onclick="wzdControl.selectItem(${ix})">` +
             (itm.text ? itm.text : itm.caption) +
             "</button>" +
             "</div>";

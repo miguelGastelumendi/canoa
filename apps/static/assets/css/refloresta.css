@@ -12,7 +12,7 @@ label {
   position: absolute;
   bottom: 34px;
   background-color: white;
-  color: green;
+  color: #5a443d;
   padding: 0 5px !important;
   width: auto !important;
   left: 36%;
@@ -30,7 +30,18 @@ label {
 .normalLabel{
   position: initial;
   color: black;
-}l
+}
+
+.labelBrown{
+  color: #5a443d;
+}
+
+.divRegister{
+  margin-top: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 input,
 select {
@@ -40,6 +51,37 @@ select {
 
 .divInputProjectName {
   width: 35%;
+}
+
+.btnLogin, .btnRegister{
+  background-color: #86bc56;
+  border: none;
+}
+
+.btnLogin:hover, .btnRegister:hover{
+  background-color: #cffaaa;
+  color: #5a443d;
+}
+
+.btnRegister:disabled{
+  background-color: #cffaaa;
+  color: #5a443d;
+}
+
+.btnHeader{
+  border: 1px solid #5a443d;
+  color: #5a443d;
+}
+
+.btnContent, .btnHelper{
+  border: 1px solid #628d3c;
+  color: #628d3c;
+}
+
+.btnSelected{
+  background-color: #86bc56;
+  color: white;
+  border: none;
 }
 
 @media screen and (max-width: 992px) {
@@ -63,7 +105,7 @@ select {
 .wzd-header {
   --bs-gutter-x: 0 !important;
   width: 100%;
-  background-color: var(--bs-gray-400);
+  background-color: #cffaaa;
   padding: 1rem 1rem;
   border-radius: 15px 15px 0 0;
   display: flex;
@@ -101,7 +143,7 @@ select {
 .wzd-selectedItem {
   width: 100%;
   text-align: center;
-  background-color: var(--bs-success);
+  background-color: #86bc56;
   padding: 0.1em 0px;
   border-radius: 0 0 15px 15px;
 }
@@ -110,6 +152,10 @@ select {
 .wzd-btnHelp {
   width: 6em;
   margin: 0.5rem 0.5rem;
+}
+.wzd-btnHelp{
+  border: 1px solid #86bc56;
+  color: #86bc56;
 }
 
 .wzd-btnNextText::after {
@@ -136,8 +182,6 @@ select {
   content: "\26A0\00A0\00A0";
 }
 
-/* .btnHelper{
-  background-color: red;
-} */
+
 
 /*~*/
