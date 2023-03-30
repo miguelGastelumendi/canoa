@@ -230,7 +230,7 @@ const wzdControl = {
               itm.fileName ? itm.fileName : "Imagem não disponível"
             }"></a>` +
             "</button>" +
-            '<span class="btnHelper"><i style="font-size: 23px; margin: 10px; color: white; cursor: pointer;" class="far fa-question-circle"></i></span>' +
+            '<span class=""><i style="font-size: 23px; margin: 10px; color: white; cursor: pointer;" class="far fa-question-circle"></i></span>' +
             "</div>";
         });
         break;
