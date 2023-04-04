@@ -33,10 +33,7 @@
     id: "{{ combination.idFluxoCaixa }}",
     caption: "Combinação {{ combination.Especies }}",
     text: '<div class="text-center">{{ combination.Especies }}</div><hr><b>TIR:</b> {{ "%.4f"|format(combination.TIR) }}<br>' +
-      '<b>Pay-back:</b> {{ combination.payback }} anos<br>' +
-      '<b>Investimento necessário:</b> {{ "%.2f"|format(combination.InvNecessario) }} <br>' +
-      '<b>Valor Total Líquido:</b> {{ "%.2f"|format(combination.VTLiquido) }} <br>' +
-      '<b>Valor Presente Líquido:</b> {{ "%.2f"|format(combination.VPLiquido) }} <br>'
+      '<b>Pay-back:</b> {{ combination.payback }} anos<br>'
   });
   {% endfor %}
   if(jsoData.length > 0){
