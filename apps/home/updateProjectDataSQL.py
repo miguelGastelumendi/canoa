@@ -60,6 +60,7 @@ sqls = {
 	           cf.idRegiaoAdm   = vtr.idRegiaoAdm""",
 
 	    "deleteProjetoFcModelo" : "delete from ProjetoFcModelo where idProjeto = @idProjeto",
+
 	    "InsertProjetoFcModelo": """
 	     Insert into ProjetoFcModelo
 	       (idProjeto, ano, 
@@ -91,6 +92,34 @@ sqls = {
 	      ) somaFC
 	 group by somaFC.idProjeto, somaFC.ano
 	 order by somaFC.idProjeto, somaFC.ano""",
+
+        'deleteProjetoDistribuicao': """delete from ProjetoDistribuicao where idProjeto = @idProjeto""",
+
+        'InsertProjetoDistribuicao': """insert into ProjetoDistribuicao 
+(idProjeto,idFaixaTipo,idGrupo,numArvores,NumLinhas,NumFaixas,TotalLinhas)
+select ge.idProjeto, ge.idFaixaTipo, ge.idGrupo, 
+       sum(ge.numArvores)*m.qtdModeloFaixa numArvores, 
+       round(sum(ge.numArvores)*m.qtdModeloFaixa/p1.QtdPltPorLInha,0) NumLinhas,
+       m.qtdModeloFaixa NumFaixas,
+       Floor(ge.Largura * m.qtdModeloFaixa / p2.EspacamPadrao) TotalLinhas
+  from (select r.idProjeto, r.idFaixaTipo, f.Largura, r.idEspecie, max(r.numArvores) NumArvores,
+              min(case when e.FlagBordadura = 'T' then 1
+                       when ((e.FlagBordadura is null) or (e.FlagBordadura <> 'T')) and  
+                             p.flagMadeireiro = 'T' and f.ProibeMadeireira = 'F' then 2 
+                      else 3
+                  end) idGrupo     
+         from ProjetoReceita r
+              inner join Especie e       on e.id = r.idEspecie  
+              inner join Produto p       on p.id = r.idProduto 
+              inner join FaixaTipo f     on f.id = r.idFaixaTipo 
+        group by r.idProjeto, r.idFaixaTipo, f.Largura, r.idEspecie
+       ) ge 
+       inner join Projeto j       on j.id = ge.idProjeto and j.id = @idProjeto
+       inner join V_ModeloFaixa m on m.idModeloPlantio = j.idModeloPlantio and  
+                                     m.idFaixaTipo     = ge.idFaixaTipo
+       cross join (select ValorParametro as QtdPltPorLInha from Parametro where nomeParametro = 'QtdPltPorLInha') p1
+       cross join (select ValorParametro as EspacamPadrao from Parametro where nomeParametro = 'EspacamPadrao') p2
+ group by ge.idProjeto, ge.idFaixaTipo, ge.Largura, ge.idGrupo, m.qtdModeloFaixa, p2.EspacamPadrao, p1.QtdPltPorLInha """,
 
        "updateProjeto": """
 update prj 
@@ -133,4 +162,5 @@ inner join
         on tr.idProjeto = sm.idProjeto
        ) ind
 on ind.idProjeto = prj.id
-where prj.id = @idProjeto"""}
+where prj.id = @idProjeto"""
+}

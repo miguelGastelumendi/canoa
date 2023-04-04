@@ -3,7 +3,8 @@
 {% block wizardConfig %}
 <script>
   const jsBtn = {{ projects|tojson }};
-  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-projectName.html' });
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.BUTTONS, nextPage: 'rsp-projectName.html',
+  help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`});
 </script>
 {% endblock %}
 

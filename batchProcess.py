@@ -13,12 +13,12 @@ def calculateFinancials(idProjeto: int):
         print(f"{key} ({result.rowcount})")
 
 def process():
-    toProcess = dbquery.getDataframeResultset("select * from listaAProcessar")
+    toProcess = dbquery.getDataframeResultset("select * from listaAProcessar order by id")
     if len(toProcess) > 0:
         for _, row in toProcess.iterrows():
-            calculateFinancials(row.idProjeto)
+            #calculateFinancials(row.idProjeto)
             XLSXHelper.GenerateXLSX(row.idProjeto)
-            dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
+            #dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
     else:
         print("Nenhum projeto a processar.")
 
