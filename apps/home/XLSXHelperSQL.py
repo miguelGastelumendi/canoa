@@ -116,7 +116,7 @@ order by 1,2,3,4,5,6,7,8,9,10""",
 where pd.idProjeto = {0}
 """,
 
-    'tbDistribuicao': """ select ge.nomeFaixa Faixa, gr.NomeGrupo Grupo, ge.nomeComum Especie, ge.nomeCientifico,
+    'tbDistribuicao': """select ge.nomeFaixa Faixa, gr.NomeGrupo Grupo, ge.nomeComum Especie, ge.nomeCientifico,
        sum(ge.numArvores)*m.qtdModeloFaixa numArvores
   from (select r.idFaixaTipo, f.NomeFaixa, e.nomeComum, e.nomeCientifico, max(r.numArvores) NumArvores,
               min(case when e.FlagBordadura = 'T' then 1
@@ -134,5 +134,16 @@ where pd.idProjeto = {0}
        inner join V_ModeloFaixa m on m.idModeloPlantio = (select idModeloPlantio from Projeto where id = {0}) and  
                                      m.idFaixaTipo     = ge.idFaixaTipo
        inner join EspGrpDistribuicao gr on gr.id = ge.idGrupo
- group by ge.nomeFaixa, gr.NomeGrupo, ge.nomeComum, ge.nomeCientifico, m.qtdModeloFaixa"""
+ group by ge.nomeFaixa, gr.NomeGrupo, ge.nomeComum, ge.nomeCientifico, m.qtdModeloFaixa""",
+
+    'faixasDistribuicao': """select mf.*,ft.* from Projeto p
+inner join ModeloPlantio mp 
+on p.idModeloPlantio = mp.id 
+inner join ModeloFaixa mf 
+on mf.idModeloPlantio = mp.id
+inner join FaixaTipo ft 
+on mf.idFaixaTipo = ft.id
+where p.id = 314
+order by mf.OrdemFaixa 
+ """
 }
