@@ -38,11 +38,11 @@ def getFormText(form: str):
                                     f"on a.idSuporteUsuarioGrupo = b.id where b.Nome = '{form}' or b.Nome = 'wizard'"))
 
 def getTipText(form: str):
-    return filterReturns(dbquery.getJSONStrResultset(
+    return dbquery.getJSONStrResultset(
         f"select Texto as text, 'Dica' as title from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
-        f"where b.Nome = '{form}' and Tag = 'tip'"))
+        f"where b.Nome = '{form}' and Tag = 'tip'").replace('\r','').replace('\n','')
 
 def getErrorMessage(tag: str):
-    return dbquery.getValues(
-        f"select Tag, Texto from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
-        f"where b.Nome = 'errorMessage' and Tag = '{tag}'")
+    return filterReturns(dbquery.getValues(
+        f"select Texto from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
+        f"where b.Nome = 'errorMessage' and Tag = '{tag}'")[0])

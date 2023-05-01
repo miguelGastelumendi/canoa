@@ -32,7 +32,10 @@ def getValues(sql):
     rows = executeSQL(sql)
     try:
         r = rows.first()
-        return r if len(r) > 1 else r[0]
+        l = []
+        for v in r:
+            l.append(v)
+        return tuple(l)
     except:
         return None
 
