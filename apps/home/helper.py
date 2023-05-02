@@ -43,6 +43,6 @@ def getTipText(form: str):
         f"where b.Nome = '{form}' and Tag = 'tip'").replace('\r','').replace('\n','')
 
 def getErrorMessage(tag: str):
-    return filterReturns(dbquery.getValues(
+    return dbquery.getValues(
         f"select Texto from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
-        f"where b.Nome = 'errorMessage' and Tag = '{tag}'")[0])
+        f"where b.Nome = 'errorMessage' and Tag = '{tag}'").replace('\r','').replace('\n','')
