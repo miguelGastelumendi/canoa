@@ -1,53 +1,50 @@
-{% extends "layouts/wizard.tmpl" %}
-
-{% block wizardDescription %}Informe a Latitude e Longitude da localização{% endblock %}
-
-{% block wizardBody %}
+{% extends "layouts/wizard.tmpl" %} {% block wizardDescription %}Informe a
+Latitude e Longitude da localização{% endblock %} {% block wizardBody %}
 <div class="containerTable">
-    <div class="rowTable">
-      <div class="col">
-        <p class="labelTable">Nome:</p>
-        <p>{{ descProjeto }}</p>
-      </div>
-      <div class="col">
-        <p class="labelTable">Autor:</p>
-        <p>{{ current_user.username }}</p>
-      </div>
+  <div class="rowTable">
+    <div class="col">
+      <p class="labelTable">Nome:</p>
+      <p>{{ descProjeto }}</p>
     </div>
-    <div class="rowTable">
-      <div class="col">
-        <p class="labelTable">E-mail:</p>
-        <p>{{ current_user.email }}</p>
-      </div>
-      <div class="col">
-        <p class="labelTable">Finalidade:</p>
-        <p>{{ desFinalidade }}</p>
-      </div>
-    </div>
-    <div class="rowTable">
-      <div class="col">
-        <p class="labelTable">Distribuição de plantio:</p>
-        <p>{{ nomeModelo }}</p>
-      </div>
-      <div class="col">
-        <p class="labelTable">Declividade:</p>
-        <p>{{ NomeTopografia }} - {{ descTopografia }}</p>
-      </div>
-    </div>
-    <div class="rowTable">
-      <div class="col">
-        <p class="labelTable">Nível de mecanização:</p>
-        <p>{{ nomeMecanizacao }}</p>
-      </div>
+    <div class="col">
+      <p class="labelTable">Autor:</p>
+      <p>{{ current_user.username }}</p>
     </div>
   </div>
-<div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
-  <div id="chart" class="chart" style="height: 100%; width: 100%;"><!-- TODO spinner visibility: hidden;" -->
+  <div class="rowTable">
+    <div class="col">
+      <p class="labelTable">E-mail:</p>
+      <p>{{ current_user.email }}</p>
+    </div>
+    <div class="col">
+      <p class="labelTable">Finalidade:</p>
+      <p>{{ desFinalidade }}</p>
+    </div>
+  </div>
+  <div class="rowTable">
+    <div class="col">
+      <p class="labelTable">Distribuição de plantio:</p>
+      <p>{{ nomeModelo }}</p>
+    </div>
+    <div class="col">
+      <p class="labelTable">Declividade:</p>
+      <p>{{ NomeTopografia }} - {{ descTopografia }}</p>
+    </div>
+  </div>
+  <div class="rowTable">
+    <div class="col">
+      <p class="labelTable">Nível de mecanização:</p>
+      <p>{{ nomeMecanizacao }}</p>
+    </div>
   </div>
 </div>
-{% endblock wizardBody %}
 
-{% block wizardConfig %}
+<div class="chart-container">
+  <div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a">
+    <div id="chart" class="chart"></div>
+  </div>
+</div>
+{% endblock wizardBody %} {% block wizardConfig %}
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
   const displayCashFlow = () => {
@@ -61,6 +58,4 @@
   });
   window.addEventListener("load", () => { displayCashFlow() });
 </script>
-{% endblock %}
-
-{# eof #}
+{% endblock %} {# eof #}
