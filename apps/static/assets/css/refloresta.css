@@ -27,16 +27,16 @@ label {
   left: 5%;
 }
 
-.normalLabel{
+.normalLabel {
   position: initial;
   color: black;
 }
 
-.labelBrown{
+.labelBrown {
   color: #5a443d;
 }
 
-.divRegister{
+.divRegister {
   margin-top: 5%;
   display: flex;
   justify-content: center;
@@ -53,32 +53,35 @@ select {
   width: 35%;
 }
 
-.btnLogin, .btnRegister{
+.btnLogin,
+.btnRegister {
   background-color: #86bc56;
   border: none;
 }
 
-.btnLogin:hover, .btnRegister:hover{
+.btnLogin:hover,
+.btnRegister:hover {
   background-color: #cffaaa;
   color: #5a443d;
 }
 
-.btnRegister:disabled{
+.btnRegister:disabled {
   background-color: #cffaaa;
   color: #5a443d;
 }
 
-.btnHeader{
+.btnHeader {
   border: 1px solid #5a443d;
   color: #5a443d;
 }
 
-.btnContent, .btnHelper{
+.btnContent,
+.btnHelper {
   border: 1px solid #628d3c;
   color: #628d3c;
 }
 
-.btnSelected{
+.btnSelected {
   background-color: #86bc56;
   color: white;
   border: none;
@@ -153,7 +156,7 @@ select {
   width: 6em;
   margin: 0.5rem 0.5rem;
 }
-.wzd-btnHelp{
+.wzd-btnHelp {
   border: 1px solid #86bc56;
   color: #86bc56;
 }
@@ -182,6 +185,50 @@ select {
   content: "\26A0\00A0\00A0";
 }
 
+.containerTable {
+  max-width: 600px;
+  margin: 0 auto;
+}
 
+.rowTable {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.col {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.col p {
+  margin: 2px;
+}
+
+.labelTable {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #5a443d;
+  font-size: large;
+  margin: 0px;
+}
+
+@media only screen and (max-width: 600px) {
+  .rowTable {
+    flex-direction: column;
+  }
+
+  .col {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+  .labelTable {
+    font-size: medium;
+  }
+
+  .col p {
+    font-size: small;
+  }
+}
 
 /*~*/
