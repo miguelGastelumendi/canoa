@@ -1,8 +1,9 @@
-{% extends "layouts/wizard.tmpl" %} {% block wizardConfig %}
-<script>
-  const jsBtn = [
-    {
-      caption: ` <div class="containerTable">
+{% extends "layouts/wizard.tmpl" %}
+
+{% block wizardDescription %}Informe a Latitude e Longitude da localização{% endblock %}
+
+{% block wizardBody %}
+<div class="containerTable">
     <div class="rowTable">
       <div class="col">
         <p class="labelTable">Nome:</p>
@@ -39,18 +40,27 @@
         <p>{{ nomeMecanizacao }}</p>
       </div>
     </div>
-  </div>`,
-      href: "rsp-ProjectStart.html",
-    },
-  ];
+  </div>
+<div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
+  <div id="chart" class="chart" style="height: 100%; width: 100%;"><!-- TODO spinner visibility: hidden;" -->
+  </div>
+</div>
+{% endblock wizardBody %}
+
+{% block wizardConfig %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+  const displayCashFlow = () => {
+    const graphs = {{cashFlowJSON | safe}};
+    Plotly.plot('chart',graphs,{});
+  }
 
   wzdControl.initPage({
-    data: jsBtn,
-    mode: wzdControl.mode.INFO,
-    nextPage: "rsp-projectStart.html",
-    help: `callback/help?id=${location.pathname
-      .substring(location.pathname.lastIndexOf("/") + 1)
-      .replace(".html", "")}`,
+    mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-areas.html',
+    help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
+  window.addEventListener("load", () => { displayCashFlow() });
 </script>
-{% endblock %} {# eof #}
+{% endblock %}
+
+{# eof #}
