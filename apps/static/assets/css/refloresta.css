@@ -188,6 +188,12 @@ select {
 .containerTable {
   max-width: 600px;
   margin: 0 auto;
+  background-color: #86bc56;
+  border: 1px solid #5a443d;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: left;
+  color: white;
 }
 
 .rowTable {
@@ -208,20 +214,28 @@ select {
 .labelTable {
   font-weight: bold;
   margin-bottom: 5px;
-  color: #5a443d;
+  /* color: #5a443d; */
   font-size: large;
   margin: 0px;
 }
 
 @media only screen and (max-width: 600px) {
   .rowTable {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-left: -5px;
+    margin-right: -5px;
   }
 
   .col {
     margin-right: 0;
     margin-bottom: 10px;
+    width: 100%;
+    max-width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
   }
+
   .labelTable {
     font-size: medium;
   }
