@@ -10,6 +10,7 @@
       <label for="propertyArea" class="col-sm-2 col-form-label" style="white-space: nowrap; width: 20%;">{{ propertyArea }}</label>
       <span class="col-sm-4">
         <input id="propertyArea" name="propertyArea" class="form-control" type="number" title="{{ propertyArea }}"
+               value="{{ areaPropriedade | safe }}"
           placeholder="ex: 10.0 ha">
       </span>
     </div>
@@ -18,6 +19,7 @@
       <label for="projectArea" class="col-sm-2 col-form-label" style="white-space: nowrap; width: 20%;">{{ projectArea }}</label>
       <div class="col-sm-4">
         <input id="projectArea" name="projectArea" class="form-control" type="number" title="{{ projectArea }}"
+               value="{{ areaProjeto | safe }}"
           placeholder="ex: 2.0 ha">
       </div>
     </div>

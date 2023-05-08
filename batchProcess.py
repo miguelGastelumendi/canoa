@@ -18,11 +18,11 @@ def process():
         for _, row in toProcess.iterrows():
             idProjeto = row.idProjeto
 
-            idProjeto = 391
+            #idProjeto = 391
 
             calculateFinancials(idProjeto)
             XLSXHelper.GenerateXLSX(idProjeto)
-            #dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
+            dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
     else:
         print("Nenhum projeto a processar.")
 

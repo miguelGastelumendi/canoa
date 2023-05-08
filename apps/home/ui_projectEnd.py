@@ -56,37 +56,13 @@ def getProjectData(project_id: str, selectedCombinations: str):
     return projectData, combinations
 
 def getCashFlowData(idProjeto: int)->DataFrame:
-    return dbquery.getDataframeResultset(f"""
-        select somaFC.idProjeto, somaFC.ano,
-        sum(somaFC.VTReceitas) VTReceitas, sum(somaFC.VTCustos) VTCustos, sum(somaFC.VTLiquido) VTLiquido,
-        sum(somaFC.VPReceitas) VPReceitas, sum(somaFC.VPCustos) VPCustos, sum(somaFC.VPLiquido) VPLiquido,
-        sum(somaFC.VALiquido)  VALiquido
-        from (select  pcf.idProjeto, fcr.idFaixaTipo, fcr.idFluxoCaixa,
-            fcr.ano,
-            fcr.VTReceitas * mf.qtdModeloFaixa as VTReceitas, fcr.VTCustos * mf.qtdModeloFaixa as VTCustos,
-            fcr.VTLiquido  * mf.qtdModeloFaixa as VTLiquido,
-            fcr.VPReceitas * mf.qtdModeloFaixa as VPReceitas, fcr.VPCustos * mf.qtdModeloFaixa as VPCustos,
-            fcr.VPLiquido  * mf.qtdModeloFaixa as VPLiquido,
-            fcr.FALiquido  * mf.qtdModeloFaixa as VALiquido
-            from VT_CombinaFcFxResumo fcr
-            inner join Projeto prj
-            on prj.id = {idProjeto}
-            inner join V_ModeloFaixa mf
-            on mf.idModeloPlantio = prj.idModeloPlantio and
-            mf.idFaixaTipo = fcr.idFaixaTipo
-            inner join ProjetoCombFaixa pcf
-            on pcf.idProjeto = prj.id and
-            pcf.idFaixaTipo = mf.idFaixatipo and
-            pcf.idFluxoCaixa = fcr.idFluxoCaixa       
-        ) somaFC
-        group by somaFC.idProjeto, somaFC.ano
-        order by somaFC.idProjeto, somaFC.ano""")
+    return dbquery.getDataframeResultset(f"""select * from ProjetoFcModelo pfm where idProjeto = {idProjeto}""")
 
 def cashFlowChart(idProjeto : int):
     df = getCashFlowData(idProjeto)
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=df.ano, y=df.VPCustos, mode='lines+markers', name='Investimento Financeiro'))
-    fig.add_trace(go.Scatter(x=df.ano, y=df.VPReceitas, mode='lines+markers', name='VTLiquido'))
+    fig.add_trace(go.Scatter(x=df.ano, y=df.VTLiquido, mode='lines+markers', name='VTLiquido'))
     fig.add_trace(go.Scatter(x=df.ano, y=df.VALiquido, mode='lines+markers', name='VAcumulado'))
     graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
     return graphJSON

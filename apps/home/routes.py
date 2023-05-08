@@ -163,9 +163,16 @@ def route_template(template):
             elif segment == 'rsp-goal.html':
                 return render_template("home/" + template,
                                            goals=dbquery.getListDictResultset(
-                                               f"select desFinalidade as caption, id, help as hint "  # desFinalidade: typo
-                                               f"from Finalidade "
-                                               f"order by orderby")
+                                            "select f.desFinalidade as caption, f.id, f.help as hint, "
+                                            f"case "
+                                            f"        when f.id = idFinalidade then 1 "
+                                            f"        else 0 "
+                                            f"end as selected "
+                                            f"from Finalidade f "
+                                            f"left join Projeto p "
+                                            f"on 1=1 "
+                                            f"and p.id = {session['_projeto_id']} "
+                                            f"order by orderby")
                                        , **helper.getFormText('rsp-goal'))
 
             elif segment == 'rsp-plantDistribution.html':
