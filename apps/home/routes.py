@@ -201,7 +201,10 @@ def route_template(template):
             elif segment == 'rsp-projectEnd.html':
                 ui_projectEnd.updateProjectData(session['_projeto_id'], request.args['id'])
                 projectData, combinations = ui_projectEnd.getProjectData(session['_projeto_id'], request.args['id'])
-                return render_template("home/" + template, combinations=combinations, **projectData,
+                cashFlowJSON = ui_projectEnd.cashFlowChart(session['_projeto_id'])
+                return render_template("home/" + template, combinations=combinations,
+                                       cashFlowJSON=cashFlowJSON,
+                                       **projectData,
                                        **helper.getFormText('rsp-projectEnd'))
 
     except TemplateNotFound:
