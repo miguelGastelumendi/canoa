@@ -112,8 +112,10 @@ def route_template(template):
                 if projectId > -1:
                     projectName = dbquery.getValues(f"select descProjeto from Projeto where id = {projectId}")
                     session['_projeto_id'] = projectId
+                    session['_operation'] = 'changingProject'
                 else:
                     projectName = ''
+                    session['_operation'] = 'includingProject'
                 return render_template("home/rsp-projectName.html",
                                        projectNameValue=projectName,
                                        **helper.getFormText('rsp-projectName'))
@@ -147,7 +149,15 @@ def route_template(template):
                                        **helper.getFormText('rsp-locationCAR'))
 
             if segment == 'rsp-areas.html':
+                if session['_operation'] == 'changingProject':
+                    areaProjeto, areaPropriedade = dbquery.getValues(
+                        f"select AreaProjeto, AreaPropriedade from Projeto "
+                        f"where id = {session['_projeto_id']}")
+                else:
+                    areaProjeto, areaPropriedade = (None, None)
                 return render_template("home/rsp-areas.html",
+                                       areaProjeto = areaProjeto,
+                                       areaPropriedade = areaPropriedade,
                                        **helper.getFormText('rsp-areas'))
 
             elif segment == 'rsp-goal.html':
