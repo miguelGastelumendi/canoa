@@ -198,8 +198,15 @@ def route_template(template):
 
                 return render_template("home/" + template,
                                        mecanization=dbquery.getListDictResultset(
-                                           f"select nomeMecanizacao as caption, id, help as hint "  # desFinalidade: typo
-                                           f"from MecanizacaoNivel "),
+                                           "select nomeMecanizacao as caption, mn.id, help as hint,"
+                                           "case "
+                                                "when mn.id = p.idMecanizacaoNivel then 1 "
+                                                "else 0 "
+                                            "end as selected " 
+                                            "from MecanizacaoNivel mn "
+                                            "left join Projeto p "
+                                            "on 1=1 "
+                                            f"where p.id = {session['_projeto_id']}"),
                                        **helper.getFormText('rsp-mecanization'))
 
             elif segment == 'rsp-combinations.html':
@@ -216,10 +223,12 @@ def route_template(template):
                                        **helper.getFormText('rsp-combinations'))
 
             elif segment == 'rsp-projectEnd.html':
-                ui_projectEnd.updateProjectData(session['_projeto_id'], request.args['id'])
-                projectData, combinations = ui_projectEnd.getProjectData(session['_projeto_id'], request.args['id'])
+                selectedCombinations = ui_projectEnd.formatCombinations(request.args['id'],'-',"','",4)
+                ui_projectEnd.updateProjectData(session['_projeto_id'], selectedCombinations)
+                projectData, combinations = ui_projectEnd.getProjectData(session['_projeto_id'], selectedCombinations)
                 cashFlowJSON = ui_projectEnd.cashFlowChart(session['_projeto_id'])
-                return render_template("home/" + template, combinations=combinations,
+                return render_template("home/" + template,
+                                       combinations=combinations,
                                        cashFlowJSON=cashFlowJSON,
                                        **projectData,
                                        **helper.getFormText('rsp-projectEnd'))
