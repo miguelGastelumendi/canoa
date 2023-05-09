@@ -70,7 +70,13 @@ def getCashFlowData(idProjeto: int)->DataFrame:
     return df
 def cashFlowChart(idProjeto : int):
     df = getCashFlowData(idProjeto)
-    fig = go.Figure()
+    layout = go.Layout(
+        #paper_bgcolor='rgba(0,0,0,0)',
+        #plot_bgcolor='rgba(0,0,0,0)'
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='#F1F7DF'
+    )
+    fig = go.Figure(layout=layout)
     fig.add_trace(go.Scatter(x=df.ano, y=df.VPCustos, mode='lines+markers', name='Investimento Financeiro',
                              line_color='gray'))
     fig.add_trace(go.Scatter(x=df.ano, y=df.VTLiquido, mode='lines+markers', name='VTLiquido',
