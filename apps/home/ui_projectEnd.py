@@ -78,11 +78,11 @@ def cashFlowChart(idProjeto : int):
     )
     fig = go.Figure(layout=layout)
     fig.add_trace(go.Scatter(x=df.ano, y=df.VPCustos, mode='lines+markers', name='Investimento Financeiro',
-                             line_color='gray'))
+                             line={'color': 'gray'}))
     fig.add_trace(go.Scatter(x=df.ano, y=df.VTLiquido, mode='lines+markers', name='VTLiquido',
-                             line_color='orange'))
+                             line={'color': 'orange'}))
     fig.add_trace(go.Scatter(x=df.ano, y=df.VALiquido, mode='lines+markers', name='VAcumulado',
-                             line_color='blue'))
+                             line={'color': 'blue'}))
     fig.update_layout(title = dict(text="Fluxo de Caixa",
                                    y=0.9,
                                    x=0.5,
