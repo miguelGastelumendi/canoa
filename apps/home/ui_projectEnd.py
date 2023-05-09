@@ -56,13 +56,38 @@ def getProjectData(project_id: str, selectedCombinations: str):
     return projectData, combinations
 
 def getCashFlowData(idProjeto: int)->DataFrame:
-    return dbquery.getDataframeResultset(f"""select * from ProjetoFcModelo pfm where idProjeto = {idProjeto}""")
-
+    df = dbquery.getDataframeResultset(f"""select * from ProjetoFcModelo pfm where idProjeto = {idProjeto} order by ano""")
+    payback = len(df[df['VALiquido'] < 0]) + 1
+    investimento = abs(df['VALiquido'].min())
+    TxPoupanca = 1 + float(dbquery.getValues(
+        """select valorParametro as TxPoup from Parametro
+           where nomeParametro = 'TxPoup'"""))
+    df['InvestimentoFinanceiro'] = 0
+    df.loc[df['ano'] == payback, 'InvestimentoFinanceiro'] = investimento
+    for i, row in df.iterrows():
+        if row.ano > payback:
+            df.at[i, 'InvestimentoFinanceiro'] = df.at[i-1, 'InvestimentoFinanceiro'] * TxPoupanca
+    return df
 def cashFlowChart(idProjeto : int):
     df = getCashFlowData(idProjeto)
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df.ano, y=df.VPCustos, mode='lines+markers', name='Investimento Financeiro'))
-    fig.add_trace(go.Scatter(x=df.ano, y=df.VTLiquido, mode='lines+markers', name='VTLiquido'))
-    fig.add_trace(go.Scatter(x=df.ano, y=df.VALiquido, mode='lines+markers', name='VAcumulado'))
+    fig.add_trace(go.Scatter(x=df.ano, y=df.VPCustos, mode='lines+markers', name='Investimento Financeiro',
+                             line_color='gray'))
+    fig.add_trace(go.Scatter(x=df.ano, y=df.VTLiquido, mode='lines+markers', name='VTLiquido',
+                             line_color='orange'))
+    fig.add_trace(go.Scatter(x=df.ano, y=df.VALiquido, mode='lines+markers', name='VAcumulado',
+                             line_color='blue'))
+    fig.update_layout(title = dict(text="Fluxo de Caixa",
+                                   y=0.9,
+                                   x=0.5,
+                                   xanchor='center',
+                                   yanchor='top',
+                                   font={'size': 30}),
+                        legend=dict(
+                            orientation="h",
+                            yanchor="bottom",
+                            y=1.02,
+                            xanchor="right",
+                            x=1))
     graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
     return graphJSON

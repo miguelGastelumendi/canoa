@@ -145,5 +145,7 @@ inner join FaixaTipo ft
 on mf.idFaixaTipo = ft.id
 where p.id = 314
 order by mf.OrdemFaixa 
- """
+ """,
+    'TxPoup': """select valorParametro as TxPoup from Parametro
+where nomeParametro = 'TxPoup'"""
 }

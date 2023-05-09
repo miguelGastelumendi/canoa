@@ -89,6 +89,7 @@ class XLSXHelper:
         self.fillWorksheetFromRows('Parametros', 'tbUnid', queryName='Unidades')
         self.fillWorksheetFromRows('Parametros', 'tbFaixa', queryName='Faixas')
         self.fillWorksheetFromRows('Parametros', 'TxDsc', queryName='txDsc')
+        self.fillWorksheetFromRows('FluxoCaixaModelo', 'TxPoup', queryName='TxPoup')
         self.fillWorksheetFromRows('ResumoSilvicultura', 'tbResumo')
         self.fillWorksheetFromRows('FluxoCaixaFaixa', 'tbFcFaixa')
         self.fillWorksheetFromRows('Distribuição', 'tbDistribuicao', queryName='tbDistribuicao')

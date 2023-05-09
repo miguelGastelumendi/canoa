@@ -18,7 +18,7 @@ def process():
         for _, row in toProcess.iterrows():
             idProjeto = row.idProjeto
 
-            #idProjeto = 391
+            idProjeto = 399
 
             calculateFinancials(idProjeto)
             XLSXHelper.GenerateXLSX(idProjeto)
