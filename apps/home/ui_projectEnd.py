@@ -4,24 +4,20 @@ from plotly.utils import PlotlyJSONEncoder
 import json
 import apps.home.dbquery as dbquery
 
-def replace_ocurrance(string, _from, to, num):
+def formatCombinations(string, _from, to, num):
     strange_char = "$&$@$$&"
-    return string.replace(_from, strange_char, num)\
-        .replace(strange_char,_from, num - 1)\
-        .replace(strange_char, to, 1)
+    return f"""'{string.replace(_from, strange_char, num).replace(strange_char,_from, num - 1).replace(strange_char, to, 1)}'"""
 
 def updateProjectData(project_id: str, selectedCombinations: str):
-    selectedCombinations = replace_ocurrance(selectedCombinations,'-',"','",4)
     dbquery.executeSQL(f"delete from ProjetoCombFaixa where idProjeto = {project_id}")
-
     dbquery.executeSQL("insert into ProjetoCombFaixa "
-                       "(idProjeto, idFluxoCaixa, nomeFaixa, idFaixaTipo, idCombinacao, Especies,"
+                       "(idProjeto, idFluxoCaixa, nomeFaixa, idFaixaTipo, idCombinacao, Especies, "
                        "TIR, payback, InvNecessario, VTLiquido, VPLiquido) "
-                       "select idProjeto, idFluxoCaixa, nomeFaixa, idFaixaTipo, idCombinacao, Especies,"
+                       "select idProjeto, idFluxoCaixa, nomeFaixa, idFaixaTipo, idCombinacao, Especies, "
                        "TIR, payback, InvNecessario, VTLiquido, VPLiquido "
-                       "from v_EscolhaCombinacaoPorFaixa "
-                       f"where idProjeto = {project_id} "
-                       f"and idFluxoCaixa in ('{selectedCombinations}') "
+                       " from v_EscolhaCombinacaoPorFaixa "
+                      f"where idProjeto = {project_id} "
+                      f"and idFluxoCaixa in ({selectedCombinations}) "
                        "order by idFaixaTipo, TIR DESC")
     dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {project_id}")
     dbquery.executeSQL(f"insert into listaAProcessar(idProjeto) values ({project_id})")
@@ -51,12 +47,38 @@ def getProjectData(project_id: str, selectedCombinations: str):
         f"and vfc.idRegiaoAdm = m.idRegiaoAdm and vfc.idTopografia = p.idTopografia and vfc.idMecanizacaoNivel = p.idMecanizacaoNivel "
         f"inner join FaixaTipo ft on ft.id =  mf2.idFaixaTipo "
         f"where p.id = {project_id} "
-        f"and vfc.idFluxoCaixa in ('{selectedCombinations}')")
+        f"and vfc.idFluxoCaixa in ({selectedCombinations})")
 
     return projectData, combinations
 
 def getCashFlowData(idProjeto: int)->DataFrame:
-    df = dbquery.getDataframeResultset(f"""select * from ProjetoFcModelo pfm where idProjeto = {idProjeto} order by ano""")
+    df = dbquery.getDataframeResultset(
+        f"""select somaFC.idProjeto, somaFC.ano,
+	       sum(somaFC.VTReceitas) VTReceitas, sum(somaFC.VTCustos) VTCustos, sum(somaFC.VTLiquido) VTLiquido,
+	       sum(somaFC.VPReceitas) VPReceitas, sum(somaFC.VPCustos) VPCustos, sum(somaFC.VPLiquido) VPLiquido,
+	       sum(somaFC.VALiquido)  VALiquido
+	 from (select  pcf.idProjeto, fcr.idFaixaTipo, fcr.idFluxoCaixa,  
+	               fcr.ano, 
+	               fcr.VTReceitas * mf.qtdModeloFaixa as VTReceitas, fcr.VTCustos * mf.qtdModeloFaixa as VTCustos, 
+	               fcr.VTLiquido  * mf.qtdModeloFaixa as VTLiquido, 
+	               fcr.VPReceitas * mf.qtdModeloFaixa as VPReceitas, fcr.VPCustos * mf.qtdModeloFaixa as VPCustos, 
+	               fcr.VPLiquido  * mf.qtdModeloFaixa as VPLiquido,
+	               fcr.FALiquido  * mf.qtdModeloFaixa as VALiquido
+	          from VT_CombinaFcFxResumo fcr
+	               inner join Projeto prj 
+	                       on prj.id = {idProjeto}
+	               inner join V_ModeloFaixa mf 
+	                       on mf.idModeloPlantio = prj.idModeloPlantio and 
+	                          mf.idFaixaTipo = fcr.idFaixaTipo
+	               inner join ProjetoCombFaixa pcf 
+	                       on pcf.idProjeto = prj.id and   
+	                          pcf.idFaixaTipo = mf.idFaixatipo and   
+	                          pcf.idFluxoCaixa = fcr.idFluxoCaixa 	
+	               --order by ano
+	      ) somaFC
+	 group by somaFC.idProjeto, somaFC.ano
+	 order by somaFC.idProjeto, somaFC.ano""")
+
     payback = len(df[df['VALiquido'] < 0]) + 1
     investimento = abs(df['VALiquido'].min())
     TxPoupanca = 1 + float(dbquery.getValues(
@@ -89,7 +111,8 @@ def cashFlowChart(idProjeto : int):
                                    xanchor='center',
                                    yanchor='top',
                                    font={'size': 30}),
-                        legend=dict(
+                      legend=dict(
+                          font=dict(family="Courier", size=20, color="black"),
                             orientation="h",
                             yanchor="bottom",
                             y=1.02,

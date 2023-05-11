@@ -71,7 +71,7 @@ order by pr.idCombinacao, e.nomeComum, p.nomeProduto, pr.Idade""",
 where ps.idProjeto = {0} 
 order by rc.nomeRecurso, ps.siglaUnidade""",
 
-    'Faixas': """select ft.nomeFaixa Faixa, mf.qtdModeloFaixa QtdFaixas
+    'Faixas': """select ft.nomeFaixa Faixa, mf.qtdModeloFaixa QtdFaixas, ft.AreaFaixa
   from Projeto pj
        inner join V_ModeloFaixa mf on mf.idModeloPlantio = pj.idModeloPlantio 
        inner join FaixaTipo ft on ft.id = mf.idFaixaTipo 
