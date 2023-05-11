@@ -10,7 +10,7 @@
     <label for="lat" class="labelLatLong col-sm-3 col-form-label">Latitude</label>
     <div class="col-sm-4">
          <input id="lat" name="lat" class="form-control" type="text" title="Latitude"
-         placeholder="ex: -21.0845" value="{{ projectLatValue }}">
+         placeholder="ex: -21.0845" value="{{ lat }}">
     </div>
   </div>
     <div style="display: flex; align-items: center; position: relative;">
@@ -18,7 +18,7 @@
       <label for="lon" class="labelLatLong col-sm-3 col-form-label" style="bottom: 42px">Longitude</label>
       <div class="col-sm-4">
         <input id="lon" name="lon" class="form-control" type="text" title="Longitude"
-           placeholder="ex: -50.1416" value="{{ projectLongValue }}">
+           placeholder="ex: -50.1416" value="{{ lon }}">
       </div>
      <button type="button" class="wzd-btnNext btn btn-outline-success" onclick="fetchFitosForMuni()">Ok</button>
     </div>

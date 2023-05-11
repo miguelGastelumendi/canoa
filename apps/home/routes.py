@@ -122,10 +122,10 @@ def route_template(template):
 
             elif segment == 'rsp-locationMethodSelect.html':
                 formItems = helper.getFormText('rsp-locationMethodSelect')
-                if projectId > -1:
-                    lat, lon = dbquery.getValues(f'select lat, lon from Projeto where id = {projectId}')
-                    formItems = {**{'selectedcountyFitofisionomy': lat is None,
-                                 'selectedlatLong': lat is not None},
+                if session['_projeto_id'] > -1:
+                    lat, lon = dbquery.getValues(f"select lat, lon from Projeto where id = {session['_projeto_id']}")
+                    formItems = {**{'selectedcountyFitofisionomy': int(lat is None),
+                                 'selectedlatLong': int(lat is not None)},
                                  **formItems}
                 else:
                     formItems = {**{'selectedcountyFitofisionomy': False,
@@ -141,7 +141,9 @@ def route_template(template):
                                        )
 
             elif segment == 'rsp-locationLatLon.html':
+                lat, lon = dbquery.getValues(f"select lat, lon from Projeto where id = {session['_projeto_id']}")
                 return render_template("home/" + template,
+                                       lat=lat, lon=lon,
                                        **helper.getFormText('rsp-locationLatLon'))
 
             elif segment == 'rsp-locationCAR.html':
