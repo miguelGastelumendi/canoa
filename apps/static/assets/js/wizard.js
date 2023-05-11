@@ -184,7 +184,7 @@ const wzdControl = {
             ${wzdControl.getBtnHint(itm.hint)}
             <button id="${wzdControl.getBtnId(
               ix
-            )}" class="btn btnContent ${sAlign}" style="width: 50%;" type="button" onclick="wzdControl.selectItem(${ix})">` +
+            )}" class="btn ${itm['selected'] == 1 ? 'btnSelected' : 'btnContent'} ${sAlign}"; style="width: 50%; type="button" onclick="wzdControl.selectItem(${ix})">` +
             (itm.text ? itm.text : itm.caption) +
             "</button>" +
             "</div>";
