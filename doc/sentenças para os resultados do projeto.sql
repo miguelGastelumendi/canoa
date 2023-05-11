@@ -55,7 +55,7 @@ select cf.idProjeto,
                      inner join MunicipioFito mf on mf.id = prj.idMunicipioFito
                      inner join Municipio m on m.id = mf.idMunicipio
                      inner join ProjetoCombFaixa pcf on pcf.idProjeto = prj.id
-               where prj.id = 139
+               where prj.id = {idProjeto}
               ) cf
         on cf.idCombinacao = vtc.idCombinacao and
            cf.idRegiaoAdm  = vtc.idRegiaoAdm  and

@@ -31,7 +31,7 @@ def route_callback(endpoint):
     callerID = args.get('callerID')
     if callerID == 'mapSP':
         return ui_projectSupport.getMapSP()
-    if endpoint == 'projectName':
+    elif endpoint == 'projectName':
         try:
             if not '_projeto_id' in session.keys() or session['_projeto_id'] == -1:
                 session['_projeto_id'] = ui_projectSupport.createProject(current_user.id, request.args['projectName'])
@@ -41,7 +41,7 @@ def route_callback(endpoint):
             if '23000' in re.split('\W+', e.args[0]):
                 return helper.getErrorMessage('projectNameMustBeUnique')
         return "Ok"
-    if endpoint == 'areas':
+    elif endpoint == 'areas':
         try:
             ui_projectSupport.updateProject(session['_projeto_id'], **{'areaPropriedade': args['propertyArea'],
                                                                        'areaProjeto': args['projectArea']})
@@ -49,23 +49,23 @@ def route_callback(endpoint):
             if '23000' in re.split('\W+', e.args[0]):
                 return helper.getErrorMessage('projectNameMustBeUnique')
         return "Ok"
-    if endpoint == 'locationCAR':
+    elif endpoint == 'locationCAR':
         return ui_projectSupport.getMapCAR(request.args.get('CAR'))
-    if endpoint == 'locationLatLon':
+    elif endpoint == 'locationLatLon':
         _, municipioFito = ui_projectSupport.getMunicipioFitoByLatLon(request.args['lat'], request.args['lon'])
         ui_projectSupport.updateProject(session['_projeto_id'], **{'idMunicipioFito': municipioFito.id[0], 'Lat': request.args['lat'],
                                                                    'Lon': request.args['lon']})
         return ui_projectSupport.getMapLatLon(request.args['lat'], request.args['lon'])
-    if endpoint == 'getDistribution':
+    elif endpoint == 'getDistribution':
         return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
-    if endpoint == 'areas':
+    elif endpoint == 'areas':
         if args.get('propertyArea') == '' or args.get('projectArea') == '':
             return helper.getErrorMessage('areasMustBeInformed')
         dbquery.executeSQL(f"UPDATE projeto SET AreaProjeto = {args.get('projectArea')}, "
                            f"AreaPropriedade = {args.get('propertyArea')} "
                            f"where id = {session['_projeto_id']}")
 
-    if endpoint == 'updateFormData':
+    elif endpoint == 'updateFormData':
         try:
             idMunicipio = int(args.get('idMunicipio'))
         except:
@@ -98,7 +98,7 @@ def route_template(template):
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-projectStart'))
 
-            if segment == 'rsp-selectProject.html':
+            elif segment == 'rsp-selectProject.html':
                 return render_template("home/" + template,
                                        projects=dbquery.getListDictResultset(
                                            f"select descProjeto as caption, id from Projeto p "
@@ -106,7 +106,7 @@ def route_template(template):
                                            f"order by descProjeto"),
                                        **helper.getFormText('rsp-selectProject'))
 
-            if segment == 'rsp-projectName.html':
+            elif segment == 'rsp-projectName.html':
                 if 'id' in request.args.keys():
                     projectId = int(request.args['id'])
                 if projectId > -1:
@@ -120,7 +120,7 @@ def route_template(template):
                                        projectNameValue=projectName,
                                        **helper.getFormText('rsp-projectName'))
 
-            if segment == 'rsp-locationMethodSelect.html':
+            elif segment == 'rsp-locationMethodSelect.html':
                 formItems = helper.getFormText('rsp-locationMethodSelect')
                 if projectId > -1:
                     lat, lon = dbquery.getValues(f'select lat, lon from Projeto where id = {projectId}')
@@ -133,22 +133,22 @@ def route_template(template):
                                  **formItems}
                 return render_template("home/" + template, **formItems)
 
-            if segment == 'rsp-locationCountyFitofisionomy.html':
+            elif segment == 'rsp-locationCountyFitofisionomy.html':
                 return render_template("home/" + template,
                                        municipios=ui_projectSupport.getListaMunicipios()
                                        , fito_municipios=ui_projectSupport.getListaFito(None)
                                        , **helper.getFormText('rsp-locationCountyFitofisionomy')
                                        )
 
-            if segment == 'rsp-locationLatLon.html':
+            elif segment == 'rsp-locationLatLon.html':
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-locationLatLon'))
 
-            if segment == 'rsp-locationCAR.html':
+            elif segment == 'rsp-locationCAR.html':
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-locationCAR'))
 
-            if segment == 'rsp-areas.html':
+            elif segment == 'rsp-areas.html':
                 if session['_operation'] == 'changingProject':
                     areaProjeto, areaPropriedade = dbquery.getValues(
                         f"select AreaProjeto, AreaPropriedade from Projeto "

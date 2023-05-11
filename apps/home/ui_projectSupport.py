@@ -5,6 +5,7 @@ import numpy as np
 import apps.home.dbquery as dbquery
 import apps.config as config
 
+mapbox_style="open-street-map"
 
 def getGJson(centroid_extent_polytype, features):
     if centroid_extent_polytype[3] == 'MultiPolygon':
@@ -124,7 +125,7 @@ def getMapMunicipio(idMunicipio: int):
                                locations=municipio.id, featureidkey="properties.id",
                                center=centroid,
                                hover_name=municipio.NomeMunicipio.tolist(), hover_data={'id': False},
-                               mapbox_style="carto-positron", zoom=zoom,
+                               mapbox_style=mapbox_style, zoom=zoom,
                                opacity=0.4)
     # fig.update_layout(
     #     mapbox_style="white-bg",
@@ -183,7 +184,7 @@ def getMapFitoMunicipio(idMunicipio: int,
                                hover_name=fito.label.tolist(),
                                color_discrete_map="identity",
                                hover_data={'id': False},
-                               mapbox_style="carto-positron", zoom=zoom,
+                               mapbox_style=mapbox_style, zoom=zoom,
                                opacity=0.4)
     fig.update_layout(
         showlegend=False)
@@ -200,7 +201,7 @@ def getMapCAR(pCAR: str = ''):
                                locations=CAR.id, featureidkey="properties.id",
                                center=centroid,
                                hover_name=CAR.CAR.tolist(), hover_data={'id': False},
-                               mapbox_style="carto-positron", zoom=zoom,
+                               mapbox_style=mapbox_style, zoom=zoom,
                                opacity=0.4)
     # fig.update_layout(
     #     mapbox_style="white-bg",
@@ -215,7 +216,7 @@ def getMapLatLon(lat: str, lon: str):
                                locations=fito.id, featureidkey="properties.id",
                                center=centroid,
                                hover_name="label", hover_data={'id': False},
-                               mapbox_style="carto-positron", zoom=zoom,
+                               mapbox_style=mapbox_style, zoom=zoom,
                                opacity=0.4)
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
@@ -226,7 +227,7 @@ def getMapSP():
                                locations=SP.id, featureidkey="properties.id",
                                center=centroid,
                                hover_name=SP.Nome.tolist(), hover_data={'id': False},
-                               mapbox_style="carto-positron", zoom=zoom,
+                               mapbox_style=mapbox_style, zoom=zoom,
                                opacity=0.4)
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
