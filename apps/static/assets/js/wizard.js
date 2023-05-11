@@ -18,6 +18,7 @@
  * @typedef {Object} wzdItem
  * @property {string} [bodyId = "wzdBody"] parent ID element of the buttons
  * @property {string} hint hint for the element
+ * @property {number} [selected =  0] 1 is true 
  * @property {string} text buttons text, if nul/undef caption is used
  * @property {string} caption display on selection
  * @property {number} id item`s ID, if informed, it is sent as a parameter
@@ -70,7 +71,7 @@ const wzdControl = {
   helpCallback: "", // fetch server help address
 
   ge: (/** @type {string} */ sId) =>
-    /** @type{HTMLElement} */ (document.getElementById(sId)),
+    /** @type{HTMLElement} */(document.getElementById(sId)),
   getBtn: (/** @type {number} */ ix) => wzdControl.ge(wzdControl.getBtnId(ix)),
   getBtnId: (/** @type {number} */ ix) => `wzdBtn${ix}`,
   getBtnHint: (/** @type {string} */ sHint) => {
@@ -93,8 +94,8 @@ const wzdControl = {
     wzdControl.multiSelect
       ? wzdControl.groups.filter(grp => grp.selected >= 0).length
       : wzdControl.selectedItemIx < 0
-      ? 0
-      : 1,
+        ? 0
+        : 1,
 
   getTitle: sDefault =>
     sDefault ? sDefault : wzdControl.ge("wzdDescription").innerText,
@@ -149,7 +150,8 @@ const wzdControl = {
     // save
     if (wzdControl.multiSelect) {
       grp.selected = ix;
-    } else {
+    }
+    else {
       wzdControl.selectedItemIx = ix;
     }
     wzdControl.showSelected();
@@ -179,12 +181,16 @@ const wzdControl = {
       case wzdControl.mode.BUTTONS:
         wzdControl.jsoData.forEach((itm, ix) => {
           bodyIx = _getBodyIx(itm.bodyId, '<div class="d-grid gap-4">');
+          const isSelected = (itm.selected == 1);
+          if (isSelected && !wzdControl.multiSelect) {
+            wzdControl.selectedItemIx = ix;
+          };
           aHtml[bodyIx] +=
             `<div>
             ${wzdControl.getBtnHint(itm.hint)}
             <button id="${wzdControl.getBtnId(
               ix
-            )}" class="btn ${itm['selected'] == 1 ? 'btnSelected' : 'btnContent'} ${sAlign}"; style="width: 50%; type="button" onclick="wzdControl.selectItem(${ix})">` +
+            )}" class="btn ${(isSelected ? 'btnSelected' : 'btnContent')} ${sAlign}"; style="width: 50%; type="button" onclick="wzdControl.selectItem(${ix})">` +
             (itm.text ? itm.text : itm.caption) +
             "</button>" +
             "</div>";
@@ -197,13 +203,11 @@ const wzdControl = {
             `<div class="d-grid gap-2 ${sAlign}">`
           );
           aHtml[bodyIx] +=
-            `<div id="${wzdControl.getBtnId(ix)}" class="alert alert-${
-              itm.type ? itm.type : "success"
+            `<div id="${wzdControl.getBtnId(ix)}" class="alert alert-${itm.type ? itm.type : "success"
             }">` +
             (itm.caption
-              ? `<h4 class="alert-heading">${itm.caption}</h4>${
-                  itm.text ? "<hr>" : ""
-                }`
+              ? `<h4 class="alert-heading">${itm.caption}</h4>${itm.text ? "<hr>" : ""
+              }`
               : "") +
             (itm.text || "") +
             "</div>";
@@ -216,7 +220,7 @@ const wzdControl = {
           bodyIx = _getBodyIx(
             itm.bodyId,
             `<div class="row ${wzdControl.getColClasses(
-              /** @type {string} */ (itm.bodyId)
+              /** @type {string} */(itm.bodyId)
             )}">`
           );
           aHtml[bodyIx] +=
@@ -224,10 +228,8 @@ const wzdControl = {
             `<button id=${wzdControl.getBtnId(
               ix
             )} class="btn bg-gradient" type="button" style="background: none;" ${onClick}">` +
-            `<a ${onClick}"> <img src="${wzdControl.path}${
-              itm.fileName
-            }" alt="${
-              itm.fileName ? itm.fileName : "Imagem não disponível"
+            `<a ${onClick}"> <img src="${wzdControl.path}${itm.fileName
+            }" alt="${itm.fileName ? itm.fileName : "Imagem não disponível"
             }"></a>` +
             "</button>" +
             '<span class=""><i style="font-size: 23px; margin: 10px; color: white; cursor: pointer;" class="far fa-question-circle"></i></span>' +
@@ -295,7 +297,8 @@ const wzdControl = {
       wzdControl.messageError(
         `Não está definido o próximo passo de '${jsBtn.caption}'.`
       );
-    } else if (jsBtn.id) {
+    }
+    else if (jsBtn.id) {
       sHref = `${wzdControl.nextPageHref}?id=${jsBtn.id}`;
     } else {
       sHref = jsBtn.href || wzdControl.nextPageHref;
@@ -304,6 +307,8 @@ const wzdControl = {
       setTimeout(() => {
         window.location.href = sHref;
       }, 0);
+    console.log("Button details:");
+
   },
 
   /** @protected */
@@ -314,8 +319,8 @@ const wzdControl = {
         wzdControl.modalReady() // @ts-ignore mdlControl
           ? mdlControl.displayHelp(oData.text, wzdControl.getTitle(oData.title))
           : wzdControl.messageInfo(
-              "O recurso de exibição de Ajuda, não está disponível no momento."
-            );
+            "O recurso de exibição de Ajuda, não está disponível no momento."
+          );
       },
       "No momento, não temos ajuda para este tópico"
     );
