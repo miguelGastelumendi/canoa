@@ -16,6 +16,7 @@ from flask import session
 from apps.home import helper
 from flask_login import current_user
 import re
+import json
 
 
 @blueprint.route('/index')
@@ -56,8 +57,6 @@ def route_callback(endpoint):
         ui_projectSupport.updateProject(session['_projeto_id'], **{'idMunicipioFito': municipioFito.id[0], 'Lat': request.args['lat'],
                                                                    'Lon': request.args['lon']})
         return ui_projectSupport.getMapLatLon(request.args['lat'], request.args['lon'])
-    elif endpoint == 'getDistribution':
-        return ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
     elif endpoint == 'areas':
         if args.get('propertyArea') == '' or args.get('projectArea') == '':
             return helper.getErrorMessage('areasMustBeInformed')
@@ -122,14 +121,14 @@ def route_template(template):
 
             elif segment == 'rsp-locationMethodSelect.html':
                 formItems = helper.getFormText('rsp-locationMethodSelect')
-                if session['_projeto_id'] > -1:
+                if session['_operation'] == 'changingProject':
                     lat, lon = dbquery.getValues(f"select lat, lon from Projeto where id = {session['_projeto_id']}")
                     formItems = {**{'selectedcountyFitofisionomy': int(lat is None),
                                  'selectedlatLong': int(lat is not None)},
                                  **formItems}
                 else:
-                    formItems = {**{'selectedcountyFitofisionomy': False,
-                                 'selectedlatLong': False},
+                    formItems = {**{'selectedcountyFitofisionomy': 0,
+                                 'selectedlatLong': 0},
                                  **formItems}
                 return render_template("home/" + template, **formItems)
 
@@ -182,16 +181,26 @@ def route_template(template):
                 idFinalidade = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idFinalidade = {idFinalidade} "
                                    f"where id = {session['_projeto_id']}")
-                return render_template("home/" + template
-                                       , **helper.getFormText('rsp-plantDistribution'))
-
-
+                distributionOptions = ui_plantdistribution.getPlantDistribution(session['_projeto_id'])
+                return render_template("home/" + template,
+                                       options=distributionOptions,
+                                       **helper.getFormText('rsp-plantDistribution'))
             elif segment == 'rsp-relief.html':
                 idModeloPlantio = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idModeloPlantio = {idModeloPlantio} "
                                    f"where id = {session['_projeto_id']}")
-                return render_template("home/" + template
-                                       , **helper.getFormText('rsp-relief'))
+                idTopografia = dbquery.getValues(f"select idTopografia from Projeto where id = {session['_projeto_id']}")
+                options = [
+                    {'caption': 'Terreno Plano', 'id': 1, 'fileName': 'wzd-terrenoPlano.png'},
+                    {'caption': 'Terreno Suave Ondulado', 'id': 2, 'fileName': 'wzd-terrenoSuaveOndulado.png'},
+                    {'caption': ' Terreno Ondulado', 'id': 3, 'fileName': 'wzd-terrenoOndulado.png'},
+                    {'caption': 'Terreno Montanhoso', 'id': 4, 'fileName': 'wzd-terrenoMontanhoso.png'}
+                ]
+                for option in options:
+                    option['selected'] = int(option['id'] == idTopografia)
+                return render_template("home/" + template,
+                                       options=json.dumps(options),
+                                       **helper.getFormText('rsp-relief'))
 
             elif segment == "rsp-mecanization.html":
                 idTopografia = request.args.get('id')

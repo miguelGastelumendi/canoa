@@ -2,26 +2,10 @@
 
 {% block wizardConfig %}
 <script>
-  async function getDistribution() {
-    const response = await fetch('/callback/getDistribution');
-    if (!response.ok) {
-      wzdControl.errorMessage(`Não foi possível obter os dados do servidor (status: ${response.status}).`);
-    } else {
-      const jsoRsp = await response.json();
-      const jsData = jsoRsp.data;
-      if (jsData.length == 0) {
-        wzdControl.errorMessage('Não exitem distribuições para esta configuração.');
-      } else {
-        wzdControl.initPage({ data: jsData, nextPage: 'rsp-relief.html',
-            mode: wzdControl.mode.IMAGES,
-            help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`}
-        );
-      }
-    }
-  }
-  getDistribution();
+  const jsBtn = {{ options|safe }};
+  wzdControl.initPage({ data: jsBtn, mode: wzdControl.mode.IMAGES,
+      nextPage: 'rsp-relief.html',
+      help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`}
+  );
 </script>
 {% endblock %}
-
-{# eof #}
-
