@@ -140,7 +140,9 @@ def route_template(template):
                                        )
 
             elif segment == 'rsp-locationLatLon.html':
-                lat, lon = dbquery.getValues(f"select lat, lon from Projeto where id = {session['_projeto_id']}")
+                lat, lon = dbquery.getValues(f"select coalesce(lat,'') as lat, "
+                                             f"coalesce(lon,'') as lon "
+                                             f"from Projeto where id = {session['_projeto_id']}")
                 return render_template("home/" + template,
                                        lat=lat, lon=lon,
                                        **helper.getFormText('rsp-locationLatLon'))
