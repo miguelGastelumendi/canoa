@@ -10,7 +10,7 @@
     <label for="lat" class="labelLatLong col-sm-3 col-form-label">Latitude</label>
     <div class="col-sm-4">
          <input id="lat" name="lat" class="form-control" type="text" title="Latitude"
-         placeholder="ex: -21.0845" value="{{ lat }}">
+         placeholder="ex: -21.0845" value="-21.0845">
     </div>
   </div>
     <div style="display: flex; align-items: center; position: relative;">
@@ -18,9 +18,9 @@
       <label for="lon" class="labelLatLong col-sm-3 col-form-label" style="bottom: 42px">Longitude</label>
       <div class="col-sm-4">
         <input id="lon" name="lon" class="form-control" type="text" title="Longitude"
-           placeholder="ex: -50.1416" value="{{ lon }}">
+           placeholder="ex: -50.1416" value="-50.1416">
       </div>
-     <button type="button" class="wzd-btnNext btn btn-outline-success" onclick="fetchFitosForMuni()">Ok</button>
+      <button type="button" class="wzd-btnNext btn btn-outline-success" onclick="fetchFitosForMuni()">Ok</button>
     </div>
 </div>
 <div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
@@ -32,31 +32,27 @@
 {% block wizardConfig %}
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
+
   const selLat = wzdControl.ge('lat');
   const selLong = wzdControl.ge('lon');
   const eleMap = wzdControl.ge('mapArea');
 
-  //-- Avoid multiple async calls
-  let bFetching = false;
   const _setCursor = (sTo) => document.body.style.cursor = sTo ? sTo : 'default';
 
-  //-- Map arrived, show it
-  const _showMap = ( /** @type {Object} */ jsoData) => {
+  const _showMap = (jsoData) => {
     if (!jsoData) { return; }
     const jsData = JSON.parse(jsoData.Map);
     Plotly.react(eleMap.id, jsData, {});
     eleMap.on('plotly_afterplot', _setCursor);
   }
 
-  //--
   const fetchFormData = (oParam, fSuccess, sError) => {
-    oParam = { ...{ lat: selLat.value, lon: selLong.value}, ...oParam };
+    oParam = { ...{ lat: selLat.value, lon: selLong.value }, ...oParam };
     sParams = '';
     for (const sKey in oParam) { sParams += `${sKey}=${oParam[sKey]}&`; }
     wzdControl.fetchObject(`/callback/locationLatLon?${sParams}`, fSuccess, sError);
   }
 
-  //--
   const fetchMapOfSP = () => {
     fetchFormData({ callerID: 'mapSP' }, _showMap, 'Não foi possível obter o mapa.');
   }
@@ -73,11 +69,19 @@
   }
 
   wzdControl.initPage({
-    mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-areas.html',
+    mode: wzdControl.mode.CUSTOM,
+    nextPage: 'rsp-areas.html',
     help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
-  window.addEventListener("load", () => { (selLat.value == "") ? fetchMapOfSP() : updateFormData(selLat.id) });
+
   document.body.style.cursor = 'progress';
+  window.addEventListener("load", () => {
+    if(selLat.value === '' && selLong.value === '') {
+    fetchMapOfSP();
+  }else if (selLat.value !== '' && selLong.value !== '') {
+    fetchFitosForMuni();
+  }
+  })
 </script>
 {% endblock %}
 
