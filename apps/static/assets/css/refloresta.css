@@ -87,6 +87,10 @@ select {
   border: none;
 }
 
+.btnContentImg{
+  border:none !important;
+}
+
 @media screen and (max-width: 992px) {
   .divInputProjectName {
     width: 60%;

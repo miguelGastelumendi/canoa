@@ -217,6 +217,10 @@ const wzdControl = {
       case wzdControl.mode.IMAGES:
         wzdControl.jsoData.forEach((itm, ix) => {
           let onClick = `onclick="wzdControl.selectItem(${ix})`;
+          const isSelected = (itm.selected == 1);
+          if (isSelected && !wzdControl.multiSelect) {
+            wzdControl.selectedItemIx = ix;
+          };
           bodyIx = _getBodyIx(
             itm.bodyId,
             `<div class="row ${wzdControl.getColClasses(
@@ -227,7 +231,7 @@ const wzdControl = {
             `<div class="col ${sAlign} mb-3">` +
             `<button id=${wzdControl.getBtnId(
               ix
-            )} class="btn bg-gradient" type="button" style="background: none;" ${onClick}">` +
+            )} class="btn bg-gradient ${(isSelected ? 'btnSelectedImg' : 'btnContentImg')}" type="button" style="background: none;" ${onClick}">` +
             `<a ${onClick}"> <img src="${wzdControl.path}${itm.fileName
             }" alt="${itm.fileName ? itm.fileName : "Imagem não disponível"
             }"></a>` +
