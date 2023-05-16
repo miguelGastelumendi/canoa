@@ -86,6 +86,10 @@ select {
   color: white;
   border: none;
 }
+.btnSelectedImg {
+  background-color: #86bc56 !important;
+  cursor: pointer;
+}
 
 .btnContentImg{
   border:none !important;

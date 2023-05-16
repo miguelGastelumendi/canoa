@@ -231,7 +231,7 @@ const wzdControl = {
             `<div class="col ${sAlign} mb-3">` +
             `<button id=${wzdControl.getBtnId(
               ix
-            )} class="btn bg-gradient ${(isSelected ? 'btnSelectedImg' : 'btnContentImg')}" type="button" style="background: none;" ${onClick}">` +
+            )} class="btn bg-gradient ${(isSelected ? 'btnSelected' : 'btnContent')}" type="button" ${onClick}">` +
             `<a ${onClick}"> <img src="${wzdControl.path}${itm.fileName
             }" alt="${itm.fileName ? itm.fileName : "Imagem não disponível"
             }"></a>` +
