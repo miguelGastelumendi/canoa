@@ -89,15 +89,13 @@ def route_template(template):
     projectId = -1
     try:
         if template.find('.html') > -1:
-            # Detect the current page
-            segment = helper.get_segment(request)
-            # if segment.startswith('testeJinja'):
-            if segment == 'rsp-projectStart.html':
+            page2Send = helper.get_segment(request)
+            if page2Send == 'rsp-projectStart.html':
                 session['_projeto_id'] = -1
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-projectStart'))
 
-            elif segment == 'rsp-selectProject.html':
+            elif page2Send == 'rsp-selectProject.html':
                 return render_template("home/" + template,
                                        projects=dbquery.getListDictResultset(
                                            f"select descProjeto as caption, id from Projeto p "
@@ -105,7 +103,7 @@ def route_template(template):
                                            f"order by descProjeto"),
                                        **helper.getFormText('rsp-selectProject'))
 
-            elif segment == 'rsp-projectName.html':
+            elif page2Send == 'rsp-projectName.html':
                 if 'id' in request.args.keys():
                     projectId = int(request.args['id'])
                 if projectId > -1:
@@ -119,7 +117,7 @@ def route_template(template):
                                        projectNameValue=projectName,
                                        **helper.getFormText('rsp-projectName'))
 
-            elif segment == 'rsp-locationMethodSelect.html':
+            elif page2Send == 'rsp-locationMethodSelect.html':
                 formItems = helper.getFormText('rsp-locationMethodSelect')
                 if session['_operation'] == 'changingProject':
                     lat, lon = dbquery.getValues(f"select lat, lon from Projeto where id = {session['_projeto_id']}")
@@ -132,14 +130,26 @@ def route_template(template):
                                  **formItems}
                 return render_template("home/" + template, **formItems)
 
-            elif segment == 'rsp-locationCountyFitofisionomy.html':
+            elif page2Send == 'rsp-locationCountyFitofisionomy.html':
+                if session['_operation'] == 'changingProject':
+                    idMunicipio, idFitofisionomia = dbquery.getValues(
+                        f"select coalesce(idMunicipio, -1) as idMunicipio, "
+                        f"coalesce(idFitofisionomia, -1) as idFitoFisionomia from Projeto p "
+                        f"inner join MunicipioFito mf "
+                        f"on p.idMunicipioFito = mf.id "
+                        f"where p.id = {session['_projeto_id']}")
+                else:
+                    idMunicipio, idFitofisionomia = (-1, -1)
+
                 return render_template("home/" + template,
+                                       idMunicipio = idMunicipio,
+                                       idFitofisionomia = idFitofisionomia,
                                        municipios=ui_projectSupport.getListaMunicipios()
-                                       , fito_municipios=ui_projectSupport.getListaFito(None)
+                                       , fito_municipios=ui_projectSupport.getListaFito(idFitofisionomia)
                                        , **helper.getFormText('rsp-locationCountyFitofisionomy')
                                        )
 
-            elif segment == 'rsp-locationLatLon.html':
+            elif page2Send == 'rsp-locationLatLon.html':
                 lat, lon = dbquery.getValues(f"select coalesce(lat,'') as lat, "
                                              f"coalesce(lon,'') as lon "
                                              f"from Projeto where id = {session['_projeto_id']}")
@@ -147,11 +157,11 @@ def route_template(template):
                                        lat=lat, lon=lon,
                                        **helper.getFormText('rsp-locationLatLon'))
 
-            elif segment == 'rsp-locationCAR.html':
+            elif page2Send == 'rsp-locationCAR.html':
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-locationCAR'))
 
-            elif segment == 'rsp-areas.html':
+            elif page2Send == 'rsp-areas.html':
                 if session['_operation'] == 'changingProject':
                     areaProjeto, areaPropriedade = dbquery.getValues(
                         f"select AreaProjeto, AreaPropriedade from Projeto "
@@ -163,7 +173,7 @@ def route_template(template):
                                        areaPropriedade = areaPropriedade,
                                        **helper.getFormText('rsp-areas'))
 
-            elif segment == 'rsp-goal.html':
+            elif page2Send == 'rsp-goal.html':
                 return render_template("home/" + template,
                                            goals=dbquery.getListDictResultset(
                                             "select f.desFinalidade as caption, f.id, f.help as hint, "
@@ -178,7 +188,7 @@ def route_template(template):
                                             f"order by orderby")
                                        , **helper.getFormText('rsp-goal'))
 
-            elif segment == 'rsp-plantDistribution.html':
+            elif page2Send == 'rsp-plantDistribution.html':
                 # TODO: number of número de módulos fiscais validation
                 idFinalidade = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idFinalidade = {idFinalidade} "
@@ -187,7 +197,7 @@ def route_template(template):
                 return render_template("home/" + template,
                                        options=distributionOptions,
                                        **helper.getFormText('rsp-plantDistribution'))
-            elif segment == 'rsp-relief.html':
+            elif page2Send == 'rsp-relief.html':
                 idModeloPlantio = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idModeloPlantio = {idModeloPlantio} "
                                    f"where id = {session['_projeto_id']}")
@@ -204,7 +214,7 @@ def route_template(template):
                                        options=json.dumps(options),
                                        **helper.getFormText('rsp-relief'))
 
-            elif segment == "rsp-mecanization.html":
+            elif page2Send == "rsp-mecanization.html":
                 idTopografia = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idTopografia = {idTopografia} "
                                    f"where id = {session['_projeto_id']}")
@@ -222,7 +232,7 @@ def route_template(template):
                                             f"where p.id = {session['_projeto_id']}"),
                                        **helper.getFormText('rsp-mecanization'))
 
-            elif segment == 'rsp-combinations.html':
+            elif page2Send == 'rsp-combinations.html':
                 # return render_template("home/rsp-relief.html", segment="rsp-relief.html")
                 idMecanizacaoNivel = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idMecanizacaoNivel = {idMecanizacaoNivel} "
@@ -235,7 +245,7 @@ def route_template(template):
                                        noData=noData,
                                        **helper.getFormText('rsp-combinations'))
 
-            elif segment == 'rsp-projectEnd.html':
+            elif page2Send == 'rsp-projectEnd.html':
                 selectedCombinations = ui_projectEnd.formatCombinations(request.args['id'],'-',"','",4)
                 ui_projectEnd.updateProjectData(session['_projeto_id'], selectedCombinations)
                 projectData, combinations = ui_projectEnd.getProjectData(session['_projeto_id'], selectedCombinations)

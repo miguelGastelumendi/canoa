@@ -36,7 +36,7 @@ def getListaFito(idMunicipio: int):
         f"from MunicipioFito mf "
         f"inner join FitoFisionomia ff "
         f"on mf.idFitoFisionomia = ff.id "
-        f"where {' 0=1' if idMunicipio is None else f'idMunicipio = {idMunicipio}'} "
+        f"where {' 0=1' if idMunicipio == -1 else f'idMunicipio = {idMunicipio}'} "
         f"order by 2")
 
 
