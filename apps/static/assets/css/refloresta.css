@@ -36,6 +36,10 @@ label {
   color: #5a443d;
 }
 
+.labelTerms{
+color: #8a8d91;
+}
+
 .divRegister {
   margin-top: 5%;
   display: flex;
