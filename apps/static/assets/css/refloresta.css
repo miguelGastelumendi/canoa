@@ -57,6 +57,7 @@ select {
 .btnRegister {
   background-color: #86bc56;
   border: none;
+  color: white;
 }
 
 .btnLogin:hover,
@@ -87,9 +88,18 @@ select {
   border: none;
 }
 
+.divRememberLogin {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0 10px;
+}
+
 @media screen and (max-width: 992px) {
   .divInputProjectName {
     width: 60%;
+  }
+  .divRememberLogin{
+    font-size: 13px;
   }
 }
 ::-webkit-input-placeholder {

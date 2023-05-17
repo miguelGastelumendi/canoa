@@ -5,31 +5,42 @@
 
 {% block wizardBody %}
 
-  <div class="container" width="60%">
-    <div class="row mb-3" style="display: flex; justify-content: center; align-items: center; position: relative;">
-      <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #628d3c; border-color: #628d3c;" tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content='{{ helpcounty }}'>?</button>
-      <label for="municipio" class="labelLocation col-sm-2 col-form-label">{{ countySelect|safe }}</label>
-      <select id="municipio" class="col-sm-4 form-select" onchange="muniChanged()" style="width: 50%;">
-        <option disabled selected value="-1">- Selecione -</option>
-        <option value="-1" disabled>{{ firstSelectCounty }}</option>
-        {% for key, value in municipios.items() %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
-      </select>
-    </div>
-
-    <div class="row mb-3" style="display: flex; justify-content: center; align-items: center; position: relative;">
-      <button type="button" class="btn" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #628d3c; border-color: #628d3c;" tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content='{{ helpFitofisionomy }}'>?</button>
-      <label for="fito_ecologica" class="labelLocation col-sm-2 col-form-label">{{ fitoFisionomySelect|safe }}</label>
-      <select id="fito_ecologica" class="col-sm-4 form-select " disabled="true" onchange="fitoChanged()" style="width: 50%;">
-        <option disabled selected>- Selecione -</option>
-        <option value="-1">
-          {% for key, value in fito_municipios.items() %}
-        <option value="{{ key|safe }}">{{ value|safe }}</option>{% endfor %}
-        </option>
-      </select>
-    </div>
+<div class="container" width="60%">
+  <div class="row mb-3" style="display: flex; justify-content: center; align-items: center; position: relative;">
+    <button type="button" class="btn"
+      style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #628d3c; border-color: #628d3c;"
+      tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda"
+      data-bs-content='{{ helpcounty }}'>?</button>
+    <label for="municipio" class="labelLocation col-sm-2 col-form-label">{{ countySelect|safe }}</label>
+    <select id="municipio" class="col-sm-4 form-select" onchange="muniChanged()" style="width: 50%;">
+      <option disabled selected value="-1">- Selecione -</option>
+      <option value="-1" disabled>{{ firstSelectCounty }}</option>
+        {% for key, value in municipios.items() %}
+      <option value="{{ key }}" {% if key == idMunicipio %}selected="selected"{% endif %}>{{ value }}</option>
+        {% endfor %}
+    </select>
   </div>
+
+  <div class="row mb-3" style="display: flex; justify-content: center; align-items: center; position: relative;">
+    <button type="button" class="btn"
+      style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #628d3c; border-color: #628d3c;"
+      tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda"
+      data-bs-content='{{ helpFitofisionomy }}'>?</button>
+    <label for="fito_ecologica" class="labelLocation col-sm-2 col-form-label">{{ fitoFisionomySelect|safe }}</label>
+    <select id="fito_ecologica" class="col-sm-4 form-select " disabled="true" onchange="fitoChanged()"
+      style="width: 50%;">
+      <option disabled selected>- Selecione -</option>
+      <option value="-1">
+        {% for key, value in fito_municipios.items() %}
+        <option value="{{ key|safe }}" {% if key == idFitofisionomia %}selected="selected"{% endif %}>{{ value|safe }}</option>
+        {% endfor %}
+      </option>
+    </select>
+  </div>
+</div>
 <div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a ">
-  <div id="mapArea" class="chart" style="height: 100%; width: 100%;"><!-- TODO spinner visibility: hidden;" in all maps -->
+  <div id="mapArea" class="chart" style="height: 100%; width: 100%;">
+    <!-- TODO spinner visibility: hidden;" in all maps -->
   </div>
 </div>
 {% endblock wizardBody %}
@@ -124,6 +135,15 @@
   });
   window.addEventListener("load", () => { (parseInt(selMuni.value) < 0) ? fetchMapOfSP() : updateFormData(selMuni.id) });
   document.body.style.cursor = 'progress';
+
+  // window.addEventListener("load", () => {
+  //   if(selMuni.value === '' && selFito.value === '') {
+  //   fetchMapOfSP();
+  // }else if (selMuni.value !== '' && selFito.value !== '') {
+  //   fetchFitosForMuni();
+  //   console.log('muni:',selMuni.value,'fito:',selFito.value)
+  // }
+  // })
 </script>
 {% endblock %}
 
