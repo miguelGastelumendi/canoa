@@ -12,7 +12,7 @@ from flask_login import (
 
 from apps import db, login_manager
 from apps.authentication import blueprint
-from apps.authentication.forms import LoginForm, CreateAccountForm
+from apps.authentication.forms import LoginForm, CreateAccountForm, ChangePasswordForm
 from apps.authentication.models import Users
 
 from apps.authentication.util import verify_pass
@@ -55,6 +55,45 @@ def login():
 
     return redirect(url_for('home_blueprint.index'))
 
+@blueprint.route('/changepassword', methods=['GET', 'POST'])
+def changepassword():
+    changepassword_form = ChangePasswordForm(request.form)
+
+    if 'password' in request.form:
+      #read form data
+      password = request.form['password']
+      confirm_password = request.form['confirm_password']
+      if password == confirm_password:
+            login_form = LoginForm(request.form)
+            return render_template('accounts/login.html',
+                                     form=login_form)
+      else:
+          return render_template('accounts/changepassword.html',
+                                 msg='Senhas diferem. Por favor, redigite.',  # mgd Wrong user or password
+                                 form=changepassword_form)
+    '''
+
+    # Locate user
+    user = Users.query.filter_by(username=username).first()
+
+    # Check the password
+    if user and verify_pass(password, user.password):
+
+        login_user(user)
+        return redirect(url_for('authentication_blueprint.route_default'))
+
+    # Something (user or pass) is not ok
+    return render_template('accounts/login.html',
+                           msg= 'Usuário desconhecido ou senha incorreta',   #mgd Wrong user or password
+                           form=login_form)
+
+if not current_user.is_authenticated:
+    return render_template('accounts/login.html',
+                           form=login_form)
+
+'''
+    return render_template('accounts/changepassword.html',
+                           form=changepassword_form)
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():

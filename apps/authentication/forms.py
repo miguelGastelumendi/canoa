@@ -29,3 +29,13 @@ class CreateAccountForm(FlaskForm):
     password = PasswordField('Password',
                              id='pwd_create',
                              validators=[DataRequired()])
+
+class ChangePasswordForm(FlaskForm):
+    password = PasswordField('Nova senha',
+                             id='pwd_create',
+                             validators=[DataRequired()])
+    confirm_password = PasswordField('Confirme a nova senha',
+                             id='pwd_confirms',
+                             validators=[DataRequired()])
+
+
