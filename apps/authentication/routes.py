@@ -12,7 +12,7 @@ from flask_login import (
 
 from apps import db, login_manager
 from apps.authentication import blueprint
-from apps.authentication.forms import LoginForm, CreateAccountForm, ChangePasswordForm
+from apps.authentication.forms import LoginForm, CreateAccountForm, ChangePasswordForm, GetUserEmailForm
 from apps.authentication.models import Users
 
 from apps.authentication.util import verify_pass
@@ -94,6 +94,20 @@ if not current_user.is_authenticated:
 '''
     return render_template('accounts/changepassword.html',
                            form=changepassword_form)
+
+@blueprint.route('/get_user_email', methods=['GET', 'POST'])
+def get_user_email():
+    get_user_email_form = GetUserEmailForm(request.form)
+    if 'email' in request.form:
+        email = request.form['email']
+        # send email
+        return render_template('accounts/getuseremail.html',
+                                msg='Foi enviado um email para esse endereço com o link para atualização da sua senha',
+                                form=get_user_email_form)
+
+    else:
+        return render_template('accounts/getuseremail.html',
+                               form=get_user_email_form)
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():

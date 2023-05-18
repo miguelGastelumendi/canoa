@@ -38,4 +38,7 @@ class ChangePasswordForm(FlaskForm):
                              id='pwd_confirms',
                              validators=[DataRequired()])
 
-
+class GetUserEmailForm(FlaskForm):
+    user_email = PasswordField('Email para envio do link',
+                             id='user_email',
+                             validators=[DataRequired()])
