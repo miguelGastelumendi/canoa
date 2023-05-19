@@ -27,14 +27,10 @@
       tabindex="-1" data-bs-trigger="focus" data-bs-placement="right" data-bs-toggle="popover" data-bs-title="Ajuda"
       data-bs-content='{{ helpFitofisionomy }}'>?</button>
     <label for="fito_ecologica" class="labelLocation col-sm-2 col-form-label">{{ fitoFisionomySelect|safe }}</label>
-    <select id="fito_ecologica" class="col-sm-4 form-select " disabled="true" onchange="fitoChanged()"
-      style="width: 50%;">
-      <option disabled selected>- Selecione -</option>
-      <option value="-1">
-        {% for key, value in fito_municipios.items() %}
-        <option value="{{ key|safe }}" {% if key == idFitofisionomia %}selected="selected"{% endif %}>{{ value|safe }}</option>
-        {% endfor %}
-      </option>
+    <select id="fito_ecologica" class="col-sm-4 form-select" onchange="fitoChanged()" style="width: 50%;">
+      {% for key, value in fito_municipios.items() %}
+        <option value="{{ key|safe }}" {% if key == idFitofisionomia %}selected{% endif %}>{{ value|safe }}</option>
+      {% endfor %}
     </select>
   </div>
 </div>
@@ -55,7 +51,7 @@
   const _setCursor = (sTo) => document.body.style.cursor = sTo ? sTo : 'default';
 
   //-- Map arrived, show it
-  const _showMap = ( /** @type {Object} */ jsoData) => {
+  const _showMap = ( /** @type {Object} */ jsoData, selectedFito) => {
     if (!jsoData) { return; }
     const jsData = JSON.parse(jsoData.Map);
     Plotly.react(eleMap.id, jsData, {});
@@ -93,6 +89,7 @@
       locaChanged();
     }
     fetchFormData({ callerID: selMuni.id, idMunicipio: sMuniId }, _loadFitoOptions, 'Não foi possível obter os fito do Município.');
+    console.log(sMuniId)
   }
 
   //--
@@ -133,7 +130,15 @@
     mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-areas.html',
     help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
-  window.addEventListener("load", () => { (parseInt(selMuni.value) < 0) ? fetchMapOfSP() : updateFormData(selMuni.id) });
+  window.addEventListener("load", () => {
+    if (parseInt(selMuni.value) > 0) {
+    updateFormData(selMuni.id);
+    fetchFitosForMuni(selMuni.value)
+  } else {
+    fetchMapOfSP();
+  }
+     console.log('muni:',parseInt(selMuni.value),'fito:',selFito.value)
+    });
   document.body.style.cursor = 'progress';
 
   // window.addEventListener("load", () => {
