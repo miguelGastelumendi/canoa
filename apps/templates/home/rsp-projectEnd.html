@@ -47,7 +47,8 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
   const displayCashFlow = () => {
-    const graphs = {{cashFlowJSON | safe}};
+    var graphs = {{cashFlowJSON | safe}};
+    graphs.config = {'displayModeBar': false}
     Plotly.plot('chart',graphs,{});
   }
 
