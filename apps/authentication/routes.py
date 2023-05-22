@@ -98,11 +98,13 @@ if not current_user.is_authenticated:
 @blueprint.route('/get_user_email', methods=['GET', 'POST'])
 def get_user_email():
     get_user_email_form = GetUserEmailForm(request.form)
-    if 'email' in request.form:
-        email = request.form['email']
+    if 'user_email' in request.form:
+        email = request.form['user_email']
         # send email
         return render_template('accounts/getuseremail.html',
-                                msg='Foi enviado um email para esse endereço com o link para atualização da sua senha',
+                                msg='Foi enviado um email para esse endereço com o link para atualização da sua senha.<br>'
+                                    'Abra o email, clique no link e recadastre sua senha de acesso. Caso não veja esse email '
+                                    'na sua Caixa de Entrada, procure na Lixeira da sua conta.',
                                 form=get_user_email_form)
 
     else:
