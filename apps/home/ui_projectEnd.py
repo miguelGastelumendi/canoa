@@ -105,8 +105,7 @@ def cashFlowChart(idProjeto : int):
                              line={'color': 'orange'}))
     fig.add_trace(go.Scatter(x=df.ano, y=df.VALiquido, mode='lines+markers', name='VAcumulado',
                              line={'color': 'blue'}))
-    fig.update_layout(title = dict(text="Fluxo de Caixa",
-                                   y=0.9,
+    fig.update_layout(title = dict(y=0.9,
                                    x=0.5,
                                    xanchor='center',
                                    yanchor='top',
