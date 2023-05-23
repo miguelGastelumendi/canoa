@@ -1,4 +1,5 @@
 import requests
+import os
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started
 # curl --request POST \
 # --url https://api.sendgrid.com/v3/mail/send \
@@ -6,7 +7,7 @@ import requests
 # --header 'Content-Type: application/json' \
 # --data '{"personalizations":[{"to":[{"email":"john.doe@example.com","name":"John Doe"}],"subject":"Hello, World!"}],"content": [{"type": "text/plain", "value": "Heya!"}],"from":{"email":"sam.smith@example.com","name":"Sam Smith"},"reply_to":{"email":"sam.smith@example.com","name":"Sam Smith"}}'
 
-EMAIL_API_KEY = "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"
+EMAIL_API_KEY = os.environ['EMAIL_API_KEY']
 
 headers = {
     'Authorization': f'Bearer {EMAIL_API_KEY}',

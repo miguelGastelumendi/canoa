@@ -101,6 +101,7 @@ def get_user_email():
     if 'user_email' in request.form:
         email = request.form['user_email']
         # send email
+
         return render_template('accounts/getuseremail.html',
                                 msg='Foi enviado um email para esse endereço com o link para atualização da sua senha.<br>'
                                     'Abra o email, clique no link e recadastre sua senha de acesso. Caso não veja esse email '
