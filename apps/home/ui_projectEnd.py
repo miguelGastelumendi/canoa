@@ -105,17 +105,18 @@ def cashFlowChart(idProjeto : int):
                              line={'color': 'orange'}))
     fig.add_trace(go.Scatter(x=df.ano, y=df.VALiquido, mode='lines+markers', name='VAcumulado',
                              line={'color': 'blue'}))
-    fig.update_layout(title = dict(y=0.9,
-                                   x=0.5,
-                                   xanchor='center',
-                                   yanchor='top',
-                                   font={'size': 30}),
-                      legend=dict(
-                          font=dict(family="Courier", size=20, color="black"),
-                            orientation="h",
-                            yanchor="bottom",
-                            y=1.02,
-                            xanchor="right",
-                            x=1))
+    fig.update_layout(
+#        title = dict(y=0.9,
+#                     x=0.5,
+#                     xanchor='center',
+#                     yanchor='top',
+#                     font={'size': 30}),
+          legend=dict(
+              font=dict(family="Courier", size=20, color="black"),
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1))
     graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
     return graphJSON
