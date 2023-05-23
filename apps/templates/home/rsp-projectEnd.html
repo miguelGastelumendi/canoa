@@ -37,19 +37,22 @@
     </div>
   </div>
 </div>
-
-<div class="chart-container">
-  <div style="min-height: 280px; margin-top: 1em; border: 1px solid #29874a">
-    <div id="chart" class="chart"></div>
+<div style="margin-top: 2em;">
+  <div class="labelFluxo">Fluxo de caixa</div>
+  <div class="chart-container">
+    <div style="min-height: 280px; border: 1px solid #29874a">
+      <div id="chart" class="chart"></div>
+    </div>
   </div>
 </div>
 {% endblock wizardBody %} {% block wizardConfig %}
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
   const displayCashFlow = () => {
-    var graphs = {{cashFlowJSON | safe}};
-    graphs.config = {'displayModeBar': false}
-    Plotly.plot('chart',graphs,{});
+    var graphs = {{ cashFlowJSON | safe
+  }};
+  graphs.config = { 'displayModeBar': false }
+  Plotly.plot('chart', graphs, {});
   }
 
   wzdControl.initPage({

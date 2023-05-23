@@ -40,6 +40,13 @@ label {
 color: #8a8d91;
 }
 
+.labelFluxo{
+  color: white;
+  font-size: 25px;
+  font-weight: bold;
+  background-color: #86bc56;
+}
+
 .divRegister {
   margin-top: 5%;
   display: flex;
