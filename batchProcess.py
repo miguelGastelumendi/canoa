@@ -22,7 +22,7 @@ def process():
 
             calculateFinancials(idProjeto)
             XLSXHelper.GenerateXLSX(idProjeto)
-            dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
+            #dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
     else:
         print("Nenhum projeto a processar.")
 

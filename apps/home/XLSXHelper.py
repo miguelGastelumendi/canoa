@@ -6,12 +6,16 @@ import re
 import apps.home.XLSXHelperSQL as XLSXHelperSQL
 from copy import copy
 from string import ascii_uppercase
+from .emailstuff import sendEmail
 
 class XLSXHelper:
     def __init__(self, templateFileName: str, idProjeto: int, debug: bool = False):
         self.xlsx = openpyxl.load_workbook(templateFileName)
         self.idProjeto = idProjeto
         self.debug = debug
+        self.projectData = self.getProjectData()
+        self.XLSXfname = f"doc/ResultadosReflorestaSP_{self.projectData['username'].replace(' ', '_')}_" \
+                f"{self.projectData['descProjeto'].replace(' ', '_')}.xlsx"
 
     colName = lambda self, name: ''.join([x for x in name if x in ascii_uppercase])
 
@@ -21,7 +25,7 @@ class XLSXHelper:
         v = [ord(c) - 64 for c in cName if c >= 'A' and c <= 'Z']
         return v[0] if len(v) == 1 else v[0] * 26 + v[1], int(cName[re.search(r"\d", cName).start():]) + 1 # first line is title
 
-    def getUserNameDescProjeto(self):
+    def getProjectData(self):
         return dbquery.getDictFieldNamesValuesResultset(
             XLSXHelperSQL.SQLs['userNameDescProjeto'].format(self.idProjeto))
 
@@ -96,13 +100,13 @@ class XLSXHelper:
         self.fillDistribution()
 
     def save(self):
-        data = self.getUserNameDescProjeto()
-        fname = f"doc/ResultadosReflorestaSP_{data['username'].replace(' ', '_')}_{data['descProjeto'].replace(' ', '_')}.xlsx"
-        self.xlsx.save(fname)
+        self.xlsx.save(self.XLSXfname)
 
+    def sendEMail(self):
+        sendEmail(self.projectData['email'], self.XLSXfname)
 
 def GenerateXLSX(idProjeto: int):
     xlsHelper = XLSXHelper('doc/TemplatePlanilhaComProjetoDoUsuario.xlsx', idProjeto, True)
     xlsHelper.execute()
     xlsHelper.save()
-    pass
+    xlsHelper.sendEMail()

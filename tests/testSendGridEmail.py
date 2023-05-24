@@ -5,11 +5,11 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 message = Mail(
-    from_email='contato@atriumforest.com.br',
+    from_email='refloresta_sp@mail.sigam.sp.gov.br',
     to_emails='assismauro@hotmail.com',
     subject='Sending with Twilio SendGrid is Fun',
     html_content='<strong>and easy to do anywhere, even with Python</strong>')
 
-sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+sg = SendGridAPIClient(os.environ.get('EMAIL_API_KEY'))
 response = sg.send(message)
 print(response.status_code, response.body, response.headers)

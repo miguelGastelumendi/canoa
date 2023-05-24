@@ -2,10 +2,12 @@ from apps.home import dbquery as dbquery
 
 def getCombinations(idProjeto):
     df = dbquery.getDataframeResultset(f"""
-select ecp.*,case 
-		       when pcf.idFluxoCaixa is not null then 1
-		       else 0
-		     end as selected from v_EscolhaCombinacaoPorFaixa ecp
+select ecp.*,
+case 
+   when pcf.idFluxoCaixa is not null then 1
+   else 0
+end as selected 
+from v_EscolhaCombinacaoPorFaixa ecp
 left join ProjetoCombFaixa pcf
 on ecp.idFluxoCaixa = pcf.idFluxoCaixa 
 where ecp.idProjeto = {idProjeto}

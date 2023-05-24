@@ -1,5 +1,5 @@
 SQLs = {
-    'userNameDescProjeto': """select u.username, descProjeto 
+    'userNameDescProjeto': """select u.username, descProjeto, u.email 
 from Projeto p 
 inner join Users u 
 on p.idUser = u.id 

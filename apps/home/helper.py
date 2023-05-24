@@ -37,9 +37,15 @@ def getFormText(form: str):
                                     f"inner join SuporteUsuarioGrupo b "
                                     f"on a.idSuporteUsuarioGrupo = b.id where b.Nome = '{form}' or b.Nome = 'wizard'"))
 
+def getTexts(group: str):
+    return dbquery.getDictResultset(f"select Tag, Texto from SuporteUsuarioElemento a "
+                             f"inner join SuporteUsuarioGrupo b "
+                             f"on a.idSuporteUsuarioGrupo = b.id where b.Nome = '{group}'")
+
 def getTipText(form: str):
     return dbquery.getJSONStrResultset(
-        f"select Texto as text, 'Dica' as title from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
+        f"select Texto as text, 'Dica' as title from SuporteUsuarioElemento a "
+        f"inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
         f"where b.Nome = '{form}' and Tag = 'tip'").replace('\r','').replace('\n','')
 
 def getErrorMessage(tag: str):
