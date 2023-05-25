@@ -260,6 +260,10 @@ def route_template(template):
                 # implementar
                 return render_template("home/" + template)
 
+            elif page2Send == 'rsp-wizardEnd.html':
+                # implementar
+                return render_template("home/" + template)
+
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
     except Exception as e:
