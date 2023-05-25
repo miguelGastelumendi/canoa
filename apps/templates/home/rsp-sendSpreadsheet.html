@@ -32,13 +32,11 @@
                                 </span>
                             </div>
                             <form method="post" action="" class="mt-2">
-                                {{ form.hidden_tag() }}
                                 <div class="form-group mb-4">
                                     <label class="normalLabel labelBrown" for="user_email">Informe o seu E-mail</label>
                                     <button type="button" class="btn btnHelper" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center;" tabindex="-1" data-bs-placement="right" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="texto de ajuda">?</button>
                                     <div class="input-group">
                                         <span class="input-group-text" id="basic-addon1"><span class="fas fa-user"></span></span>
-                                        {{ form.user_email(class="form-control", id="user_email") }}
                                     </div>
                                 </div>
                                 <!-- End of Form -->
