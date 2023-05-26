@@ -1,0 +1,19 @@
+{% extends "layouts/wizard.tmpl" %} {% block wizardDescription %}Resumo do Projeto{% endblock %} {% block wizardBody %}
+<div class="containerTable">
+  <div class="rowTable">
+    <div class="col">
+      <p class="labelTable">Projeto finalizado</p>
+      <p>Texto para o usuário</p>
+    </div>
+  </div>
+</div>
+
+{% endblock wizardBody %} {% block wizardConfig %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+  wzdControl.initPage({
+    mode: wzdControl.mode.CUSTOM, nextPage: 'rsp-sendSpreadsheet.html',
+    help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
+  });
+</script>
+{% endblock %} {# eof #}

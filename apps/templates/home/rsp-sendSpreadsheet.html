@@ -1,0 +1,60 @@
+
+{% extends "layouts/wizard.tmpl" %}
+
+{% block content %}
+{% block wizardBody %}
+<section class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark img-fluid">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+                <div class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 w-100 fmxw-500">
+                    <div class="text-center text-md-center mt-md-0">
+                        <img src="../../static/assets/img/logo-login.png" width="128px" height="128px" class="img-fluid">
+                        <!-- 2022.12.12 voltar com msg que foi 'perdida' nas melhorias -->
+                        <span class="font-weight-normal">
+                            {% if msg %}
+                                <br />
+                                <div class="alert alert-danger">
+                                {{ msg | safe }}
+                                </div>
+                            {% else %}
+                                <!-- Add your credentials -->
+                            {% endif %}
+                        </span>
+                    </div>
+                    <form method="post" action="" class="mt-2">
+                        <div class="form-group mb-4">
+                            <label class="normalLabel labelBrown" for="user_email">Informe o seu E-mail</label>
+                            <button type="button" class="btn btnHelper" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center;" tabindex="-1" data-bs-placement="right" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="texto de ajuda">?</button>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1"><span class="fas fa-user"></span></span>
+                                <input class="form-control" id="user_email" name="user_email" required="" type="text" value="{{ user_email }}">
+                            </div>
+                        </div>
+                        <!-- End of Form -->
+                        <div class="d-grid">
+                            <button type="submit" name="login" class="btn btnLogin" onclick="wzdControl.gotoNextPage()">Enviar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock wizardBody %}
+{% endblock content %}
+
+{% block wizardConfig %}
+<script>
+
+  wzdControl.initPage({
+    mode: wzdControl.mode.CUSTOM,
+    nextPage: 'rsp-wizardEnd.html',
+    help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
+  });
+
+</script>
+{% endblock %}
+
+{# eof #}

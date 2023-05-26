@@ -197,6 +197,7 @@ def route_template(template):
                 return render_template("home/" + template,
                                        options=distributionOptions,
                                        **helper.getFormText('rsp-plantDistribution'))
+
             elif page2Send == 'rsp-relief.html':
                 idModeloPlantio = request.args.get('id')
                 dbquery.executeSQL(f"update Projeto set idModeloPlantio = {idModeloPlantio} "
@@ -255,6 +256,20 @@ def route_template(template):
                                        cashFlowJSON=cashFlowJSON,
                                        **projectData,
                                        **helper.getFormText('rsp-projectEnd'))
+
+            elif page2Send == 'rsp-sendSpreadsheet.html':
+                user_email = dbquery.getValues("select email from Users u "
+                                               "inner join Projeto p "
+                                               "on p.idUser = u.id "
+                                               f"where p.id = {session['_projeto_id']}")
+                return render_template("home/" + template,
+                                       user_email = user_email,
+                                       **helper.getFormText('rsp-sendSpreadsheet'))
+
+            elif page2Send == 'rsp-wizardEnd.html':
+                # implementar envio do email
+                return render_template("home/" + template,
+                                       **helper.getFormText('rsp-wizardEnd'))
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
