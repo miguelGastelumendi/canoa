@@ -225,7 +225,7 @@ def route_template(template):
                                            "case "
                                                 "when mn.id = p.idMecanizacaoNivel then 1 "
                                                 "else 0 "
-                                            "end as selected " 
+                                            "end as selected "
                                             "from MecanizacaoNivel mn "
                                             "left join Projeto p "
                                             "on 1=1 "
