@@ -100,9 +100,11 @@ class XLSXHelper:
         self.fillDistribution()
 
     def save(self):
+        print(f'Salvando {self.XLSXfname}...')
         self.xlsx.save(self.XLSXfname)
 
     def sendEMail(self):
+        print(f"Enviando a planilha para {self.projectData['eMailEnvioResultado']}...")
         sendEmail(self.projectData['eMailEnvioResultado'],'emailSendSpreadsheet',
                   {'descProjeto': self.projectData['descProjeto']},
                   self.XLSXfname)
