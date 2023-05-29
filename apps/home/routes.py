@@ -17,7 +17,7 @@ from apps.home import helper
 from flask_login import current_user
 import re
 import json
-
+import secrets
 
 @blueprint.route('/index')
 @login_required
@@ -132,12 +132,13 @@ def route_template(template):
 
             elif page2Send == 'rsp-locationCountyFitofisionomy.html':
                 if session['_operation'] == 'changingProject':
-                    idMunicipio, idFitofisionomia = dbquery.getValues(
+                    idMunicipioidFito = dbquery.getValues(
                         f"select coalesce(idMunicipio, -1) as idMunicipio, "
                         f"coalesce(idFitofisionomia, -1) as idFitoFisionomia from Projeto p "
                         f"inner join MunicipioFito mf "
                         f"on p.idMunicipioFito = mf.id "
                         f"where p.id = {session['_projeto_id']}")
+                    idMunicipio, idFitofisionomia = (-1, -1) if idMunicipioidFito is None else idMunicipioidFito
                 else:
                     idMunicipio, idFitofisionomia = (-1, -1)
 
@@ -236,6 +237,7 @@ def route_template(template):
             elif page2Send == 'rsp-combinations.html':
                 # return render_template("home/rsp-relief.html", segment="rsp-relief.html")
                 idMecanizacaoNivel = request.args.get('id')
+
                 dbquery.executeSQL(f"update Projeto set idMecanizacaoNivel = {idMecanizacaoNivel} "
                                    f"where id = {session['_projeto_id']}")
 
@@ -267,7 +269,10 @@ def route_template(template):
                                        **helper.getFormText('rsp-sendSpreadsheet'))
 
             elif page2Send == 'rsp-wizardEnd.html':
-                # implementar envio do email
+                to = 'assismauro@hotmail.com'
+                dbquery.executeSQL(f"UPDATE Projeto set eMailEnvioResultado = '{to}' "
+                                   f"where id = {session['_projeto_id']}")
+                dbquery.executeSQL(f"INSERT INTO ListaAProcessar(idProjeto) values ({session['_projeto_id']})")
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-wizardEnd'))
 

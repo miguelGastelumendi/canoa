@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import time
 import apps.home.dbquery as dbquery
 from apps.home.updateProjectDataSQL import sqls
 from apps.config import Config
@@ -13,18 +14,20 @@ def calculateFinancials(idProjeto: int):
         print(f"{key} ({result.rowcount})")
 
 def process():
-    toProcess = dbquery.getDataframeResultset("select * from listaAProcessar order by id")
-    if len(toProcess) > 0:
-        for _, row in toProcess.iterrows():
-            idProjeto = row.idProjeto
+    while True:
+        toProcess = dbquery.getDataframeResultset("select * from listaAProcessar order by id")
+        if len(toProcess) > 0:
+            for _, row in toProcess.iterrows():
+                idProjeto = row.idProjeto
 
-            idProjeto = 390
+                #idProjeto = 437
 
-            calculateFinancials(idProjeto)
-            XLSXHelper.GenerateXLSX(idProjeto)
-            #dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
-    else:
-        print("Nenhum projeto a processar.")
+                calculateFinancials(idProjeto)
+                XLSXHelper.GenerateXLSX(idProjeto)
+                dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
+        else:
+            print("Nenhum projeto a processar.")
+        time.sleep(60)
 
 if __name__ == "__main__":
     process()

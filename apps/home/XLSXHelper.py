@@ -103,7 +103,9 @@ class XLSXHelper:
         self.xlsx.save(self.XLSXfname)
 
     def sendEMail(self):
-        sendEmail(self.projectData['email'], self.XLSXfname)
+        sendEmail(self.projectData['eMailEnvioResultado'],'emailSendSpreadsheet',
+                  {'descProjeto': self.projectData['descProjeto']},
+                  self.XLSXfname)
 
 def GenerateXLSX(idProjeto: int):
     xlsHelper = XLSXHelper('doc/TemplatePlanilhaComProjetoDoUsuario.xlsx', idProjeto, True)
