@@ -167,10 +167,10 @@ const wzdControl = {
       //@ts-ignore cast error: but as 'itm.selected' is not bool => try as string
       if (!((typeof itm.selected == typeof true) ? itm.selected : (parseInt('0' + (/** @type {string} */(itm.selected) || '')) ? true : false))) {
         itm.selected = false;
-      } else if (aSelected.indexOf(itm.bodyId) < 0) {
+      } else if (wzdControl.multiSelect ? /* one by group */(aSelected.indexOf(itm.bodyId) < 0) : /* one per page */ (aSelected.length == 0)) {
         itm.selected = true;
         aSelected.push(itm.bodyId);
-      } else /* just one item can be selected */ {
+      } else /* just one item can be selected (per group or page)*/ {
         itm.selected = false;
       }
     });
