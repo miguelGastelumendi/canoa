@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import time
 import apps.home.dbquery as dbquery
 from apps.home.updateProjectDataSQL import sqls
 from apps.config import Config
@@ -18,11 +19,12 @@ def process():
         for _, row in toProcess.iterrows():
             idProjeto = row.idProjeto
 
-            idProjeto = 390
+            #idProjeto = 437
 
             calculateFinancials(idProjeto)
             XLSXHelper.GenerateXLSX(idProjeto)
-            #dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
+            dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
+            time.sleep(60)
     else:
         print("Nenhum projeto a processar.")
 

@@ -1,0 +1,19 @@
+Inserts em SuporteUsuarioGrupo,SuporteUsuarioElemento
+18	emailSendSpreadsheet	10/10 - Textos do email de envio da planilha resultado
+19	emailChangePassword	Email para troca de senha
+20...
+
+18	Subject	Resultados do projeto {nomeProjeto} criado por vc no ReflorestaSP
+18	Text	Em anexo, planilha contendo informações detalhadas do projeto.
+19	Subject	Email para troca de senha de acesso ao ReflorestaSP.
+19	Text	"Clique no link abaixo para poder digitar uma nova senha de acesso ao ReflorestaSP.
+
+{url}"
+---------------------------------------------------------------------------
+20...
+
+ALTER TABLE RURALLEGAL.dbo.Projeto ADD eMailEnvioResultado varchar(100) NULL;
+
+ALTER TABLE RURALLEGAL.dbo.Users ADD recoverEMailToken varchar(100) NULL;
+ALTER TABLE RURALLEGAL.dbo.Users ADD recoverEmailTimeStamp datetime NULL;
+

@@ -1,5 +1,5 @@
 SQLs = {
-    'userNameDescProjeto': """select u.username, descProjeto, u.email 
+    'userNameDescProjeto': """select u.username, descProjeto, p.eMailEnvioResultado 
 from Projeto p 
 inner join Users u 
 on p.idUser = u.id 
@@ -147,5 +147,7 @@ where p.id = 314
 order by mf.OrdemFaixa 
  """,
     'TxPoup': """select valorParametro as TxPoup from Parametro
-where nomeParametro = 'TxPoup'"""
+where nomeParametro = 'TxPoup'""",
+    'sendEMailData': "select eMailEnvioResultado, descProjeto "
+                     "from Projeto p where id = {0}"
 }

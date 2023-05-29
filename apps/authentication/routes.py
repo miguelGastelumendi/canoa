@@ -2,6 +2,7 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
+import datetime
 
 from flask import render_template, redirect, request, url_for
 from flask_login import (
@@ -9,14 +10,14 @@ from flask_login import (
     login_user,
     logout_user
 )
-
 from apps import db, login_manager
 from apps.authentication import blueprint
 from apps.authentication.forms import LoginForm, CreateAccountForm, ChangePasswordForm, GetUserEmailForm
 from apps.authentication.models import Users
-
-from apps.authentication.util import verify_pass
-
+from apps.authentication.util import verify_pass, hash_pass
+from apps.home.emailstuff import sendEmail
+from apps.home.dbquery import executeSQL, getValues
+import secrets
 
 @blueprint.route('/')
 def route_default():
@@ -52,46 +53,35 @@ def login():
         return render_template('accounts/login.html',
                                form=login_form)
 
-
     return redirect(url_for('home_blueprint.index'))
 
-@blueprint.route('/changepassword', methods=['GET', 'POST'])
-def changepassword():
+@blueprint.route('/changepassword/<token>', methods=['GET','POST'])
+def changepassword(token):
     changepassword_form = ChangePasswordForm(request.form)
-
     if 'password' in request.form:
       #read form data
       password = request.form['password']
       confirm_password = request.form['confirm_password']
       if password == confirm_password:
             login_form = LoginForm(request.form)
-            return render_template('accounts/login.html',
-                                     form=login_form)
+            user = Users.query.filter_by(recoverEMailToken=token).first()
+            user.password = hash_pass(password)
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('authentication_blueprint.login'))
       else:
           return render_template('accounts/changepassword.html',
                                  msg='Senhas diferem. Por favor, redigite.',  # mgd Wrong user or password
                                  form=changepassword_form)
-    '''
-
-    # Locate user
-    user = Users.query.filter_by(username=username).first()
-
-    # Check the password
-    if user and verify_pass(password, user.password):
-
-        login_user(user)
-        return redirect(url_for('authentication_blueprint.route_default'))
-
-    # Something (user or pass) is not ok
-    return render_template('accounts/login.html',
-                           msg= 'Usuário desconhecido ou senha incorreta',   #mgd Wrong user or password
-                           form=login_form)
-
-if not current_user.is_authenticated:
-    return render_template('accounts/login.html',
-                           form=login_form)
-
-'''
+    else:
+        recoverEmailTimeStamp = getValues("select recoverEmailTimeStamp from Users "
+                                          f"where recoverEMailToken = '{token}'")
+        if (datetime.datetime.now() - recoverEmailTimeStamp).days > 1:
+            get_user_email_form = GetUserEmailForm(request.form)
+            return render_template('accounts/getuseremail.html',
+                                   msg='O link de recuperação de senhas está sendo usado fora do prazo.<br>'
+                                       'Por favor, forneça o seu email novamente para receber o link atualizado.',
+                                   form=get_user_email_form)
     return render_template('accounts/changepassword.html',
                            form=changepassword_form)
 
@@ -99,13 +89,23 @@ if not current_user.is_authenticated:
 def get_user_email():
     get_user_email_form = GetUserEmailForm(request.form)
     if 'user_email' in request.form:
-        email = request.form['user_email']
-        # send email
+        toEMail = request.form['user_email']
 
+        if getValues(f"select count(1) from Users where email = '{toEMail}'") != 1:
+            return render_template('accounts/getuseremail.html',
+                                   msg='E-Mail não cadastrado.',
+                                   form=get_user_email_form)
+        token = secrets.token_urlsafe()
+        url = f"{url_for('authentication_blueprint.changepassword',token=token)}"
+        executeSQL(f"update Users set recoverEmailToken = '{token}',"
+                   f" recoverEmailTimeStamp = current_timestamp "
+                   f"where email = '{toEMail}'")
+        sendEmail(toEMail, 'emailChangePassword', {'url': url})
         return render_template('accounts/getuseremail.html',
                                 msg='Foi enviado um email para esse endereço com o link para atualização da sua senha.<br>'
                                     'Abra o email, clique no link e recadastre sua senha de acesso. Caso não veja esse email '
-                                    'na sua Caixa de Entrada, procure na Lixeira da sua conta.',
+                                    'na sua Caixa de Entrada, procure na Lixeira da sua conta.<br>'
+                                    'Esse link tem a validade de 24h a partir de agora.',
                                 form=get_user_email_form)
 
     else:
