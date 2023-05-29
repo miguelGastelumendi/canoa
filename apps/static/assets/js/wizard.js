@@ -58,8 +58,8 @@
 
 const wzdControl = {
   multiSelect: false,
-  selectedItemIx: -1,
-  nextPageHref: "", // Wizard page has ony one target
+  selectedItemIx: -1, // Selected item index, when multiSelect is false
+  nextPageHref: "",   // Wizard page has ony one target
   /** @type {number} */
   displayMode: 0,
   /** @type {Array<groupItem>}*/
@@ -68,15 +68,14 @@ const wzdControl = {
   jsoData: [],
   /** @type {fOnNext?} */
   fOnNext: null,
-  helpCallback: "", // fetch server help address
+  helpCallback: "", // Fetch server help address
 
-  ge: (/** @type {string} */ sId) =>
-    /** @type{HTMLElement} */(document.getElementById(sId)),
+  ge: (/** @type {string} */ sId) => /** @type{HTMLElement} */(document.getElementById(sId)),
   getBtn: (/** @type {number} */ ix) => wzdControl.ge(wzdControl.getBtnId(ix)),
   getBtnId: (/** @type {number} */ ix) => `wzdBtn${ix}`,
   getBtnHint: (/** @type {string} */ sHint) => {
     return !sHint
-      ? ""
+      ? ""  // TODO: colocar no CSS
       : `<button type="button" class="btn btnHelper" style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center;" tabindex="-1" data-bs-placement="left" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-title="Ajuda" data-bs-content="${sHint}">?</button>`;
   },
   setBody: (/** @type {string} */ sId, /** @type {string} */ sBody) => (wzdControl.ge(sId).innerHTML = "" + sBody),
@@ -96,8 +95,7 @@ const wzdControl = {
       ? wzdControl.groups.filter(grp => grp.selectedItemIx >= 0).length
       : wzdControl.selectedItemIx < 0 ? 0 : 1,
 
-  getTitle: sDefault =>
-    sDefault ? sDefault : wzdControl.ge("wzdDescription").innerText,
+  getTitle: sDefault => sDefault ? sDefault : wzdControl.ge("wzdDescription").innerText,
 
   getGroupItemByIx: (/** @type {number} */ ix) => {
     const itm = wzdControl.jsoData[ix];
