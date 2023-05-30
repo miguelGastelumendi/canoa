@@ -32,7 +32,7 @@ endblock %}
               {{ form.hidden_tag() }}
 
               <div class="form-group mb-4">
-                <label class="normalLabel labelBrown" for="email">Nome de usuário</label>
+                <label class="normalLabel labelBrown" for="email">{{ userName }}</label>
                 <div class="input-group">
                   <span class="input-group-text" id="basic-addon1"
                     ><span class="fas fa-user"></span
@@ -42,7 +42,7 @@ endblock %}
               </div>
               <!-- Form -->
               <div class="form-group mb-4">
-                <label class="normalLabel labelBrown" for="email">E-mail</label>
+                <label class="normalLabel labelBrown" for="email">{{ eMail }}</label>
                 <div class="input-group">
                   <span class="input-group-text" id="basic-addon3"
                     ><span class="fas fa-envelope"></span
@@ -54,7 +54,7 @@ endblock %}
               <div class="form-group">
                 <!-- Form -->
                 <div class="form-group mb-4">
-                  <label class="normalLabel labelBrown" for="password">Senha</label>
+                  <label class="normalLabel labelBrown" for="password">{{ password }}</label>
                   <div class="input-group">
                     <span class="input-group-text" id="basic-addon4"
                       ><span class="fas fa-unlock-alt"></span
@@ -100,7 +100,7 @@ endblock %}
                   class="btn btnRegister"
                   disabled
                 >
-                  Registrar-se
+                    {{ toRegister }}
                 </button>
               </div>
             </form>
@@ -111,7 +111,7 @@ endblock %}
               <a
                 href="{{ url_for('authentication_blueprint.login') }}"
                 class="btn btnRegister"
-                >Ir para Login</a
+                >{{ gotoLogin }}</a
               >
             </p>
 
