@@ -13759,7 +13759,9 @@ textarea.form-control-lg {
 .section-image {
   background-repeat: no-repeat;
   background-position: top center;
-  background-size: cover; }
+  background-size: cover; 
+  background-image: url(../img/pages/mataAtlantica.jpeg);
+  }
 
 /**
  * = Floating animations
