@@ -1,3 +1,4 @@
+# pylint: disable=E1101
 import base64
 import os
 from sendgrid import (SendGridAPIClient, Mail, Attachment, FileContent,
@@ -12,7 +13,7 @@ from apps.home.helper import getTexts as getTexts
 # --data '{"personalizations":[{"to":[{"email":"john.doe@example.com","name":"John Doe"}],"subject":"Hello, World!"}],"content": [{"type": "text/plain", "value": "Heya!"}],"from":{"email":"sam.smith@example.com","name":"Sam Smith"},"reply_to":{"email":"sam.smith@example.com","name":"Sam Smith"}}'
 
 # https://stackoverflow.com/questions/40656019/python-sendgrid-send-email-with-pdf-attachment-file
-EMAIL_API_KEY = os.environ['EMAIL_API_KEY']
+
 
 #fromEmail = 'refloresta_sp@mail.sigam.sp.gov.br'
 fromEmail = 'assismauro@hotmail.com'

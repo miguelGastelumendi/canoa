@@ -37,7 +37,7 @@
 
                                 <!-- Form Input User Name -->
                                 <div class="form-group mb-4">
-                                    <label class="normalLabel labelBrown" for="username_login">Usuário</label>  <!-- mgd fix for with input id -->
+                                    <label class="normalLabel labelBrown" for="username_login">{{  userLabel }}</label>  <!-- mgd fix for with input id -->
                                     <div class="input-group">
                                         <span class="input-group-text" id="basic-addon1"><span class="fas fa-user"></span></span>
                                         {{ form.username(class="form-control", id="user_email") }}
@@ -47,7 +47,7 @@
                                 <div class="form-group">
                                     <!-- Form Input Password -->
                                     <div class="form-group mb-4">
-                                        <label class="normalLabel labelBrown" for="pwd_login">Senha</label>    <!-- mgd fix for with input id -->
+                                        <label class="normalLabel labelBrown" for="pwd_login">{{ passwordLabel }}</label>    <!-- mgd fix for with input id -->
                                         <div class="input-group">
                                             <span class="input-group-text" id="basic-addon2"><span class="fas fa-unlock-alt"></span></span>
                                             {{ form.password(class="form-control", type="password", id="pwd_login") }}
@@ -58,23 +58,23 @@
                                         <div>
                                             <input class="" type="checkbox" value="" id="remember">
                                             <label class="normalLabel labelBrown" class="form-check-label mb-0" for="remember">
-                                              Lembrar meus dados
+                                                {{ rememberData }}
                                             </label>
                                         </div>
                                             <span>
                                                 <a href="{{ url_for('authentication_blueprint.get_user_email') }}" class="labelBrown">
-                                                    Esqueci minha senha</a>
+                                                    {{ forgotPassword }}</a>
                                             </span>
                                     </div>
                                     <div class="divRememberLogin" style="margin-top: 30px;">
                                         <span>
                                             <a href="https://www.uol.com.br/" class="labelBrown" target="_blank">
-                                                Disclaimer
+                                                {{ disclaimer }}
                                             </a>
                                         </span>
                                         <span>
                                             <a href="https://www.uol.com.br/" class="labelBrown" target="_blank">
-                                                Termos de uso
+                                                {{ termsOfUse }}
                                             </a>
                                         </span>
                                     </div>
@@ -83,9 +83,9 @@
                                 <!-- <input class="" type="text" value="" id="latlon" pattern="/-(19|2[0-5])(\.[0-9]{1,6})/" onblur=""> -->
 
                                 <div class="d-grid">
-                                    <button type="submit" name="login" class="btn btnLogin">Entrar</button>
+                                    <button type="submit" name="login" class="btn btnLogin">{{ enter }}</button>
                                 </div>
-                                <div class="divRegister"><a href="{{ url_for('authentication_blueprint.register') }}" class="labelBrown">Fazer Cadastro</a></div>
+                                <div class="divRegister"><a href="{{ url_for('authentication_blueprint.register') }}" class="labelBrown">{{ doRegister }}</a></div>
                             </form>
                         </div>
                     </div>

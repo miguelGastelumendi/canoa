@@ -50,7 +50,7 @@
 
   wzdControl.initPage({
     mode: wzdControl.mode.CUSTOM,
-    nextPage: 'rsp-wizardEnd.html',
+    nextPage: 'rsp-wizardEnd.html?email='+wzdControl.ge("user_email").value,
     help: `callback/help?id=${location.pathname.substring(location.pathname.lastIndexOf("/") + 1).replace('.html', '')}`
   });
 

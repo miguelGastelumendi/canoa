@@ -3,6 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 import datetime
+import requests
 
 from flask import render_template, redirect, request, url_for
 from flask_login import (
@@ -18,6 +19,7 @@ from apps.authentication.util import verify_pass, hash_pass
 from apps.home.emailstuff import sendEmail
 from apps.home.dbquery import executeSQL, getValues
 import secrets
+from apps.home.helper import getTexts, getErrorMessage
 
 @blueprint.route('/')
 def route_default():
@@ -29,6 +31,7 @@ def route_default():
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm(request.form)
+    texts = getTexts('login')
     if 'login' in request.form:
 
         # read form data
@@ -45,75 +48,82 @@ def login():
             return redirect(url_for('authentication_blueprint.route_default'))
 
         # Something (user or pass) is not ok
+        texts['msg'] = getErrorMessage('userOrPwdIsWrong')
         return render_template('accounts/login.html',
-                               msg= 'Usuário desconhecido ou senha incorreta',   #mgd Wrong user or password
-                               form=login_form)
+                               form=login_form,
+                               **texts)
 
     if not current_user.is_authenticated:
         return render_template('accounts/login.html',
-                               form=login_form)
+                               form=login_form,
+                               **texts
+                               )
 
     return redirect(url_for('home_blueprint.index'))
 
 @blueprint.route('/changepassword/<token>', methods=['GET','POST'])
 def changepassword(token):
+    texts = getTexts('changepassword')
     changepassword_form = ChangePasswordForm(request.form)
     if 'password' in request.form:
       #read form data
       password = request.form['password']
       confirm_password = request.form['confirm_password']
       if password == confirm_password:
-            login_form = LoginForm(request.form)
             user = Users.query.filter_by(recoverEMailToken=token).first()
             user.password = hash_pass(password)
             db.session.add(user)
             db.session.commit()
             return redirect(url_for('authentication_blueprint.login'))
       else:
+          texts['msg'] = getErrorMessage('passwordsAreDifferent')
           return render_template('accounts/changepassword.html',
-                                 msg='Senhas diferem. Por favor, redigite.',  # mgd Wrong user or password
-                                 form=changepassword_form)
+                                 form=changepassword_form,
+                                 **texts)
     else:
         recoverEmailTimeStamp = getValues("select recoverEmailTimeStamp from Users "
                                           f"where recoverEMailToken = '{token}'")
         if (datetime.datetime.now() - recoverEmailTimeStamp).days > 1:
             get_user_email_form = GetUserEmailForm(request.form)
+            texts['msg'] = getErrorMessage('passwordsAreDifferent')
             return render_template('accounts/getuseremail.html',
-                                   msg='O link de recuperação de senhas está sendo usado fora do prazo.<br>'
-                                       'Por favor, forneça o seu email novamente para receber o link atualizado.',
-                                   form=get_user_email_form)
+                                   form=get_user_email_form,
+                                   **texts)
     return render_template('accounts/changepassword.html',
-                           form=changepassword_form)
+                           form=changepassword_form,
+                           **texts)
 
 @blueprint.route('/get_user_email', methods=['GET', 'POST'])
 def get_user_email():
+    texts = getTexts('getuseremail')
     get_user_email_form = GetUserEmailForm(request.form)
     if 'user_email' in request.form:
         toEMail = request.form['user_email']
 
         if getValues(f"select count(1) from Users where email = '{toEMail}'") != 1:
+            texts['msg'] = getErrorMessage('emailNotRegistered')
             return render_template('accounts/getuseremail.html',
-                                   msg='E-Mail não cadastrado.',
-                                   form=get_user_email_form)
+                                   form=get_user_email_form,
+                                   **texts)
         token = secrets.token_urlsafe()
-        url = f"{url_for('authentication_blueprint.changepassword',token=token)}"
+        ip = requests.get('https://checkip.amazonaws.com').text.strip()
+        url = f"http://{ip}:50051{url_for('authentication_blueprint.changepassword',token=token)}"
+        sendEmail(toEMail, 'emailChangePassword', {'url': url})
         executeSQL(f"update Users set recoverEmailToken = '{token}',"
                    f" recoverEmailTimeStamp = current_timestamp "
                    f"where email = '{toEMail}'")
-        sendEmail(toEMail, 'emailChangePassword', {'url': url})
+        texts['msg'] = getErrorMessage('emailSent')
         return render_template('accounts/getuseremail.html',
-                                msg='Foi enviado um email para esse endereço com o link para atualização da sua senha.<br>'
-                                    'Abra o email, clique no link e recadastre sua senha de acesso. Caso não veja esse email '
-                                    'na sua Caixa de Entrada, procure na Lixeira da sua conta.<br>'
-                                    'Esse link tem a validade de 24h a partir de agora.',
-                                form=get_user_email_form)
-
+                               form=get_user_email_form,
+                               **texts)
     else:
         return render_template('accounts/getuseremail.html',
-                               form=get_user_email_form)
+                               form=get_user_email_form,
+                               **texts)
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():
+    texts = getTexts('register')
     create_account_form = CreateAccountForm(request.form)
     if 'register' in request.form:
 
@@ -123,18 +133,20 @@ def register():
         # Check usename exists
         user = Users.query.filter_by(username=username).first()
         if user:
+            texts['msg'] = getErrorMessage('userAlreadyRegistered')
             return render_template('accounts/register.html',
-                                   msg='Nome do usuário já cadastrado',
                                    success=False,
-                                   form=create_account_form)
+                                   form=create_account_form,
+                                   **texts)
 
         # Check email exists
         user = Users.query.filter_by(email=email).first()
         if user:
+            texts['msg'] = getErrorMessage('emailAlreadyRegistered')
             return render_template('accounts/register.html',
-                                   msg='Email já cadastrado',
                                    success=False,
-                                   form=create_account_form)
+                                   form=create_account_form,
+                                   **texts)
 
         # else we can create the user
         user = Users(**request.form)
@@ -142,12 +154,15 @@ def register():
         db.session.commit()
 
         return render_template('accounts/register.html',
-                               msg='Usuário cadastrado, por favor faça o <a href="/login">login!</a>',
+                               msg=f'{texts["endOfRegister"]} <a href="/login">login!</a>',
                                success=True,
-                               form=create_account_form)
+                               form=create_account_form,
+                               **texts)
 
     else:
-        return render_template('accounts/register.html', form=create_account_form)
+        return render_template('accounts/register.html',
+                               form=create_account_form,
+                               **texts)
 
 
 @blueprint.route('/logout')
