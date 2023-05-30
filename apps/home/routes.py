@@ -272,7 +272,8 @@ def route_template(template):
                 to = request.args['email']
                 dbquery.executeSQL(f"UPDATE Projeto set eMailEnvioResultado = '{to}' "
                                    f"where id = {session['_projeto_id']}")
-                dbquery.executeSQL(f"INSERT INTO ListaAProcessar(idProjeto) values ({session['_projeto_id']})")
+                dbquery.executeSQL(f"delete from ListaAProcessar where idProjeto = {session['_projeto_id']};"
+                                   f"INSERT INTO ListaAProcessar(idProjeto) values ({session['_projeto_id']})")
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-wizardEnd'))
 
