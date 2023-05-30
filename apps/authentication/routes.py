@@ -3,6 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 import datetime
+import requests
 
 from flask import render_template, redirect, request, url_for
 from flask_login import (
@@ -105,11 +106,12 @@ def get_user_email():
                                    form=get_user_email_form,
                                    **texts)
         token = secrets.token_urlsafe()
-        url = f"{url_for('authentication_blueprint.changepassword',token=token)}"
+        ip = requests.get('https://checkip.amazonaws.com').text.strip()
+        url = f"http://{ip}:50051{url_for('authentication_blueprint.changepassword',token=token)}"
+        sendEmail(toEMail, 'emailChangePassword', {'url': url})
         executeSQL(f"update Users set recoverEmailToken = '{token}',"
                    f" recoverEmailTimeStamp = current_timestamp "
                    f"where email = '{toEMail}'")
-        sendEmail(toEMail, 'emailChangePassword', {'url': url})
         texts['msg'] = getErrorMessage('emailSent')
         return render_template('accounts/getuseremail.html',
                                form=get_user_email_form,
