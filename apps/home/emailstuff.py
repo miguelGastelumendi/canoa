@@ -1,3 +1,4 @@
+# pylint: disable=E1101
 import base64
 import os
 from sendgrid import (SendGridAPIClient, Mail, Attachment, FileContent,
