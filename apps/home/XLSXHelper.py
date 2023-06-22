@@ -14,8 +14,8 @@ class XLSXHelper:
         self.idProjeto = idProjeto
         self.debug = debug
         self.projectData = self.getProjectData()
-        self.XLSXfname = f"doc/ResultadosReflorestaSP_{self.projectData['username'].replace(' ', '_')}_" \
-                f"{self.projectData['descProjeto'].replace(' ', '_')}.xlsx"
+        self.XLSXfname = f"doc/xls_projectresults/ResultadosReflorestaSP_{self.projectData['username'].replace(' ', '_')}_" \
+                f"{self.idProjeto}_{self.projectData['descProjeto'].replace(' ', '_')}.xlsx"
 
     colName = lambda self, name: ''.join([x for x in name if x in ascii_uppercase])
 
@@ -71,8 +71,11 @@ class XLSXHelper:
                 del ws.tables[tbName]
                 ws.tables.add(tab)
         except Exception as e:
+            print("Erro: ")
+            print("Tablename:", tbName)
+            print()
             print(e)
-            raise Exception('Error.')
+            #raise Exception('Error.')
 
     def fillWorksheetFromDict(self, name: str):
         if self.debug:
