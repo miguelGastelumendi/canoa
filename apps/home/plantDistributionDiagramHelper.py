@@ -1,5 +1,24 @@
 import pandas as pd
 from apps.home.dbquery import getDataframeResultset
+from PIL import Image, ImageDraw, ImageFont, ImageColor
+
+FaixaColors = {
+    'Verde':   (196, 255, 14),
+    'Marrom':  (185, 122, 86),
+    'Laranja': (255, 127, 39),
+    'Branca':  (255, 255, 255),
+    'Roxa':    (163, 73,164)
+}
+
+FaixaChars = {
+    'bordadura':      'o',
+    'madeireira':     'ם',
+    'nao_madeireira': 'Υ',
+    'diversidade':    'D'
+}
+
+black = ImageColor.getrgb('black')
+white = ImageColor.getrgb('white')
 
 class ClassFaixa(object):
     def __init__(self, nomeFaixa: str, ColunasPorFaixa: int, totalColunas: int):
@@ -38,10 +57,11 @@ def GetGrupo(idProjeto: int, idFaixaTipo: int) -> list:
                      "        de.nomeGrupo, de.numColunasJuntas, pm.EspEntreColunas " +\
                      "  order by de.Grupo "
     dfGrupo = getDataframeResultset(localGrupoQuery)
-    localGrupoLst = [ClassGrupo(Grupo=row[0], nomeGrupo=row[1], numColunasJuntas=row[2], numColunas=row[3]) for _, row in dfGrupo.iterrows()]
+    localGrupoLst = [ClassGrupo(Grupo=row[0], nomeGrupo=row[1], numColunasJuntas=row[2], numColunas=row[3])
+                     for _, row in dfGrupo.iterrows()]
     return localGrupoLst
 
-def getPlantDistribuiton(idProjeto : int)->dict:
+def getPlantDistribuiton(idProjeto : int)->(dict, pd.DataFrame):
     ProxGrupo = 0
     DistDic = {}
 
@@ -69,4 +89,32 @@ def getPlantDistribuiton(idProjeto : int)->dict:
             GrupoAtual = GrupoLst[ProxGrupo]
 
         DistDic[idFaixa] = DistFaixaDic
-    return DistDic
+    return DistDic, FaixaDic
+
+def drawRectBorder(drawcontext, xy, outline=None, width=0):
+    (x1, y1), (x2, y2) = xy
+    points = (x1, y1), (x2, y1), (x2, y2), (x1, y2), (x1, y1)
+    drawcontext.line(points, fill=outline, width=width)
+
+def drawStrips(img: Image, colors: []):
+    draw = ImageDraw.Draw(img)
+    leftBottom = (img.size[0]-1, img.size[1]-1)
+    stripWidth = img.size[0] / len(colors)
+    for i in range(len(colors)):
+        draw.rectangle((0 + i * stripWidth, 0) + leftBottom,
+                       fill=FaixaColors[colors[i]],
+                       outline='black',
+                       width=2)
+    draw.text((1, 1), "Sample text", fill=black)
+
+
+def drawPicPlantDistribution(DistDic: dict, fname: str, colors = ()):
+    width = 600
+    height = 800
+    img = Image.new(mode="RGB", size=(width, height), color='white')
+    drawStrips(img, colors=colors)
+    img.show()
+    pass
+
+def createPlantDistributionArray(DistDict: dict, faixas: pd.DataFrame):
+    pass

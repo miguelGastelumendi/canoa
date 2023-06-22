@@ -1,5 +1,10 @@
-from apps.home.plantDistributionDiagramHelper import getPlantDistribuiton
+from apps.home.plantDistributionDiagramHelper import getPlantDistribuiton, createPlantDistributionArray, drawPicPlantDistribution
+from apps.home.dbquery import getDataframeResultset
 
 if __name__ == '__main__':
-    dist=getPlantDistribuiton(390)
+    projectId = 390
+    dist, faixas=getPlantDistribuiton(projectId)
+
+    createPlantDistributionArray(dist, faixas)
+    drawPicPlantDistribution(dist, '', faixas)
     pass

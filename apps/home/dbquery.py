@@ -31,14 +31,18 @@ def executeSQL(sql):
 def getValues(sql):
     rows = executeSQL(sql)
     try:
-        r = rows.first()
-        if len(r) > 1:
-            l = []
-            for v in r:
+        lines = rows.fetchall()
+        l = []
+        if len(lines) > 1:
+            for line in lines:
+                l.append(line[0])
+            return tuple(l)
+        elif len(lines[0]) > 1:
+            for v in lines[0]:
                 l.append(v)
             return tuple(l)
         else:
-            return r[0]
+            return lines[0][0]
     except:
         return None
 

@@ -207,7 +207,7 @@ def route_template(template):
                 options = [
                     {'caption': 'Terreno Plano', 'id': 1, 'fileName': 'wzd-terrenoPlano.png'},
                     {'caption': 'Terreno Suave Ondulado', 'id': 2, 'fileName': 'wzd-terrenoSuaveOndulado.png'},
-                    {'caption': ' Terreno Ondulado', 'id': 3, 'fileName': 'wzd-terrenoOndulado.png'},
+                    {'caption': 'Terreno Ondulado', 'id': 3, 'fileName': 'wzd-terrenoOndulado.png'},
                     {'caption': 'Terreno Montanhoso', 'id': 4, 'fileName': 'wzd-terrenoMontanhoso.png'}
                 ]
                 for option in options:

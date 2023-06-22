@@ -24,7 +24,9 @@ def updateProjectData(project_id: str, selectedCombinations: str):
 
 def getProjectData(project_id: str, selectedCombinations: str):
     projectData = dbquery.getDictFieldNamesValuesResultset(
-        "select p.id, descProjeto,AreaProjeto, desFinalidade,nomeModelo,NomeTopografia,descTopografia,nomeMecanizacao,descMecanizacao "        
+        "select p.id, descProjeto,AreaProjeto, desFinalidade,nomeModelo,NomeTopografia,"
+        "descTopografia,nomeMecanizacao,descMecanizacao,round(TIR * 100, 2) as TIR,payBack, "
+        "round(InvNecessario,2) as InvNecessario "        
         "from projeto p "
         "inner join Finalidade f "
         "on p.idFinalidade = f.id "

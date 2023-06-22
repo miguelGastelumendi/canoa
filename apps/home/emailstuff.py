@@ -51,4 +51,4 @@ def sendEmail(toMail: str, emailType: str, toReplace: dict, file2SendPath: str =
         response = sendgrid_client.send(message)
         return response
     except Exception as e:
-        print(e.message)
+        print(e)

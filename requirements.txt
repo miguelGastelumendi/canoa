@@ -10,6 +10,7 @@ Flask-Minify==0.37
 flask-restx==0.5.1
 Flask-SQLAlchemy==2.5.1
 Flask-WTF==1.0.0
+gevent==22.10.2
 greenlet==2.0.1
 gunicorn==20.1.0
 htmlmin==0.1.12
