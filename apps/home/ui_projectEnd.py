@@ -113,6 +113,8 @@ def cashFlowChart(idProjeto : int):
 #                     xanchor='center',
 #                     yanchor='top',
 #                     font={'size': 30}),
+
+          xaxis_title="Anos", yaxis_title="R$/ha",
           legend=dict(
               font=dict(family="Courier", size=20, color="black"),
                 orientation="h",
