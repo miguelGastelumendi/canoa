@@ -3,7 +3,7 @@
 select * 
   from v_EscolhaCombinacaoPorFaixa
  where idProjeto = 139              
- order by idFaixaTipo, TIR DESC 
+ order by idFaixaTipo, TIR DESC
  
 -- grave o que o usuário escolheu na tabela ProjetoCombFaixa 
 -- idFluxo de caixa é um varchar 

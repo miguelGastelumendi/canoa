@@ -18,6 +18,9 @@ def process():
         toProcess = dbquery.getDataframeResultset("select * from listaAProcessar order by id")
         if len(toProcess) > 0:
             for _, row in toProcess.iterrows():
+                emailEnvioResultado = dbquery.getValues(f'select emailEnvioResultado from Projeto where id = {row.idProjeto}')
+                if emailEnvioResultado is None: # Usuário ainda não informou o email: esperar o próximo loop
+                    continue
                 idProjeto = row.idProjeto
 
                 #idProjeto = 437

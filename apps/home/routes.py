@@ -78,6 +78,12 @@ def route_callback(endpoint):
                                             **{'idMunicipioFito': idFito})
         return ui_projectSupport.getMapFitoMunicipio(idMunicipio,
                                                      idFito)
+    elif endpoint == 'sendProjectEMail':
+        to = request.args['user_email']
+        dbquery.executeSQL(f"UPDATE Projeto set eMailEnvioResultado = '{to}' "
+                           f"where id = {session['_projeto_id']}")
+        dbquery.executeSQL(f"delete from ListaAProcessar where idProjeto = {session['_projeto_id']};"
+                           f"INSERT INTO ListaAProcessar(idProjeto) values ({session['_projeto_id']})")
     elif endpoint == 'help':
         return helper.getTipText(args.get('id'))
     return "Ok"
@@ -269,11 +275,6 @@ def route_template(template):
                                        **helper.getFormText('rsp-sendSpreadsheet'))
 
             elif page2Send == 'rsp-wizardEnd.html':
-                to = request.args['email']
-                dbquery.executeSQL(f"UPDATE Projeto set eMailEnvioResultado = '{to}' "
-                                   f"where id = {session['_projeto_id']}")
-                dbquery.executeSQL(f"delete from ListaAProcessar where idProjeto = {session['_projeto_id']};"
-                                   f"INSERT INTO ListaAProcessar(idProjeto) values ({session['_projeto_id']})")
                 return render_template("home/" + template,
                                        **helper.getFormText('rsp-wizardEnd'))
 
