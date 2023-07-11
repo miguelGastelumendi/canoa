@@ -1,0 +1,63 @@
+-- faixas a serem preenchidas
+--
+alter view V_DistribuicaoFaixas as
+select p.id idProjeto, mf.idFaixaTipo, ft.nomeFaixa, mf.QtdDeFaixas,
+       floor(ft.Largura/cast(pm.EspEntreColunas as integer)) as ColunasPorFaixa,
+       mf.QtdDeFaixas * floor(ft.Largura/cast(pm.EspEntreColunas as integer)) as TotalColunas
+  from Projeto p
+       inner join
+            (select idModeloPlantio, idFaixaTipo, count(*) QtdDeFaixas from ModeloFaixa group by idModeloPlantio, idFaixaTipo) mf
+            on mf.idModeloPlantio = p.idModeloPlantio
+       inner join FaixaTipo ft on ft.id = mf.idFaixaTipo
+       cross join (select ValorParametro as EspEntreColunas from Parametro where nomeParametro = 'EspacamPadrao') pm
+--where p.id = 390
+--select idFaixaTipo, nomeFaixa, ColunasPorFaixa, TotalColunas from V_DistribuicaoFaixas where idProjeto = 390
+
+-- view para a tabelinha que aparece na planilha e na tela
+alter view V_DistribuicaoEspecies as
+select a2.IdProjeto, a2.idFaixaTipo, a2.NomeFaixa, a2.idcombinacao,
+       a2.idEspecie, a2.nomeComum, a2.nomeCientifico, a2.NumArvores, a2.areaocupacao,
+       a2.Grupo, gd.nomeGrupo, gd.numColunasJuntas
+  from (
+select a1.IdProjeto, a1.idFaixaTipo, a1.NomeFaixa, a1.idcombinacao,
+       a1.idEspecie, a1.nomeComum, a1.nomeCientifico, a1.NumArvores, a1.areaOcupacao,
+       min(a1.Grupo) Grupo
+  from (
+        select pc.IdProjeto, pc.idFaixaTipo, ft.NomeFaixa, pc.idcombinacao,
+               ce.idEspecie, e.nomeComum, e.nomeCientifico, ce.NumArvores, ce.areaOcupacao,
+               vep.idProduto,
+               case when e.FlagBordadura = 'T' then 1 else 99 end Grupo1 ,
+               case when (vep.FlagMadeireiro = 'T'  or vep.flagSupressao = 'T') then 2 else 99 end Grupo2,
+               case when vep.FlagNaoMadeireiro = 'T' then 3 else 99 end Grupo3,
+               LEAST(
+               case when e.FlagBordadura = 'T' then 1 else 99 end,
+               case when (vep.FlagMadeireiro = 'T'  or vep.flagSupressao = 'T') then 2 else 99 end,
+               case when vep.FlagNaoMadeireiro = 'T' then 3 else 99 end) Grupo
+          from ProjetoCombFaixa pc
+               inner join CombinaEspecie ce on ce.idCombinacao = pc.idCombinacao
+               inner join Especie e on e.id = ce.idEspecie
+               inner join FaixaTipo ft on ft.id = pc.idFaixaTipo
+               inner join (select distinct idEspecie, idProduto, flagMadeireiro, flagNaoMadeireiro, flagSupressao from v_EspecieProduto) vep on
+                          vep.idEspecie = ce.idEspecie and
+                          not(ft.ProibeMadeireira = 'T' and vep.flagMadeireiro = 'T') and
+                          not(ft.ProibeNaoMadeireira = 'T' and vep.flagNaoMadeireiro = 'T'  ) and
+                          not(ft.ProibeSupressao = 'T' and vep.flagSupressao = 'T')
+      )a1
+  group by a1.IdProjeto, a1.idFaixaTipo, a1.NomeFaixa, a1.idcombinacao,
+           a1.idEspecie, a1.nomeComum, a1.nomeCientifico, a1.NumArvores, a1.areaOcupacao
+  ) a2
+  inner join GrupoDistribuicao gd on gd.ordem = a2.Grupo
+--where a2.idProjeto = 390
+--select  * from V_DistribuicaoEspecies where idProjeto = 390
+
+
+-- quantas colunas por grupo, o grupo esta na ordem que deve aparecer da parda para o centro
+-- essa senten;a est[a dentro da procedure Python
+select de.idFaixaTipo, de.NomeFaixa, de.Grupo, de.nomeGrupo, de.numColunasJuntas,
+       round(sum((de.AreaOcupacao * df.QtdDeFaixas))/(100.00*cast(pm.EspEntreColunas as integer)),0) Numcolunas
+ from V_DistribuicaoEspecies de
+      inner join V_DistribuicaoFaixas df on df.idProjeto = de.idProjeto and df.idFaixaTipo = de.idFaixaTipo
+      cross join (select ValorParametro as EspEntreColunas
+                    from Parametro where nomeParametro = 'EspacamPadrao') pm
+ where de.idProjeto = 390
+group by de.idFaixaTipo, de.NomeFaixa, de.Grupo, de.nomeGrupo, de.numColunasJuntas, pm.EspEntreColunas
