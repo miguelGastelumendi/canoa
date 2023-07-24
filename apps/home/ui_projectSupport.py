@@ -127,10 +127,9 @@ def getMapMunicipio(idMunicipio: int):
                                hover_name=municipio.NomeMunicipio.tolist(), hover_data={'id': False},
                                mapbox_style=mapbox_style, zoom=zoom,
                                opacity=0.4)
-    # fig.update_layout(
-    #     mapbox_style="white-bg",
-    #     showlegend=False)
-    # fig.update_layout(coloraxis_showscale=False)
+    fig.update_layout(
+        showlegend=False
+    )
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder),
                             'Fito': json.dumps(getListaFito(idMunicipio), cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
@@ -185,9 +184,13 @@ def getMapFitoMunicipio(idMunicipio: int,
                                color_discrete_map="identity",
                                hover_data={'id': False},
                                mapbox_style=mapbox_style, zoom=zoom,
-                               opacity=0.4)
+                               opacity=0.4
+                               )
     fig.update_layout(
-        showlegend=False)
+        showlegend=False,
+        margin=dict(l=20, r=20, t=30, b=20)
+    )
+    #fig.update_yaxes(automargin=True)
 
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder),
                             'FitoMunicipio': json.dumps(getListaFito(idMunicipio), cls=plotly.utils.PlotlyJSONEncoder),
@@ -203,10 +206,10 @@ def getMapCAR(pCAR: str = ''):
                                hover_name=CAR.CAR.tolist(), hover_data={'id': False},
                                mapbox_style=mapbox_style, zoom=zoom,
                                opacity=0.4)
-    # fig.update_layout(
-    #     mapbox_style="white-bg",
-    #     showlegend=False)
-    # fig.update_layout(coloraxis_showscale=False)
+    fig.update_layout(
+        showlegend=False,
+        margin=dict(l=20, r=20, t=30, b=20)
+    )
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
 
@@ -218,6 +221,10 @@ def getMapLatLon(lat: str, lon: str):
                                hover_name="label", hover_data={'id': False},
                                mapbox_style=mapbox_style, zoom=zoom,
                                opacity=0.4)
+    fig.update_layout(
+        showlegend=False,
+        margin=dict(l=20, r=20, t=30, b=20)
+    )
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
 
@@ -229,6 +236,10 @@ def getMapSP():
                                hover_name=SP.Nome.tolist(), hover_data={'id': False},
                                mapbox_style=mapbox_style, zoom=zoom,
                                opacity=0.4)
+    fig.update_layout(
+        showlegend=False,
+        margin=dict(l=20, r=20, t=30, b=20)
+    )
     graphJSON = json.dumps({'Map': json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)})
     return graphJSON
 
