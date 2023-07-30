@@ -32,7 +32,7 @@
     bodyId: "body{{ combination.idFaixaTipo }}",
     id: "{{ combination.idFluxoCaixa }}",
     caption: "Combinação {{ combination.Especies }}",
-    text: '<div class="text-center">{{ combination.Especies }}</div><hr><b>TIR:</b> {{ "%.4f"|format(combination.TIR) }}<br>' +
+    text: '<div class="text-center">{{ combination.Especies }}</div><hr><b>TIR:</b> {{ "%.1f"|format(combination.TIR * 100) }}%<br>' +
       '<b>Pay-back:</b> {{ combination.payback }} anos<br>',
     selected: {{ combination.selected }}
   });

@@ -1,0 +1,10 @@
+1)	A tela do Gráfico:
+a.	Os eixos ainda estão sem título
+b.	A TIR, Payback e Valor do investimento estão zerados
+c.	Mostrar TIR em %; Payback em anos, Investimento em R$/há (falta o “/ha”)
+d.	As meninas perguntam se tem jeito de acrescentar uma linha: “Horizonte 30 anos”
+2)	Tela que mostra as combinações:
+a.	A TIR deve ser em %
+b.	Colocar coluna espécie (nome científico reduzido).
+3)	Ainda falta resolver o problema de mostrar o município-fito para os projetos já existentes e quando a gente retorna a tela. Acredito que seja o mesmo problema.
+4)	E falta a tela da distribuição
