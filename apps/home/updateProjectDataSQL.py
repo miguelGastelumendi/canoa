@@ -1,6 +1,6 @@
 sqls = {
-        "deleteProjetoSilvicultura": "delete from  ProjetoSilvicultura where idProjeto = @idProjeto",
-        "insertProjetoSilvicultura": """        
+    "deleteProjetoSilvicultura": "delete from  ProjetoSilvicultura where idProjeto = @idProjeto",
+    "insertProjetoSilvicultura": """        
 	 insert into ProjetoSilvicultura 
 	(idProjeto, idFluxoCaixa,
 	 idFaixaTipo, idFitoFisionomia, idRegiaoEco, 
@@ -9,19 +9,22 @@ sqls = {
 	 Ano, 
 	 idClasse, idCustoEtapa, idOperacao, idRecurso, 
 	 qtdRecurso, siglaUnidade, Preco, qtdRecEspFaixa, ValorEspFaixa )
-	select cf.idProjeto,
-	       cf.idFluxoCaixa,
+	 select cf.idProjeto, cf.idFluxoCaixa,
 	       vtc.idFaixaTipo, vtc.idFitoFisionomia, vtc.idRegiaoEco, 
 	       vtc.idCombinacao, vtc.idRegiaoAdm, vtc.idTopografia, vtc.idMecanizacaoNivel, 
-	       vtc.idespecie, vtc.idProduto, vtc.numArvores, vtc.areaOcupacao, 
+	       vtc.idespecie, vtc.idProduto, 
+	       (vtc.numArvores * vmf.qtdModeloFaixa) as numArvores , (vtc.areaOcupacao * vmf.qtdModeloFaixa) as areaOcupacao, 
 	       vtc.Ano, 
 	       vtc.idClasse, vtc.idCustoEtapa, vtc.idOperacao, vtc.idRecurso, 
-	       vtc.qtdRecurso, vtc.siglaUnidade, vtc.Preco, vtc.qtdRecEspFaixa, vtc.ValorEspFaixa 
+	       vtc.qtdRecurso, vtc.siglaUnidade, vtc.Preco, 
+	       (vtc.qtdRecEspFaixa * vmf.qtdModeloFaixa) as qtdRecEspFaixa , 
+	       (vtc.ValorEspFaixa * vmf.qtdModeloFaixa) as ValorEspFaixa
 	  from VT_CombinaFcCustos vtc
 	       inner join 
 	             (select pcf.idProjeto, 
 	                     pcf.idFluxoCaixa, 
-	                     pcf.idCombinacao, m.idRegiaoAdm, prj.idTopografia, prj.idMecanizacaoNivel 
+	                     pcf.idCombinacao, 
+	                     m.idRegiaoAdm, prj.idTopografia, prj.idMecanizacaoNivel, prj.idModeloPlantio 
 	                from Projeto prj 
 	                     inner join MunicipioFito mf on mf.id = prj.idMunicipioFito 
 	                     inner join Municipio m on m.id = mf.idMunicipio 
@@ -31,10 +34,13 @@ sqls = {
 	        on cf.idCombinacao = vtc.idCombinacao and 
 	           cf.idRegiaoAdm  = vtc.idRegiaoAdm  and
 	           cf.idTopografia = vtc.idTopografia and  
-	           cf.idMecanizacaoNivel = vtc.idMecanizacaoNivel""",
+	           cf.idMecanizacaoNivel = vtc.idMecanizacaoNivel
+	        inner join V_ModeloFaixa vmf 
+	        on vmf.idModeloPlantio = cf.idModeloPlantio and
+	           vmf.idFaixaTipo = vtc.idFaixaTipo""",
 
-        "deleteProjetoReceita": "delete from  ProjetoReceita where idProjeto = @idProjeto",
-        "insertProjetoReceita": """
+    "deleteProjetoReceita": "delete from  ProjetoReceita where idProjeto = @idProjeto",
+    "insertProjetoReceita": """
 	Insert into ProjetoReceita
 	       (idProjeto, idFluxoCaixa,
 	        idFaixaTipo, idFitoFisionomia, idRegiaoEco, idCombinacao, idRegiaoAdm,  
@@ -43,13 +49,17 @@ sqls = {
 	 select cf.idProjeto,
 	        cf.idFluxoCaixa,
 	        vtr.idFaixaTipo, vtr.idFitoFisionomia, vtr.idRegiaoEco, vtr.idCombinacao, vtr.idRegiaoAdm,  
-	        vtr.idespecie, vtr.areaOcupacao, vtr.idProduto, vtr.Idade, vtr.idIntervencao, 
-	        vtr.ProdPlanta, vtr.numArvores, vtr.Preco, vtr.ProdFaixa, vtr.ValorEspFaixa
+	        vtr.idespecie, (vtr.areaOcupacao * vmf.qtdModeloFaixa) as areaOcupacao, 
+	        vtr.idProduto, vtr.Idade, vtr.idIntervencao, 
+	        vtr.ProdPlanta, (vtr.numArvores * vmf.qtdModeloFaixa) as numArvores, 
+	        vtr.Preco, 
+	        (vtr.ProdFaixa * vmf.qtdModeloFaixa) as ProdFaixa, 
+	        (vtr.ValorEspFaixa * vmf.qtdModeloFaixa) as ValorEspFaixa
 	   from VT_CombinaFcReceitas vtr
 	        inner join 
 	             (select pcf.idProjeto, 
 	                     pcf.idFluxoCaixa, 
-	                     pcf.idCombinacao, m.idRegiaoAdm 
+	                     pcf.idCombinacao, m.idRegiaoAdm, prj.idModeloPlantio  
 	                from Projeto prj 
 	                     inner join MunicipioFito mf on mf.id = prj.idMunicipioFito 
 	                     inner join Municipio m on m.id = mf.idMunicipio 
@@ -57,11 +67,14 @@ sqls = {
 	               where prj.id = @idProjeto
 	              ) cf  
 	        on cf.idCombinacao  = vtr.idCombinacao and 
-	           cf.idRegiaoAdm   = vtr.idRegiaoAdm""",
+	           cf.idRegiaoAdm   = vtr.idRegiaoAdm
+	        inner join V_ModeloFaixa vmf 
+	        on vmf.idModeloPlantio = cf.idModeloPlantio and
+	           vmf.idFaixaTipo = vtr.idFaixaTipo""",
 
-	    "deleteProjetoFcModelo" : "delete from ProjetoFcModelo where idProjeto = @idProjeto",
+    "deleteProjetoFcModelo": "delete from ProjetoFcModelo where idProjeto = @idProjeto",
 
-	    "InsertProjetoFcModelo": """
+    "InsertProjetoFcModelo": """
 	     Insert into ProjetoFcModelo
 	       (idProjeto, ano, 
 	        VTReceitas, VTCustos, VTLiquido,
@@ -88,14 +101,14 @@ sqls = {
 	                       on pcf.idProjeto = prj.id and   
 	                          pcf.idFaixaTipo = mf.idFaixatipo and   
 	                          pcf.idFluxoCaixa = fcr.idFluxoCaixa 
-	
+
 	      ) somaFC
 	 group by somaFC.idProjeto, somaFC.ano
 	 order by somaFC.idProjeto, somaFC.ano""",
 
-        'deleteProjetoDistribuicao': """delete from ProjetoDistribuicao where idProjeto = @idProjeto""",
+    'deleteProjetoDistribuicao': """delete from ProjetoDistribuicao where idProjeto = @idProjeto""",
 
-        'InsertProjetoDistribuicao': """insert into ProjetoDistribuicao 
+    'InsertProjetoDistribuicao': """insert into ProjetoDistribuicao 
 (idProjeto,idFaixaTipo,idGrupo,numArvores,NumLinhas,NumFaixas,TotalLinhas)
 select ge.idProjeto, ge.idFaixaTipo, ge.idGrupo, 
        sum(ge.numArvores)*m.qtdModeloFaixa numArvores, 
@@ -121,7 +134,7 @@ select ge.idProjeto, ge.idFaixaTipo, ge.idGrupo,
        cross join (select ValorParametro as EspacamPadrao from Parametro where nomeParametro = 'EspacamPadrao') p2
  group by ge.idProjeto, ge.idFaixaTipo, ge.Largura, ge.idGrupo, m.qtdModeloFaixa, p2.EspacamPadrao, p1.QtdPltPorLInha """,
 
-       "updateProjeto": """
+    "updateProjeto": """
 update prj 
 set prj.VTReceitas    = ind.VTReceitas, 
     prj.VTCustos      = ind.VTCustos,

@@ -76,7 +76,7 @@ order by rc.nomeRecurso, ps.siglaUnidade""",
        inner join V_ModeloFaixa mf on mf.idModeloPlantio = pj.idModeloPlantio 
        inner join FaixaTipo ft on ft.id = mf.idFaixaTipo 
  where pj.id = {0}""",
-    
+
     'txDsc': f"""select valorParametro TxDsc 
   from Parametro p 
  where p.nomeParametro = 'TxDsc'""",
@@ -100,7 +100,7 @@ from (
        where ps.idProjeto = {0} 
       ) x
 order by 1,2,3,4,5,6,7,8,9,10""",
-    
+
     'FluxoCaixaFaixa': """select * 
   from (
         select distinct 
@@ -116,25 +116,29 @@ order by 1,2,3,4,5,6,7,8,9,10""",
 where pd.idProjeto = {0}
 """,
 
-    'tbDistribuicao': """select ge.nomeFaixa Faixa, gr.NomeGrupo Grupo, ge.nomeComum Especie, ge.nomeCientifico,
+    'tbDistribuicao': """select ge.nomeFaixa Faixa, gr.NomeGrupo Grupo, ge.nomeComum Especie, ge.nomeCientifico, ge.entreLinha, ge.entrePlanta, ge.areaOcupacao,
        sum(ge.numArvores)*m.qtdModeloFaixa numArvores
-  from (select r.idFaixaTipo, f.NomeFaixa, e.nomeComum, e.nomeCientifico, max(r.numArvores) NumArvores,
+  from (select r.idFaixaTipo, f.NomeFaixa, e.nomeComum, e.nomeCientifico, ep.entreLinha, ep.entrePlanta, ep.areaOcupacao, max(r.numArvores) NumArvores,
               min(case when e.FlagBordadura = 'T' then 1
                        when ((e.FlagBordadura is null) or (e.FlagBordadura <> 'T')) and  
                              p.flagMadeireiro = 'T' and f.ProibeMadeireira = 'F' then 2 
                       else 3
                   end) idGrupo     
          from ProjetoReceita r
-              inner join Especie e       on e.id = r.idEspecie  
-              inner join Produto p       on p.id = r.idProduto 
-              inner join FaixaTipo f     on f.id = r.idFaixaTipo 
+              inner join Especie e         on e.id = r.idEspecie  
+              inner join Produto p         on p.id = r.idProduto 
+              inner join FaixaTipo f       on f.id = r.idFaixaTipo 
+              inner join Projeto pj        on pj.id = r.idProjeto
+              inner join Municipiofito mf  on mf.id = pj.idMunicipioFito 
+              inner join FitoFisionomia ff on ff.id = mf.idFitoFisionomia 
+              inner join Espacamento ep    on ep.idEspecie = e.id and ep.idFormacao = ff.idFormacao  
         where r.idProjeto = {0}       
-        group by r.idFaixaTipo, f.NomeFaixa, f.Largura, e.nomeComum, e.nomeCientifico
+        group by r.idFaixaTipo, f.NomeFaixa, f.Largura, e.nomeComum, e.nomeCientifico, ep.entreLinha, ep.entrePlanta, ep.areaOcupacao
        ) ge 
-       inner join V_ModeloFaixa m on m.idModeloPlantio = (select idModeloPlantio from Projeto where id = {0}) and  
+       inner join V_ModeloFaixa m on m.idModeloPlantio = (select idModeloPlantio from Projeto where id = {0} ) and  
                                      m.idFaixaTipo     = ge.idFaixaTipo
        inner join EspGrpDistribuicao gr on gr.id = ge.idGrupo
- group by ge.nomeFaixa, gr.NomeGrupo, ge.nomeComum, ge.nomeCientifico, m.qtdModeloFaixa""",
+ group by ge.nomeFaixa, gr.NomeGrupo, ge.nomeComum, ge.nomeCientifico, ge.entreLinha, ge.entrePlanta, ge.areaOcupacao, m.qtdModeloFaixa""",
 
     'faixasDistribuicao': """select mf.*,ft.* from Projeto p
 inner join ModeloPlantio mp 
