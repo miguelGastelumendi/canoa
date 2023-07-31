@@ -1,7 +1,6 @@
 import spData as db
 import math
 
-
 def BuildTakeOff(laneSize, speciesDic) -> list:
     localLst = []
     sortedKeys = []
