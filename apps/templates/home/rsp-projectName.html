@@ -9,7 +9,7 @@
       <button type="button" class="btn"
         style="width: 30px; height: 30px; border-radius: 100%; align-items: center; display: inline-flex; justify-content: center; color: #628d3c; border-color: #628d3c;"
         tabindex="-1" data-bs-placement="left" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-title="Ajuda"
-        data-bs-content="Insira o nome escolhido para o projeto">?</button>
+        data-bs-content="{{ helpProjectName }}">?</button>
       <label for="projectName" class="col-sm-2 col-form-label labelProjectName">{{ projectNameDesc|safe }}</label>
       <div class="col-sm-8 divInputProjectName" >
         <input id="projectName" name="projectName" class="form-control" type="text" title="{{ projectNameDesc|safe }}"
