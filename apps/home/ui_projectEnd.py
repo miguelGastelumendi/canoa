@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 from plotly.utils import PlotlyJSONEncoder
 import json
 import apps.home.dbquery as dbquery
+import numpy_financial as npf
 
 def formatCombinations(string, _from, to, num):
     strange_char = "$&$@$$&"
@@ -25,7 +26,7 @@ def updateProjectData(project_id: str, selectedCombinations: str):
 def getProjectData(project_id: str, selectedCombinations: str):
     projectData = dbquery.getDictFieldNamesValuesResultset(
         "select p.id, descProjeto,AreaProjeto, desFinalidade,nomeModelo,NomeTopografia,"
-        "descTopografia,nomeMecanizacao,descMecanizacao,round(TIR * 100, 2) as TIR,payBack, "
+        "descTopografia,nomeMecanizacao,descMecanizacao,payBack, "
         "round(InvNecessario,2) as InvNecessario "        
         "from projeto p "
         "inner join Finalidade f "
@@ -53,7 +54,7 @@ def getProjectData(project_id: str, selectedCombinations: str):
 
     return projectData, combinations
 
-def getCashFlowData(idProjeto: int)->DataFrame:
+def getCashFlowData(idProjeto: int)->(DataFrame, float):
     df = dbquery.getDataframeResultset(
         f"""select somaFC.idProjeto, somaFC.ano,
 	       sum(somaFC.VTReceitas) VTReceitas, sum(somaFC.VTCustos) VTCustos, sum(somaFC.VTLiquido) VTLiquido,
@@ -82,7 +83,10 @@ def getCashFlowData(idProjeto: int)->DataFrame:
 	 order by somaFC.idProjeto, somaFC.ano""")
 
     payback = len(df[df['VALiquido'] < 0]) + 1
+    tir = npf.irr(df['VPLiquido'])
+    tir = 0 if tir < 0 else 1 if tir > 1 else round(tir * 100, 2)
     investimento = abs(df['VALiquido'].min())
+
     TxPoupanca = 1 + float(dbquery.getValues(
         """select valorParametro as TxPoup from Parametro
            where nomeParametro = 'TxPoup'"""))
@@ -91,9 +95,9 @@ def getCashFlowData(idProjeto: int)->DataFrame:
     for i, row in df.iterrows():
         if row.ano > payback:
             df.at[i, 'InvestimentoFinanceiro'] = df.at[i-1, 'InvestimentoFinanceiro'] * TxPoupanca
-    return df
-def cashFlowChart(idProjeto : int):
-    df = getCashFlowData(idProjeto)
+    return df, tir
+def cashFlowChart(idProjeto : int)->(str, float):
+    df, tir = getCashFlowData(idProjeto)
     layout = go.Layout(
         #paper_bgcolor='rgba(0,0,0,0)',
         #plot_bgcolor='rgba(0,0,0,0)'
@@ -123,4 +127,4 @@ def cashFlowChart(idProjeto : int):
                 xanchor="right",
                 x=1))
     graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
-    return graphJSON
+    return graphJSON, tir

@@ -257,8 +257,10 @@ def route_template(template):
             elif page2Send == 'rsp-projectEnd.html':
                 selectedCombinations = ui_projectEnd.formatCombinations(request.args['id'],'-',"','",4)
                 ui_projectEnd.updateProjectData(session['_projeto_id'], selectedCombinations)
+
+                cashFlowJSON, tir = ui_projectEnd.cashFlowChart(session['_projeto_id'])
                 projectData, combinations = ui_projectEnd.getProjectData(session['_projeto_id'], selectedCombinations)
-                cashFlowJSON = ui_projectEnd.cashFlowChart(session['_projeto_id'])
+                projectData['TIR'] = tir
                 return render_template("home/" + template,
                                        combinations=combinations,
                                        cashFlowJSON=cashFlowJSON,

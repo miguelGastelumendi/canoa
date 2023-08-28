@@ -45,3 +45,4 @@ openpyxl~=3.1.2
 Pillow~=9.4.0
 requests~=2.30.0
 sendgrid~=6.10.0
+ numpy-financial~=1.0.0
