@@ -78,13 +78,17 @@ class XLSXHelper:
             #raise Exception('Error.')
 
     def fillWorksheetFromDict(self, name: str):
-        if self.debug:
-            print('fillWorksheetFromDict:')
-            print(locals())
-        dict = self.getDataAsDict(name)
-        for key, value in dict.items():
-            worksheet, cell = self.xlsx.defined_names[key].value.split('!')
-            self.xlsx[worksheet][cell] = value
+        try:
+            if self.debug:
+                print('fillWorksheetFromDict:')
+                print(locals())
+            dict = self.getDataAsDict(name)
+            for key, value in dict.items():
+                worksheet, cell = self.xlsx.defined_names[key].value.split('!')
+                self.xlsx[worksheet][cell] = value
+        except Exception as e:
+            print("Erro: em fillWorksheetFromDict")
+            print(e)
 
     def fillDistribution(self):
         pass
