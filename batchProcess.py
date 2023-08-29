@@ -9,14 +9,19 @@ import argparse
 config = Config()
 
 def ProcessCmdLine():
-    parser = argparse.ArgumentParser(description='SISMOI import data app.')
+    parser = argparse.ArgumentParser(description='ReflorestaSP Pos-processing.')
     parser.add_argument('-pi', '--project_id', help='Id of the project to process', type=int, default=-1)
+    parser.add_argument('-d', '--debug', type=int, default=0)
     return parser.parse_args()
 
-def calculateFinancials(idProjeto: int):
+def calculateFinancials(idProjeto: int, debug: int):
     for key in sqls.keys():
-        result = dbquery.executeSQL(sqls[key].replace('@idProjeto',str(idProjeto)))
+        sql = sqls[key].replace('@idProjeto',str(idProjeto))
+        result = dbquery.executeSQL(sql)
         print(f"{key} ({result.rowcount})")
+        if (debug == 1):
+            print(sql)
+            print()
 
 def process():
     args = ProcessCmdLine()
@@ -34,9 +39,7 @@ def process():
                     print('Ainda sem email de envio')
                     continue
 
-                #idProjeto = 437
-
-                calculateFinancials(idProjeto)
+                calculateFinancials(idProjeto, args.debug)
                 XLSXHelper.GenerateXLSX(idProjeto)
                 dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
         else:
