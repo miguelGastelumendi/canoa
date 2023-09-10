@@ -181,18 +181,29 @@ def route_template(template):
                                        **helper.getFormText('rsp-areas'))
 
             elif page2Send == 'rsp-goal.html':
-                return render_template("home/" + template,
-                                           goals=dbquery.getListDictResultset(
+                removeAPPoption = dbquery.getValues(
+                    "select count(1) from Projeto p "
+                    "inner join MunicipioFito mf " 
+                    "on p.idMunicipioFito = mf.id "
+                    "inner join Municipio m "
+                    "on mf.idMunicipio = m.id "
+                   f"where p.id = {session['_projeto_id']} "
+                    "and p.AreaPropriedade > m.moduloFiscal * 4")
+                goals=dbquery.getListDictResultset(
                                             "select f.desFinalidade as caption, f.id, f.help as hint, "
                                             f"case "
                                             f"        when f.id = idFinalidade then 1 "
                                             f"        else 0 "
                                             f"end as selected "
                                             f"from Finalidade f "
-                                            f"left join Projeto p "
-                                            f"on 1=1 "
-                                            f"and p.id = {session['_projeto_id']} "
-                                            f"order by orderby")
+                                            f"inner join Projeto p "
+                                            f"on p.id = {session['_projeto_id']} "
+                                            f"{'where f.id <> 3' if removeAPPoption > 0 else ''} "
+                                            f"order by orderby"
+                                        )
+                
+                return render_template("home/" + template,
+                                           goals=goals
                                        , **helper.getFormText('rsp-goal'))
 
             elif page2Send == 'rsp-plantDistribution.html':
