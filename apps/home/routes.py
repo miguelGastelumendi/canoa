@@ -181,6 +181,7 @@ def route_template(template):
                                        **helper.getFormText('rsp-areas'))
 
             elif page2Send == 'rsp-goal.html':
+                # Opção APP só está disponível para propriedades com área menor que 4 módulos fiscais do município
                 removeAPPoption = dbquery.getValues(
                     "select count(1) from Projeto p "
                     "inner join MunicipioFito mf " 

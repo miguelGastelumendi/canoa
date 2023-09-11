@@ -113,7 +113,7 @@ def getPlantDistribuiton(idProjeto: int) -> (dict, dict, pd.DataFrame):
 
 def drawStrips(FaixasTipos: dict, Faixas):
     width = 800
-    height = 800
+    height = 700
     colNamesHeight = 10
     verticalInterval = 10
     img = Image.new(mode="RGB", size=(width, height), color='white')
