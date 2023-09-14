@@ -9,7 +9,7 @@ def formatCombinations(string, _from, to, num):
     strange_char = "$&$@$$&"
     return f"""'{string.replace(_from, strange_char, num).replace(strange_char,_from, num - 1).replace(strange_char, to, 1)}'"""
 
-def updateProjectData(project_id: str, selectedCombinations: str):
+def updateProjectCombinationData(project_id: str, selectedCombinations: str):
     dbquery.executeSQL(f"delete from ProjetoCombFaixa where idProjeto = {project_id}")
     dbquery.executeSQL("insert into ProjetoCombFaixa "
                        "(idProjeto, idFluxoCaixa, nomeFaixa, idFaixaTipo, idCombinacao, Especies, "
@@ -20,13 +20,15 @@ def updateProjectData(project_id: str, selectedCombinations: str):
                       f"where idProjeto = {project_id} "
                       f"and idFluxoCaixa in ({selectedCombinations}) "
                        "order by idFaixaTipo, TIR DESC")
+
+def updateListaAProcessar(project_id: str):
     dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {project_id}")
     dbquery.executeSQL(f"insert into listaAProcessar(idProjeto) values ({project_id})")
 
-def getProjectData(project_id: str, selectedCombinations: str):
+def getProjectData(project_id: str):
     projectData = dbquery.getDictFieldNamesValuesResultset(
         "select p.id, descProjeto,AreaProjeto, desFinalidade,nomeModelo,NomeTopografia,"
-        "descTopografia,nomeMecanizacao,descMecanizacao,payBack, "
+        "descTopografia,nomeMecanizacao,descMecanizacao,payBack, round(TIR * 100,4) as TIR, "
         "round(InvNecessario,2) as InvNecessario "        
         "from projeto p "
         "inner join Finalidade f "
@@ -38,23 +40,9 @@ def getProjectData(project_id: str, selectedCombinations: str):
         "inner join MecanizacaoNivel mn "
         "on p.idMecanizacaoNivel = mn.id "
         f"where p.id = {project_id}")
+    return projectData
 
-    combinations = dbquery.getDataframeResultset(
-        f"select ft.nomeFaixa, "
-        f"vfc.idFaixaTipo,  vfc.idCombinacao, vfc.Especies, round(case when vfc.TIR < 0 then RAND()*0.01 + 0.13 else vfc.TIR end,2) as TIR, "
-        f"round(vfc.payback,2) as payback, round(vfc.InvNecessario,2) as InvNecessario, round(vfc.VTLiquido,2) as VTLiquido, round(vfc.VPLiquido,2) as VPLiquido "
-        f"from Projeto p inner join MunicipioFito mf on mf.id = p.idMunicipioFito "
-        f"inner join Municipio m on m.id = mf.idMunicipio "
-        f"inner join (select distinct idModeloPlantio, idFaixaTipo from ModeloFaixa mf) mf2 on mf2.idModeloPlantio = p.idModeloPlantio "
-        f"inner join v_filtraCombinacoes vfc on vfc.idFaixaTipo = mf2.idFaixaTipo and vfc.idFitofisionomia = mf.idFitoFisionomia and vfc.idRegiaoEco = m.idRegiaoEco "
-        f"and vfc.idRegiaoAdm = m.idRegiaoAdm and vfc.idTopografia = p.idTopografia and vfc.idMecanizacaoNivel = p.idMecanizacaoNivel "
-        f"inner join FaixaTipo ft on ft.id =  mf2.idFaixaTipo "
-        f"where p.id = {project_id} "
-        f"and vfc.idFluxoCaixa in ({selectedCombinations})")
-
-    return projectData, combinations
-
-def getCashFlowData(idProjeto: int)->(DataFrame, float):
+def CalculateFinanceData(idProjeto: int)->(DataFrame, float, float, int):
     df = dbquery.getDataframeResultset(
         f"""select somaFC.idProjeto, somaFC.ano,
 	       sum(somaFC.VTReceitas) VTReceitas, sum(somaFC.VTCustos) VTCustos, sum(somaFC.VTLiquido) VTLiquido,
@@ -84,7 +72,7 @@ def getCashFlowData(idProjeto: int)->(DataFrame, float):
 
     payback = len(df[df['VALiquido'] < 0]) + 1
     tir = npf.irr(df['VPLiquido'])
-    tir = 0 if tir < 0 else 1 if tir > 1 else round(tir * 100, 2)
+    tir = 0 if tir < 0 else 1 if tir > 1 else tir
     investimento = abs(df['VALiquido'].min())
 
     TxPoupanca = 1 + float(dbquery.getValues(
@@ -95,12 +83,10 @@ def getCashFlowData(idProjeto: int)->(DataFrame, float):
     for i, row in df.iterrows():
         if row.ano > payback:
             df.at[i, 'InvestimentoFinanceiro'] = df.at[i-1, 'InvestimentoFinanceiro'] * TxPoupanca
-    return df, tir
-def cashFlowChart(idProjeto : int)->(str, float):
-    df, tir = getCashFlowData(idProjeto)
+    return df, tir, investimento, payback
+
+def cashFlowChart(df: DataFrame)->str:
     layout = go.Layout(
-        #paper_bgcolor='rgba(0,0,0,0)',
-        #plot_bgcolor='rgba(0,0,0,0)'
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='#F1F7DF'
     )
@@ -112,12 +98,6 @@ def cashFlowChart(idProjeto : int)->(str, float):
     fig.add_trace(go.Scatter(x=df.ano, y=df.VALiquido, mode='lines+markers', name='VAcumulado',
                              line={'color': 'blue'}))
     fig.update_layout(
-#        title = dict(y=0.9,
-#                     x=0.5,
-#                     xanchor='center',
-#                     yanchor='top',
-#                     font={'size': 30}),
-
           xaxis_title="Anos", yaxis_title="R$/ha",
           legend=dict(
               font=dict(family="Courier", size=20, color="black"),
@@ -127,4 +107,9 @@ def cashFlowChart(idProjeto : int)->(str, float):
                 xanchor="right",
                 x=1))
     graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
-    return graphJSON, tir
+    return graphJSON
+
+def updateProjectFinanceData(project_id: str, tir: float, investimento: float, payback: int):
+    dbquery.executeSQL(f"UPDATE Projeto set PayBack = {payback}, InvNecessario = {investimento}, TIR = {tir} "
+                       f"WHERE id = {project_id}")
+

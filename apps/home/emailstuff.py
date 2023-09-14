@@ -39,10 +39,10 @@ def sendEmail(toMail: str, emailType: str, toReplace: dict, file2SendPath: str =
         with open(file2SendPath, 'rb') as f:
             data = f.read()
         encoded = base64.b64encode(data).decode()
-        fileName = os.path.basename(file2SendPath).split('.')[0]
+        fileName = os.path.basename(file2SendPath)
         attachment = Attachment()
         attachment.file_content = FileContent(encoded)
-        attachment.file_type = FileType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        attachment.file_type = FileType('Microsoft Excel 2007+')
         attachment.file_name = FileName(fileName)
         attachment.disposition = Disposition('attachment')
         message.attachment = attachment

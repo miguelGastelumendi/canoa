@@ -33,6 +33,11 @@ engine = create_engine(connection_url)
     mgd: 'apagou os string connections'
 '''
     SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
+    CHANGE_PWD_EMAIL_LINK = os.environ['CHANGE_PWD_EMAIL_LINK']
+
+    if (SQLALCHEMY_DATABASE_URI == '') or (CHANGE_PWD_EMAIL_LINK == ''):
+        raise Exception("Verifique se as variáveis de ambiente estão definidas.")
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Assets Management

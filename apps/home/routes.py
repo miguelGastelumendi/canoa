@@ -4,7 +4,7 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from apps.home import blueprint
-from flask import render_template, request
+from flask import render_template, request, Markup
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 import apps.home.ui_projectSupport as ui_projectSupport
@@ -82,8 +82,7 @@ def route_callback(endpoint):
         to = request.args['user_email']
         dbquery.executeSQL(f"UPDATE Projeto set eMailEnvioResultado = '{to}' "
                            f"where id = {session['_projeto_id']}")
-        dbquery.executeSQL(f"delete from ListaAProcessar where idProjeto = {session['_projeto_id']};"
-                           f"INSERT INTO ListaAProcessar(idProjeto) values ({session['_projeto_id']})")
+        ui_projectEnd.updateListaAProcessar(session['_projeto_id'])
     elif endpoint == 'help':
         return helper.getTipText(args.get('id'))
     return "Ok"
@@ -140,7 +139,8 @@ def route_template(template):
                 if session['_operation'] == 'changingProject':
                     idMunicipioidFito = dbquery.getValues(
                         f"select coalesce(idMunicipio, -1) as idMunicipio, "
-                        f"coalesce(idFitofisionomia, -1) as idFitoFisionomia from Projeto p "
+                        f"coalesce(idMunicipioFito, -1) as idFitoFisionomia "
+                        f"from Projeto p "
                         f"inner join MunicipioFito mf "
                         f"on p.idMunicipioFito = mf.id "
                         f"where p.id = {session['_projeto_id']}")
@@ -148,12 +148,23 @@ def route_template(template):
                 else:
                     idMunicipio, idFitofisionomia = (-1, -1)
 
+                municipios = ui_projectSupport.getListaMunicipios()
+                fito_municipios = ui_projectSupport.getListaFito(idMunicipio)
+                formText = helper.getFormText('rsp-locationCountyFitofisionomy')
+                strMunicipios, strFitoMunicipios = '', ''
+                for key, value in municipios.items():
+                    selected = '  selected="selected" ' if key == idMunicipio else ' '
+                    strMunicipios += f'<option{selected}value="{key}">{value}</option>\n'
+                for key, value in fito_municipios.items():
+                    selected = '  selected="selected" ' if key == idFitofisionomia else ''
+                    strFitoMunicipios += f'<option{selected}value="{key}">{value}</option>\n'
+
                 return render_template("home/" + template,
-                                       idMunicipio = idMunicipio,
-                                       idFitofisionomia = idFitofisionomia,
-                                       municipios=ui_projectSupport.getListaMunicipios()
-                                       , fito_municipios=ui_projectSupport.getListaFito(idFitofisionomia)
-                                       , **helper.getFormText('rsp-locationCountyFitofisionomy')
+                                       idMunicipio=idMunicipio,
+                                       idFitofisionomia=idFitofisionomia,
+                                       municipios=strMunicipios
+                                       , fito_municipios=strFitoMunicipios
+                                       , **formText
                                        )
 
             elif page2Send == 'rsp-locationLatLon.html':
@@ -268,13 +279,13 @@ def route_template(template):
 
             elif page2Send == 'rsp-projectEnd.html':
                 selectedCombinations = ui_projectEnd.formatCombinations(request.args['id'],'-',"','",4)
-                ui_projectEnd.updateProjectData(session['_projeto_id'], selectedCombinations)
+                ui_projectEnd.updateProjectCombinationData(session['_projeto_id'], selectedCombinations)
+                dfFinance, tir, investimento, payback = ui_projectEnd.CalculateFinanceData(session['_projeto_id'])
+                cashFlowJSON = ui_projectEnd.cashFlowChart(dfFinance)
+                ui_projectEnd.updateProjectFinanceData(session['_projeto_id'], tir, investimento, payback)
+                projectData = ui_projectEnd.getProjectData(session['_projeto_id'])
 
-                cashFlowJSON, tir = ui_projectEnd.cashFlowChart(session['_projeto_id'])
-                projectData, combinations = ui_projectEnd.getProjectData(session['_projeto_id'], selectedCombinations)
-                projectData['TIR'] = tir
                 return render_template("home/" + template,
-                                       combinations=combinations,
                                        cashFlowJSON=cashFlowJSON,
                                        **projectData,
                                        **helper.getFormText('rsp-projectEnd'))
