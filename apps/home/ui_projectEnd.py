@@ -71,7 +71,7 @@ def CalculateFinanceData(idProjeto: int)->(DataFrame, float, float, int):
 	 order by somaFC.idProjeto, somaFC.ano""")
 
     payback = len(df[df['VALiquido'] < 0]) + 1
-    tir = npf.irr(df['VPLiquido'])
+    tir = npf.irr(df['VTLiquido'])
     tir = 0 if tir < 0 else 1 if tir > 1 else tir
     investimento = abs(df['VALiquido'].min())
 
