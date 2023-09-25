@@ -7,7 +7,8 @@ from apps import config
 import json
 
 def getEngine():
-    return create_engine(config.Config.SQLALCHEMY_DATABASE_URI)
+    return create_engine(config.Config.SQLALCHEMY_DATABASE_URI,
+                         isolation_level="READ UNCOMMITTED")
 
 
 def getSession():
