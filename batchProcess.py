@@ -20,12 +20,14 @@ def ProcessCmdLine():
 
 def calculateFinancials(idProjeto: int, debug: int, log: logHelper.Log):
     for key in sqls.keys():
-        sql = sqls[key].replace('@idProjeto', str(idProjeto))
-        result = dbquery.executeSQL(sql)
-        print(f"{key} ({result.rowcount})")
-        if debug == 1:
-            log.log(sql)
-
+        try:
+            sql = sqls[key].replace('@idProjeto', str(idProjeto))
+            result = dbquery.executeSQL(sql)
+            print(f"{key} ({result.rowcount})")
+            if debug == 1:
+                log.log(sql)
+        except Exception as e:
+            log.log(f'\nErro na query acima: {e}')
 
 def process():
     args = ProcessCmdLine()
@@ -51,6 +53,7 @@ def process():
                         continue
 
                     calculateFinancials(idProjeto, args.debug, log)
+                    log.log('Iniciando geração da planilha')
                     XLSXHelper.GenerateXLSX(idProjeto, log)
                     dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
             else:

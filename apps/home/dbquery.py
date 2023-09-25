@@ -22,10 +22,7 @@ def connectDB():
 
 def executeSQL(sql):
     conn = connectDB()
-    try:
-        return conn.execute(text(sql))
-    except Exception as e:
-        raise e
+    return conn.execute(text(sql))
 
 
 def getValues(sql):
