@@ -180,6 +180,19 @@ def route_template(template):
                                        **helper.getFormText('rsp-locationCAR'))
 
             elif page2Send == 'rsp-areas.html':
+                avalilableCombinations = dbquery.getValues(
+                    f"""select count(mf.id) 
+  from combinacao c
+       inner join Municipio m on m.idRegiaoEco = c.idRegiaoEco 
+       inner join MunicipioFito mf on 
+                  mf.idMunicipio = m.id and 
+                  mf.idFitoFisionomia = c.idFitoFisionomia
+       inner join Projeto p on
+                  mf.id = p.idMunicipioFito  
+  where p.id = {session['_projeto_id']}""")
+                if avalilableCombinations == 0:
+                    return render_template("home/rsp-theresNoCombinations.html",
+                                           **helper.getFormText('rsp-theresNoCombinations'))
                 if session['_operation'] == 'changingProject':
                     areaProjeto, areaPropriedade = dbquery.getValues(
                         f"select AreaProjeto, AreaPropriedade from Projeto "
