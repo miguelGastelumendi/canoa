@@ -5,6 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 import datetime
 import requests
 import os
+from flask import session
 
 from flask import render_template, redirect, request, url_for
 from flask_login import (
@@ -12,6 +13,7 @@ from flask_login import (
     login_user,
     logout_user
 )
+from sqlalchemy import or_
 from apps import db, login_manager
 from apps.authentication import blueprint
 from apps.authentication.forms import LoginForm, CreateAccountForm, ChangePasswordForm, GetUserEmailForm
@@ -40,8 +42,8 @@ def login():
         password = request.form['password']
 
         # Locate user
-        user = Users.query.filter_by(username=username).first()
-
+        #user = Users.query.filter_by(username=username).first()
+        user = Users.query.filter(or_(Users.username==username, Users.email==username)).first()
         # Check the password
         if user and verify_pass(password, user.password):
 
