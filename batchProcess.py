@@ -58,3 +58,6 @@ def process():
             time.sleep(60)
         except:
             pass
+
+if __name__ == "__main__":
+    process()
