@@ -91,7 +91,7 @@ def cashFlowChart(df: DataFrame)->str:
         plot_bgcolor='#F1F7DF'
     )
     fig = go.Figure(layout=layout)
-    fig.add_trace(go.Scatter(x=df.ano, y=df.VPCustos, mode='lines+markers', name='Investimento Financeiro',
+    fig.add_trace(go.Scatter(x=df.ano, y=df.InvestimentoFinanceiro, mode='lines+markers', name='Investimento Financeiro',
                              line={'color': 'gray'}))
     fig.add_trace(go.Scatter(x=df.ano, y=df.VTLiquido, mode='lines+markers', name='VTLiquido',
                              line={'color': 'orange'}))
