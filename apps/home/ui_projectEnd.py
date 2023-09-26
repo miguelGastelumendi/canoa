@@ -80,8 +80,9 @@ def CalculateFinanceData(idProjeto: int)->(DataFrame, float, float, int):
            where nomeParametro = 'TxPoup'"""))
 
     for i, row in df.iterrows():
-        df.loc[i, 'InvestimentoFinanceiro'] = investimento if i == 0 else\
-            df.at[i-1, 'InvestimentoFinanceiro'] * TxPoupanca
+        VTLiquidoCorrente = df.loc[i, 'VTLiquido']
+        df.loc[i, 'InvestimentoFinanceiro'] = abs(VTLiquidoCorrente) if i == 0 else\
+            df.at[i-1, 'InvestimentoFinanceiro'] * TxPoupanca + (abs(VTLiquidoCorrente) if VTLiquidoCorrente < 0 else 0.0)
     return df, tir, investimento, payback
 
 def cashFlowChart(df: DataFrame)->str:

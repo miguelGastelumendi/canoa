@@ -117,8 +117,9 @@ where pd.idProjeto = {0}
 """,
 
     'tbDistribuicao': """select ge.nomeFaixa Faixa, gr.NomeGrupo Grupo, ge.nomeComum Especie, ge.nomeCientifico, ge.entreLinha, ge.entrePlanta, ge.areaOcupacao,
-       sum(ge.numArvores)*m.qtdModeloFaixa numArvores
-  from (select r.idFaixaTipo, f.NomeFaixa, e.nomeComum, e.nomeCientifico, ep.entreLinha, ep.entrePlanta, ep.areaOcupacao, max(r.numArvores) NumArvores,
+       sum(ge.numArvores) numArvores
+  from (select r.idFaixaTipo, f.NomeFaixa, e.nomeComum, e.nomeCientifico, ep.entreLinha, 
+               ep.entrePlanta, ep.areaOcupacao, max(r.numArvores) NumArvores,
               min(case when e.FlagBordadura = 'T' then 1
                        when ((e.FlagBordadura is null) or (e.FlagBordadura <> 'T')) and  
                              p.flagMadeireiro = 'T' and f.ProibeMadeireira = 'F' then 2 
@@ -135,10 +136,8 @@ where pd.idProjeto = {0}
         where r.idProjeto = {0}       
         group by r.idFaixaTipo, f.NomeFaixa, f.Largura, e.nomeComum, e.nomeCientifico, ep.entreLinha, ep.entrePlanta, ep.areaOcupacao
        ) ge 
-       inner join V_ModeloFaixa m on m.idModeloPlantio = (select idModeloPlantio from Projeto where id = {0} ) and  
-                                     m.idFaixaTipo     = ge.idFaixaTipo
        inner join EspGrpDistribuicao gr on gr.id = ge.idGrupo
- group by ge.nomeFaixa, gr.NomeGrupo, ge.nomeComum, ge.nomeCientifico, ge.entreLinha, ge.entrePlanta, ge.areaOcupacao, m.qtdModeloFaixa""",
+ group by ge.nomeFaixa, gr.NomeGrupo, ge.nomeComum, ge.nomeCientifico, ge.entreLinha, ge.entrePlanta, ge.areaOcupacao""",
 
     'faixasDistribuicao': """select mf.*,ft.* from Projeto p
 inner join ModeloPlantio mp 
