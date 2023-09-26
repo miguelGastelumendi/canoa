@@ -35,15 +35,17 @@ def process():
         log = logHelper.Log(args.logfile)
     else:
         log = logHelper.Log('')  # log to screen only
+    toProcess = dbquery.getDataframeResultset("select * from listaAProcessar where 1=0") # ?
     while True:
-        if args.project_id == -1:
+        if args.project_id == -1 and len(toProcess) == 0:
             toProcess = dbquery.getDataframeResultset("select * from listaAProcessar order by id")
         else:
             toProcess = dbquery.getDataframeResultset(f"select {args.project_id} as idProjeto")
         try:
             log.log(f'lista com {len(toProcess)} a processar.')
             if len(toProcess) > 0:
-                for _, row in toProcess.iterrows():
+                while len(toProcess) > 0:
+                    row = toProcess.iloc[0]
                     idProjeto = row.idProjeto
                     log.log(f"idProjeto: {idProjeto}")
                     emailEnvioResultado = dbquery.getValues(
@@ -55,12 +57,13 @@ def process():
                     calculateFinancials(idProjeto, args.debug, log)
                     log.log('Iniciando geração da planilha')
                     XLSXHelper.GenerateXLSX(idProjeto, log)
+                    toProcess = toProcess[toProcess['idProjeto'] != idProjeto]
                     dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
-            else:
-                log.log("Nenhum projeto a processar.")
             time.sleep(60)
-        except:
-            pass
+        except Exception as e:
+            log.log(e)
+            toProcess = toProcess[toProcess['idProjeto'] != idProjeto]
+            dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
 
 if __name__ == "__main__":
     process()

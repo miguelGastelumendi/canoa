@@ -7,12 +7,13 @@ import apps.home.XLSXHelperSQL as XLSXHelperSQL
 from copy import copy
 from string import ascii_uppercase
 from .emailstuff import sendEmail
+import apps.home.logHelper as logHelper
 
 class XLSXHelper:
-    def __init__(self, templateFileName: str, idProjeto: int, debug: bool = False):
+    def __init__(self, templateFileName: str, idProjeto: int, log: logHelper.Log):
         self.xlsx = openpyxl.load_workbook(templateFileName)
         self.idProjeto = idProjeto
-        self.debug = debug
+        self.log = log
         self.projectData = self.getProjectData()
         self.XLSXfname = f"doc/xls_projectresults/ResultadosReflorestaSP_{self.projectData['username'].replace(' ', '_')}_" \
                 f"{self.idProjeto}_{self.projectData['descProjeto'].replace(' ', '_')}.xlsx"
@@ -36,9 +37,7 @@ class XLSXHelper:
         return dbquery.getDictFieldNamesValuesResultset(XLSXHelperSQL.SQLs[name].format(self.idProjeto))
 
     def fillWorksheetFromRows(self, wsName: str, tbName: str, queryName=None):
-        if self.debug:
-            print('fillWorksheetFromRows:')
-            print(locals())
+        self.log.log(f'fillWorksheetFromRows:\n{locals()}')
         if queryName is None:
             queryName = wsName
         try:
@@ -79,16 +78,13 @@ class XLSXHelper:
 
     def fillWorksheetFromDict(self, name: str):
         try:
-            if self.debug:
-                print('fillWorksheetFromDict:')
-                print(locals())
+            self.log.log(f'fillWorksheetFromRows:\n{locals()}')
             dict = self.getDataAsDict(name)
             for key, value in dict.items():
                 worksheet, cell = self.xlsx.defined_names[key].value.split('!')
                 self.xlsx[worksheet][cell] = value
         except Exception as e:
-            print("Erro: em fillWorksheetFromDict")
-            print(e)
+            self.log.log(f"Erro: em fillWorksheetFromDict\n{e}")
 
     def fillDistribution(self):
         pass
@@ -116,8 +112,9 @@ class XLSXHelper:
                   {'descProjeto': self.projectData['descProjeto']},
                   self.XLSXfname)
 
-def GenerateXLSX(idProjeto: int):
-    xlsHelper = XLSXHelper('doc/TemplatePlanilhaComProjetoDoUsuario.xlsx', idProjeto, True)
+def GenerateXLSX(idProjeto: int, log: logHelper.Log):
+    log.log('Generate XLSX')
+    xlsHelper = XLSXHelper('doc/TemplatePlanilhaComProjetoDoUsuario.xlsx', idProjeto, log)
     xlsHelper.execute()
     xlsHelper.save()
     xlsHelper.sendEMail()

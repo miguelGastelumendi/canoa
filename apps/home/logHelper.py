@@ -8,7 +8,7 @@ class Log():
     def log(self, text: str):
         msg = f'{datetime.now().strftime("%m/%d/%Y, %H:%M:%S.%f")} {text}\n'
         if self.fname != '':
-            with open(self.fname,mode='w') as logFile:
+            with open(self.fname,mode='a') as logFile:
                 logFile.write(msg)
         print(msg)
 
