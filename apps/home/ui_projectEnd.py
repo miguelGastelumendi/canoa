@@ -78,11 +78,10 @@ def CalculateFinanceData(idProjeto: int)->(DataFrame, float, float, int):
     TxPoupanca = 1 + float(dbquery.getValues(
         """select valorParametro as TxPoup from Parametro
            where nomeParametro = 'TxPoup'"""))
-    df['InvestimentoFinanceiro'] = 0
-    df.loc[df['ano'] == payback, 'InvestimentoFinanceiro'] = investimento
+
     for i, row in df.iterrows():
-        if row.ano > payback:
-            df.at[i, 'InvestimentoFinanceiro'] = df.at[i-1, 'InvestimentoFinanceiro'] * TxPoupanca
+        df.loc[i, 'InvestimentoFinanceiro'] = investimento if i == 0 else\
+            df.at[i-1, 'InvestimentoFinanceiro'] * TxPoupanca
     return df, tir, investimento, payback
 
 def cashFlowChart(df: DataFrame)->str:
