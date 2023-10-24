@@ -66,7 +66,7 @@ def process():
         except Exception as e:
             log.log(e)
             toProcess = toProcess[toProcess['idProjeto'] != idProjeto]
-            dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
+            #dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
 
 if __name__ == "__main__":
     process()
