@@ -35,13 +35,16 @@ def process():
         log = logHelper.Log(args.logfile)
     else:
         log = logHelper.Log('')  # log to screen only
-    toProcess = dbquery.getDataframeResultset("select * from listaAProcessar where 1=0") # ?
+    try:
+        toProcess = dbquery.getDataframeResultset("select * from listaAProcessar where 1=0") # ?
+    except:
+        pass
     while True:
-        if args.project_id == -1 and len(toProcess) == 0:
-            toProcess = dbquery.getDataframeResultset("select * from listaAProcessar order by id")
-        else:
-            toProcess = dbquery.getDataframeResultset(f"select {args.project_id} as idProjeto")
         try:
+            if args.project_id == -1 and len(toProcess) == 0:
+                toProcess = dbquery.getDataframeResultset("select * from listaAProcessar order by id")
+            else:
+                toProcess = dbquery.getDataframeResultset(f"select {args.project_id} as idProjeto")
             log.log(f'lista com {len(toProcess)} a processar.')
             if len(toProcess) > 0:
                 while len(toProcess) > 0:
