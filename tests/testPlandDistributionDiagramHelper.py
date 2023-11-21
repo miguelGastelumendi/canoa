@@ -1,8 +1,10 @@
-from apps.home.plantDistributionDiagramHelper import getPlantDistribuiton, createPlantDistributionArray, drawPicPlantDistribution
-
+from apps.home.plantDistributionDiagramHelper import Diagram
 if __name__ == '__main__':
     projectId = 442
-    dist, FaixasTipos, Faixas = getPlantDistribuiton(projectId)
+
+    diagram = Diagram(projectId)
+
+
 
     createPlantDistributionArray(dist, FaixasTipos, Faixas)
     drawPicPlantDistribution(dist, '', FaixasTipos, Faixas)

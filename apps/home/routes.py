@@ -17,7 +17,9 @@ from apps.home import helper
 from flask_login import current_user
 import re
 import json
-import secrets
+import apps.home.logHelper as logHelper
+
+log = logHelper.Log2Database()
 
 @blueprint.route('/index')
 @login_required
@@ -28,6 +30,8 @@ def index():
 @blueprint.route('/callback/<endpoint>')
 @login_required
 def route_callback(endpoint):
+    log.logActivity2Database(idUsuario=current_user.id if current_user else 'NULL',
+    idProjeto='NULL' if not '_projeto_id' in session.keys() else session['_projeto_id'], url=f"{endpoint}\{str(request.args.to_dict(flat=True))}")
     args = request.args
     callerID = args.get('callerID')
     if callerID == 'mapSP':
@@ -91,6 +95,9 @@ def route_callback(endpoint):
 @blueprint.route('/<template>')
 @login_required
 def route_template(template):
+    log.logActivity2Database(idUsuario=current_user.id if current_user else 'NULL',
+    idProjeto='NULL' if not '_projeto_id' in session.keys() or session['_projeto_id'] == -1 else session['_projeto_id'], url=
+                             f"{template}\{str(request.args.to_dict(flat=True))}")
     projectId = -1
     try:
         if template.find('.html') > -1:

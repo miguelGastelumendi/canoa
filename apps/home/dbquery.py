@@ -8,7 +8,7 @@ import json
 
 def getEngine():
     return create_engine(config.Config.SQLALCHEMY_DATABASE_URI,
-                         isolation_level="READ UNCOMMITTED")
+                         isolation_level="READ UNCOMMITTED", connect_args={'connect_timeout': 600})
 
 
 def getSession():
