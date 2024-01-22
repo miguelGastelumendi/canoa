@@ -38,8 +38,10 @@ def process():
         log = logHelper.Log('')  # log to screen only
     try:
         toProcess = dbquery.getDataframeResultset("select * from listaAProcessar where 1=0") # ?
-    except:
-        pass
+    except Exception as e:
+        log.log(e)
+        print(e)
+        exit
     while True:
         try:
             if args.project_id == -1 and len(toProcess) == 0:
