@@ -30,6 +30,7 @@ def calculateFinancials(idProjeto: int, debug: int, log: logHelper.Log):
             log.log(f'\nErro na query acima: {e}')
 
 def process():
+    toProcess = None
     args = ProcessCmdLine()
     if args.logfile != '':
         log = logHelper.Log(args.logfile)
@@ -65,7 +66,9 @@ def process():
             time.sleep(60)
         except Exception as e:
             log.log(e)
-            toProcess = toProcess[toProcess['idProjeto'] != idProjeto]
+            print(e)
+            if toProcess is not None:
+                toProcess = toProcess[toProcess['idProjeto'] != idProjeto]
             #dbquery.executeSQL(f"delete from listaAProcessar where idProjeto = {row.idProjeto}")
 
 if __name__ == "__main__":
