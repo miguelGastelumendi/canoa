@@ -138,10 +138,10 @@ def get_user_email():
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():
-    log.logActivity2Database(idUsuario=current_user.id if current_user else -1,
-    idProjeto=-1 if not '_projeto_id' in session.keys() else session['_projeto_id'],
-                             url=f'/register/{request.form["username"] if "register" in request.form else ""}/{request.form["email"] if "register" in request.form else ""}'
-                             )
+    #log.logActivity2Database(idUsuario=current_user.id if current_user else -1,
+    #idProjeto=-1 if not '_projeto_id' in session.keys() else session['_projeto_id'],
+    #                         url=f'/register/{request.form["username"] if "register" in request.form else ""}/{request.form["email"] if "register" in request.form else ""}'
+    #                         )
     texts = getTexts('register')
     create_account_form = CreateAccountForm(request.form)
     if 'register' in request.form:
