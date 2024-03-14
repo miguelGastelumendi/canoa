@@ -37,3 +37,9 @@ apps/config.py
 test.js
 test.html
 
+### Flask template
+instance/*
+!instance/.gitignore
+.webassets-cache
+.env
+

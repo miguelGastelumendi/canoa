@@ -1,7 +1,7 @@
 SQLs = {
     'userNameDescProjeto': """select u.username, descProjeto, p.eMailEnvioResultado 
 from Projeto p 
-inner join Users u 
+inner join users u 
 on p.idUser = u.id 
 where p.id = {0}""",
 
@@ -11,7 +11,7 @@ where p.id = {0}""",
        re.nomeRegiaoEco, ra.nomeRegiaoAdm, tp.nomeTopografia,
        mn.nomeMecanizacao 
   from Projeto pj
-       inner join Users us          on us.id = pj.idUser 
+       inner join users us          on us.id = pj.idUser 
        inner join Finalidade fn     on fn.id = pj.idFinalidade  
        inner join MunicipioFito mf  on mf.id = pj.idMunicipioFito 
        inner join Municipio mu      on mu.id = mf.idMunicipio 

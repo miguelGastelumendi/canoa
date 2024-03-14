@@ -311,7 +311,7 @@ def route_template(template):
                                        **helper.getFormText('rsp-projectEnd'))
 
             elif page2Send == 'rsp-sendSpreadsheet.html':
-                user_email = dbquery.getValues("select email from Users u "
+                user_email = dbquery.getValues("select email from users u "
                                                "inner join Projeto p "
                                                "on p.idUser = u.id "
                                                f"where p.id = {session['_projeto_id']}")
