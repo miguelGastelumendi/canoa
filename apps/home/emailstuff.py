@@ -47,7 +47,7 @@ def sendEmail(toMail: str, emailType: str, toReplace: dict, file2SendPath: str =
         attachment.disposition = Disposition('attachment')
         message.attachment = attachment
     try:
-        sendgrid_client = SendGridAPIClient(os.environ.get('EMAIL_API_KEY').strip())
+        sendgrid_client = SendGridAPIClient(os.environ.get('CAATINGA_EMAIL_API_KEY').strip())
         response = sendgrid_client.send(message)
         return response
     except Exception as e:

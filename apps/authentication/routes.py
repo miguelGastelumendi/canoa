@@ -5,7 +5,6 @@ Copyright (c) 2019 - present AppSeed.us
 import datetime
 import requests
 import os
-from flask import session
 
 from flask import render_template, redirect, request, url_for
 from flask_login import (
