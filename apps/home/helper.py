@@ -1,6 +1,7 @@
 import re
-import apps.home.dbquery as  dbquery
-from flask import escape
+import apps.home.dbquery as dbquery
+#mgd from flask import escape
+from markupsafe import escape
 from sqlalchemy import engine
 
 
