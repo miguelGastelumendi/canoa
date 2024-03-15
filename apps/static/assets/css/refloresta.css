@@ -2,9 +2,7 @@
 /* Miguel Gastelumendi -- mgd */
 
 body {
-  background-image: url(../img/pages/caatingaFundo.jpeg);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background: url(../img/pages/caatingaFundo.png) no-repeat fixed;
   background-size: cover;
 }
 
