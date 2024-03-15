@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 import os
-from flask_migrate import Migrate
+#from flask_migrate import Migrate
 from flask_minify import Minify
 from sys import exit
 

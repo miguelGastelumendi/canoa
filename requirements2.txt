@@ -1,2 +1,12 @@
+flask_minify #run.py
 flask_login
 flask_sqlalchemy
+psycopg2-binary   #for connStr postgresql:/ 'indirectly uese postgresql psycopg2 as a (defualt?) dialect.
+requests  #apps\authentication\routes.py
+flask_wtf  #apps\authentication\forms.py
+sendgrid  #apps\home\emailstuff.py
+pandas #apps\home\dbquery.py (listed in requirements.txt but...)
+plotly #apps\home\dbquery.py (listed in requirements.txt but...)
+## escape  depreciated from flask, use markupsafe => fixed inf `apps\home\helper.py`
+## Markup not found in apps\home\routes.pys
+numpy_financial #apps\home\ui_projectEnd.py

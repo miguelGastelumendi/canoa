@@ -4,7 +4,8 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from apps.home import blueprint
-from flask import render_template, request, Markup
+#mgd from flask import render_template, request, Markup
+from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 import apps.home.ui_projectSupport as ui_projectSupport
@@ -188,14 +189,14 @@ def route_template(template):
 
             elif page2Send == 'rsp-areas.html':
                 avalilableCombinations = dbquery.getValues(
-                    f"""select count(mf.id) 
+                    f"""select count(mf.id)
   from combinacao c
-       inner join Municipio m on m.idRegiaoEco = c.idRegiaoEco 
-       inner join MunicipioFito mf on 
-                  mf.idMunicipio = m.id and 
+       inner join Municipio m on m.idRegiaoEco = c.idRegiaoEco
+       inner join MunicipioFito mf on
+                  mf.idMunicipio = m.id and
                   mf.idFitoFisionomia = c.idFitoFisionomia
        inner join Projeto p on
-                  mf.id = p.idMunicipioFito  
+                  mf.id = p.idMunicipioFito
   where p.id = {session['_projeto_id']}""")
                 if avalilableCombinations == 0:
                     return render_template("home/rsp-theresNoCombinations.html",
@@ -215,7 +216,7 @@ def route_template(template):
                 # Opção APP só está disponível para propriedades com área menor que 4 módulos fiscais do município
                 removeAPPoption = dbquery.getValues(
                     "select count(1) from Projeto p "
-                    "inner join MunicipioFito mf " 
+                    "inner join MunicipioFito mf "
                     "on p.idMunicipioFito = mf.id "
                     "inner join Municipio m "
                     "on mf.idMunicipio = m.id "
@@ -233,7 +234,7 @@ def route_template(template):
                                             f"{'where f.id <> 3' if removeAPPoption > 0 else ''} "
                                             f"order by orderby"
                                         )
-                
+
                 return render_template("home/" + template,
                                            goals=goals
                                        , **helper.getFormText('rsp-goal'))

@@ -32,8 +32,9 @@ engine = create_engine(connection_url)
     SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://<USER>:<PASSWORD>@<SERVER>:/APPSPEED?driver=ODBC+Driver+18+for+SQL+Server'
     mgd: 'apagou os string connections'
 '''
-    SQLALCHEMY_DATABASE_URI = os.environ['CAATINGA_SQLALCHEMY_DATABASE_URI']
-    CHANGE_PWD_EMAIL_LINK = os.environ['CAATINGA_CHANGE_PWD_EMAIL_LINK']
+
+    SQLALCHEMY_DATABASE_URI = os.getenv('CAATINGA_SQLALCHEMY_DATABASE_URI', '');
+    CHANGE_PWD_EMAIL_LINK = os.getenv('CAATINGA_CHANGE_PWD_EMAIL_LINK', '')
 
     if (SQLALCHEMY_DATABASE_URI == '') or (CHANGE_PWD_EMAIL_LINK == ''):
         raise Exception("Verifique se as variáveis de ambiente estão definidas.")
