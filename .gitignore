@@ -36,6 +36,8 @@ apps/config.py
 # mgd
 test.js
 test.html
+caat/
+*.hlp
 
 ### Flask template
 instance/*
