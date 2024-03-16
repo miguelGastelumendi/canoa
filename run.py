@@ -23,6 +23,7 @@ except KeyError:
 
 app = create_app(app_config)
 
+
 if not DEBUG:
     Minify(app=app, html=True, js=False, cssless=False)
 
@@ -32,5 +33,8 @@ if DEBUG:
     app.logger.info('DBMS             = ' + app_config.SQLALCHEMY_DATABASE_URI)
     app.logger.info('ASSETS_ROOT      = ' + app_config.ASSETS_ROOT)
 
+
+host, port = os.getenv('CAATINGA_SERVER_ADDRESS', '0.0.0.0:50051').split(':');
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=50051)
+    app.run(host=host, port=port)
