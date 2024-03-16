@@ -18,7 +18,7 @@
                     <div class="col-12 d-flex align-items-center justify-content-center">
                         <div class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 w-100 fmxw-500">
                             <div class="text-center text-md-center mt-md-0">
-                                <img src="../../static/assets/img/logo-login.png" width="128px" height="128px" class="img-fluid">
+                                <img src="../../static/assets/img/pages/login.png" class="img-fluid">
                                 <!-- 2022.12.12 voltar com msg que foi 'perdida' nas melhorias -->
                                 <span class="font-weight-normal">
                                     {% if msg %}
@@ -62,22 +62,22 @@
                                             </label>
                                         </div>
                                             <span>
-                                                <a href="{{ url_for('authentication_blueprint.get_user_email') }}" class="labelBrown">
+                                                <a href="{{ url_for('authentication_blueprint.get_user_email') }}" class="linkBrown">
                                                     {{ forgotPassword }}</a>
                                             </span>
                                     </div>
-                                    <div class="divRememberLogin" style="margin-top: 30px;">
+                                    <!-- mgd <div class="divRememberLogin" style="margin-top: 30px;">
                                         <span>
-                                            <a href="static/assets/doc/disclaimer.html" class="labelBrown" target="_blank">
+                                            <a href="static/assets/doc/disclaimer.html" class="linkBrown" target="_blank">
                                                 {{ disclaimer }}
                                             </a>
                                         </span>
                                         <span>
-                                            <a href="static/assets/doc/politica_de_privacidade.html" class="labelBrown" target="_blank">
+                                            <a href="static/assets/doc/politica_de_privacidade.html" class="linkBrown" target="_blank">
                                                 {{ termsOfUse }}
                                             </a>
                                         </span>
-                                    </div>
+                                    </div> -->
                                 </div>
 
                                 <!-- <input class="" type="text" value="" id="latlon" pattern="/-(19|2[0-5])(\.[0-9]{1,6})/" onblur=""> -->
@@ -85,7 +85,22 @@
                                 <div class="d-grid">
                                     <button type="submit" name="login" class="btn btnLogin">{{ enter }}</button>
                                 </div>
-                                <div class="divRegister"><a href="{{ url_for('authentication_blueprint.register') }}" class="labelBrown">{{ doRegister }}</a></div>
+                                <div class="divRememberLogin" style="margin-top: 20px;">
+                                    <span>
+                                        <a href="static/assets/doc/disclaimer.html" class="linkBrown" target="_blank">
+                                            {{ disclaimer }}
+                                        </a>
+                                    </span>
+                                    <span>
+                                        <a href="static/assets/doc/politica_de_privacidade.html" class="linkBrown" target="_blank">
+                                            {{ termsOfUse }}
+                                        </a>
+                                    </span>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="button" class="btn btnRegister" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ doRegister }}</button>
+                                </div>
+
                             </form>
                         </div>
                     </div>
