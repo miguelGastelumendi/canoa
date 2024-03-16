@@ -37,4 +37,4 @@ if DEBUG:
 host, port = os.getenv('CAATINGA_SERVER_ADDRESS', '0.0.0.0:50051').split(':');
 
 if __name__ == "__main__":
-    app.run(host=host, port=port)
+    app.run(host=host, port=int(port))
