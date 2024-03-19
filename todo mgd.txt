@@ -1,0 +1,5 @@
+2024-03-19
+   - Avoid pront shadoe document.css
+   - Create authentication template
+   - After login display new "window", import?
+   

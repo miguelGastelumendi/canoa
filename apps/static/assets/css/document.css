@@ -1,0 +1,111 @@
+/* document.css
+   2024-02-12
+   Miguel Gastelumendi -- mgd
+*/
+
+:root {
+  --header-minHeight: 34px;
+  --display-maxHeight: 90vh;
+  --display-border: 1px;
+  --display-borderColor: rgb(131, 110, 69);
+  /* This is typical `legal` font */
+  --document-fontFamily:  "Century Schoolbook", "Century Old Style", serif;
+  --document-color: red;  /* test scope of the rule */
+  --document-bgColor: rgba(250, 240, 220, 0.92);/* light sepia */
+}
+
+.documentFont {
+  font-family: var(--document-fontFamily);
+  color: var(--document-color);
+}
+
+/*
+    <main>
+      .documentDisplay
+        | .documentHeader
+            {documentTitle}
+        | .documentBody
+            {documentSubTitle}
+            {documentAbstract}
+            {documentBody}
+    </main>
+*/
+
+.documentDisplay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 900px;
+  width: 80%;
+  max-height: var(--display-maxHeight);
+  background-color: var(--document-bgColor);
+  padding: 0px;
+  /* lower-shadow right-shadow shadow-blur color */
+  box-shadow: 25px 20px 10px rgba(0, 0, 0, 0.2);
+  border: var(--display-border) solid var(--display-borderColor);
+  font-family: var(--document-fontFamily);
+  color: var(--document-color);
+}
+
+.documentHeader {
+  top: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: var(--display-border) solid var(--display-borderColor);
+  padding-left: 2em;
+  position: sticky;
+  min-height: var(--header-minHeight);
+  z-index: 100;
+}
+
+@media print {
+  .documentHeader {
+      box-shadow: none;
+  }
+}
+
+.documentTitle {
+  width: 100%;
+}
+
+.documentButtons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.documentButton {
+  padding: calc((var(--header-minHeight) - 2px) / 2);
+  border: none;
+  border-left: 30px;
+  border-right: 30px;
+  border-radius: 4px;
+}
+
+#documentButtonPrint {
+  background: url('/static/assets/img/pages/pagePrint.png');
+  background-size: cover;
+}
+
+#documentButtonClose {
+  background: url('/static/assets/img/pages/pageClose.png');
+  background-size: cover;
+}
+
+.documentBody {
+  padding: 1em 2em .5em 2em;
+  overflow-y: auto;
+  /* Rendered time set with js:  `The overflow property only works for block elements with a specified height.` */
+  max-height: calc(var(--display-maxHeight) - var(--header-minHeight) - (3 * var(--display-border)));
+  scrollbar-width: thin;
+}
+
+p {
+  font-family: var(--document-fontFamily);
+}
+
+/*~*/

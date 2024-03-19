@@ -1,34 +1,30 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends "layouts/base-fullscreen.html" %}
 
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+{% block title %} {title} {% endblock %}
 
-        <title>Caatinga &ndash; Disclaimer</title>
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link type="text/css" href="/static/assets/css/document.css" rel="stylesheet">
+{% endblock stylesheets %}
 
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="title" content="Caatinga">
-        <meta name="author" content="Equipe `Caatinga`">
-        <meta name="description" content="Disclaimer de Caatinga">
+{% block main_content %}
+<div class="documentDisplay printNoShadow">
+    <div class="documentHeader">
+        <div class="documentTitle">
+            <h1>{% block documentTitle %} <code>{documentTitle}</code> {% endblock %}</h1>
+        </div>
+        <div class="documentButtons">
+            <button ID="documentButtonPrint" onclick="window.print();" class="documentButton printDoNot" title="Imprimir"></button>
+            <button ID="documentButtonClose" onclick="history.back();" class="documentButton printDoNot" title="Fechar e voltar"></button>
+        </div>
+    </div>
+    <div class="documentBody">
+        <h2>{% block documentSubTitle %} <code>{documentSubTitle}</code> {% endblock %}</h2>
+        <h3>{% block documentAbstract %} <code>{documentAbstract}</code> {% endblock %}</h3>
 
-        <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon/favicon-32.png">
-        <link rel="icon" type="image/png" sizes="64x64" href="../img/favicon/favicon-64.png">
-        <meta name="msapplication-TileColor" content="#ffffff">
-        <meta name="theme-color" content="#ffffff">
-
-        <!-- Fontawesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <!-- Pixel CSS -->
-        <link type="text/css" href="../css/pixel.css" rel="stylesheet">
-        <link type="text/css" href="../css/caatinga.css" rel="stylesheet">
-
-    </head>
-    <body>
-        <div class="displayDocument">
-            <button onclick="window.print();" class="printPageButton dontPrint"></button>
-            <h1>Termo de Uso e Políticaa de Privacidade</h1>
-            <h3>Lugar para o termo</h3>
-
+        {% block documentBody %}
+        <code>{documentBody}</code>
+        <section>
             <p>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.
                 Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.
@@ -36,7 +32,6 @@
                 Mauris massa. Vestibulum lacinia arcu eget nulla.
                 Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
             </p>
-
             <p>
                 Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor.
                 Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis.
@@ -60,7 +55,6 @@
                 Mauris massa. Vestibulum lacinia arcu eget nulla.
                 Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
             </p>
-
             <p>
                 Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor.
                 Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis.
@@ -69,9 +63,8 @@
                 Fusce ac turpis quis ligula lacinia aliquet.
                 Mauris ipsum. Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh.
             </p>
-
-        </div>
-
-
-    </body>
-</html>
+            </sction>
+            {% endblock documentBody %}
+    </div>
+</div>
+{% endblock main_content %}
