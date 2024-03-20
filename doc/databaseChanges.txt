@@ -10,3 +10,5 @@ CREATE SEQUENCE suporteusuarioelemento_seq START WITH 372;
 
 - Ative o preenchimento do valor default pelo SEQUENCE:
 ALTER TABLE suporteusuarioelemento ALTER COLUMN id SET DEFAULT nextval('suporteusuarioelemento_seq');
+
+

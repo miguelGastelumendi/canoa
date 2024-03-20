@@ -6,16 +6,15 @@ from sqlalchemy import text
 from apps import config
 import json
 
-engine = None
-
-connection = None
-
-def getEngine():
-    global engine
-    if not engine:
-        engine = create_engine(config.Config.SQLALCHEMY_DATABASE_URI,
+engine = create_engine(config.Config.SQLALCHEMY_DATABASE_URI,
                          isolation_level="READ UNCOMMITTED", connect_args={'connect_timeout': 600})
-    return engine
+
+# def getEngine():
+#     global engine
+#     if not engine:
+#         engine = create_engine(config.Config.SQLALCHEMY_DATABASE_URI,
+#                          isolation_level="READ UNCOMMITTED", connect_args={'connect_timeout': 600})
+#     return engine
 
 
 #def getSession():
@@ -23,17 +22,18 @@ def getEngine():
 #    return scoped_session(session_factory)
 
 
-def connectDB():
-    global engine, connection
-    if not connection:
-        engine = getEngine()
-        connection = engine.connect()
-    return connection
+# def connectDB():
+#     global engine, connection
+#     if not connection:
+#         engine = getEngine()
+#         connection = engine.connect()
+#     return connection
 
 
 def executeSQL(sql):
-    conn = connectDB()
-    return conn.execute(text(sql))
+    global engine
+    with engine.connect() as conn:
+        return conn.execute(text(sql))
 
 
 def getValues(sql):
