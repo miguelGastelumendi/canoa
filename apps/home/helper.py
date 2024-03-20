@@ -50,10 +50,10 @@ def getTipText(form: str):
         f"where b.Nome = '{form}' and Tag = 'tip'").replace('\r','').replace('\n','')
 
 def getErrorMessage(tag: str):
-    msg= dbquery.getValues(
+    msgError= dbquery.getValues(
         f"select Texto from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
         f"where b.Nome = 'errorMessage' and Tag = '{tag}'");
-    if msg is None:
-        msg= f"Error '{tag}' (não registrado).";
-    return msg
+    if msgError is None:
+        msgError= f"Error '{tag}' (não registrado).";
+    return msgError
 

@@ -1,76 +1,69 @@
 {% extends "./layouts/accounts.tmpl" %}
 
+{% block formContent %}
 
-   {% block formContent %}
-
-      <!-- { User Name -->
-      <div class="form-group">
-         <label class="normalLabel accountLabel" for="user_email">{{ userLabel }}</label>
-         <div class="input-group">
-               <!-- Font Awesome fas fa- ...-->
-               <span class="input-group-text" id="basic-addon1">
-                  <span class="fas fa-user"></span>
-               </span>
-               {{ form.username(class="form-control", id="user_email") }}
-         </div>
+   <!-- { User Name -->
+   <div class="form-group">
+      <label class="normalLabel accountLabel" for="user_email">{{ userLabel }}</label>
+      <div class="input-group">
+            <!-- Font Awesome fas fa- ...-->
+            <span class="input-group-text" id="basic-addon1">
+               <span class="fas fa-user"></span>
+            </span>
+            {{ form.username(class="form-control", id="user_email") }}
       </div>
-      <!-- User Name } -->
+   </div>
+   <!-- User Name } -->
 
-      <!--{ Password  -->
-      <div class="form-group mt-3">
-         <label class="normalLabel accountLabel" for="pwd_login">{{ passwordLabel }}</label>
-         <div class="input-group">
-               <!-- Font Awesome fas fa ...-->
-               <span class="input-group-text" id="basic-addon2">
-                  <span class="fas fa-unlock-alt"></span>
-               </span>
-               {{ form.password(class="form-control", type="password", id="pwd_login") }}
-         </div>
+   <!--{ Password  -->
+   <div class="form-group mt-3">
+      <label class="normalLabel accountLabel" for="pwd_login">{{ passwordLabel }}</label>
+      <div class="input-group">
+            <!-- Font Awesome fas fa ...-->
+            <span class="input-group-text" id="basic-addon2">
+               <span class="fas fa-unlock-alt"></span>
+            </span>
+            {{ form.password(class="form-control", type="password", id="pwd_login") }}
       </div>
-      <!-- Password }-->
+   </div>
+   <!-- Password }-->
 
-      <!-- { RememberMe & ForgotPw -->
-      <div class="form-group">
-         <div class="loginTwoCells">
-               <!-- { RememberMe -->
-               <div>
-                  <input class="btnCheck" type="checkbox" value="" id="rememberMe">
-                  <label class="normalLabel accountLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
-               </div>
-               <!-- RememberMe } -->
+   <!-- { RememberMe & ForgotPw -->
+   <div class="form-group">
+      <div class="loginTwoCells">
+            <!-- { RememberMe -->
+            <div>
+               <input class="btnCheck" type="checkbox" value="" id="rememberMe">
+               <label class="normalLabel accountLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
+            </div>
+            <!-- RememberMe } -->
 
-               <!-- { ForgotPw :-( -->
-               <span>
-                  <a href="{{ url_for('authentication_blueprint.get_user_email') }}" class="accountLink">{{ forgotPassword }}</a>
-               </span>
-               <!--End ForgotPw } -->
-         </div>
+            <!-- { ForgotPw :-( -->
+            <span>
+               <a href="{{ url_for('authentication_blueprint.getuseremail') }}" class="accountLink">{{ forgotPassword }}</a>
+            </span>
+            <!--End ForgotPw } -->
       </div>
-      <!-- RememberMe & ForgotPw } -->
+   </div>
+   <!-- RememberMe & ForgotPw } -->
+{% endblock formContent %}
 
-      <!-- { Submit -->
-      <div class="d-grid">
-         <button type="submit" name="login" class="btn btnMain">{{ submitButton }}</button>
-      </div>
-      <!-- Submit } -->
+{% block formBelow %}
+   <!-- { Register Info -->
+   <div class="loginTwoCells mt-3">
+      <span>
+            <a href="docs/disclaimer" class="accountLink">{{ disclaimer }}</a>
+      </span>
+      <span>
+            <a href="docs/politica_de_privacidade" class="accountLink">{{ termsOfUse }}</a>
+      </span>
+   </div>
+   <!-- Register Info } -->
 
-      <!-- { Register Info -->
-      <div class="loginTwoCells mt-3">
-         <span>
-               <a href="docs/disclaimer" class="accountLink">{{ disclaimer }}</a>
-         </span>
-         <span>
-               <a href="docs/politica_de_privacidade" class="accountLink">{{ termsOfUse }}</a>
-         </span>
-      </div>
-      <!-- Register Info } -->
-
-      <!-- { Goto Register -->
-      <div class="d-grid">
-         <button type="button" class="btn btnMain" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ gotoRegister }}</button>
-      </div>
-      <!-- Goto Register } -->
-
-    {% endblock formContent %}
-
+   <!-- { Goto Register -->
+   <div class="d-grid">
+      <button type="button" class="btn btnMain" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ gotoRegister }}</button>
+   </div>
+   <!-- Goto Register } -->
+{% endblock formBelow %}
 {# eof #}

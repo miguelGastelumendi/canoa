@@ -55,7 +55,7 @@ def login():
             return redirect(url_for('authentication_blueprint.route_default'))
 
         # Something (user or pass) is not ok
-        texts['msg'] = getErrorMessage('userOrPwdIsWrong')
+        texts['msgError'] = getErrorMessage('userOrPwdIsWrong')
         return render_template('accounts/login.html',
                                form=login_form,
                                **texts)
@@ -86,7 +86,7 @@ def changepassword(token):
             db.session.commit()
             return redirect(url_for('authentication_blueprint.login'))
       else:
-          texts['msg'] = getErrorMessage('passwordsAreDifferent')
+          texts['msgError'] = getErrorMessage('passwordsAreDifferent')
           return render_template('accounts/changepassword.html',
                                  form=changepassword_form,
                                  **texts)
@@ -94,11 +94,11 @@ def changepassword(token):
         recoverEmailTimeStamp = getValues("select recoverEmailTimeStamp from users "
                                           f"where recoverEMailToken = '{token}'")
         if recoverEmailTimeStamp == None:
-            texts['msg'] = getErrorMessage('noRecoveryPwRequestFound')
+           texts['msgError'] = getErrorMessage('noRecoveryPwRequestFound')
 
         elif (datetime.datetime.now() - recoverEmailTimeStamp).days > 1:
             get_user_email_form = GetUserEmailForm(request.form)
-            texts['msg'] = getErrorMessage('passwordsAreDifferent')
+            texts['msgError'] = getErrorMessage('passwordsAreDifferent')
             return render_template('accounts/getuseremail.html',
                                    form=get_user_email_form,
                                    **texts)
@@ -106,8 +106,8 @@ def changepassword(token):
                            form=changepassword_form,
                            **texts)
 
-@blueprint.route('/get_user_email', methods=['GET', 'POST'])
-def get_user_email():
+@blueprint.route('/getuseremail', methods=['GET', 'POST'])
+def getuseremail():
     #log.logActivity2Database(idUsuario=current_user.id if current_user else -1,
     #idProjeto=-1 if not '_projeto_id' in session.keys() else session['_projeto_id'],
     #                         url=f'/get_user_email')
@@ -117,7 +117,7 @@ def get_user_email():
         toEMail = request.form['user_email']
 
         if getValues(f"select count(1) from users where email = '{toEMail}'") != 1:
-            texts['msg'] = getErrorMessage('emailNotRegistered')
+            texts['msgError'] = getErrorMessage('emailNotRegistered')
             return render_template('accounts/getuseremail.html',
                                    form=get_user_email_form,
                                    **texts)
@@ -129,7 +129,7 @@ def get_user_email():
         executeSQL(f"update users set recoverEmailToken = '{token}',"
                    f" recoverEmailTimeStamp = current_timestamp "
                    f"where email = '{toEMail}'")
-        texts['msg'] = getErrorMessage('emailSent')
+        texts['msgError'] = getErrorMessage('emailSent')
         return render_template('accounts/getuseremail.html',
                                form=get_user_email_form,
                                **texts)
@@ -154,7 +154,7 @@ def register():
         # Check usename exists
         user = users.query.filter_by(username=username).first()
         if user:
-            texts['msg'] = getErrorMessage('userAlreadyRegistered')
+            texts['msgError'] = getErrorMessage('userAlreadyRegistered')
             return render_template('accounts/register.html',
                                    success=False,
                                    form=create_account_form,
@@ -163,7 +163,7 @@ def register():
         # Check email exists
         user = users.query.filter_by(email=email).first()
         if user:
-            texts['msg'] = getErrorMessage('emailAlreadyRegistered')
+            texts['msgError'] = getErrorMessage('emailAlreadyRegistered')
             return render_template('accounts/register.html',
                                    success=False,
                                    form=create_account_form,

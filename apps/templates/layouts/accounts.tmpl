@@ -1,10 +1,12 @@
 {#
-   Template for Accounts Forms (mgd 2024.03)
-        vars:
-            -
+Template for Accounts Forms (mgd 2024.03)
+vars:
+- base-caatinga.tmpl.{pageTitle} Web Page Title
+- {formTitle}
+- eventualmente {msgError} {msgOk}
 
-        used by:
-            - Login.html
+used by:
+- Login.html
 
 #}
 
@@ -16,48 +18,61 @@ cl{% extends "layouts/base-caatinga.tmpl" %}
 {% endblock stylesheets %}
 
 {% block content %}
-    <main>
-        <section class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark img-fluid">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-12 d-flex align-items-center justify-content-center">
-                        <div class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 w-100 fmxw-500">
+<main>
+   <section class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark img-fluid">
+      <div class="container">
+         <div class="row justify-content-center">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+               <div
+                  class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 w-100 fmxw-500">
 
-                            <!-- { Image -->
-                            <div class="loginImage">
-                                <img src="/static/assets/img/pages/accounts.png" alt="Representação da Caatinga, em tons marrão">
-                                <div class="loginImageText">{{ formTitle }}</div>
-                            </div>
-                            <!-- Image } -->
+                  <!-- { Image -->
+                  <div class="loginImage">
+                     <img src="/static/assets/img/pages/accounts.png" alt="Representação da Caatinga, em tons marrão">
+                     <div class="loginImageText">{{ formTitle }}</div>
+                  </div>
+                  <!-- Image } -->
 
-                            <!-- { BackendError -->
-                            <div class="text-center text-md-center mt-md-0 mb-4">
-                                <span class="font-weight-normal">
-                                    {% if msg %}
-                                        <br>
-                                        <div class="alert alert-danger">
-                                        {{ msg | safe }}
-                                        </div>
-                                    {% else %}
-                                        <!-- other msg? -->
-                                    {% endif %}
-                                </span>
-                            </div>
-                            <!-- BackError } -->
-
-                            <!-- { Form  -->
-                            <form method="post" action="" class="mt-2">
-                                {{ form.hidden_tag() }}
-
-                                {% block formContent %}
-                                {% endblock formContent %}
-                            </form>
-                            <!-- Form } -->
+                  <!-- { BackendError -->
+                  <div class="text-center text-md-center mt-md-0 mb-4">
+                     <span class="font-weight-normal">
+                        {% if msgError %}
+                        <br>
+                        <div class="alert alert-danger">
+                           {{ msgError | safe }}
                         </div>
-                    </div>
-                </div>
+                        {% else %}
+                        <!-- other msg? -->
+                        {% endif %}
+                     </span>
+                  </div>
+                  <!-- BackError } -->
+
+                  {% block formAbove %}
+                  {% endblock formAbove %}
+
+                  <!-- { Form  -->
+                  <form method="post" action="" class="mt-2">
+                     {{ form.hidden_tag() }}
+
+                     {% block formContent %}
+                     {% endblock formContent %}
+
+                     <!-- { Submit -->
+                     <div class="d-grid">
+                        <button type="submit" name="btnSubmit" class="btn btnMain">{{ submitButton }}</button>
+                     </div>
+                     <!-- Submit } -->
+                  </form>
+                  <!-- Form } -->
+
+                  {% block formBelow %}
+                  {% endblock formBelow %}
+               </div>
             </div>
-        </section>
-    </main>
+         </div>
+      </div>
+   </section>
+</main>
 {% endblock content %}
 {# eof #}
