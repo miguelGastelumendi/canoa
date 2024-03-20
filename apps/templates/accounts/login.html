@@ -1,116 +1,76 @@
-{% extends "layouts/base-fullscreen.html" %}
+{% extends "./layouts/accounts.tmpl" %}
 
-{% block title %} Login {% endblock %}
 
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+   {% block formContent %}
 
-{% block content %}
+      <!-- { User Name -->
+      <div class="form-group">
+         <label class="normalLabel accountLabel" for="user_email">{{ userLabel }}</label>
+         <div class="input-group">
+               <!-- Font Awesome fas fa- ...-->
+               <span class="input-group-text" id="basic-addon1">
+                  <span class="fas fa-user"></span>
+               </span>
+               {{ form.username(class="form-control", id="user_email") }}
+         </div>
+      </div>
+      <!-- User Name } -->
 
-    <main>
+      <!--{ Password  -->
+      <div class="form-group mt-3">
+         <label class="normalLabel accountLabel" for="pwd_login">{{ passwordLabel }}</label>
+         <div class="input-group">
+               <!-- Font Awesome fas fa ...-->
+               <span class="input-group-text" id="basic-addon2">
+                  <span class="fas fa-unlock-alt"></span>
+               </span>
+               {{ form.password(class="form-control", type="password", id="pwd_login") }}
+         </div>
+      </div>
+      <!-- Password }-->
 
-        {% include 'includes/preloader.html' %}
+      <!-- { RememberMe & ForgotPw -->
+      <div class="form-group">
+         <div class="loginTwoCells">
+               <!-- { RememberMe -->
+               <div>
+                  <input class="btnCheck" type="checkbox" value="" id="rememberMe">
+                  <label class="normalLabel accountLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
+               </div>
+               <!-- RememberMe } -->
 
-        <!-- Section -->
-        <section class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark img-fluid">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-12 d-flex align-items-center justify-content-center">
-                        <div class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 w-100 fmxw-500">
-                            <div class="text-center text-md-center mt-md-0">
-                                <img src="../../static/assets/img/pages/login.png" class="img-fluid">
-                                <!-- 2022.12.12 voltar com msg que foi 'perdida' nas melhorias -->
-                                <span class="font-weight-normal">
-                                    {% if msg %}
-                                        <br />
-                                        <div class="alert alert-danger">
-                                        {{ msg | safe }}
-                                        </div>
-                                    {% else %}
-                                        <!-- Add your credentials -->
-                                    {% endif %}
-                                </span>
-                            </div>
-                            <form method="post" action="" class="mt-2">
+               <!-- { ForgotPw :-( -->
+               <span>
+                  <a href="{{ url_for('authentication_blueprint.get_user_email') }}" class="accountLink">{{ forgotPassword }}</a>
+               </span>
+               <!--End ForgotPw } -->
+         </div>
+      </div>
+      <!-- RememberMe & ForgotPw } -->
 
-                                {{ form.hidden_tag() }}
+      <!-- { Submit -->
+      <div class="d-grid">
+         <button type="submit" name="login" class="btn btnMain">{{ submitButton }}</button>
+      </div>
+      <!-- Submit } -->
 
-                                <!-- Form Input User Name -->
-                                <div class="form-group mb-4">
-                                    <label class="normalLabel labelBrown" for="username_login">{{  userLabel }}</label>  <!-- mgd fix for with input id -->
-                                    <div class="input-group">
-                                        <span class="input-group-text" id="basic-addon1"><span class="fas fa-user"></span></span>
-                                        {{ form.username(class="form-control", id="user_email") }}
-                                    </div>
-                                </div>
-                                <!-- End of Form -->
-                                <div class="form-group">
-                                    <!-- Form Input Password -->
-                                    <div class="form-group mb-4">
-                                        <label class="normalLabel labelBrown" for="pwd_login">{{ passwordLabel }}</label>    <!-- mgd fix for with input id -->
-                                        <div class="input-group">
-                                            <span class="input-group-text" id="basic-addon2"><span class="fas fa-unlock-alt"></span></span>
-                                            {{ form.password(class="form-control", type="password", id="pwd_login") }}
-                                        </div>
-                                    </div>
-                                    <!-- End of Form -->
-                                    <div class="divRememberLogin">
-                                        <div>
-                                            <input class="" type="checkbox" value="" id="remember">
-                                            <label class="normalLabel labelBrown" class="form-check-label mb-0" for="remember">
-                                                {{ rememberData }}
-                                            </label>
-                                        </div>
-                                            <span>
-                                                <a href="{{ url_for('authentication_blueprint.get_user_email') }}" class="linkBrown">
-                                                    {{ forgotPassword }}</a>
-                                            </span>
-                                    </div>
-                                    <!-- mgd <div class="divRememberLogin" style="margin-top: 30px;">
-                                        <span>
-                                            <a href="static/assets/doc/disclaimer.html" class="linkBrown" target="_blank">
-                                                {{ disclaimer }}
-                                            </a>
-                                        </span>
-                                        <span>
-                                            <a href="static/assets/doc/politica_de_privacidade.html" class="linkBrown" target="_blank">
-                                                {{ termsOfUse }}
-                                            </a>
-                                        </span>
-                                    </div> -->
-                                </div>
+      <!-- { Register Info -->
+      <div class="loginTwoCells mt-3">
+         <span>
+               <a href="docs/disclaimer" class="accountLink">{{ disclaimer }}</a>
+         </span>
+         <span>
+               <a href="docs/politica_de_privacidade" class="accountLink">{{ termsOfUse }}</a>
+         </span>
+      </div>
+      <!-- Register Info } -->
 
-                                <!-- <input class="" type="text" value="" id="latlon" pattern="/-(19|2[0-5])(\.[0-9]{1,6})/" onblur=""> -->
+      <!-- { Goto Register -->
+      <div class="d-grid">
+         <button type="button" class="btn btnMain" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ gotoRegister }}</button>
+      </div>
+      <!-- Goto Register } -->
 
-                                <div class="d-grid">
-                                    <button type="submit" name="login" class="btn btnLogin">{{ enter }}</button>
-                                </div>
-                                <div class="divRememberLogin" style="margin-top: 20px;">
-                                    <span>
-                                        <a href="static/assets/doc/disclaimer.html" class="linkBrown" target="_blank">
-                                            {{ disclaimer }}
-                                        </a>
-                                    </span>
-                                    <span>
-                                        <a href="static/assets/doc/politica_de_privacidade.html" class="linkBrown" target="_blank">
-                                            {{ termsOfUse }}
-                                        </a>
-                                    </span>
-                                </div>
-                                <div class="d-grid">
-                                    <button type="button" class="btn btnRegister" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ doRegister }}</button>
-                                </div>
+    {% endblock formContent %}
 
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-{% endblock content %}
-
-<!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{# eof #}

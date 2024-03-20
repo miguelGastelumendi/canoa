@@ -22,21 +22,35 @@ import apps.home.logHelper as logHelper
 
 log = logHelper.Log2Database()
 
+# ============= Index ============== #
 @blueprint.route('/index')
 @login_required
 def index():
     return render_template('home/index.html', segment='index')
 
 
+# ============= Documents ============== #
+@blueprint.route('/docs/<docName>')
+def docs(docName):
+    return render_template('layouts/documentDisplay.html',  **{'documentTitle': f'{docName} Document', 'pageTitle':f'{docName}'})
+
+
+# ======== Route Callback ========== #
 @blueprint.route('/callback/<endpoint>')
 @login_required
 def route_callback(endpoint):
-    log.logActivity2Database(idUsuario=current_user.id if current_user else 'NULL',
-    idProjeto='NULL' if not '_projeto_id' in session.keys() else session['_projeto_id'], url=f"{endpoint}\{str(request.args.to_dict(flat=True))}")
+    log.logActivity2Database(
+          idUsuario= current_user.id if current_user else 'NULL'
+        , idProjeto= 'NULL' if not '_projeto_id' in session.keys() else session['_projeto_id']
+        , url=f"{endpoint}\{str(request.args.to_dict(flat=True))}"
+    )
+
     args = request.args
     callerID = args.get('callerID')
+
     if callerID == 'mapSP':
         return ui_projectSupport.getMapSP()
+
     elif endpoint == 'projectName':
         try:
             if not '_projeto_id' in session.keys() or session['_projeto_id'] == -1:
@@ -47,6 +61,7 @@ def route_callback(endpoint):
             if '23000' in re.split('\W+', e.args[0]):
                 return helper.getErrorMessage('projectNameMustBeUnique')
         return "Ok"
+
     elif endpoint == 'areas':
         try:
             ui_projectSupport.updateProject(session['_projeto_id'], **{'areaPropriedade': args['propertyArea'],
@@ -55,6 +70,7 @@ def route_callback(endpoint):
             if '23000' in re.split('\W+', e.args[0]):
                 return helper.getErrorMessage('projectNameMustBeUnique')
         return "Ok"
+
     elif endpoint == 'locationCAR':
         return ui_projectSupport.getMapCAR(request.args.get('CAR'))
     elif endpoint == 'locationLatLon':
@@ -92,7 +108,7 @@ def route_callback(endpoint):
         return helper.getTipText(args.get('id'))
     return "Ok"
 
-
+# =========== template ============= #
 @blueprint.route('/<template>')
 @login_required
 def route_template(template):

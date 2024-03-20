@@ -1,0 +1,18 @@
+2024-03-19
+   - Avoid print shadow document.css
+   - Create authentication template
+   - After login display new "window", import?
+
+2024-03-20
+   - Registro:
+      » [ ] Li e ...
+
+
+
+----------------
+   - base-caatinga.tmpl is really needed?
+
+apps\templates\accounts\login.html:
+   basic-addon2
+
+Clean caatinga.css
