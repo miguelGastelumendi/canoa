@@ -1,8 +1,17 @@
-{% extends "layouts/base-fullscreen.html" %}
+{#
+    Displays HTML documents, has print & close button (mgd 2024.03)
+    and a nice layout ;-)
+        vars:
+            -<h1>documentTitle</h1>
+            - documentBody
+#}
+
+{# files are relative to ./templates #}
+{% extends "/layouts/base-fullscreen.html" %}
 
 {% block title %} {title} {% endblock %}
 
-<!-- Specific Page CSS goes HERE  -->
+
 {% block stylesheets %}
 <link type="text/css" href="/static/assets/css/document.css" rel="stylesheet">
 {% endblock stylesheets %}
@@ -11,7 +20,7 @@
 <div class="documentDisplay printNoShadow">
     <div class="documentHeader">
         <div class="documentTitle">
-            <h1>{% block documentTitle %} <code>{documentTitle}</code> {% endblock %}</h1>
+            <h1>{{documentTitle}}</h1>
         </div>
         <div class="documentButtons">
             <button ID="documentButtonPrint" onclick="window.print();" class="documentButton printDoNot" title="Imprimir"></button>
@@ -19,9 +28,6 @@
         </div>
     </div>
     <div class="documentBody">
-        <h2>{% block documentSubTitle %} <code>{documentSubTitle}</code> {% endblock %}</h2>
-        <h3>{% block documentAbstract %} <code>{documentAbstract}</code> {% endblock %}</h3>
-
         {% block documentBody %}
         <code>{documentBody}</code>
         <section>

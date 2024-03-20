@@ -1,0 +1,79 @@
+/*
+   accounts.css
+      for accounts.tmpl & extenders
+
+   2024-03-12
+   Miguel Gastelumendi -- mgd
+*/
+
+:root {
+   --buttonColor: #4c811d;
+   --titleColor:  #4c811d;
+   --labelColor: #5a443d;
+}
+
+.normalLabel {
+   position: initial;
+   color: black;
+ }
+
+ .accountLabel {
+   color: var(--labelColor);
+ }
+
+ .accountLink {
+   color: var(--labelColor);
+   transition: font-weight 0.3s ease;
+ }
+
+ .accountLink:hover {
+    text-decoration: underline;
+    /* option 2) font-weight: bold; */
+ }
+
+ .loginTwoCells {
+   display: flex;
+   justify-content: space-between;
+   margin: 10px 0 10px;
+ }
+
+ .loginImage {
+   position: relative;
+ }
+
+ .loginImageText {
+   position: absolute; /* Position the text absolutely within the parent div */
+   top: 4px;
+   left: 4px;
+   background-color: rgba(255, 255, 255, 0.15);
+   padding: 4px;
+   width: 100%;
+   /* style variant weight size family */
+   font: normal normal 800 160% 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+   color: var(--titleColor);
+}
+
+/* .loginImageText::before {
+   content: var(--project-name)  ' – '; /* '\f2009\f2013\f0A0'; "&thinsp;&ndash;&nbsp");
+}
+ */
+
+.btnCheck:checked {
+   accent-color: var(--buttonColor);
+}
+
+.btnMain{
+  background-color: var(--buttonColor);
+  border: none;
+  color: white;
+}
+
+.btnMain:hover {
+  background-color: var(--buttonColor);
+  filter: brightness(120%);
+}
+
+.btnMain:disabled {
+  background-color: var(--buttonColor);
+  filter: brightness(60%);
+}

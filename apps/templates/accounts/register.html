@@ -1,144 +1,91 @@
-{% extends "layouts/base-fullscreen.html" %} {% block title %} Sign UP {%
-endblock %}
+{% extends "./layouts/accounts.tmpl" %}
 
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %} {% block content %}
 
-<main>
-  {% include 'includes/preloader.html' %}
 
-  <!-- Section -->
-  <section
-    class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark"
-    data-background="/static/assets/img/pages/1440_Tree-tops.jpg"
-  >
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-12 d-flex align-items-center justify-content-center">
-          <div
-            class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 p-lg-5 w-100 fmxw-500"
-          >
-            <div class="text-center text-md-center mb-4 mt-md-0">
-              <span>
-                {% if msg %}
-                <div class="alert alert-danger">{{ msg | safe }}</div>
-                {% else %} {{ addCredentials }} {% endif %}
-              </span>
+   {% if not success %}
+      {% block formContent %}
+         <!-- { User Name -->
+         <div class="form-group">
+            <label class="normalLabel accountLabel" for="userName">{{ userLabel }}</label>
+            <div class="input-group">
+               <span class="input-group-text" id="basic-addon1">
+                  <span class="fas fa-user"></span>
+               </span>
+               {{ form.username(class="form-control", id= "userName") }}
             </div>
+         </div>
+         <!-- User Name } -->
 
-            {% if not success %}
+         <!-- Email  -->
+         <div class="form-group mt-3">
+            <label class="normalLabel accountLabel" for="user_email">{{ emailLabel }}</label>
+            <div class="input-group">
+               <span class="input-group-text" id="basic-addon3">
+                  <span class="fas fa-envelope"></span>
+               </span>
+               {{ form.email(class="form-control", type="email", id="user_email") }}
+            </div>
+         </div>
+         <!-- Email } -->
 
-            <form method="post" action="" action="#">
-              {{ form.hidden_tag() }}
+         <!-- { Password  -->
+         <div class="form-group mt-3">
+            <label class="normalLabel accountLabel" for="password">{{ passwordLabel }}</label>
+            <div class="input-group">
+               <span class="input-group-text" id="basic-addon4">
+                  <span class="fas fa-unlock-alt"></span>
+               </span>
+               {{ form.password(class="form-control", type="password", id="password") }}
+            </div>
+         </div>
+         <!-- Password } -->
 
-              <div class="form-group mb-4">
-                <label class="normalLabel labelBrown" for="email">{{ userName }}</label>
-                <div class="input-group">
-                  <span class="input-group-text" id="basic-addon1"
-                    ><span class="fas fa-user"></span
-                  ></span>
-                  {{ form.username(class="form-control") }}
-                </div>
-              </div>
-              <!-- Form -->
-              <div class="form-group mb-4">
-                <label class="normalLabel labelBrown" for="email">{{ eMail }}</label>
-                <div class="input-group">
-                  <span class="input-group-text" id="basic-addon3"
-                    ><span class="fas fa-envelope"></span
-                  ></span>
-                  {{ form.email(class="form-control", type="email") }}
-                </div>
-              </div>
-              <!-- End of Form -->
-              <div class="form-group">
-                <!-- Form -->
-                <div class="form-group mb-4">
-                  <label class="normalLabel labelBrown" for="password">{{ password }}</label>
-                  <div class="input-group">
-                    <span class="input-group-text" id="basic-addon4"
-                      ><span class="fas fa-unlock-alt"></span
-                    ></span>
-                    {{ form.password(class="form-control", type="password") }}
-                  </div>
-                </div>
-                <!-- End of Form -->
-                <div
-                  class="d-flex justify-content-between align-items-center mb-4"
-                >
-                  <div class="form-check mb-0">
-                    <input
-                      id="remember"
-                    
-                      type="checkbox"
-                      onclick="acceptTerms()"
-                    />
-                    <label class="normalLabel labelBrown" class="form-check-label mb-0" for="remember">
-                      Aceite os
-                      <a
-                        class="fw-bold text-underline labelBrown"
-                        href="static/assets/doc/politica_de_privacidade.html"
-                        target="_blank"
-                        >Termos</a
-                      >
-                    </label>
-                  </div>
+         <!-- { Termo || Login -->
+         <div class="form-group">
+            <div class="loginTwoCells">
+                  <!-- { Tremo -->
                   <div>
-                    <a
-                      href="{{ url_for('authentication_blueprint.login') }}"
-                      class="text-right"
-                      >{{ login }}</a
-                    >
+                     <input class="btnCheck" type="checkbox" onclick="termsAccepted()" id="termsAccepted">
+                     <label class="normalLabel accountLabel" class="form-check-label mb-0" for="termsAccepted">
+                        {{ termsLabel }}
+                        <a href="docs/politica_de_privacidade" class="accountLink">{{ termsLink }}</a>
+                     </label>
                   </div>
-                </div>
-              </div>
-              <div class="d-grid">
-                <button
-                  id="register"
-                  type="submit"
-                  name="register"
-                  class="btn btnRegister"
-                  disabled
-                >
-                    {{ toRegister }}
-                </button>
-              </div>
-            </form>
+                  <!-- RememberMe } -->
 
-            {% else %}
+                  <!-- { ForgotPw :-( -->
+                  <span>
+                     <a href="{{ url_for('authentication_blueprint.login') }}" class="accountLink">{{ gotoLogin }}</a>
+                  </span>
+                  <!--End ForgotPw } -->
+            </div>
+         </div>
 
-            <p class="mt-4 text-sm text-center">
-              <a
-                href="{{ url_for('authentication_blueprint.login') }}"
-                class="btn btnRegister"
-                >{{ gotoLogin }}</a
-              >
-            </p>
+         <!-- { Submit -->
+         <div class="d-grid">
+            <button type="submit" id="submit" disabled class="btn btnMain">{{ submitButton }}</button>
+         </div>
+         <!-- Submit } -->
+      {% endblock formContent %}
+   {% else %}
+      <p class="mt-4 text-sm text-center">
+         <a
+            href="{{ url_for('authentication_blueprint.login') }}"
+            class="btn btnRegister"
+            >{{ gotoLogin }}</a
+         >
+      </p>
+   {% endif %}
 
-            {% endif %}
 
-            <br />
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
-
-<script>
-  function acceptTerms() {
-    let terms = document.getElementById("remember").checked;
-    const btnRegister = document.getElementById("register");
-    terms.checked = !terms;
-    if (terms) {
-      btnRegister.disabled = false;
-    } else {
-      btnRegister.disabled = true;
-    }
-  }
-</script>
-
-{% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+   <script>
+      function termsAccepted() {
+         const termsAccepted = document.getElementById("termsAccepted").checked;
+         const btnSubmit = document.getElementById("submit");
+         btnSubmit.disabled = !termsAccepted;
+      }
+   </script>
+{% endblock javascripts %}

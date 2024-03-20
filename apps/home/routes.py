@@ -32,7 +32,7 @@ def index():
 # ============= Documents ============== #
 @blueprint.route('/docs/<docName>')
 def docs(docName):
-    return render_template('/docs/documentDisplay.html',  documentTitle="Disclaimmer Document", title='Disclaimer')
+    return render_template('layouts/documentDisplay.html',  **{'documentTitle': f'{docName} Document', 'pageTitle':f'{docName}'})
 
 
 # ======== Route Callback ========== #

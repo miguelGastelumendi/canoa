@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# -*- encoding: utf-8 -*-us
 """
 Copyright (c) 2019 - present AppSeed.us
 """
@@ -93,7 +93,10 @@ def changepassword(token):
     else:
         recoverEmailTimeStamp = getValues("select recoverEmailTimeStamp from users "
                                           f"where recoverEMailToken = '{token}'")
-        if (datetime.datetime.now() - recoverEmailTimeStamp).days > 1:
+        if recoverEmailTimeStamp == None:
+            texts['msg'] = getErrorMessage('noRecoveryPwRequestFound')
+
+        elif (datetime.datetime.now() - recoverEmailTimeStamp).days > 1:
             get_user_email_form = GetUserEmailForm(request.form)
             texts['msg'] = getErrorMessage('passwordsAreDifferent')
             return render_template('accounts/getuseremail.html',

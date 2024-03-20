@@ -1,6 +1,12 @@
 /* caatinga.css */
 /* Miguel Gastelumendi -- mgd */
 
+
+:root {
+  --project-name: 'Caatinga';
+
+}
+
 body {
   background: url(../img/pages/caatingaFundo.png) no-repeat fixed;
   background-size: cover;
@@ -25,23 +31,6 @@ label {
   left: 5%;
 }
 
-.normalLabel {
-  position: initial;
-  color: black;
-}
-
-.labelBrown {
-  color: #5a443d;
-}
-
-.linkBrown {
-  color: #5a443d;
-  transition: font-weight 0.3s ease;
-}
-
-.linkBrown:hover {
-  font-weight: bold;
-}
 
 .labelTerms{
 color: #8a8d91;
@@ -71,23 +60,6 @@ select {
   width: 35%;
 }
 
-.btnLogin,
-.btnRegister {
-  background-color: #86bc56;
-  border: none;
-  color: white;
-}
-
-.btnLogin:hover,
-.btnRegister:hover {
-  background-color: #cffaaa;
-  color: #5a443d;
-}
-
-.btnRegister:disabled {
-  background-color: #cffaaa;
-  color: #5a443d;
-}
 
 .btnHeader {
   border: 1px solid #5a443d;
@@ -106,11 +78,6 @@ select {
   border: none;
 }
 
-.divRememberLogin {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0 10px;
-}
 
 @media screen and (max-width: 992px) {
   .divInputProjectName {
