@@ -1,11 +1,27 @@
+
 2024-03-19
-   - Avoid print shadow document.css
-   - Create authentication template
-   - After login display new "window", import?
+   #new template `documentDisplay.html` & refactoring.
+    » Visão geral, documentDisplay.html
+   #Login e Registro funcionando na UI (falta [x] Li Termos)
+    » Avoid print shadow document.css
+    » Create authentication template
+    » After login display new "window", import?
 
 2024-03-20
-   - Registro:
-      » [ ] Li e ...
+   #Login, Registro, Recuperar Senha funcionando na UI (falta changepassword.html)
+       » Registro: [ ] Li e ...
+       » getuseremail.html
+       » msg -> msgError
+
+   #
+      » changepasswod.html  não tem form :-O
+      » msg -> msgWarn
+      » msg ->
+
+   pasasar fa para account
+   - pixel.css bug
+
+   http://127.0.0.1:5000/getuseremail <> http://127.0.0.1:5000/getUserEmail
 
 
 
@@ -15,4 +31,7 @@
 apps\templates\accounts\login.html:
    basic-addon2
 
-Clean caatinga.css
+- Faltam error pages
+      D:\Projects\AdaptaBrasil\Caatinga\apps\templates\home\page-404.html
+
+- Clean caatinga.css
