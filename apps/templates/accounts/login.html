@@ -4,7 +4,7 @@
 
    <!-- { User Name -->
    <div class="form-group">
-      <label class="normalLabel accountLabel" for="user_email">{{ userLabel }}</label>
+      <label class="accountLabel" for="user_email">{{ userLabel }}</label>
       <div class="input-group">
             <!-- Font Awesome fas fa- ...-->
             <span class="input-group-text" id="basic-addon1">
@@ -17,24 +17,24 @@
 
    <!--{ Password  -->
    <div class="form-group mt-3">
-      <label class="normalLabel accountLabel" for="pwd_login">{{ passwordLabel }}</label>
+      <label class="accountLabel" for="pwd_login">{{ passwordLabel }}</label>
       <div class="input-group">
             <!-- Font Awesome fas fa ...-->
             <span class="input-group-text" id="basic-addon2">
                <span class="fas fa-unlock-alt"></span>
             </span>
-            {{ form.password(class="form-control", type="password", id="pwd_login") }}
+            {{ form.password(class="form-control", id="pwd_login") }}
       </div>
    </div>
    <!-- Password }-->
 
    <!-- { RememberMe & ForgotPw -->
    <div class="form-group">
-      <div class="loginTwoCells">
+      <div class="accountTwoCells">
             <!-- { RememberMe -->
             <div>
-               <input class="btnCheck" type="checkbox" value="" id="rememberMe">
-               <label class="normalLabel accountLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
+               <input class="accountCheckBtn" type="checkbox" value="" id="rememberMe">
+               <label class="accountLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
             </div>
             <!-- RememberMe } -->
 
@@ -50,7 +50,7 @@
 
 {% block formBelow %}
    <!-- { Register Info -->
-   <div class="loginTwoCells mt-3">
+   <div class="accountTwoCells mt-3">
       <span>
             <a href="docs/disclaimer" class="accountLink">{{ disclaimer }}</a>
       </span>
@@ -62,7 +62,7 @@
 
    <!-- { Goto Register -->
    <div class="d-grid">
-      <button type="button" class="btn btnMain" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ gotoRegister }}</button>
+      <button type="button" class="btn accountMainBtn" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ gotoRegister }}</button>
    </div>
    <!-- Goto Register } -->
 {% endblock formBelow %}

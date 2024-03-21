@@ -73,8 +73,26 @@ def changepassword(token):
     #log.logActivity2Database(idUsuario=current_user.id if current_user else -1,
     #idProjeto=-1 if not '_projeto_id' in session.keys() else session['_projeto_id'],
     #assis                         url=f'/changepassword{token}')
+    # TODO:
+    #   A]
+    #      1) fazer o <token> opcional, para usar o tb para mudar senha
+    #   B]
+    #      1) Revisar se existe token e se é valido
+    #      2) conferir se as senhas são iguais
+    #      3) erro ou success.
+    #
     texts = getTexts('changepassword')
     changepassword_form = ChangePasswordForm(request.form)
+
+    #Teste par aLayout de página
+    return render_template('accounts/changepassword.html',
+                           form=changepassword_form,
+                           **texts)
+
+
+
+
+
     if 'password' in request.form:
       #read form data
       password = request.form['password']
@@ -94,7 +112,7 @@ def changepassword(token):
         recoverEmailTimeStamp = getValues("select recoverEmailTimeStamp from users "
                                           f"where recoverEMailToken = '{token}'")
         if recoverEmailTimeStamp == None:
-           texts['msgError'] = getErrorMessage('noRecoveryPwRequestFound')
+           texts['msgError'] = getErrorMessage('linkExpired')
 
         elif (datetime.datetime.now() - recoverEmailTimeStamp).days > 1:
             get_user_email_form = GetUserEmailForm(request.form)
@@ -108,6 +126,7 @@ def changepassword(token):
 
 @blueprint.route('/getuseremail', methods=['GET', 'POST'])
 def getuseremail():
+
     #log.logActivity2Database(idUsuario=current_user.id if current_user else -1,
     #idProjeto=-1 if not '_projeto_id' in session.keys() else session['_projeto_id'],
     #                         url=f'/get_user_email')

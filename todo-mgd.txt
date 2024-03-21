@@ -13,10 +13,19 @@
        » getuseremail.html
        » msg -> msgError
 
-   #
+   #Ajustes, mas changepassword.html ainda não tem 'back form'
+
+
+2024-02-21
       » changepasswod.html  não tem form :-O
       » msg -> msgWarn
       » msg ->
+
+
+   revisar wtforms, acho que tem confusão entre id e name
+o que é class en form.confirm_password(class="form-control", id="pwdConfirm") }
+   changepassword, fazer token opcional e mudar algoritmo
+
 
    pasasar fa para account
    - pixel.css bug

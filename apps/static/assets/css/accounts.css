@@ -1,6 +1,10 @@
 /*
    accounts.css
-      for accounts.tmpl & extenders
+      for accounts.tmpl & extenders, like
+         - Login
+         - Change Password
+         - Get User email
+         - Register
 
    2024-03-12
    Miguel Gastelumendi -- mgd
@@ -13,12 +17,9 @@
    --linkColor: #5a443d;
 }
 
-.normalLabel {
+/* === Helpers === */
+.accountLabel {
    position: initial;
-   color: black;
- }
-
- .accountLabel {
    color: var(--labelColor);
  }
 
@@ -31,20 +32,20 @@
     text-decoration: underline;
  }
 
- .loginTwoCells {
+ .accountTwoCells {
    display: flex;
    justify-content: space-between;
    margin: 10px 0 10px;
  }
 
- .loginImage {
+  /* === Title === */
+ .accountPageImage {
    position: relative;
  }
 
- .loginImageText {
+ .accountPageTitle {
    position: absolute; /* Position the text absolutely within the parent div */
    top: 0px;
-   /* margin: 6px; */
    padding: 6px;
    width: 100%;
    background-color: rgba(255, 255, 255, 0.4);
@@ -53,27 +54,30 @@
    color: var(--titleColor);
 }
 
-/* .loginImageText::before {
+/* .accountPageTitle::before {
    content: var(--project-name)  ' – '; /* '\f2009\f2013\f0A0'; "&thinsp;&ndash;&nbsp");
 }
  */
 
-.btnCheck:checked {
+ /* === Buttons === */
+.accountCheckBtn:checked {
    accent-color: var(--buttonColor);
 }
 
-.btnMain{
+.accountMainBtn{
   background-color: var(--buttonColor);
   border: none;
   color: white;
 }
 
-.btnMain:hover {
+.accountMainBtn:hover {
   background-color: var(--buttonColor);
   filter: brightness(120%);
 }
 
-.btnMain:disabled {
+.accountMainBtn:disabled {
   background-color: var(--buttonColor);
   filter: brightness(60%);
 }
+
+/* eof */

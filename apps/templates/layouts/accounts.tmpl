@@ -27,9 +27,9 @@ cl{% extends "layouts/base-caatinga.tmpl" %}
                   class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 w-100 fmxw-500">
 
                   <!-- { Image -->
-                  <div class="loginImage">
+                  <div class="accountPageImage">
                      <img src="/static/assets/img/pages/accounts.png" alt="Representação da Caatinga, em tons marrão">
-                     <div class="loginImageText">{{ formTitle }}</div>
+                     <div class="accountPageTitle">{{ formTitle }}</div>
                   </div>
                   <!-- Image } -->
 
@@ -60,7 +60,7 @@ cl{% extends "layouts/base-caatinga.tmpl" %}
 
                      <!-- { Submit -->
                      <div class="d-grid">
-                        <button type="submit" name="btnSubmit" class="btn btnMain">{{ submitButton }}</button>
+                        <button type="submit" name="btnSubmit" id="btnSubmit" class="btn accountMainBtn">{{ submitButton }}</button>
                      </div>
                      <!-- Submit } -->
                   </form>

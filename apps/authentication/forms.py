@@ -5,7 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
-from wtforms.validators import Email, DataRequired
+from wtforms.validators import Email, DataRequired, Length, EqualTo
 
 # login and registration
 
@@ -32,11 +32,9 @@ class CreateAccountForm(FlaskForm):
 
 class ChangePasswordForm(FlaskForm):
     password = PasswordField('Nova senha',
-                             id='pwd_create',
-                             validators=[DataRequired()])
+                             validators=[DataRequired(), Length(min=6), EqualTo('confirm_password', message="As senhas não são iguais.")])
     confirm_password = PasswordField('Confirme a nova senha',
-                             id='pwd_confirms',
-                             validators=[DataRequired()])
+                             validators=[DataRequired(), Length(min=6)])
 
 class GetUserEmailForm(FlaskForm):
     user_email = StringField('Email para envio do link',

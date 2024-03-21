@@ -13,7 +13,7 @@
    {% else %}
       <!-- { User Name -->
       <div class="form-group">
-         <label class="normalLabel accountLabel" for="userName">{{ userLabel }}</label>
+         <label class="accountLabel" for="userName">{{ userLabel }}</label>
          <div class="input-group">
             <span class="input-group-text" id="basic-addon1">
                <span class="fas fa-user"></span>
@@ -25,7 +25,7 @@
 
       <!-- Email  -->
       <div class="form-group mt-3">
-         <label class="normalLabel accountLabel" for="user_email">{{ emailLabel }}</label>
+         <label class="accountLabel" for="user_email">{{ emailLabel }}</label>
          <div class="input-group">
             <span class="input-group-text" id="basic-addon3">
                <span class="fas fa-envelope"></span>
@@ -37,7 +37,7 @@
 
       <!-- { Password  -->
       <div class="form-group mt-3">
-         <label class="normalLabel accountLabel" for="password">{{ passwordLabel }}</label>
+         <label class="accountLabel" for="password">{{ passwordLabel }}</label>
          <div class="input-group">
             <span class="input-group-text" id="basic-addon4">
                <span class="fas fa-unlock-alt"></span>
@@ -49,11 +49,11 @@
 
       <!-- { Termo || Login -->
       <div class="form-group">
-         <div class="loginTwoCells">
+         <div class="accountTwoCells">
                <!-- { Tremo -->
                <div>
-                  <input class="btnCheck" type="checkbox" onclick="fTermsAccepted()" id="termsAccepted">
-                  <label class="normalLabel accountLabel" class="form-check-label mb-0" for="termsAccepted">
+                  <input class="accountCheckBtn" type="checkbox" onclick="fTermsAccepted()" id="termsAccepted">
+                  <label class="accountLabel" class="form-check-label mb-0" for="termsAccepted">
                      {{ termsLabel }}
                      <b><a href="docs/politica_de_privacidade" class="accountLink">{{ termsLink }}</a></b>
                   </label>
@@ -74,8 +74,9 @@
    {% block javascripts %}
       <script>
          // keep syn after refresh
-         const btnSubmit = document.getElementById("submit");
+         const btnSubmit = document.getElementById("btnSubmit");
          const btnAccepted = document.getElementById("termsAccepted");
+         btnSubmit.disabled = true;
          btnAccepted.checked = !btnSubmit.disabled;
          function fTermsAccepted() {
             btnSubmit.disabled = !btnAccepted.checked;
