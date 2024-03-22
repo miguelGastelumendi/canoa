@@ -36,7 +36,6 @@ apps/config.py
 # mgd
 test.js
 test.html
-todo-mgd.py
 caat/
 *.hlp
 

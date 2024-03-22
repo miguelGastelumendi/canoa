@@ -68,61 +68,132 @@ def login():
 
     return redirect(url_for('home_blueprint.index'))
 
+# { to_str ================================================
+# mgd 2024.03.21
+#----------------------------------------------------------
+def to_str(s: str):
+    return '' if s is None else s.strip()
+# to_str } ================================================
+
+# { Logger ================================================
+# mgd 2024.03.21
+def logger(url: str):
+   idProjectKey= '_projeto_id'
+   idProject= db.session[idProjectKey] if  current_user.is_authenticated and idProjectKey in db.session.keys() else -1
+   idUser= current_user.id if current_user.is_authenticated else -1
+
+   # assis log.logActivity2Database(idUser, idProject, url)
+# Logger } ================================================
+
+# { isMethodGet ===========================================
+# mgd 2024.03.21
+def isMethodGet():
+   isGet= True
+   if request.method == 'POST':
+       isGet= False
+   elif not isGet:
+       raise ValueError('Unexpected request method')
+
+   return isGet
+# isMethodGet } ===========================================
+
+# { changepassword ========================================
+# Change Password for `authenticated user` or with Token
+# mgd 2024.03.21
+@blueprint.route('/changepassword', methods= ['POST', 'GET'])
 @blueprint.route('/changepassword/<token>', methods=['GET','POST'])
-def changepassword(token):
-    #log.logActivity2Database(idUsuario=current_user.id if current_user else -1,
-    #idProjeto=-1 if not '_projeto_id' in session.keys() else session['_projeto_id'],
-    #assis                         url=f'/changepassword{token}')
-    # TODO:
-    #   A]
-    #      1) fazer o <token> opcional, para usar o tb para mudar senha
-    #   B]
-    #      1) Revisar se existe token e se é valido
-    #      2) conferir se as senhas são iguais
-    #      3) erro ou success.
-    #
-    texts = getTexts('changepassword')
-    changepassword_form = ChangePasswordForm(request.form)
+def changepassword(token= None):
+   route= 'changepassword'
+   template = f'accounts/{route}.html'
+   isGet= isMethodGet()
+   hasToken= token != None
+   sToken= to_str(token)
+   tokenIsValid = True # hasToken if ValidateToken(token) else True
+   logger(f'@{request.method.lower()}:/{route}/{sToken}')
 
-    #Teste par aLayout de página
-    return render_template('accounts/changepassword.html',
-                           form=changepassword_form,
-                           **texts)
+   changepassword_form= ChangePasswordForm(request.form)
+   texts= getTexts(route)
+
+   if not tokenIsValid:
+      texts['msgError']= getErrorMessage('invalidRequest')
+
+   elif (current_user.is_authenticated and hasToken):
+      texts['msgError']= getErrorMessage('invalidRequest')
+
+   elif not (current_user.is_authenticated or hasToken):
+      texts['msgError']= getErrorMessage('invalidRequest')
+
+   elif not isGet:
+      password= to_str(request.form['password'])
+      confirm_password= to_str(request.form['confirm_password'])
+
+      if (len(password) < 6):
+         texts['msgError']= getErrorMessage('invalidPassword')
+      elif password != confirm_password:
+         texts['msgError']= getErrorMessage('passwordsAreDifferent')
+      elif current_user.is_authenticated:
+         user = users.query.filter_by(recoveremailtoken=token).first()
+         user.password = hash_pass(password)
+         db.session.add(user)
+         db.session.commit()
+         #TODO give msg and goto
+         texts['msgGoto'] = url_for('authentication_blueprint.login');
+         return redirect(url_for('authentication_blueprint.login'))
 
 
+   return render_template(
+       template,
+       form= changepassword_form,
+       **texts
+      )
+
+# changepassword } ========================================
 
 
+# { changepassword ======================================
+# User with Token Change Password Routine
 
-    if 'password' in request.form:
-      #read form data
-      password = request.form['password']
-      confirm_password = request.form['confirm_password']
-      if password == confirm_password:
-            user = users.query.filter_by(recoveremailtoken=token).first()
-            user.password = hash_pass(password)
-            db.session.add(user)
-            db.session.commit()
-            return redirect(url_for('authentication_blueprint.login'))
-      else:
-          texts['msgError'] = getErrorMessage('passwordsAreDifferent')
-          return render_template('accounts/changepassword.html',
-                                 form=changepassword_form,
-                                 **texts)
-    else:
-        recoverEmailTimeStamp = getValues("select recoverEmailTimeStamp from users "
-                                          f"where recoverEMailToken = '{token}'")
-        if recoverEmailTimeStamp == None:
-           texts['msgError'] = getErrorMessage('linkExpired')
+# @blueprint.route('/changepassword/<token>', methods=['GET','POST'])
+# def changepassword(token=None):
+#    route= 'changepassword'
+#    isGet= isMethodGet()
+#    logger(f'@{request.method.lower()}:/{route}')
 
-        elif (datetime.datetime.now() - recoverEmailTimeStamp).days > 1:
-            get_user_email_form = GetUserEmailForm(request.form)
-            texts['msgError'] = getErrorMessage('passwordsAreDifferent')
-            return render_template('accounts/getuseremail.html',
-                                   form=get_user_email_form,
-                                   **texts)
-    return render_template('accounts/changepassword.html',
-                           form=changepassword_form,
-                           **texts)
+#    texts= getTexts('route')
+#    changepassword_form= ChangePasswordForm(request.form)
+
+
+#    if 'password' in request.form:
+#       #read form data
+#       password = request.form['password']
+#       confirm_password = request.form['confirm_password']
+#       if password == confirm_password:
+#             user = users.query.filter_by(recoveremailtoken=token).first()
+#             user.password = hash_pass(password)
+#             db.session.add(user)
+#             db.session.commit()
+#             return redirect(url_for('authentication_blueprint.login'))
+#       else:
+#           texts['msgError'] = getErrorMessage('passwordsAreDifferent')
+#           return render_template('accounts/changepassword.html',
+#                                  form=changepassword_form,
+#                                  **texts)
+#    else:
+#       recoverEmailTimeStamp = getValues("select recoverEmailTimeStamp from users "
+#                                        f"where recoverEMailToken = '{token}'")
+#       if recoverEmailTimeStamp == None:
+#          texts['msgError'] = getErrorMessage('linkExpired')
+
+#       elif (datetime.datetime.now() - recoverEmailTimeStamp).days > 1:
+#          get_user_email_form = GetUserEmailForm(request.form)
+#          texts['msgError'] = getErrorMessage('passwordsAreDifferent')
+#          return render_template('accounts/getuseremail.html',
+#                                  form=get_user_email_form,
+#                                  **texts)
+#    return render_template('accounts/changepassword.html',
+#                         form=changepassword_form,
+#                         **texts)
+
 
 @blueprint.route('/getuseremail', methods=['GET', 'POST'])
 def getuseremail():
@@ -235,3 +306,5 @@ def not_found_error(error):
 @blueprint.errorhandler(500)
 def internal_error(error):
     return render_template('home/page-500.html'), 500
+
+#eof

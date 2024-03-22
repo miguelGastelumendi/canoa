@@ -5,8 +5,12 @@ vars:
 - {formTitle}
 - eventualmente {msgError} {msgOk}
 
-used by:
-- Login.html
+used by
+   apps\templates\accounts\
+      - changepassword.html
+      - getuseremail.html
+      - login.html
+      - register.html
 
 #}
 
@@ -14,7 +18,7 @@ used by:
 cl{% extends "layouts/base-caatinga.tmpl" %}
 
 {% block stylesheets %}
-<link type="text/css" href="/static/assets/css/accounts.css" rel="stylesheet">
+<link type="text/css" href="static/assets/css/accounts.css" rel="stylesheet">
 {% endblock stylesheets %}
 
 {% block content %}
@@ -34,7 +38,7 @@ cl{% extends "layouts/base-caatinga.tmpl" %}
                   <!-- Image } -->
 
                   <!-- { BackendError -->
-                  <div class="text-center text-md-center mt-md-0 mb-4">
+                  <div class="text-center text-md-center mt-md-0 mb-3">
                      <span class="font-weight-normal">
                         {% if msgError %}
                         <br>
@@ -59,7 +63,7 @@ cl{% extends "layouts/base-caatinga.tmpl" %}
                      {% endblock formContent %}
 
                      <!-- { Submit -->
-                     <div class="d-grid">
+                     <div class="d-grid mt-3">
                         <button type="submit" name="btnSubmit" id="btnSubmit" class="btn accountMainBtn">{{ submitButton }}</button>
                      </div>
                      <!-- Submit } -->

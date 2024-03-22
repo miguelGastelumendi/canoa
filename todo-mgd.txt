@@ -17,14 +17,20 @@
 
 
 2024-02-21
-      » changepasswod.html  não tem form :-O
+      #Login, Registro, Recuperar Senha e ChangePassword funcionando na UI, mas falta ChangePassword com Token
+      » ChangePassword, fazer token opcional e novo algoritmo (com get/post)
+      » ChangePassword.html com token não tem form :-O,  sim token, OK
+
+
+2024-02-22
+      » Usar novas funções isGet, logger...
       » msg -> msgWarn
-      » msg ->
+      » msg -> msgGoto
 
 
    revisar wtforms, acho que tem confusão entre id e name
 o que é class en form.confirm_password(class="form-control", id="pwdConfirm") }
-   changepassword, fazer token opcional e mudar algoritmo
+
 
 
    pasasar fa para account
