@@ -108,7 +108,7 @@ def changepassword(token= None):
    isGet= isMethodGet()
    hasToken= token != None
    sToken= to_str(token)
-   tokenIsValid = True # hasToken if ValidateToken(token) else True
+   tokenIsValid = True # TODO: hasToken if ValidateToken(token) else True
    logger(f'@{request.method.lower()}:/{route}/{sToken}')
 
    changepassword_form= ChangePasswordForm(request.form)
@@ -129,17 +129,20 @@ def changepassword(token= None):
 
       if (len(password) < 6):
          texts['msgError']= getErrorMessage('invalidPassword')
+
       elif password != confirm_password:
          texts['msgError']= getErrorMessage('passwordsAreDifferent')
-      elif current_user.is_authenticated:
+
+      elif not current_user.is_authenticated:
          user = users.query.filter_by(recoveremailtoken=token).first()
          user.password = hash_pass(password)
          db.session.add(user)
          db.session.commit()
          #TODO give msg and goto
-         texts['msgGoto'] = url_for('authentication_blueprint.login');
+         texts['urlGoto'] = url_for('authentication_blueprint.login');
          return redirect(url_for('authentication_blueprint.login'))
 
+      #else #user is_authenticated
 
    return render_template(
        template,
