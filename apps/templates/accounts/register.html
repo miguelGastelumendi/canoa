@@ -1,16 +1,15 @@
 {% extends "./layouts/accounts.tmpl" %}
 
-
+{% block formAbove %}
+   {% if success %}
+   <div class="d-grid">
+      <button type="button" class="btn accountMainBtn" onclick="window.location.href='{{ url_for('authentication_blueprint.login') }}'">{{ gotoLogin }}</button>
+   </div>
+   {% endif %}
+{% endblock formAbove %}
 
 {% block formContent %}
-   {% if success %}
-      <p class="mt-4 text-sm text-center">
-         <a
-         href="{{ url_for('authentication_blueprint.login') }}"
-         class="btn btnRegister"
-         >{{ gotoLogin }}</a>
-      </p>
-   {% else %}
+   {% if not success %}
       <!-- { User Name -->
       <div class="form-group">
          <label class="accountLabel" for="userName">{{ userLabel }}</label>
@@ -55,14 +54,14 @@
                   <input class="accountCheckBtn" type="checkbox" onclick="fTermsAccepted()" id="termsAccepted">
                   <label class="accountLabel" class="form-check-label mb-0" for="termsAccepted">
                      {{ termsLabel }}
-                     <b><a href="docs/politica_de_privacidade" class="accountLink">{{ termsLink }}</a></b>
+                     <b><a class="accountLink" href="docs/politica_de_privacidade">{{ termsLink }}</a></b>
                   </label>
                </div>
                <!-- RememberMe } -->
 
                <!-- { ForgotPw :-( -->
                <span>
-                  <a href="{{ url_for('authentication_blueprint.login') }}" class="accountLink">{{ gotoLogin }}</a>
+                  <a class="accountLink" href="{{ url_for('authentication_blueprint.login') }}">{{ gotoLogin }}</a>
                </span>
                <!--End ForgotPw } -->
          </div>
@@ -70,19 +69,16 @@
    {% endif %}
 {% endblock formContent %}
 
-{% if success %}
-   {% block javascripts %}
-      <script>
-         // keep syn after refresh
-         const btnSubmit = document.getElementById("btnSubmit");
-         const btnAccepted = document.getElementById("termsAccepted");
-         btnSubmit.disabled = true;
-         btnAccepted.checked = !btnSubmit.disabled;
-         function fTermsAccepted() {
-            btnSubmit.disabled = !btnAccepted.checked;
-         }
-      </script>
-   {% endblock javascripts %}
-{% endif %}
 
+{% block javascripts %}
+   {% if not success %}
+   <script>
+      const btnSubmit = document.getElementById("btnSubmit");
+      const btnAccepted = document.getElementById("termsAccepted");
+      btnSubmit.disabled = true;
+      btnAccepted.checked = !btnSubmit.disabled;
+      function fTermsAccepted() { btnSubmit.disabled = !btnAccepted.checked; }
+   </script>
+   {% endif %}
+{% endblock javascripts %}
 {# eof #}

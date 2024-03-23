@@ -18,43 +18,43 @@ used by
 cl{% extends "layouts/base-caatinga.tmpl" %}
 
 {% block stylesheets %}
-<link type="text/css" href="static/assets/css/accounts.css" rel="stylesheet">
+<link type="text/css" href= "{{ url_for('static', filename='css/accounts.css') }}" rel="stylesheet">
 {% endblock stylesheets %}
 
 {% block content %}
 <main>
    <section class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark img-fluid">
       <div class="container">
-         <div class="row justify-content-center">
-            <div class="col-12 d-flex align-items-center justify-content-center">
-               <div
-                  class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 w-100 fmxw-500">
+         <div class="d-flex align-items-center justify-content-center">
+            <div class="bg-white rounded border-gray-500 p-4 fmxw-500">
 
-                  <!-- { Image -->
-                  <div class="accountPageImage">
-                     <img src="/static/assets/img/pages/accounts.png" alt="Representação da Caatinga, em tons marrão">
-                     <div class="accountPageTitle">{{ formTitle }}</div>
-                  </div>
-                  <!-- Image } -->
+               <!-- { Image -->
+               <div class="accountPageImage">
+                  <img src="{{ url_for('static', filename='img/pages/accounts.png') }}" alt="Representação da Caatinga, em tons marrão">
+                  <div class="accountPageTitle">{{ formTitle }}</div>
+               </div>
+               <!-- Image } -->
 
-                  <!-- { BackendError -->
-                  <div class="text-center text-md-center mt-md-0 mb-3">
-                     <span class="font-weight-normal">
-                        {% if msgError %}
-                        <br>
-                        <div class="alert alert-danger">
-                           {{ msgError | safe }}
-                        </div>
-                        {% else %}
-                        <!-- other msg? -->
-                        {% endif %}
-                     </span>
-                  </div>
-                  <!-- BackError } -->
+               <!-- { BackendMessage -->
+               <div class="text-center text-md-center mt-md-0 mb-3">
+                  <span class="font-weight-normal">
+                     {% if msgError %}
+                     <div class="alert alert-danger mt-3">
+                        {{ msgError | safe }}
+                     </div>
+                     {% elif msgSuccess %}
+                     <div class="alert alert-success mt-3">
+                        {{ msgSuccess | safe }}
+                     </div>
+                     {% endif %}
+                  </span>
+               </div>
+               <!-- BackendMessage } -->
 
-                  {% block formAbove %}
-                  {% endblock formAbove %}
+               {% block formAbove %}
+               {% endblock formAbove %}
 
+               {% if not msgSuccess %}
                   <!-- { Form  -->
                   <form method="post" action="" class="mt-2">
                      {{ form.hidden_tag() }}
@@ -63,17 +63,16 @@ cl{% extends "layouts/base-caatinga.tmpl" %}
                      {% endblock formContent %}
 
                      <!-- { Submit -->
-                     <div class="d-grid mt-3">
-                        <button type="submit" name="btnSubmit" id="btnSubmit" class="btn accountMainBtn">{{ submitButton }}</button>
-                     </div>
-                     <!-- Submit } -->
-                  </form>
-                  <!-- Form } -->
-
+                        <div class="d-grid mt-3">
+                           <button type="submit" name="btnSubmit" id="btnSubmit" class="btn accountMainBtn">{{ submitButton }}</button>
+                        </div>
+                        <!-- Submit } -->
+                     </form>
+                     <!-- Form } -->
+               {% endif %}
                   {% block formBelow %}
                   {% endblock formBelow %}
                </div>
-            </div>
          </div>
       </div>
    </section>

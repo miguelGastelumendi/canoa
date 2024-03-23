@@ -7,13 +7,13 @@
 #}
 
 {# files are relative to ./templates #}
-{% extends "/layouts/base-fullscreen.html" %}
+{% extends "/layouts/base-caatinga.tmpl" %}
 
 {% block title %} {title} {% endblock %}
 
 
 {% block stylesheets %}
-<link type="text/css" href="/static/assets/css/document.css" rel="stylesheet">
+<link type="text/css" href="{{ url_for('static', filename='css/document.css') }}" rel="stylesheet">
 {% endblock stylesheets %}
 
 {% block main_content %}

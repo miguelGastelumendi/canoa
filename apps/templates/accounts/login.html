@@ -40,7 +40,7 @@
 
             <!-- { ForgotPw :-( -->
             <span>
-               <a href="{{ url_for('authentication_blueprint.getuseremail') }}" class="accountLink">{{ forgotPassword }}</a>
+               <a href="{{ url_for('authentication_blueprint.requestemail') }}" class="accountLink">{{ forgotPassword }}</a>
             </span>
             <!--End ForgotPw } -->
       </div>
@@ -51,6 +51,7 @@
 {% block formBelow %}
    <!-- { Register Info -->
    <div class="accountTwoCells mt-3">
+      <!-- docs/file is a virtual path -->
       <span>
             <a href="docs/disclaimer" class="accountLink">{{ disclaimer }}</a>
       </span>

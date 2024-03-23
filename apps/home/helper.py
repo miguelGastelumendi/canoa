@@ -49,11 +49,26 @@ def getTipText(form: str):
         f"inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
         f"where b.Nome = '{form}' and Tag = 'tip'").replace('\r','').replace('\n','')
 
-def getErrorMessage(tag: str):
-    msgError= dbquery.getValues(
-        f"select Texto from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
-        f"where b.Nome = 'errorMessage' and Tag = '{tag}'");
-    if msgError is None:
-        msgError= f"Error '{tag}' (não registrado).";
-    return msgError
 
+def getMessage(tag: str, nome: str):
+    msg= dbquery.getValues(
+        f"select Texto from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
+        f"where b.Nome = '{nome}' and Tag = '{tag}'");
+    if msg is None:
+        msg= f"Mensagem '{tag}' (não registrada, {nome}).";
+    return msg
+
+def add_msg(tag: str, nome: str, texts: dict[str, str] = None) -> str:
+   value = getMessage(tag, nome)
+   if (texts != None ):
+      texts[nome] = value
+   return value
+
+def getErrorMessage(tag: str) -> str:
+    return add_msg(tag)
+
+def add_msg_error(tag: str, texts: dict[str, str] = None) -> str:
+   return add_msg(tag, 'msgError', texts)
+
+def add_msg_success(tag: str, texts: dict[str, str] = None) -> str:
+   return add_msg(tag, 'msgSuccess', texts)

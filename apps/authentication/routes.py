@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-us
 """
-Copyright (c) 2019 - present AppSeed.us
+ The Caatinga Team 2024
+ ----------------------
 """
 import datetime
 import requests
@@ -15,58 +16,16 @@ from flask_login import (
 from sqlalchemy import or_
 from apps import db, login_manager
 from apps.authentication import blueprint
-from apps.authentication.forms import LoginForm, CreateAccountForm, ChangePasswordForm, GetUserEmailForm
+from apps.authentication.forms import LoginForm, RegisterForm, ChangePasswordForm, RequestEmailForm
 from apps.authentication.models import users
 from apps.authentication.util import verify_pass, hash_pass
 from apps.home.emailstuff import sendEmail
 from apps.home.dbquery import executeSQL, getValues
 import secrets
-from apps.home.helper import getTexts, getErrorMessage
+from apps.home.helper import getTexts, add_msg_success, add_msg_error
 from apps.home.logHelper import Log2Database
 
-log = Log2Database()
-
-@blueprint.route('/')
-def route_default():
-    return redirect(url_for('authentication_blueprint.login'))
-
-# Login & Registration
-
-@blueprint.route('/login', methods=['GET', 'POST'])
-def login():
-    #log.logActivity2Database(idUsuario='NULL',
-    #                         idProjeto='NULL',
-    #                         url=f'/login/{request.form["username"]}/{request.form["password"]}' if 'login' in request.form else '/login')
-    login_form = LoginForm(request.form)
-    texts = getTexts('login')
-    if 'login' in request.form:
-
-        # read form data
-        username = request.form['username']
-        password = request.form['password']
-
-        # Locate user
-        #user = users.query.filter_by(username=username).first()
-        user = users.query.filter(or_(users.username==username, users.email==username)).first()
-        # Check the password
-        if user and verify_pass(password, user.password):
-
-            login_user(user)
-            return redirect(url_for('authentication_blueprint.route_default'))
-
-        # Something (user or pass) is not ok
-        texts['msgError'] = getErrorMessage('userOrPwdIsWrong')
-        return render_template('accounts/login.html',
-                               form=login_form,
-                               **texts)
-
-    if not current_user.is_authenticated:
-        return render_template('accounts/login.html',
-                               form=login_form,
-                               **texts
-                               )
-
-    return redirect(url_for('home_blueprint.index'))
+log= Log2Database()
 
 # { to_str ================================================
 # mgd 2024.03.21
@@ -79,215 +38,265 @@ def to_str(s: str):
 # mgd 2024.03.21
 def logger(url: str):
    idProjectKey= '_projeto_id'
-   idProject= db.session[idProjectKey] if  current_user.is_authenticated and idProjectKey in db.session.keys() else -1
+   logged= False if not current_user else current_user.is_authenticated
+   idProject= db.session[idProjectKey] if logged and hasattr(db.session, 'keys') and idProjectKey in db.session.keys(idProjectKey) else -1
    idUser= current_user.id if current_user.is_authenticated else -1
 
    # assis log.logActivity2Database(idUser, idProject, url)
-# Logger } ================================================
+# Logger } ------------------------------------------------
 
-# { isMethodGet ===========================================
+# { is_method_get =========================================
 # mgd 2024.03.21
-def isMethodGet():
-   isGet= True
+def is_method_get():
+   is_get= True
    if request.method == 'POST':
-       isGet= False
-   elif not isGet:
-       raise ValueError('Unexpected request method')
+       is_get= False
+   elif not is_get:
+       # if not is_get then is_post, there is no other possibility
+       raise ValueError('Unexpected request method.')
 
-   return isGet
-# isMethodGet } ===========================================
+   return is_get
+# is_method_get } -----------------------------------------
 
-# { changepassword ========================================
-# Change Password for `authenticated user` or with Token
-# mgd 2024.03.21
-@blueprint.route('/changepassword', methods= ['POST', 'GET'])
-@blueprint.route('/changepassword/<token>', methods=['GET','POST'])
-def changepassword(token= None):
-   route= 'changepassword'
-   template = f'accounts/{route}.html'
-   isGet= isMethodGet()
-   hasToken= token != None
-   sToken= to_str(token)
-   tokenIsValid = True # TODO: hasToken if ValidateToken(token) else True
-   logger(f'@{request.method.lower()}:/{route}/{sToken}')
+# { token_exists =========================================-
+# mgd 2024.03.22
+def token_exists(token: str) -> bool:
+   return (len(token) > 10) and getValues(f"select recoverEmailTimeStamp from users where recoveremailtoken = '{token}'")
+# token_exists } -----------------------------------------
 
-   changepassword_form= ChangePasswordForm(request.form)
+# { is_token_valid ========================================
+# mgd 2024.03.22
+def is_token_valid(token: str, days: int) -> bool:
+   token = to_str(token)
+   time_stamp = getValues("select recoverEmailTimeStamp from users where recoveremailtoken = '{token}'")
+   if (time_stamp == None):
+      days = -1
+   else:
+      days= (datetime.datetime.now() - time_stamp).days
+
+   return 0 <= days <= 1
+# is_token_valid } ----------------------------------------
+
+
+@blueprint.route('/')
+def route_default():
+    if current_user.is_authenticated:
+      return redirect(url_for('home_blueprint.index'))
+    else:
+      return redirect(url_for('authentication_blueprint.login'))
+
+
+# { login =================================================
+@blueprint.route('/login', methods= ['GET', 'POST'])
+def login():
+   route= 'login'
+   template= f'accounts/{route}.html'
+   is_post= not is_method_get()
+   logger(f'@{request.method.lower()}:/{route}')
+
+   # deixar rodar login
+   # if current_user.is_authenticated:
+   #    return redirect(url_for('home_blueprint.index'))
+
+   tmpl_form= LoginForm(request.form)
    texts= getTexts(route)
 
-   if not tokenIsValid:
-      texts['msgError']= getErrorMessage('invalidRequest')
-
-   elif (current_user.is_authenticated and hasToken):
-      texts['msgError']= getErrorMessage('invalidRequest')
-
-   elif not (current_user.is_authenticated or hasToken):
-      texts['msgError']= getErrorMessage('invalidRequest')
-
-   elif not isGet:
+   if is_post:
+      username= to_str(request.form['username'])
       password= to_str(request.form['password'])
-      confirm_password= to_str(request.form['confirm_password'])
 
-      if (len(password) < 6):
-         texts['msgError']= getErrorMessage('invalidPassword')
+      user= users.query.filter(or_(users.username==username, users.email==username)).first()
+      if user and verify_pass(password, user.password):
+         login_user(user)
+         return redirect(url_for('home_blueprint.index'))
 
-      elif password != confirm_password:
-         texts['msgError']= getErrorMessage('passwordsAreDifferent')
-
-      elif not current_user.is_authenticated:
-         user = users.query.filter_by(recoveremailtoken=token).first()
-         user.password = hash_pass(password)
-         db.session.add(user)
-         db.session.commit()
-         #TODO give msg and goto
-         texts['urlGoto'] = url_for('authentication_blueprint.login');
-         return redirect(url_for('authentication_blueprint.login'))
-
-      #else #user is_authenticated
+      # Something (user or pass) is not ok, retutn
+      add_msg_error('userOrPwdIsWrong', texts)
 
    return render_template(
        template,
-       form= changepassword_form,
+       form= tmpl_form,
        **texts
       )
+# login } -------------------------------------------------
 
-# changepassword } ========================================
-
-
-# { changepassword ======================================
-# User with Token Change Password Routine
-
-# @blueprint.route('/changepassword/<token>', methods=['GET','POST'])
-# def changepassword(token=None):
-#    route= 'changepassword'
-#    isGet= isMethodGet()
-#    logger(f'@{request.method.lower()}:/{route}')
-
-#    texts= getTexts('route')
-#    changepassword_form= ChangePasswordForm(request.form)
-
-
-#    if 'password' in request.form:
-#       #read form data
-#       password = request.form['password']
-#       confirm_password = request.form['confirm_password']
-#       if password == confirm_password:
-#             user = users.query.filter_by(recoveremailtoken=token).first()
-#             user.password = hash_pass(password)
-#             db.session.add(user)
-#             db.session.commit()
-#             return redirect(url_for('authentication_blueprint.login'))
-#       else:
-#           texts['msgError'] = getErrorMessage('passwordsAreDifferent')
-#           return render_template('accounts/changepassword.html',
-#                                  form=changepassword_form,
-#                                  **texts)
-#    else:
-#       recoverEmailTimeStamp = getValues("select recoverEmailTimeStamp from users "
-#                                        f"where recoverEMailToken = '{token}'")
-#       if recoverEmailTimeStamp == None:
-#          texts['msgError'] = getErrorMessage('linkExpired')
-
-#       elif (datetime.datetime.now() - recoverEmailTimeStamp).days > 1:
-#          get_user_email_form = GetUserEmailForm(request.form)
-#          texts['msgError'] = getErrorMessage('passwordsAreDifferent')
-#          return render_template('accounts/getuseremail.html',
-#                                  form=get_user_email_form,
-#                                  **texts)
-#    return render_template('accounts/changepassword.html',
-#                         form=changepassword_form,
-#                         **texts)
+# { changepassword ========================================
+# Change Password for `authenticated user` or with a token
+# mgd 2024.03.21
+@blueprint.route('/changepassword', methods= ['POST', 'GET'])
+@blueprint.route('/changepassword/<token>', methods= ['GET','POST'])
+def changepassword(token= None):
+   success_btn = 'chgPwSuccessBtn'
+   success_link = 'chgPwSuccessLink'
+   route= 'changepassword'
+   template= f'accounts/{route}.html'
+   is_get= is_method_get()
+   token_send= token != None
+   token_str= to_str(token)
+   days= 0
+   success= False
+   password= '' if is_get else to_str(request.form['password'])
+   confirm_password= '' if is_get else to_str(request.form['confirm_password'])
+   logger(f'@{request.method.lower()}:/{route}/{token_str}')
 
 
-@blueprint.route('/getuseremail', methods=['GET', 'POST'])
-def getuseremail():
+   tmpl_form= ChangePasswordForm(request.form)
+   texts= getTexts(route)
 
-    #log.logActivity2Database(idUsuario=current_user.id if current_user else -1,
-    #idProjeto=-1 if not '_projeto_id' in session.keys() else session['_projeto_id'],
-    #                         url=f'/get_user_email')
-    texts = getTexts('getuseremail')
-    get_user_email_form = GetUserEmailForm(request.form)
-    if 'user_email' in request.form:
-        toEMail = request.form['user_email']
+   if not (token_send and token_exists(token_str)):
+      add_msg_error('invalidToken', texts)
 
-        if getValues(f"select count(1) from users where email = '{toEMail}'") != 1:
-            texts['msgError'] = getErrorMessage('emailNotRegistered')
-            return render_template('accounts/getuseremail.html',
-                                   form=get_user_email_form,
-                                   **texts)
-        token = secrets.token_urlsafe()
-        ip = requests.get('https://checkip.amazonaws.com').text.strip()
-        url = f"{os.environ['CAATINGA_CHANGE_PWD_EMAIL_LINK']}{url_for('authentication_blueprint.changepassword', token=token)}"
-        #url = f"http://{ip}:50051{url_for('authentication_blueprint.changepassword',token=token)}"
-        sendEmail(toEMail, 'emailChangePassword', {'url': url})
-        executeSQL(f"update users set recoverEmailToken = '{token}',"
-                   f" recoverEmailTimeStamp = current_timestamp "
-                   f"where email = '{toEMail}'")
-        texts['msgError'] = getErrorMessage('emailSent')
-        return render_template('accounts/getuseremail.html',
-                               form=get_user_email_form,
-                               **texts)
-    else:
-        return render_template('accounts/getuseremail.html',
-                               form=get_user_email_form,
-                               **texts)
+   elif (token_send and current_user.is_authenticated):
+      add_msg_error('invalidRequest', texts)
 
-@blueprint.route('/register', methods=['GET', 'POST'])
+   elif not (token_send or current_user.is_authenticated):
+      add_msg_error('invalidRequest', texts)
+
+   elif is_get:
+      pass
+
+   elif (len(password) < 6): # TODO: tmpl_form.password.validators[1].min
+      add_msg_error('invalidPassword', texts)
+
+   elif password != confirm_password:
+      add_msg_error('passwordsAreDifferent', texts)
+
+   elif current_user.is_authenticated:
+      user.password= hash_pass(password)
+      db.session.add(user)
+      db.session.commit()
+      add_msg_success('chgPwUserSuccess', texts)
+      texts[success_btn] = add_msg_success('chgPwSuccessUserBtn')
+      texts[success_link] = url_for('home_blueprint.index')
+      success= True
+
+   elif not is_token_valid(days):
+      add_msg_error('invalidToken' if days < 0 else 'expiredToken', texts)
+
+   else: # user has a valid token
+      user= users.query.filter_by(recoveremailtoken=token).first()
+      user.password= hash_pass(password)
+      db.session.add(user)
+      db.session.commit()
+      add_msg_success('chgPwTokenSuccess', texts)
+      texts[success_btn] = add_msg_success('chgPwSuccessTokenBtn' )
+      texts[success_link] = url_for('authentication_blueprint.login')
+      success= True
+
+   return render_template(
+       template,
+       form= tmpl_form,
+       success= success,
+       **texts
+      )
+# changepassword } ----------------------------------------
+
+
+# { requestemail ==========================================
+@blueprint.route('/requestemail', methods= ['GET', 'POST'])
+def requestemail():
+   route= 'requestemail'
+   template= f'accounts/{route}.html'
+   is_get=  is_method_get()
+   logger(f'@{request.method.lower()}:/{route}')
+   success = False
+
+   texts= getTexts(route)
+   tmpl_form= RequestEmailForm(request.form)
+   send_to=  '' if is_get else to_str(request.form['user_email'])
+
+   if is_get:
+      pass
+
+   elif getValues(f"select count(1) from users where email = '{send_to}'") != 1:
+      add_msg_error('emailNotRegistered', texts)
+
+   else:
+      token= secrets.token_urlsafe()
+      ip= requests.get('https://checkip.amazonaws.com').text.strip()
+      url= f"{os.environ['CAATINGA_CHANGE_PWD_EMAIL_LINK']}{url_for('authentication_blueprint.changepassword', token=token)}"
+      #url= f"http://{ip}:50051{url_for('authentication_blueprint.changepassword',token=token)}"
+      #TODO: try/catch
+      # TESTE sendEmail(send_to, 'emailChangePassword', {'url': url})
+      executeSQL(f"update users set recoveremailtoken= '{token}',"
+                 f" recoveremailtimestamp= current_timestamp"
+                 f" where email = '{send_to}'")
+
+      add_msg_success('emailSent', texts)
+      success = True
+
+
+   return render_template(template,
+                          success= success,
+                           form= tmpl_form,
+                           **texts)
+
+# requestemail } ------------------------------------------
+
+# { register ==============================================
+@blueprint.route('/register', methods= ['GET', 'POST'])
 def register():
-    #log.logActivity2Database(idUsuario=current_user.id if current_user else -1,
-    #idProjeto=-1 if not '_projeto_id' in session.keys() else session['_projeto_id'],
-    #                         url=f'/register/{request.form["username"] if "register" in request.form else ""}/{request.form["email"] if "register" in request.form else ""}'
-    #                         )
-    texts = getTexts('register')
-    create_account_form = CreateAccountForm(request.form)
-    if 'register' in request.form:
+   route= 'register'
+   template= f'accounts/{route}.html'
+   is_get= is_method_get()
+   logger(f'@{request.method.lower()}:/{route}')
 
-        username = request.form['username']
-        email = request.form['email']
+   texts= getTexts('register')
+   tmpl_form= RegisterForm(request.form)
 
-        # Check usename exists
-        user = users.query.filter_by(username=username).first()
-        if user:
-            texts['msgError'] = getErrorMessage('userAlreadyRegistered')
-            return render_template('accounts/register.html',
-                                   success=False,
-                                   form=create_account_form,
-                                   **texts)
+   if is_get:
+      return render_template(template,
+                             success=False,
+                             form=tmpl_form,
+                             **texts)
 
-        # Check email exists
-        user = users.query.filter_by(email=email).first()
-        if user:
-            texts['msgError'] = getErrorMessage('emailAlreadyRegistered')
-            return render_template('accounts/register.html',
-                                   success=False,
-                                   form=create_account_form,
-                                   **texts)
-
-        # else we can create the user
-        user = users(**request.form)
-        db.session.add(user)
-        db.session.commit()
-
-        return render_template('accounts/register.html',
-                               msg=f'{texts["endOfRegister"]} <a href="/login">login!</a>',
-                               success=True,
-                               form=create_account_form,
-                               **texts)
-
-    else:
-        return render_template('accounts/register.html',
-                               form=create_account_form,
-                               **texts)
+   # Teste de success
+   # add_msg_success('welcome', texts)
+   # return render_template('accounts/register.html',
+   #                         success=True,
+   #                         form=tmpl_form,
+   #                         **texts)
 
 
+   # is_post:
+   username= request.form['username']
+   email= request.form['email']
+
+   user= users.query.filter_by(username=username).first()
+   if user:  #user exists!
+      add_msg_error('userAlreadyRegistered', texts);
+      return render_template(template,
+                              success=False,
+                              form=tmpl_form,
+                              **texts)
+
+   user= users.query.filter_by(email=email).first()
+   if user: #email exists!
+         add_msg_error('emailAlreadyRegistered', texts)
+         return render_template(template,
+                              success=False,
+                              form=tmpl_form,
+                              **texts)
+
+   # else we can create the user ;-)
+   user= users(**request.form)
+   db.session.add(user)
+   db.session.commit()
+   add_msg_success('welcome', texts)
+
+   return render_template('accounts/register.html',
+                           success=True,
+                           form=tmpl_form,
+                           **texts)
+# register } ----------------------------------------------
+
+# { logout ================================================
 @blueprint.route('/logout')
 def logout():
-    #log.logActivity2Database(idUsuario=current_user.id if current_user else -1,
-    #                         idProjeto=-1 if not '_projeto_id' in session.keys() else session['_projeto_id'],
-    #                         url=f'/logout/{request.form["username"] if "register" in request.form else ""}'
-    #                         )
-    logout_user()
-    return redirect(url_for('authentication_blueprint.login'))
-
+   logger(f'@{request.method.lower()}:/logout')
+   logout_user()
+   return redirect(url_for('authentication_blueprint.login'))
+# logout } ------------------------------------------------
 
 # Errors
 

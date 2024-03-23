@@ -16,33 +16,46 @@
    #Ajustes, mas changepassword.html ainda não tem 'back form'
 
 
-2024-02-21
+2024-03-21
       #Login, Registro, Recuperar Senha e ChangePassword funcionando na UI, mas falta ChangePassword com Token
       » ChangePassword, fazer token opcional e novo algoritmo (com get/post)
       » ChangePassword.html com token não tem form :-O,  sim token, OK
 
 
-2024-02-22
-      » Usar novas funções isGet, logger...
-      » msg -> msgWarn
-      » msg -> msgGoto
+2024-03-22
+      #Login, Registro, Recuperar Senha e ChangePassword (com e sem token) UI funcionando. Loga e desloga.
+      » Geral em todos os formulários de autenticação
+      » Revisão no wtforms de accounts
+      » Novo mgsSuccess ('contrario do msgError'): mostra uma mensagem e so um botão (com link)
+      » Registro Ok
+      » Login ok
+      » Logout OK
+      » Change password quando logado, ok
+      » getuseremail.html -> requestemail.html
+
+2024-03-23
+      » Criar index com menu *muito* simples:
+         - docs ñ funcionam
+         - changepassword/token -> token invalido -> solicitar um novo
+         - importar
+         - Logout
+         - Change password
+         - About
+         - requestEmail caseinsensitive
+         - depois de registrar -> login -> importar
+         - se msg de success tem <br> align left
+         - se já tem token com < 1 hora, não pedir mais
+
+2024-03-25
+      » Enviar token pelo email
 
 
-   revisar wtforms, acho que tem confusão entre id e name
-o que é class en form.confirm_password(class="form-control", id="pwdConfirm") }
 
+  - pixel.css bug
 
-
-   pasasar fa para account
-   - pixel.css bug
-
-   http://127.0.0.1:5000/getuseremail <> http://127.0.0.1:5000/getUserEmail
-
-
+   http://127.0.0.1:5000/requestemail <> http://127.0.0.1:5000/requestEmail
 
 ----------------
-   - base-caatinga.tmpl is really needed?
-
 apps\templates\accounts\login.html:
    basic-addon2
 

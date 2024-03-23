@@ -10,25 +10,22 @@
   <meta name="author" content="Equipe `Caatinga`">
   <meta name="description" content="">
 
-  <link rel="icon" type="image/png" sizes="32x32" href="../../static/assets/img/favicon/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="64x64" href="../../static/assets/img/favicon/favicon-64.png">
+  <link rel="icon" type="image/png" sizes="32x32" href= "{{ url_for('static', filename='img/favicon/favicon-64.png') }}">
+  <link rel="icon" type="image/png" sizes="64x64" href= "{{ url_for('static', filename='img/favicon/favicon-64.png') }}">
 
   <!-- Fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+  <link rel="stylesheet" href= "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
     integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
     crossorigin="anonymous" referrerpolicy="no-referrer">
 
   <!-- CSS -->
-  <link type="text/css" href="../../static/assets/css/pixel.css" rel="stylesheet">
-  <link type="text/css" href="../../static/assets/css/caatinga.css" rel="stylesheet">
+  <link type="text/css" href= "{{ url_for('static', filename='css/pixel.css') }}" rel="stylesheet">
+  <link type="text/css" href= "{{ url_for('static', filename='css/caatinga.css') }}" rel="stylesheet">
 </head>
 
 <body>
 
   {% include 'includes/navigation.html' %}
-  <script>
-    setTimeout(()=>window.location.href = 'rsp-projectStart.html',0);
-  </script>
 </body>
 
 </html>

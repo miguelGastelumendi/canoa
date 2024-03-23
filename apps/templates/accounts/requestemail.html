@@ -1,0 +1,30 @@
+{% extends "./layouts/accounts.tmpl" %}
+
+
+{% block formAbove %}
+   {% if success %}
+      <!-- { Goto login -->
+      <div class="d-grid">
+         <button type="button" class="btn accountMainBtn" onclick="window.location.href='{{ url_for('home_blueprint.index') }}'">{{ successBtn }}</button>
+      </div>
+      <!-- Goto Login } -->
+   {% endif %}
+{% endblock formAbove %}
+
+{% block formContent %}
+   {% if not success %}
+   <!-- { Request email -->
+   <div class="form-group mb-3">
+      <label class="accountLabel" for="user_email">{{ emailLabel }}</label>
+      <div class="input-group">
+            <span class="input-group-text" id="basic-addon1">
+               <span class="fas fa-envelope"></span>
+            </span>
+            {{ form.user_email(class="form-control", id="user_email") }}
+      </div>
+   </div>
+   <!-- Request email } -->
+   {% endif %}
+{% endblock formContent %}
+
+{# eof #}

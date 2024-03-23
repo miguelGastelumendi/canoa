@@ -1,6 +1,10 @@
-/* caatinga.css */
-/* Miguel Gastelumendi -- mgd */
+/* caatinga.css
 
+   /!\  -------------------------------------
+   All css files should use absolute paths
+   and  html files
+
+*/
 
 :root {
   --project-name: 'Caatinga';
@@ -8,7 +12,7 @@
 }
 
 body {
-  background: url(../img/pages/caatingaFundo.png) no-repeat fixed;
+  background: url(/static/img/pages/caatingaFundo.png) no-repeat fixed;
   background-size: cover;
 }
 
@@ -23,17 +27,8 @@ label {
   z-index: 10;
 }
 
-.labelLocation {
-  left: 29%;
-}
-
-.labelLatLong {
-  left: 5%;
-}
-
-
 .labelTerms{
-color: #8a8d91;
+   color: #8a8d91;
 }
 
 .labelFluxo{
@@ -112,7 +107,7 @@ select {
 }
 
 .wzd-logo {
-  background: url(../img/logo-wzd.png) no-repeat center top;
+  background: url(/static/logo-wzd.png) no-repeat center top;
   height: 52px;
   /* this is important */
   width: 52px;
