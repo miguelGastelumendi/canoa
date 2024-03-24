@@ -34,20 +34,34 @@
       » getuseremail.html -> requestemail.html
 
 2024-03-23
+      #Login, Registro, Recuperar Senha, ChangePassword e ResetPassword OK! Inicio de /index
+      » Renomear forms do processo de recuperação de senha (seguir padrão internacional)
+         - getusermail -> passwordrecovery
+         - changepassword<token> -> resetpassword/<token>
+         -changepassword -> changepassword
       » Criar index com menu *muito* simples:
-         - docs ñ funcionam
+         - mudar senha
+         - importar
+         - disclaimer
+         - Sobre
+         - Sair/Logout
+
          - changepassword/token -> token invalido -> solicitar um novo
          - importar
-         - Logout
-         - Change password
-         - About
-         - requestEmail caseinsensitive
+
+2024-03-25
+         - requestEmail case insensitive
          - depois de registrar -> login -> importar
          - se msg de success tem <br> align left
          - se já tem token com < 1 hora, não pedir mais
+         - nova column lastpasswordchange
 
 2024-03-25
       » Enviar token pelo email
+
+
+Database tasks:
+   - unique keys for suporteusuariogrupo.nome  suporteusuarioelemento.tag users.name, users.email
 
 
 

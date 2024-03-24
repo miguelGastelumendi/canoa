@@ -16,7 +16,7 @@
 <link type="text/css" href="{{ url_for('static', filename='css/document.css') }}" rel="stylesheet">
 {% endblock stylesheets %}
 
-{% block main_content %}
+{% block content %}
 <div class="documentDisplay printNoShadow">
     <div class="documentHeader">
         <div class="documentTitle">
@@ -73,4 +73,4 @@
             {% endblock documentBody %}
     </div>
 </div>
-{% endblock main_content %}
+{% endblock content %}

@@ -26,7 +26,7 @@ log = logHelper.Log2Database()
 @blueprint.route('/index')
 # @login_required não pode ter, index é 'livre', depende do menu
 def index():
-    return render_template('home/index.html', segment='index')
+    return render_template('home/index.html', pageTitle='Home')
 
 
 # ============= Documents ============== #

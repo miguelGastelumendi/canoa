@@ -90,12 +90,12 @@
 }
 
 #documentButtonPrint {
-  background: url('/static/assets/img/pages/pagePrint.png');
+  background: url('/static/img/pages/pagePrint.png');
   background-size: cover;
 }
 
 #documentButtonClose {
-  background: url('/static/assets/img/pages/pageClose.png');
+  background: url('/static/img/pages/pageClose.png');
   background-size: cover;
 }
 

@@ -15,7 +15,7 @@ used by
 #}
 
 {# files are relative to ./templates #}
-cl{% extends "layouts/base-caatinga.tmpl" %}
+{% extends "layouts/base-caatinga.tmpl" %}
 
 {% block stylesheets %}
 <link type="text/css" href= "{{ url_for('static', filename='css/accounts.css') }}" rel="stylesheet">

@@ -5,7 +5,7 @@
 """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import Email, DataRequired, Length, EqualTo
 
 # login and registration
@@ -15,6 +15,8 @@ class LoginForm(FlaskForm):
                      validators=[DataRequired()])
     password = PasswordField('Password',
                      validators=[DataRequired()])
+    remember_me = BooleanField('Remember_me')
+
 
 class RegisterForm(FlaskForm):
     username = StringField('Username',
@@ -24,14 +26,14 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password',
                      validators=[DataRequired(), Length(min=6)])
 
-class ChangePasswordForm(FlaskForm):
+class NewPasswordForm(FlaskForm):
     password = PasswordField('Nova senha',
                      validators=[DataRequired(), Length(min=6), EqualTo('confirm_password', message="As senhas não são iguais.")])
                      # EqualTo não está funcionando 2024.03.21
     confirm_password = PasswordField('Confirme a nova senha',
                      validators=[DataRequired(), Length(min=6)])
 
-class RequestEmailForm(FlaskForm):
+class PasswordRecoveryForm(FlaskForm):
     user_email = StringField('Email para envio do link',
                              validators=[DataRequired(), Email()])
 # eof #

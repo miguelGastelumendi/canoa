@@ -32,15 +32,16 @@
    <div class="form-group">
       <div class="accountTwoCells">
             <!-- { RememberMe -->
-            <div>
-               <input class="accountCheckBtn" type="checkbox" value="" id="rememberMe">
-               <label class="accountLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
+            <div class="form-check">
+               {{ form.remember_me(class="form-check-input", id="rememberMe") }}
+               <!-- <input class="form-check-input" type="checkbox"  id="rememberMe" name="rememberme"> -->
+               <label class="form-check-label accountLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
             </div>
             <!-- RememberMe } -->
 
             <!-- { ForgotPw :-( -->
             <span>
-               <a href="{{ url_for('authentication_blueprint.requestemail') }}" class="accountLink">{{ forgotPassword }}</a>
+               <a href="{{ url_for('authentication_blueprint.passwordrecovery') }}" class="accountLink">{{ forgotPassword }}</a>
             </span>
             <!--End ForgotPw } -->
       </div>
