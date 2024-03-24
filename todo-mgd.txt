@@ -45,6 +45,19 @@
          - disclaimer
          - Sobre
          - Sair/Logout
+      » Formulários prontos:
+        o Sem logar
+         - /register
+         - /login
+         - /passwordrecovery
+         - /resetpassword/<token> (de email)
+        o Logado
+         - /changepassword
+         - /logout
+
+
+
+
 
          - changepassword/token -> token invalido -> solicitar um novo
          - importar
