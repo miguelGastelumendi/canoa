@@ -27,12 +27,13 @@
 
     </head>
     <body>
-        {% block content %}{% endblock content %}
+         <main>
+         {% block content %}{% endblock content %}
+         </main>
+         {% block htmlHelpers %}{% endblock htmlHelpers %}
 
-        {% block htmlHelpers %}{% endblock htmlHelpers %}
+         {% include 'includes/scripts.html' %}
 
-        {% include 'includes/scripts.html' %}
-
-        {% block javascripts %}{% endblock javascripts %}
+         {% block javascripts %}{% endblock javascripts %}
     </body>
 </html>

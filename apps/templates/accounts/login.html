@@ -1,16 +1,16 @@
-{% extends "./layouts/accounts.tmpl" %}
+{% extends "./layouts/data_form.tmpl" %}
 
 {% block formContent %}
 
    <!-- { User Name -->
    <div class="form-group">
-      <label class="accountLabel" for="user_email">{{ userLabel }}</label>
+      <label class="accountLabel" for="user_name">{{ userLabel }}</label>
       <div class="input-group">
             <!-- Font Awesome fas fa- ...-->
             <span class="input-group-text" id="basic-addon1">
                <span class="fas fa-user"></span>
             </span>
-            {{ form.username(class="form-control", id="user_email") }}
+            {{ form.username(class="form-control", id="user_name") }}
       </div>
    </div>
    <!-- User Name } -->
@@ -64,7 +64,7 @@
 
    <!-- { Goto Register -->
    <div class="d-grid">
-      <button type="button" class="btn accountMainBtn" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ gotoRegister }}</button>
+      <!-- mgd <button type="button" class="btn accountMainBtn" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ gotoRegister }}</button> -->
    </div>
    <!-- Goto Register } -->
 {% endblock formBelow %}

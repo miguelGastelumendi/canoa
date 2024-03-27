@@ -1,22 +1,5 @@
-{#
-Template for Accounts Forms (mgd 2024.03)
-vars:
-- base-caatinga.tmpl.{pageTitle} Web Page Title
-- {formTitle}
-- eventualmente {msgError} {msgOk}
-
-used by
-   apps\templates\accounts\
-      - login.html
-      - passwordrecovery.html
-      - changepassword.html
-      - getuseremail.html
-      - register.html
-
-#}
-
 {# files are relative to ./templates #}
-{% extends "layouts/data_form.tmpl" %}
+{% extends "./layouts/window.tmpl" %}
 
 {% block stylesheets %}
 <link type="text/css" href= "{{ url_for('static', filename='css/accounts.css') }}" rel="stylesheet">
@@ -24,6 +7,7 @@ used by
 
 
 {% block wndContent %}
+   <!-- { % with {"wndBtnText": "submitButton"} % } -->
 
       <!-- { BackendMessage -->
       <div class="text-center text-md-center mt-md-0 mb-3">
@@ -54,16 +38,17 @@ used by
 
             <!-- { Submit -->
                <div class="d-grid mt-3">
-                  <button type="submit" name="btnSubmit" id="btnSubmit" class="btn accountMainBtn">{{ submitButton }}</button>
+                  <button type="submit">{{ submitButton }}</button>
                </div>
                <!-- Submit } -->
             </form>
             <!-- Form } -->
       {% endif %}
 
-
       {% block formBelow %}
       {% endblock formBelow %}
 
+   <!-- { % endwith % } -->
 {% endblock wndContent %}
+
 {# eof #}

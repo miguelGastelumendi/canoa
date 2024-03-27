@@ -38,7 +38,7 @@
       » Renomear forms do processo de recuperação de senha (seguir padrão internacional)
          - getusermail -> passwordrecovery
          - changepassword<token> -> resetpassword/<token>
-         -changepassword -> changepassword
+         - changepassword -> changepassword
       » Criar index com menu *muito* simples:
          - mudar senha
          - importar
@@ -54,28 +54,54 @@
         o Logado
          - /changepassword
          - /logout
-
-
-
-
-
-         - changepassword/token -> token invalido -> solicitar um novo
          - importar
 
-2024-03-25
-         - requestEmail case insensitive
-         - depois de registrar -> login -> importar
-         - se msg de success tem <br> align left
-         - se já tem token com < 1 hora, não pedir mais
-         - nova column lastpasswordchange
 
 2024-03-25
       » Enviar token pelo email
+      » Check if current_user.authentication, every where and checkout logout, refresh
+      » *Apresentação N 1*, foi boa sem bugs.
+      » Refazer os templates, para ter um em comum com: account.html + displayForm
+      » Recriar os usuários do DB para ter:
+         1. um super usuário caatinga_power
+         2. um grupo: caatinga_users
+         3. um usuário para ser connection string
+         4. desenvolvedores: mauro + miguel
+         5. as permissões concentradas em caatinga_users
+      » Trazer os schemas AdaptaBrasil para o nosso banco.
+      » Criar indices unique
+      » Criar vw_texts para a UI
+      » Novas colunas para user: last_password_date, created_at, active e real_name (To display => username)
 
+2024-03-26
+      » Ajustar no programa o desenvolvido ontem.
+
+2024-03-27
+      » Set default schema for DB (user is not working)
+      » Usar users.search_name
+      » Trigger para users colunas 'internal' e manter email <- lower
+
+
+
+
+      » Cookier de leembrar
+
+
+      - changepassword/token -> token invalido -> solicitar um novo
+------------------------------
+Significant system improvements:
+   » Unique keys, case insensitive, for suporteusuariogrupo.nome  suporteusuarioelemento.tag
+
+
+Significant system improvements:
+
+
+Version 1.0  improvements:
+   » remove all *.css (pixel incluisve)
+   » use icons, not
 
 Database tasks:
-   - unique keys for suporteusuariogrupo.nome  suporteusuarioelemento.tag users.name, users.email
-
+   - create vw_suporteusuario
 
 
   - pixel.css bug

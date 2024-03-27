@@ -15,10 +15,13 @@ class users(db.Model, UserMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True)
+    search_name = db.Column(db.String(64), unique=True)
     email = db.Column(db.String(64), unique=True)
     password = db.Column(db.LargeBinary)
     recoveremailtoken = db.Column(db.String(100))
     recoveremailtimestamp = db.Column(db.DateTime())
+    disabled = db.Column(db.Boolean)
+
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():
@@ -45,6 +48,9 @@ def user_loader(id):
 
 @login_manager.request_loader
 def request_loader(request):
-    username = request.form.get('username')
-    user = users.query.filter_by(username=username).first()
-    return user if user else None
+   if len(request.form) == 0:
+      return None # mgd
+
+   username = request.form.get('username')
+   user = users.query.filter_by(search_name = username.lower()).first()
+   return user if user else None

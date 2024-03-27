@@ -5,7 +5,6 @@
  """
 # cSpell:ignore passwordrecovery recoveremailtoken recoveremailtimestamp lastpasswordchange
 
-
 import datetime
 import requests
 import os
@@ -26,7 +25,7 @@ from apps.authentication.util import verify_pass, hash_pass
 from apps.home.emailstuff import sendEmail
 from apps.home.dbquery import executeSQL, getValues
 import secrets
-from apps.home.helper import getTexts, add_msg_success, add_msg_error
+from apps.home.texts import get_texts, add_msg_success, add_msg_error
 from apps.home.logHelper import Log2Database
 from collections import namedtuple
 
@@ -72,8 +71,8 @@ def is_method_get():
 # is_method_get } -----------------------------------------
 
 # { tokenValid ============================================
-#  returns true and the number of days since issuance if
-#  the token is found
+#  True when the number of days since issuance is less than
+#  or equal to `max`
 def tokenValid(time_stamp, max: int) -> bool:
    days= (datetime.datetime.now() - time_stamp).days
    return 0 <= days <= max
@@ -102,13 +101,14 @@ def login():
 
 
    tmpl_form= LoginForm(request.form)
-   texts= getTexts(route)
+   texts= get_texts(route)
 
    if is_post:
       username= to_str(request.form['username'])
       password= to_str(request.form['password'])
+      search_for= to_str(username).lower()
 
-      user= users.query.filter(or_(users.username==username, users.email==username)).first()
+      user= users.query.filter(or_(users.search_name == search_for, users.email == search_for)).first()
       if user and verify_pass(password, user.password):
          remember_me = to_str(request.form.get('remember_me')); # not always returns
          login_user(user, remember_me)
@@ -141,7 +141,7 @@ def changepassword():
 
 
    tmpl_form= NewPasswordForm(request.form)
-   texts= getTexts(route)
+   texts= get_texts(route)
    #TODO if current_user.is_authenticated redirect to logoff
 
    if is_get:
@@ -191,7 +191,7 @@ def resetpassword(token= None):
    confirm_password= '' if is_get else to_str(request.form['confirm_password'])
 
    tmpl_form= NewPasswordForm(request.form)
-   texts= getTexts(route)
+   texts= get_texts(route)
 
    if current_user.is_authenticated:
       logout()
@@ -255,7 +255,7 @@ def passwordrecovery():
    logger(f'@{request.method.lower()}:/{route}')
    success = False
 
-   texts= getTexts(route)
+   texts= get_texts(route)
    tmpl_form= PasswordRecoveryForm(request.form)
    send_to= '' if is_get else to_str(request.form['user_email'])
 
@@ -285,7 +285,6 @@ def passwordrecovery():
                           success= success,
                           form= tmpl_form,
                           **texts)
-
 # passwordrecovery } --------------------------------------
 
 # { register ==============================================
@@ -296,7 +295,7 @@ def register():
    is_get= is_method_get()
    logger(f'@{request.method.lower()}:/{route}')
 
-   texts= getTexts('register')
+   texts= get_texts('register')
    tmpl_form= RegisterForm(request.form)
 
    if is_get:
@@ -314,20 +313,28 @@ def register():
 
 
    # is_post:
-   username= request.form['username']
-   email= request.form['email']
+   username= to_str(request.form['username'])
+   email= to_str(request.form['email'])
+   search_for= username.lower()
 
-   user= users.query.filter_by(username=username).first()
-   if user:  #user exists!
+   user= users.query.filter_by(search_name = search_for).first()
+   if user:  # user exists!
       add_msg_error('userAlreadyRegistered', texts);
       return render_template(template,
                               success=False,
                               form=tmpl_form,
                               **texts)
 
-   user= users.query.filter_by(email=email).first()
-   if user: #email exists!
+   user= users.query.filter_by(email = email.lower()).first()
+   if user: # e-mail exists!
          add_msg_error('emailAlreadyRegistered', texts)
+         return render_template(template,
+                              success=False,
+                              form=tmpl_form,
+                              **texts)
+
+   if user.disable: # ups!
+         add_msg_error('userIsDisabled', texts)
          return render_template(template,
                               success=False,
                               form=tmpl_form,
@@ -353,7 +360,7 @@ def logout():
    return redirect(url_for('authentication_blueprint.login'))
 # logout } ------------------------------------------------
 
-# Errors
+# Errors --------------------------------------------------
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():

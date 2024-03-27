@@ -3,6 +3,7 @@ import apps.home.dbquery as dbquery
 #mgd from flask import escape
 from markupsafe import escape
 from sqlalchemy import engine
+from  apps.home.texts import add_msg
 
 
 def getValueFromHTMLName(template: str):
@@ -38,10 +39,15 @@ def getFormText(form: str):
                                     f"inner join suporteusuariogrupo b "
                                     f"on a.idsuporteusuariogrupo = b.id where b.nome = '{form}' or b.nome = 'wizard'"))
 
-def getTexts(group: str):
-    return dbquery.getDictResultset(f"select Tag, Texto from SuporteUsuarioElemento a "
-                             f"inner join SuporteUsuarioGrupo b "
-                             f"on a.idSuporteUsuarioGrupo = b.id where b.Nome = '{group}'")
+# def getTexts(group: str):
+#     return dbquery.getDictResultset(f"select tag, texto from suporteusuarioelemento a "
+#                              f"inner join suporteusuariogrupo b "
+#                              f"on a.idsuporteusuariogrupo = b.id where b.nome = '{group.lower()}'")
+
+
+def getErrorMessage(tag: str) -> str:
+    return add_msg(tag)
+
 
 def getTipText(form: str):
     return dbquery.getJSONStrResultset(
@@ -50,25 +56,3 @@ def getTipText(form: str):
         f"where b.Nome = '{form}' and Tag = 'tip'").replace('\r','').replace('\n','')
 
 
-def getMessage(tag: str, nome: str):
-    msg= dbquery.getValues(
-        f"select Texto from SuporteUsuarioElemento a inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
-        f"where b.Nome = '{nome}' and Tag = '{tag}'");
-    if msg is None:
-        msg= f"Mensagem '{tag}' (não registrada, {nome}).";
-    return msg
-
-def add_msg(tag: str, nome: str, texts: dict[str, str] = None) -> str:
-   value = getMessage(tag, nome)
-   if (texts != None ):
-      texts[nome] = value
-   return value
-
-def getErrorMessage(tag: str) -> str:
-    return add_msg(tag)
-
-def add_msg_error(tag: str, texts: dict[str, str] = None) -> str:
-   return add_msg(tag, 'msgError', texts)
-
-def add_msg_success(tag: str, texts: dict[str, str] = None) -> str:
-   return add_msg(tag, 'msgSuccess', texts)

@@ -34,7 +34,7 @@ if DEBUG:
     app.logger.info('ASSETS_ROOT      = ' + app_config.ASSETS_ROOT)
 
 
-host, port = os.getenv('CAATINGA_SERVER_ADDRESS', '0.0.0.0:50051').split(':');
+host, port = os.getenv('CAATINGA_SERVER_ADDRESS', '0.0.0.0:5000').split(':');
 
 if __name__ == "__main__":
     app.run(host=host, port=int(port))

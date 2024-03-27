@@ -25,7 +25,6 @@ def register_blueprints(app):
 
 
 def configure_database(app):
-
     @app.teardown_request
     def shutdown_session(exception=None):
         db.session.remove()
