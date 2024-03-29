@@ -1,4 +1,4 @@
-{% extends "./layouts/data_form.tmpl" %}
+{% extends "./layouts/form.tmpl" %}
 
 {% block formContent %}
 
@@ -7,7 +7,7 @@
       <label class="accountLabel" for="user_name">{{ userLabel }}</label>
       <div class="input-group">
             <!-- Font Awesome fas fa- ...-->
-            <span class="input-group-text" id="basic-addon1">
+            <span class="input-group-text">
                <span class="fas fa-user"></span>
             </span>
             {{ form.username(class="form-control", id="user_name") }}
@@ -16,11 +16,10 @@
    <!-- User Name } -->
 
    <!--{ Password  -->
-   <div class="form-group mt-3">
+   <div class="form-group">
       <label class="accountLabel" for="pwd_login">{{ passwordLabel }}</label>
       <div class="input-group">
-            <!-- Font Awesome fas fa ...-->
-            <span class="input-group-text" id="basic-addon2">
+            <span class="input-group-text">
                <span class="fas fa-unlock-alt"></span>
             </span>
             {{ form.password(class="form-control", id="pwd_login") }}
@@ -64,7 +63,7 @@
 
    <!-- { Goto Register -->
    <div class="d-grid">
-      <!-- mgd <button type="button" class="btn accountMainBtn" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ gotoRegister }}</button> -->
+      <button type="button" class="btn accountMainBtn" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ gotoRegister }}</button>
    </div>
    <!-- Goto Register } -->
 {% endblock formBelow %}

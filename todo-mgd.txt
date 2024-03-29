@@ -77,24 +77,22 @@
       » Ajustar no programa o desenvolvido ontem.
 
 2024-03-27
+      # Revisão de segurança e performance: app + db
       » Set default schema for DB (user is not working)
       » Usar users.search_name
-      » Trigger para users colunas 'internal' e manter email <- lower
+      » Trigger para users colunas 'internal' (de procura/where) e manter email <- lower
+
+2024-03-28
+      # Adaptar formulário sem imagem superior
 
 
-
-
-      » Cookier de leembrar
+      » Remember-me Cookie
 
 
       - changepassword/token -> token invalido -> solicitar um novo
-------------------------------
-Significant system improvements:
-   » Unique keys, case insensitive, for suporteusuariogrupo.nome  suporteusuarioelemento.tag
 
 
 Significant system improvements:
-
 
 Version 1.0  improvements:
    » remove all *.css (pixel incluisve)

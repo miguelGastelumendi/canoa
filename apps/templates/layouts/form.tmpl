@@ -1,14 +1,14 @@
-{# files are relative to ./templates #}
-{% extends "./layouts/window.tmpl" %}
+{# template for HTML forms }
+
+{% with dlgClass="dfClass" %}
+   {% extends "./layouts/dialog.tmpl" %}
+{% % endwith %}
 
 {% block stylesheets %}
 <link type="text/css" href= "{{ url_for('static', filename='css/accounts.css') }}" rel="stylesheet">
 {% endblock stylesheets %}
 
-
-{% block wndContent %}
-   <!-- { % with {"wndBtnText": "submitButton"} % } -->
-
+{% block dlgContent %}
       <!-- { BackendMessage -->
       <div class="text-center text-md-center mt-md-0 mb-3">
          <span class="font-weight-normal">
@@ -48,7 +48,6 @@
       {% block formBelow %}
       {% endblock formBelow %}
 
-   <!-- { % endwith % } -->
-{% endblock wndContent %}
+{% endblock dlgContent %}
 
 {# eof #}

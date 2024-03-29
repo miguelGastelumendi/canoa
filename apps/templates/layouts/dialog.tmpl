@@ -1,0 +1,31 @@
+{# template for (modal or normal) dialogs modal or normal #}
+{# files are relative to ./templates #}
+
+{% extends "./layouts/base_caatinga.tmpl" %}
+
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+<section>
+   <div class= "{{ (dlgClass | default('modal')) }} tabindex='-1'" id="{{ (dlgID | default('dlgId')) }}" >
+      <div class="modal-dialog dlg-dialog">
+         <div class="modal-content dlg-content">
+            <div class="modal-header dlg-header">
+               <h5 class="modal-title dlg-header">Bem-vindo ao aplicativo Caatinga</h5>
+               <button type="button" class="btn-close dlg-btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body dlg-body">
+               {% block dlgContent %}
+               {% endblock dlgContent %}
+            </div>
+            <div class="modal-footer dlg-footer collapse">
+               <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+               <button type="{{ (dlgBtnType | default('button')) }}" class="btn btn-primary dlg-btn-ok" data-bs-dismiss="modal">{{ (dlgBtnText | default("OK")) }}</button>
+            </div>
+         </div>
+      </div>
+   </div>
+</section>
+{% endblock content %}
+{# eof #}
