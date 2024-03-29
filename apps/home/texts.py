@@ -10,10 +10,10 @@
 import apps.home.dbquery as dbquery
 
 def get_select( cols: str, grupo: str, tag: str = None ):
+   tagFilter = '' if tag is None else f" and (search_tag = '{tag.lower()}')"
    query = ( f"select {cols} from caatinga.vw_textos "
               f"where "
-              f"(grupo = '{grupo.lower()}')"  +
-              '' if tag is None else f" and (search_tag = '{tag.lower()}');"
+              f"(grupo = '{grupo.lower()}'){tagFilter};"
             )
    return query
 

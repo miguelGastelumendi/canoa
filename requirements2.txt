@@ -12,4 +12,4 @@ plotly #apps\home\dbquery.py (listed in requirements.txt but...)
 numpy_financial #apps\home\ui_projectEnd.py
 
 # Caating Need,
-Jinja2==3.0.2
+Jinja2 # update ==3.0.2

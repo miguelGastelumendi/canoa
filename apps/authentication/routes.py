@@ -3,7 +3,7 @@
  The Caatinga Team 2024
  ----------------------
  """
-# cSpell:ignore passwordrecovery recoveremailtoken recoveremailtimestamp lastpasswordchange
+# cSpell:ignore passwordrecovery recoveremailtoken recoveremailtimestamp lastpasswordchange tmpl errorhandler assis
 
 import datetime
 import requests
@@ -52,7 +52,7 @@ def logger(url: str):
    idProjectKey= '_projeto_id'
    logged= False if not current_user else current_user.is_authenticated
    idProject= db.session[idProjectKey] if logged and hasattr(db.session, 'keys') and idProjectKey in db.session.keys(idProjectKey) else -1
-   idUser= current_user.id if current_user.is_authenticated else -1
+   idUser= current_user.id if logged else -1
 
    # assis log.logActivity2Database(idUser, idProject, url)
 # Logger } ------------------------------------------------
@@ -109,13 +109,16 @@ def login():
       search_for= to_str(username).lower()
 
       user= users.query.filter(or_(users.search_name == search_for, users.email == search_for)).first()
-      if user and verify_pass(password, user.password):
+      if not user or not verify_pass(password, user.password):
+         add_msg_error('userOrPwdIsWrong', texts)
+
+      elif user.disabled:
+         add_msg_error('userIsDisabled', texts)
+
+      else:
          remember_me = to_str(request.form.get('remember_me')); # not always returns
          login_user(user, remember_me)
          return redirect(url_for('home_blueprint.index'))
-
-      # Something (user or pass) is not ok, retutn
-      add_msg_error('userOrPwdIsWrong', texts)
 
    return render_template(
        template,
@@ -263,7 +266,7 @@ def passwordrecovery():
       pass
 
    # TODO: get  user= users.query.filter_by(email=send_to).first() => use instead of update
-   elif getValues(f"select count(1) from users where email = '{send_to}'") != 1:
+   elif getValues(f"select count(1) from users where email = '{send_to.lower()}'") != 1:
       add_msg_error('emailNotRegistered', texts)
 
    else:
@@ -317,7 +320,7 @@ def register():
    email= to_str(request.form['email'])
    search_for= username.lower()
 
-   user= users.query.filter_by(search_name = search_for).first()
+   user= users.query.filter_by(search_name = username.lower()).first()
    if user:  # user exists!
       add_msg_error('userAlreadyRegistered', texts);
       return render_template(template,
@@ -333,15 +336,10 @@ def register():
                               form=tmpl_form,
                               **texts)
 
-   if user.disable: # ups!
-         add_msg_error('userIsDisabled', texts)
-         return render_template(template,
-                              success=False,
-                              form=tmpl_form,
-                              **texts)
+   # else we can create the user not disabled ;-)
 
-   # else we can create the user ;-)
    user= users(**request.form)
+   user.disabled = False
    db.session.add(user)
    db.session.commit()
    add_msg_success('welcome', texts)

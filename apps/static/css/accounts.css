@@ -38,44 +38,22 @@
    margin: 10px 0 10px;
  }
 
-  /* === Title === */
- .accountPageImage {
-   position: relative;
- }
-
- .accountPageTitle {
-   position: absolute; /* Position the text absolutely within the parent div */
-   top: 0px;
-   padding: 6px;
-   width: 100%;
-   background-color: rgba(255, 255, 255, 0.4);
-   /* style variant weight size family */
-   font: normal normal 800 180% 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-   color: var(--titleColor);
-}
-
-/* .accountPageTitle::before {
-   content: var(--project-name)  ' – '; /* '\f2009\f2013\f0A0'; "&thinsp;&ndash;&nbsp");
-}
- */
-
- /* === Buttons === */
-.accountCheckBtn:checked {
+ .accountCheckBtn:checked {
    accent-color: var(--buttonColor);
 }
 
-.accountMainBtn{
-  background-color: var(--buttonColor);
-  border: none;
-  color: white;
+.btnSubmit {
+   background-color: var(--buttonColor);
+   border: none;
+   color: white;
 }
 
-.accountMainBtn:hover {
+.btnSubmit:hover {
   background-color: var(--buttonColor);
   filter: brightness(120%);
 }
 
-.accountMainBtn:disabled {
+.btnSubmit:disabled {
   background-color: var(--buttonColor);
   filter: brightness(60%);
 }

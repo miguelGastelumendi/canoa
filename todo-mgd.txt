@@ -83,12 +83,12 @@
       » Trigger para users colunas 'internal' (de procura/where) e manter email <- lower
 
 2024-03-28
-      # Adaptar formulário sem imagem superior
+      #Adaptar formulário sem imagem superior, passwordrecovery e resetpassword nao funcionam.
 
+
+2024-04-01
 
       » Remember-me Cookie
-
-
       - changepassword/token -> token invalido -> solicitar um novo
 
 

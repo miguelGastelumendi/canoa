@@ -1,52 +1,52 @@
 {# template for HTML forms }
 
-{% with dlgClass="dfClass" %}
+{#% with dlgClass="dfClass" %#}
    {% extends "./layouts/dialog.tmpl" %}
-{% % endwith %}
+{#% endwith %#}
 
 {% block stylesheets %}
 <link type="text/css" href= "{{ url_for('static', filename='css/accounts.css') }}" rel="stylesheet">
 {% endblock stylesheets %}
 
 {% block dlgContent %}
-      <!-- { BackendMessage -->
-      <div class="text-center text-md-center mt-md-0 mb-3">
-         <span class="font-weight-normal">
-            {% if msgError %}
-            <div class="alert alert-danger mt-3">
-               {{ msgError | safe }}
-            </div>
-            {% elif msgSuccess %}
-            <div class="alert alert-success mt-3">
-               {{ msgSuccess | safe }}
-            </div>
-            {% endif %}
-         </span>
-      </div>
-      <!-- BackendMessage } -->
+   <!-- { BackendMessage -->
+   <div class="text-center text-md-center mt-md-0 mb-3">
+      <span class="font-weight-normal">
+         {% if msgError %}
+         <div class="alert alert-danger mt-3">
+            {{ msgError | safe }}
+         </div>
+         {% elif msgSuccess %}
+         <div class="alert alert-success mt-3">
+            {{ msgSuccess | safe }}
+         </div>
+         {% endif %}
+      </span>
+   </div>
+   <!-- BackendMessage } -->
 
-      {% block formAbove %}
-      {% endblock formAbove %}
+   {% block formAbove %}
+   {% endblock formAbove %}
 
-      {% if not msgSuccess %}
-         <!-- { Form  -->
-         <form method="post" action="" class="mt-2">
-            {{ form.hidden_tag() }}
+   {% if not msgSuccess %}
+      <!-- { Form  -->
+      <form method="post" action="" class="mt-2">
+         {{ form.hidden_tag() }}
 
-            {% block formContent %}
-            {% endblock formContent %}
+         {% block formContent %}
+         {% endblock formContent %}
 
-            <!-- { Submit -->
-               <div class="d-grid mt-3">
-                  <button type="submit">{{ submitButton }}</button>
-               </div>
-               <!-- Submit } -->
-            </form>
-            <!-- Form } -->
-      {% endif %}
+         <!-- { Submit -->
+         <div class="d-grid mt-3">
+            <button class="form-control btnSubmit" id="btnSubmit" type="submit">{{ submitButton }}</button>
+         </div>
+         <!-- Submit } -->
+      </form>
+      <!-- Form } -->
+   {% endif %}
 
-      {% block formBelow %}
-      {% endblock formBelow %}
+   {% block formBelow %}
+   {% endblock formBelow %}
 
 {% endblock dlgContent %}
 

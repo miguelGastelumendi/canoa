@@ -44,17 +44,7 @@ label {
   justify-content: center;
   align-items: center;
 }
-
-input,
-select {
-  background-color: white !important;
-  position: relative !important;
-}
-
-.divInputProjectName {
-  width: 35%;
-}
-
+/*
 
 .btnHeader {
   border: 1px solid #5a443d;

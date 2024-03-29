@@ -16,7 +16,7 @@
    <!-- User Name } -->
 
    <!--{ Password  -->
-   <div class="form-group">
+   <div class="form-group mt-3">
       <label class="accountLabel" for="pwd_login">{{ passwordLabel }}</label>
       <div class="input-group">
             <span class="input-group-text">
@@ -28,43 +28,40 @@
    <!-- Password }-->
 
    <!-- { RememberMe & ForgotPw -->
-   <div class="form-group">
-      <div class="accountTwoCells">
-            <!-- { RememberMe -->
-            <div class="form-check">
-               {{ form.remember_me(class="form-check-input", id="rememberMe") }}
-               <!-- <input class="form-check-input" type="checkbox"  id="rememberMe" name="rememberme"> -->
-               <label class="form-check-label accountLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
-            </div>
-            <!-- RememberMe } -->
-
-            <!-- { ForgotPw :-( -->
-            <span>
-               <a href="{{ url_for('authentication_blueprint.passwordrecovery') }}" class="accountLink">{{ forgotPassword }}</a>
-            </span>
-            <!--End ForgotPw } -->
+   <div class="form-group mt-3">
+      <!-- { RememberMe -->
+      <div class="">
+         {{ form.remember_me(class="accountCheckBtn", id="rememberMe") }}
+         <label class="form-check-label accountLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
       </div>
+      <!-- RememberMe } -->
    </div>
    <!-- RememberMe & ForgotPw } -->
 {% endblock formContent %}
 
 {% block formBelow %}
    <!-- { Register Info -->
-   <div class="accountTwoCells mt-3">
+   <div class="accountTwoCells">
       <!-- docs/file is a virtual path -->
       <span>
             <a href="docs/disclaimer" class="accountLink">{{ disclaimer }}</a>
       </span>
       <span>
-            <a href="docs/politica_de_privacidade" class="accountLink">{{ termsOfUse }}</a>
+         <a href="{{ url_for('authentication_blueprint.passwordrecovery') }}" class="accountLink">{{ forgotPassword }}</a>
       </span>
    </div>
    <!-- Register Info } -->
 
-   <!-- { Goto Register -->
-   <div class="d-grid">
-      <button type="button" class="btn accountMainBtn" onclick="window.location.href='{{ url_for('authentication_blueprint.register') }}'">{{ gotoRegister }}</button>
+   <!-- { forgot | register -->
+      <div class="accountTwoCells mt-3">
+         <span>
+            <a href="docs/politica_de_privacidade" class="accountLink">{{ termsOfUse }}</a>
+         </span>
+         <span>
+         <a href="{{ url_for('authentication_blueprint.register') }}" class="accountLink">{{ gotoRegister }}</a>
+      </span>
    </div>
-   <!-- Goto Register } -->
+   <!-- forgot | register } -->
+
 {% endblock formBelow %}
 {# eof #}

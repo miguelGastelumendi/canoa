@@ -25,6 +25,7 @@ class RegisterForm(FlaskForm):
                      validators=[DataRequired(), Email()])
     password = PasswordField('Password',
                      validators=[DataRequired(), Length(min=6)])
+    disabled = BooleanField('Disabled')
 
 class NewPasswordForm(FlaskForm):
     password = PasswordField('Nova senha',
