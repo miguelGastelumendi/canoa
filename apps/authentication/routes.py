@@ -13,7 +13,9 @@ from flask import render_template, redirect, request, url_for
 from flask_login import (
    current_user,
    login_user,
-   logout_user
+   logout_user,
+   confirm_login,
+   fresh_login_required
 )
 from sqlalchemy import or_
 from apps import db, login_manager
@@ -27,19 +29,37 @@ from apps.home.dbquery import executeSQL, getValues
 import secrets
 from apps.home.texts import get_texts, add_msg_success, add_msg_error
 from apps.home.logHelper import Log2Database
-from collections import namedtuple
+
 
 log= Log2Database()
+
+
+# ---------------------------------------------------------
+#   Account Routes Helpers
+# ---------------------------------------------------------
 
 # { to_str ================================================
 def to_str(s: str):
     return '' if s is None else s.strip()
 # to_str } ------------------------------------------------
 
+# { is_user_logged ========================================
+# in some context, current_user is an 'invalid pointer'
+# see models.py:request_loader
+def is_user_logged():
+   logged = False
+   try:
+      logged = current_user.is_authenticated if current_user else None
+   except:
+      logged = False
+
+   return logged
+# is_user_logged } ----------------------------------------
+
 # { get_user_row ==========================================
 def get_user_row():
    user_row = None
-   if current_user and current_user.is_authenticated:
+   if is_user_logged():
       user_row= users.query.filter_by(id = current_user.id).first()
 
    return user_row
@@ -50,7 +70,7 @@ def get_user_row():
 # mgd 2024.03.21
 def logger(url: str):
    idProjectKey= '_projeto_id'
-   logged= False if not current_user else current_user.is_authenticated
+   logged= is_user_logged()
    idProject= db.session[idProjectKey] if logged and hasattr(db.session, 'keys') and idProjectKey in db.session.keys(idProjectKey) else -1
    idUser= current_user.id if logged else -1
 
@@ -62,10 +82,10 @@ def logger(url: str):
 def is_method_get():
    is_get= True
    if request.method == 'POST':
-       is_get= False
+      is_get= False
    elif not is_get:
-       # if not is_get then is_post, there is no other possibility
-       raise ValueError('Unexpected request method.')
+      # if not is_get then is_post, there is no other possibility
+      raise ValueError('Unexpected request method.')
 
    return is_get
 # is_method_get } -----------------------------------------
@@ -78,12 +98,26 @@ def tokenValid(time_stamp, max: int) -> bool:
    return 0 <= days <= max
 # tokenValid } --------------------------------------------
 
+# { internalLogout  =======================================
+def internal_logout():
+   logout_user()
+# internalLogout } ========================================
+
+
+# ---------------------------------------------------------
+#   Account Routes
+# ---------------------------------------------------------
+
+# { default route =========================================
 @blueprint.route('/')
 def route_default():
-    if current_user.is_authenticated:
+    if is_user_logged():
       return redirect(url_for('home_blueprint.index'))
     else:
       return redirect(url_for('authentication_blueprint.login'))
+
+# default route } =========================================
+
 
 
 # { login =================================================
@@ -96,9 +130,8 @@ def login():
 
 
    # TODO: Ask for logout
-   if current_user.is_authenticated and not is_post:
+   if is_user_logged() and not is_post:
       return unauthorized_handler()
-
 
    tmpl_form= LoginForm(request.form)
    texts= get_texts(route)
@@ -118,6 +151,7 @@ def login():
       else:
          remember_me = to_str(request.form.get('remember_me')); # not always returns
          login_user(user, remember_me)
+         # test: confirm_login()
          return redirect(url_for('home_blueprint.index'))
 
    return render_template(
@@ -130,9 +164,16 @@ def login():
 # { changepassword ========================================
 # Change Password of the `authenticated user`
 # mgd 2024.03.21
+# todo login_required()
+# todo: 2024.04.01 fresh_login_required()
 @blueprint.route('/changepassword', methods= ['GET','POST'])
-@login_required
 def changepassword():
+
+   # TODO: Ask for logout
+   if not is_user_logged():
+      # TODO: form que fala: solicitação invalida, você será redirecionado a:
+      return redirect(url_for('authentication_blueprint.login'))
+
    route= 'changepassword'
    template= f'accounts/rst_chg_password.html'
    is_get= is_method_get()
@@ -142,10 +183,8 @@ def changepassword():
    user= None if is_get else get_user_row()
    logger(f'@{request.method.lower()}:/{route}/')
 
-
    tmpl_form= NewPasswordForm(request.form)
    texts= get_texts(route)
-   #TODO if current_user.is_authenticated redirect to logoff
 
    if is_get:
       pass
@@ -157,13 +196,15 @@ def changepassword():
       add_msg_error('passwordsAreDifferent', texts)
 
    elif user == None:
-      logout()
+      internal_logout()
+      redirect(url_for('authentication_blueprint.login'))
 
    else:
       user.password= hash_pass(password)
       db.session.add(user)
       db.session.commit()
       add_msg_success('chgPwSuccess', texts)
+      internal_logout()
       success= True
 
    return render_template(
@@ -196,8 +237,8 @@ def resetpassword(token= None):
    tmpl_form= NewPasswordForm(request.form)
    texts= get_texts(route)
 
-   if current_user.is_authenticated:
-      logout()
+   if is_user_logged():
+      internal_logout()
       return unauthorized_handler()
 
    elif len(token_str) < 12:
@@ -213,7 +254,7 @@ def resetpassword(token= None):
       add_msg_error('passwordsAreDifferent', texts)
 
    else:
-      user= users.query.filter_by(recoveremailtoken=token_str).first()
+      user= users.query.filter_by(recoveremailtoken = token_str).first()
       if user == None:
          add_msg_error('invalidToken', texts)
 
@@ -223,7 +264,6 @@ def resetpassword(token= None):
       else:
          user.password= hash_pass(password)
          user.recoveremailtoken= None
-         #user.lastpasswordchange= datetime.datetime.now()
          db.session.add(user)
          db.session.commit()
          add_msg_success('resetPwSuccess', texts)
@@ -248,9 +288,9 @@ def resetpassword(token= None):
 @blueprint.route('/passwordrecovery', methods= ['GET', 'POST'])
 def passwordrecovery():
 
-   if current_user.is_authenticated:
-      # como que oc chegou aqui, vai para
-      return redirect(url_for('home_blueprint.changepassword'))
+   if is_user_logged():
+      # como é que oc chegou aqui, vai para
+      return redirect(url_for('authentication_blueprint.changepassword'))
 
    route= 'passwordrecovery'
    template= f'accounts/{route}.html'
@@ -260,29 +300,32 @@ def passwordrecovery():
 
    texts= get_texts(route)
    tmpl_form= PasswordRecoveryForm(request.form)
-   send_to= '' if is_get else to_str(request.form['user_email'])
+   send_to= '' if is_get else to_str(request.form['user_email']).lower()
+   user= None if is_get else users.query.filter_by(email = send_to).first()
+   apiKey = None if is_get else os.environ.get('CAATINGA_EMAIL_API_KEY')
 
    if is_get:
       pass
 
-   # TODO: get  user= users.query.filter_by(email=send_to).first() => use instead of update
-   elif getValues(f"select count(1) from users where email = '{send_to.lower()}'") != 1:
+   elif user == None:
       add_msg_error('emailNotRegistered', texts)
 
    else:
-      token= secrets.token_urlsafe()
-      ip= requests.get('https://checkip.amazonaws.com').text.strip()
-      #url= f"{os.environ['CAATINGA_CHANGE_PWD_EMAIL_LINK']}{url_for('authentication_blueprint.changepassword', token=token)}"
-      url= f"http://{ip}:50051{url_for('authentication_blueprint.changepassword',token=token)}"
+      code = 7 #TODO, error code
+      try:
+         token= secrets.token_urlsafe()
+         ip= requests.get('https://checkip.amazonaws.com').text.strip()
+         url= f"http://{ip}:50051{url_for('authentication_blueprint.changepassword', token=token)}"
 
-      sendEmail(send_to, 'emailPasswordRecovery', {'url': url})
-      update = (f"update users set recoveremailtoken= '{token}',"
-                f" recoveremailtimestamp= current_timestamp"
-                f" where email = '{send_to}'")
-      executeSQL(update)
+         sendEmail(send_to, 'emailPasswordRecovery', {'url': url}, apiKey)
+         user.recoveremailtoken= token   # recoveremailtimestamp updated in trigger
+         db.session.add(user)
+         db.session.commit()
+         add_msg_success('emailSent', texts)
 
-      add_msg_success('emailSent', texts)
-      success = True
+         success = True
+      except: #TODO: log
+         add_msg_error('emailNotSent', texts)
 
    return render_template(template,
                           success= success,
@@ -307,18 +350,9 @@ def register():
                              form=tmpl_form,
                              **texts)
 
-   # Teste de success
-   # add_msg_success('welcome', texts)
-   # return render_template('accounts/register.html',
-   #                         success=True,
-   #                         form=tmpl_form,
-   #                         **texts)
-
-
-   # is_post:
+   #else is_post:
    username= to_str(request.form['username'])
    email= to_str(request.form['email'])
-   search_for= username.lower()
 
    user= users.query.filter_by(search_name = username.lower()).first()
    if user:  # user exists!
@@ -354,7 +388,7 @@ def register():
 @blueprint.route('/logout')
 def logout():
    logger(f'@{request.method.lower()}:/logout')
-   logout_user()
+   internal_logout()
    return redirect(url_for('authentication_blueprint.login'))
 # logout } ------------------------------------------------
 

@@ -23,7 +23,7 @@ fromEmail = 'assismauro@hotmail.com'
 #}
 #response = requests.post('https://api.sendgrid.com/v3/mail/send', headers=headers, json=json_data)
 
-def sendEmail(toMail: str, emailType: str, toReplace: dict, file2SendPath: str = None):
+def sendEmail(toMail: str, emailType: str, toReplace: dict, apiKey: str, file2SendPath: str = None):
     eMailTexts = get_texts(emailType)
     for eMailTextsKey in eMailTexts.keys():
         for toReplaceKey in toReplace.keys():
@@ -46,7 +46,7 @@ def sendEmail(toMail: str, emailType: str, toReplace: dict, file2SendPath: str =
         attachment.disposition = Disposition('attachment')
         message.attachment = attachment
     try:
-        sendgrid_client = SendGridAPIClient(os.environ.get('CAATINGA_EMAIL_API_KEY').strip())
+        sendgrid_client = SendGridAPIClient(apiKey)
         response = sendgrid_client.send(message)
         return response
     except Exception as e:

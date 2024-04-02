@@ -4,7 +4,7 @@
 
    <!-- { User Name -->
    <div class="form-group">
-      <label class="accountLabel" for="user_name">{{ userLabel }}</label>
+      <label class="formLabel" for="user_name">{{ userLabel }}</label>
       <div class="input-group">
             <!-- Font Awesome fas fa- ...-->
             <span class="input-group-text">
@@ -17,7 +17,7 @@
 
    <!--{ Password  -->
    <div class="form-group mt-3">
-      <label class="accountLabel" for="pwd_login">{{ passwordLabel }}</label>
+      <label class="formLabel" for="pwd_login">{{ passwordLabel }}</label>
       <div class="input-group">
             <span class="input-group-text">
                <span class="fas fa-unlock-alt"></span>
@@ -31,8 +31,8 @@
    <div class="form-group mt-3">
       <!-- { RememberMe -->
       <div class="">
-         {{ form.remember_me(class="accountCheckBtn", id="rememberMe") }}
-         <label class="form-check-label accountLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
+         {{ form.remember_me(class="formCheckBtn", id="rememberMe") }}
+         <label class="form-check-label formLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
       </div>
       <!-- RememberMe } -->
    </div>
@@ -41,24 +41,24 @@
 
 {% block formBelow %}
    <!-- { Register Info -->
-   <div class="accountTwoCells">
+   <div class="formTwoCells">
       <!-- docs/file is a virtual path -->
       <span>
-            <a href="docs/disclaimer" class="accountLink">{{ disclaimer }}</a>
+            <a href="docs/disclaimer" class="formLink">{{ disclaimer }}</a>
       </span>
       <span>
-         <a href="{{ url_for('authentication_blueprint.passwordrecovery') }}" class="accountLink">{{ forgotPassword }}</a>
+         <a href="{{ url_for('authentication_blueprint.passwordrecovery') }}" class="formLink">{{ forgotPassword }}</a>
       </span>
    </div>
    <!-- Register Info } -->
 
    <!-- { forgot | register -->
-      <div class="accountTwoCells mt-3">
-         <span>
-            <a href="docs/politica_de_privacidade" class="accountLink">{{ termsOfUse }}</a>
-         </span>
-         <span>
-         <a href="{{ url_for('authentication_blueprint.register') }}" class="accountLink">{{ gotoRegister }}</a>
+   <div class="formTwoCells">
+      <span>
+         <a href="docs/politica_de_privacidade" class="formLink">{{ termsOfUse }}</a>
+      </span>
+      <span>
+         <a href="{{ url_for('authentication_blueprint.register') }}" class="formLink">{{ gotoRegister }}</a>
       </span>
    </div>
    <!-- forgot | register } -->

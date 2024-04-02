@@ -23,6 +23,6 @@ def index():
 # ============= Documents ============== #
 @blueprint.route('/docs/<docName>')
 def docs(docName):
-    return render_template('layouts/documentDisplay.html',  **{'documentTitle': f'{docName} Document', 'pageTitle':f'{docName}'})
+    return render_template('home/documentDisplay.html',  **{'documentTitle': f'{docName} Document', 'pageTitle':f'{docName}'})
 
 

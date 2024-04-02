@@ -48,7 +48,7 @@ def user_loader(id):
 
 @login_manager.request_loader
 def request_loader(request):
-   if len(request.form) == 0:
+   if len(request.form) == 0 or request.form.get('username') == None:
       return None # mgd
 
    username = request.form.get('username')

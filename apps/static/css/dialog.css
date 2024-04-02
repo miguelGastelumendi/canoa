@@ -1,0 +1,13 @@
+/*
+   dialog.css
+      for dialog.tmpl & extenders, such us
+         -
+   2024-04-01
+   Miguel Gastelumendi -- mgd
+*/
+
+
+.dlgShow {
+   display: block !important;
+}
+

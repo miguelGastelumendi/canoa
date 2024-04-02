@@ -1,6 +1,6 @@
 /*
-   accounts.css
-      for accounts.tmpl & extenders, like
+   form.css
+      for form.tmpl & extenders, such as
          - Login
          - Change Password
          - Get User email
@@ -18,42 +18,42 @@
 }
 
 /* === Helpers === */
-.accountLabel {
+.formLabel {
    position: initial;
    color: var(--labelColor);
  }
 
- .accountLink {
+ .formLink {
    color: var(--linkColor);
    font-weight: 800;
  }
 
- .accountLink:hover {
+ .formLink:hover {
     text-decoration: underline;
  }
 
- .accountTwoCells {
+ .formTwoCells {
    display: flex;
    justify-content: space-between;
-   margin: 10px 0 10px;
+   margin: 6px 0 6px;
  }
 
- .accountCheckBtn:checked {
+ .formCheckBtn:checked {
    accent-color: var(--buttonColor);
 }
 
-.btnSubmit {
+.formMainBtn {
    background-color: var(--buttonColor);
    border: none;
    color: white;
 }
 
-.btnSubmit:hover {
+.formMainBtn:hover {
   background-color: var(--buttonColor);
   filter: brightness(120%);
 }
 
-.btnSubmit:disabled {
+.formMainBtn:disabled {
   background-color: var(--buttonColor);
   filter: brightness(60%);
 }

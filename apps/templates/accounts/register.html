@@ -3,7 +3,7 @@
 {% block formAbove %}
    {% if success %}
    <div class="d-grid">
-      <button type="button" class="btn accountMainBtn" onclick="window.location.href='{{ url_for('authentication_blueprint.login') }}'">{{ gotoLogin }}</button>
+      <button type="button" class="btn formMainBtn" onclick="window.location.href='{{ url_for('authentication_blueprint.login') }}'">{{ gotoLogin }}</button>
    </div>
    {% endif %}
 {% endblock formAbove %}
@@ -12,7 +12,7 @@
    {% if not success %}
       <!-- { User Name -->
       <div class="form-group">
-         <label class="accountLabel" for="userName">{{ userLabel }}</label>
+         <label class="formLabel" for="userName">{{ userLabel }}</label>
          <div class="input-group">
             <span class="input-group-text" id="basic-addon1">
                <span class="fas fa-user"></span>
@@ -24,7 +24,7 @@
 
       <!-- Email  -->
       <div class="form-group mt-3">
-         <label class="accountLabel" for="user_email">{{ emailLabel }}</label>
+         <label class="formLabel" for="user_email">{{ emailLabel }}</label>
          <div class="input-group">
             <span class="input-group-text" id="basic-addon3">
                <span class="fas fa-envelope"></span>
@@ -36,7 +36,7 @@
 
       <!-- { Password  -->
       <div class="form-group mt-3">
-         <label class="accountLabel" for="password">{{ passwordLabel }}</label>
+         <label class="formLabel" for="password">{{ passwordLabel }}</label>
          <div class="input-group">
             <span class="input-group-text" id="basic-addon4">
                <span class="fas fa-unlock-alt"></span>
@@ -46,26 +46,33 @@
       </div>
       <!-- Password } -->
 
-         <!-- { Termo || Login -->
-      <div class="form-group">
-         <div class="accountTwoCells">
-               <!-- { Tremo -->
-               <div>
-                  <input class="accountCheckBtn" type="checkbox" onclick="fTermsAccepted()" id="termsAccepted">
-                  <label class="accountLabel" class="form-check-label mb-0" for="termsAccepted">
-                     {{ termsLabel }}
-                     <b><a class="accountLink" href="docs/politica_de_privacidade">{{ termsLink }}</a></b>
-                  </label>
-               </div>
-               <!-- RememberMe } -->
-
-               <!-- { ForgotPw :-( -->
-               <span>
-                  <a class="accountLink" href="{{ url_for('authentication_blueprint.login') }}">{{ gotoLogin }}</a>
-               </span>
-               <!--End ForgotPw } -->
+      <!-- { Termo || '' -->
+      <div class="form-group mt-2">
+         <div class="formTwoCells">
+            <!-- { Termo -->
+            <div>
+               <input class="formCheckBtn" type="checkbox" onclick="fTermsAccepted()" id="termsAccepted">
+               <label class="formLabel" class="form-check-label" for="termsAccepted">
+                  {{ termsLabel }}
+                  <a class="formLink" href="docs/politica_de_privacidade">{{ termsLink }}</a>
+               </label>
+            </div>
+            <!-- Termo } -->
+            <!-- empty } -->
+            <span>&nbsp;</span>
+            <!-- end empty } -->
          </div>
       </div>
+      <!-- { '' & 'login' -->
+      <div class="formTwoCells">
+         <!-- empty } -->
+         <span>&nbsp;</span>
+         <!-- end empty } -->
+         <span>
+            <a class="formLink" href="{{ url_for('authentication_blueprint.login') }}">{{ gotoLogin }}</a>
+         </span>
+      </div>
+      <!-- forgot | register } -->
    {% endif %}
 {% endblock formContent %}
 
@@ -73,7 +80,7 @@
 {% block javascripts %}
    {% if not success %}
    <script>
-      const btnSubmit = document.getElementById("btnSubmit");
+      const btnSubmit = document.getElementById("formMainBtn-id");
       const btnAccepted = document.getElementById("termsAccepted");
       btnSubmit.disabled = true;
       btnAccepted.checked = !btnSubmit.disabled;

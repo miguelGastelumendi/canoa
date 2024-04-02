@@ -85,11 +85,16 @@
 2024-03-28
       #Adaptar formulário sem imagem superior, passwordrecovery e resetpassword nao funcionam.
 
-
 2024-04-01
+      #Formulários funcionando, configuráveis
+
+2024-04-02
+      #Formulário das Contas de Usuário revisão 2, novo background
+
 
       » Remember-me Cookie
       - changepassword/token -> token invalido -> solicitar um novo
+      - changepassword -> request current
 
 
 Significant system improvements:

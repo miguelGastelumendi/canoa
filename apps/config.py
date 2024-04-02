@@ -34,9 +34,9 @@ engine = create_engine(connection_url)
 '''
 
     SQLALCHEMY_DATABASE_URI = os.getenv('CAATINGA_SQLALCHEMY_DATABASE_URI', '');
-    CHANGE_PWD_EMAIL_LINK = os.getenv('CAATINGA_CHANGE_PWD_EMAIL_LINK', '')
+    CAATINGA_EMAIL_API_KEY = os.getenv('CAATINGA_EMAIL_API_KEY', '')
 
-    if (SQLALCHEMY_DATABASE_URI == '') or (CHANGE_PWD_EMAIL_LINK == ''):
+    if (SQLALCHEMY_DATABASE_URI == '') or (CAATINGA_EMAIL_API_KEY == ''):
         raise Exception("Verifique se as variáveis de ambiente estão definidas.")
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False

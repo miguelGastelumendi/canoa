@@ -1,12 +1,20 @@
-{# template for HTML forms }
+{# template for HTML forms #}
+{#  Size: sm, <>, lg, xl #}
 
-{#% with dlgClass="dfClass" %#}
-   {% extends "./layouts/dialog.tmpl" %}
-{#% endwith %#}
+
+{% set dlgDisplay= True %}
+{% set dlgCentered= False %}
+{% set dlgSize= 'modal-sm' %}
+{% set dlgTop= 'mt-6' %}
+
+
+{% extends "./layouts/dialog.tmpl" %}
 
 {% block stylesheets %}
-<link type="text/css" href= "{{ url_for('static', filename='css/accounts.css') }}" rel="stylesheet">
+<link type="text/css" href= "{{ url_for('static', filename='css/form.css') }}" rel="stylesheet">
+<link type="text/css" href= "{{ url_for('static', filename='css/dialog.css') }}" rel="stylesheet">
 {% endblock stylesheets %}
+
 
 {% block dlgContent %}
    <!-- { BackendMessage -->
@@ -38,7 +46,7 @@
 
          <!-- { Submit -->
          <div class="d-grid mt-3">
-            <button class="form-control btnSubmit" id="btnSubmit" type="submit">{{ submitButton }}</button>
+            <button class="form-control formMainBtn" id="formMainBtn-id" type="submit">{{ submitButton }}</button>
          </div>
          <!-- Submit } -->
       </form>
@@ -49,5 +57,6 @@
    {% endblock formBelow %}
 
 {% endblock dlgContent %}
+
 
 {# eof #}

@@ -1,30 +1,41 @@
-{# template for (modal or normal) dialogs modal or normal #}
-{# files are relative to ./templates #}
+{# template for (modal or normal) dialogs #}
 
 {% extends "./layouts/base.tmpl" %}
 
 {% block stylesheets %}
+<link type="text/css" href= "{{ url_for('static', filename='css/dialog.css') }}" rel="stylesheet">
 {% endblock stylesheets %}
+
 
 {% block content %}
 <section>
-   <div class= "{{ (dlgClass | default('amodal')) }} tabindex='-1'" id="{{ (dlgID | default('dlgId')) }}" >
-      <div class="modal-dialog dlg-dialog">
+   <div class= "modal {%+ if dlgDisplay %}dlgShow{% endif %}{%+ if not dlgCentered %} {{dlgTop}}{% endif %}" tabindex="-1" id="dlg-id-main" >
+      <div class="modal-dialog {{ dlgSize }} {%+ if dlgCentered %}modal-dialog-centered{% endif %} dlg-dialog">
          <div class="modal-content dlg-content">
             <div class="modal-header dlg-header">
-               <h5 class="modal-title dlg-header">{{ (pageTitle | default('Caatinga')) }}</h5>
-               <button type="button" class="btn-close dlg-btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <h5 class="modal-title dlg-title">{{ (pageTitle | default('Caatinga')) }}</h5>
+               <button type="button" class="btn-close dlg-btn-close" data-bs-dismiss="modal" aria-label="Close" id="dlg-id-close"></button>
             </div>
             <div class="modal-body dlg-body">
                {% block dlgContent %}
                {% endblock dlgContent %}
             </div>
             <div class="modal-footer dlg-footer collapse">
-               <button type="button" class="btn btn-primary dlg-btn-ok" data-bs-dismiss="modal" id="dlg-btn-ok">{{ (dlgBtnText | default("OK")) }}</button>
+               <button type="button" class="btn btn-primary dlg-btn-ok" data-bs-dismiss="modal" id="dlg-id-ok">{{ (dlgBtnText | default("OK")) }}</button>
             </div>
          </div>
       </div>
    </div>
 </section>
 {% endblock content %}
+
+{% block javascripts %}
+   <script>
+      const btnClose = document.getElementById("dlg-id-close");
+      if (btnClose){
+         btnClose.addEventListener("click", ()=>{ window.location.href = "{{ url_for('home_blueprint.index') }}"});
+      }
+   </script>
+{% endblock javascripts %}
+
 {# eof #}

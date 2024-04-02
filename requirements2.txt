@@ -13,3 +13,4 @@ numpy_financial #apps\home\ui_projectEnd.py
 
 # Caating Need,
 Jinja2 # update ==3.0.2
+pipreqs
