@@ -1,3 +1,5 @@
+{% set dlgClose= False %}
+
 {% extends "./layouts/form.tmpl" %}
 
 {% block formContent %}
@@ -55,7 +57,7 @@
    <!-- { forgot | register -->
    <div class="formTwoCells">
       <span>
-         <a href="docs/politica_de_privacidade" class="formLink">{{ termsOfUse }}</a>
+         <a href="docs/especificacaoSetor" class="formLink">{{ termsOfUse }}</a>
       </span>
       <span>
          <a href="{{ url_for('authentication_blueprint.register') }}" class="formLink">{{ gotoRegister }}</a>

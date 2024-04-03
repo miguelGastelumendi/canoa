@@ -91,6 +91,8 @@
 2024-04-02
       #Formulário das Contas de Usuário revisão 2, novo background
 
+2024-04-02
+      #Display de documentos HTML (comparte dialog.tmpl com os formulários)
 
       » Remember-me Cookie
       - changepassword/token -> token invalido -> solicitar um novo
