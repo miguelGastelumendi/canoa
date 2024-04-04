@@ -1,0 +1,24 @@
+{#
+   Displays simple or HTML documents
+   The document should be divided into two parts, css & body
+
+   mgd 2024.03
+#}
+
+
+{% set dlgCentered= True %}
+{% set dlgTitle= 'formTitle' %}
+{% set dlgHeader= 'formHeader' %}
+{% set dlgSize= 'modal-lg' %}
+{% set dlgScroll= True %}
+
+{% extends "/layouts/dialog.html.j2" %}
+
+{% block stylesheets %}
+{{ documentStyle | safe }}
+{% endblock stylesheets %}
+
+
+{% block dlgContent %}
+{{ documentBody | safe }}
+{% endblock dlgContent %}

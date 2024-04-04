@@ -1,20 +1,27 @@
-{# template for HTML forms #}
-{#  Size: sm, <>, lg, xl #}
+{#
+   apps\templates\layouts\form.html
+   ---------------------------------
+
+   Displays HTM Forms
+   Used by:
+      apps\templates\accounts\
+         - login.html.j2
+         - passwordrecovery.html.j2
+         - register.html.j2
+         - rst_chg_password.html.j2
+
+   mgd
+#}
 
 
-{% set dlgDisplay= True %}
 {% set dlgCentered= False %}
-{% set dlgSize= 'modal-sm' %}
+{% set dlgHeader= 'formHeader' %}
+{% set dlgTitle= 'formTitle' %}
+{% set dlgSize= 'modal-sm' %}   {#  Size: sm, <>, lg, xl #}
 {% set dlgTop= 'mt-6' %}
-{% set dlgFooter= False %}
+{% set dlgFooter= 'collapse' %}
 
-
-{% extends "./layouts/dialog.tmpl" %}
-
-{% block dlgStyleSheet %}
-<link type="text/css" href= "{{ url_for('static', filename='css/form.css') }}" rel="stylesheet">
-{% endblock dlgStyleSheet %}
-
+{% extends "./layouts/dialog.html.j2" %}
 
 {% block dlgContent %}
    <!-- { BackendMessage -->

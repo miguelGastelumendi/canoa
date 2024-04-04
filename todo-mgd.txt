@@ -94,28 +94,22 @@
 2024-04-02
       #Display de documentos HTML (comparte dialog.tmpl com os formulários)
 
+2024-04-03
+      #Atualização de git
       » Remember-me Cookie
+      » vw_textos (atualizada)
+      » caatinga.css
+
+
       - changepassword/token -> token invalido -> solicitar um novo
       - changepassword -> request current
 
 
 Significant system improvements:
 
-Version 1.0  improvements:
-   » remove all *.css (pixel incluisve)
-   » use icons, not
-
-Database tasks:
-   - create vw_suporteusuario
-
-
-  - pixel.css bug
+ - pixel.css bug
 
    http://127.0.0.1:5000/requestemail <> http://127.0.0.1:5000/requestEmail
-
-----------------
-apps\templates\accounts\login.html:
-   basic-addon2
 
 - Faltam error pages
       D:\Projects\AdaptaBrasil\Caatinga\apps\templates\home\page-404.html

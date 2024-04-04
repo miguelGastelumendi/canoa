@@ -124,7 +124,7 @@ def route_default():
 @blueprint.route('/login', methods= ['GET', 'POST'])
 def login():
    route= 'login'
-   template= f'accounts/{route}.html'
+   template= f'accounts/{route}.html.j2'
    is_post= not is_method_get()
    logger(f'@{request.method.lower()}:/{route}')
 
@@ -175,7 +175,7 @@ def changepassword():
       return redirect(url_for('authentication_blueprint.login'))
 
    route= 'changepassword'
-   template= f'accounts/rst_chg_password.html'
+   template= f'accounts/rst_chg_password.html.j2'
    is_get= is_method_get()
    success= False
    password= '' if is_get else to_str(request.form['password'])
@@ -226,7 +226,7 @@ def changepassword():
 @blueprint.route('/resetpassword/<token>', methods= ['GET','POST'])
 def resetpassword(token= None):
    route= 'resetpassword'
-   template= f'accounts/rst_chg_password.html'
+   template= f'accounts/rst_chg_password.html.j2'
    is_get= is_method_get()
    success= False
    token_str= to_str(token)
@@ -293,7 +293,7 @@ def passwordrecovery():
       return redirect(url_for('authentication_blueprint.changepassword'))
 
    route= 'passwordrecovery'
-   template= f'accounts/{route}.html'
+   template= f'accounts/{route}.html.j2'
    is_get=  is_method_get()
    logger(f'@{request.method.lower()}:/{route}')
    success = False
@@ -337,7 +337,7 @@ def passwordrecovery():
 @blueprint.route('/register', methods= ['GET', 'POST'])
 def register():
    route= 'register'
-   template= f'accounts/{route}.html'
+   template= f'accounts/{route}.html.j2'
    is_get= is_method_get()
    logger(f'@{request.method.lower()}:/{route}')
 
@@ -378,10 +378,10 @@ def register():
    db.session.commit()
    add_msg_success('welcome', texts)
 
-   return render_template('accounts/register.html',
-                           success=True,
-                           form=tmpl_form,
-                           **texts)
+   return render_template(template,
+                          success=True,
+                          form=tmpl_form,
+                          **texts)
 # register } ----------------------------------------------
 
 # { logout ================================================

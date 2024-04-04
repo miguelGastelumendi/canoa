@@ -1,68 +1,93 @@
-/* caatinga.css
-
-   /!\  -------------------------------------
-   All css files should use absolute paths
-   and  html files
-
-*/
+/* ============================================
+ *     apps\static\css\caatinga.css
+ *
+ *  2024-02-12
+ *  Miguel Gastelumendi -- mgd
+ * ============================================ */
 
 :root {
-  --project-name: 'Caatinga';
+   --project-name: 'Caatinga';
 
+   --buttonColor: #647663;  /* #4c811d; */
+   --titleColor:  #c4884c;
+   --labelColor: #5a443d;
+   --linkColor: #5a443d;
 }
 
 body {
-  background: url(/static/img/pages/caatingaFundo.jpeg) no-repeat fixed;
-  background-size: cover;
+   background: url(/static/img/pages/caatingaFundo.jpeg) no-repeat fixed;
+   background-size: cover;
 }
 
-label {
-  position: absolute;
-  bottom: 34px;
-  background-color: white;
-  color: #5a443d;
-  padding: 0 5px !important;
-  width: auto !important;
-  left: 36%;
-  z-index: 10;
+
+/* ============================================
+ *     apps\templates\layouts\dialog.tmpl
+ * ============================================ */
+
+.dlgShow {
+   display: block !important;
 }
 
-.labelTerms{
-   color: #8a8d91;
+.dlgBtnOk {
+
 }
 
-.labelFluxo{
-  color: white;
-  font-size: 25px;
-  font-weight: bold;
-  background-color: #86bc56;
+
+/* ============================================
+ *     apps\templates\accounts\*.html
+ * ============================================ */
+.formHeader{
+   background-color: var(--titleColor);
+ }
+
+.formTitle{
+   color: white;
 }
 
-.divRegister {
-  margin-top: 5%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-/*
+.formLabel {
+   color: var(--labelColor);
+   padding: 0 .4em;
+ }
 
-.btnHeader {
-  border: 1px solid #5a443d;
-  color: #5a443d;
+.formLink {
+   color: var(--linkColor);
+   font-weight: 800;
+ }
+
+ .formLink:hover {
+    text-decoration: underline;
+ }
+
+ .formTwoCells {
+   display: flex;
+   justify-content: space-between;
+   margin: 6px 0 6px;
+ }
+
+.formCheckBtn {
+   accent-color: var(--buttonColor);
 }
 
-.btnContent,
-.btnHelper {
-  border: 1px solid #628d3c;
-  color: #628d3c;
+.formMainBtn {
+   background-color: var(--buttonColor);
+   border: none;
+   color: white;
 }
 
-.btnSelected {
-  background-color: #86bc56;
-  color: white;
-  border: none;
+.formMainBtn:hover {
+  background-color: var(--buttonColor);
+  filter: brightness(120%);
 }
 
+.formMainBtn:disabled {
+  background-color: var(--buttonColor);
+  filter: brightness(60%);
+}
+
+
+/* ============================================
+ *          responsive design
+ * ============================================ */
 
 @media screen and (max-width: 992px) {
   .divInputProjectName {
@@ -76,162 +101,4 @@ label {
   font-style: italic;
 }
 
-.wzd-backdrop {
-  margin-top: 2%;
-}
-
-.wzd-container {
-  padding: 0px;
-}
-
-/* Header: Left: logo, right: Title / sub title */
-.wzd-header {
-  --bs-gutter-x: 0 !important;
-  width: 100%;
-  background-color: #cffaaa;
-  padding: 1rem 1rem;
-  border-radius: 15px 15px 0 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.wzd-logo {
-  background: url(/static/logo-wzd.png) no-repeat center top;
-  height: 52px;
-  /* this is important */
-  width: 52px;
-}
-
-/* Body: specific for each wizard */
-.wzd-body {
-  width: 100%;
-  padding: 1.2em 0.5em;
-  background-color: var(--bs-white);
-  text-align: center;
-  overflow-x: hidden;
-  overflow-y: auto;
-  max-height: 80vh;
-}
-
-/* Footer: a Ok button and display selected info */
-.wzd-footer {
-  width: 100%;
-  text-align: center;
-  background-color: var(--bs-gray-400);
-  border-radius: 0 0 15px 15px;
-}
-
-/* User Selection Display area (inside Footer) */
-.wzd-selectedItem {
-  width: 100%;
-  text-align: center;
-  background-color: #86bc56;
-  padding: 0.1em 0px;
-  border-radius: 0 0 15px 15px;
-}
-
-.wzd-btnNext,
-.wzd-btnHelp {
-  width: 6em;
-  margin: 0.5rem 0.5rem;
-}
-.wzd-btnHelp {
-  border: 1px solid #86bc56;
-  color: #86bc56;
-}
-
-.wzd-btnNextText::after {
-  width: 6em;
-  content: "Próximo";
-}
-
-.wzd-btnOpensModal::after {
-  content: "\00A0\00A0\2197";
-}
-
-/* Footer text */
-.mdl-technical {
-  width: 100%;
-  text-align: left;
-  background-color: var(--bs-danger-backg);
-  border: 1px solid var(--bs-gray-600);
-  color: var(--bs-gray-600);
-  font-size: smaller;
-  padding: 0.2rem;
-}
-
-.mdl-technical::before {
-  content: "\26A0\00A0\00A0";
-}
-
-.containerTable {
-  max-width: 600px;
-  margin: 0 auto;
-  background-color: #86bc56;
-  border-radius: 5px;
-  padding: 20px;
-  text-align: left;
-  color: white;
-}
-
-.rowTable {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.col {
-  flex: 1;
-  margin-right: 10px;
-}
-
-.col p {
-  margin: 2px;
-}
-
-.labelTable {
-  font-weight: bold;
-  margin-bottom: 5px;
-  /* color: #5a443d; */
-  font-size: large;
-  margin: 0px;
-}
-
-@media only screen and (max-width: 600px) {
-  .rowTable {
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin-left: -5px;
-    margin-right: -5px;
-  }
-
-  .col {
-    margin-right: 0;
-    margin-bottom: 10px;
-    width: 100%;
-    max-width: 100%;
-    padding-left: 5px;
-    padding-right: 5px;
-  }
-
-  .labelTable {
-    font-size: medium;
-  }
-
-  .col p {
-    font-size: small;
-  }
-
-/* mgd from: documents.css */
-  @media print {
-    .printDoNot {
-      display: none;
-    }
-    .printNoShadow {
-      box-shadow: none;
-    }
-  }
-
-}
 /*~*/

@@ -1,11 +1,20 @@
+{#
+   apps\templates\layouts\base.html
+   --------------------------------
+
+   The Base Template for Caatinga
+
+   mgd
+#}
+
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>
-            Caatinga &ndash; {{ pageTitle }}
-        </title>
+        <title>Caatinga {%+ if pageTitle %} &ndash; {{pageTitle}}{% endif %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="title" content="Caatinga">
         <meta name="author" content="Equipe `Caatinga`">
