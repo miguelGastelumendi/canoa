@@ -8,10 +8,12 @@
 :root {
    --project-name: 'Caatinga';
 
-   --buttonColor: #647663;  /* #4c811d; */
-   --titleColor:  #c4884c;
-   --labelColor: #5a443d;
-   --linkColor: #5a443d;
+   --buttonBackColor: #647663;
+   --buttonTextColor: white;
+   --titleBackColor: #c4884c;
+   --titleTextColor: white;
+   --labelTextColor: #c4884c;
+   --linkTextColor: #60370e;
 }
 
 body {
@@ -28,60 +30,67 @@ body {
    display: block !important;
 }
 
-.dlgBtnOk {
-
-}
 
 
 /* ============================================
  *     apps\templates\accounts\*.html
  * ============================================ */
-.formHeader{
-   background-color: var(--titleColor);
- }
+.formHeader {
+   background-color: var(--titleBackColor);
+}
 
-.formTitle{
-   color: white;
+.formTitle {
+   color: var(--titleTextColor);
+   font-size: 1.5rem;
 }
 
 .formLabel {
-   color: var(--labelColor);
+   color: var(--labelTextColor);
    padding: 0 .4em;
- }
+}
+
+.formText {
+   color: var(--labelTextColor);
+}
+
+.formLine {
+   margin-bottom: 0px;
+}
 
 .formLink {
-   color: var(--linkColor);
-   font-weight: 800;
- }
+   color: var(--linkTextColor);
+   font-weight: 400;
+}
 
- .formLink:hover {
-    text-decoration: underline;
- }
+.formLink:hover {
+   text-decoration: underline;
+}
 
- .formTwoCells {
+.formTwoCells {
    display: flex;
    justify-content: space-between;
    margin: 6px 0 6px;
- }
+}
 
 .formCheckBtn {
-   accent-color: var(--buttonColor);
+   accent-color: var(--buttonBackColor);
 }
 
 .formMainBtn {
-   background-color: var(--buttonColor);
+   background-color: var(--buttonBackColor);
    border: none;
-   color: white;
+   color: var(--buttonTextColor);
+   font-size: 1.1rem;
 }
 
 .formMainBtn:hover {
-  background-color: var(--buttonColor);
-  filter: brightness(120%);
+   background-color: var(--buttonBackColor);
+   filter: brightness(120%);
 }
 
 .formMainBtn:disabled {
-  background-color: var(--buttonColor);
-  filter: brightness(60%);
+   background-color: var(--buttonBackColor);
+   filter: brightness(60%);
 }
 
 
@@ -90,15 +99,17 @@ body {
  * ============================================ */
 
 @media screen and (max-width: 992px) {
-  .divInputProjectName {
-    width: 60%;
-  }
-  .divRememberLogin{
-    font-size: 13px;
-  }
+   .divInputProjectName {
+      width: 60%;
+   }
+
+   .divRememberLogin {
+      font-size: 13px;
+   }
 }
+
 ::-webkit-input-placeholder {
-  font-style: italic;
+   font-style: italic;
 }
 
 /*~*/

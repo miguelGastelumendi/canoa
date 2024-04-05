@@ -1,4 +1,4 @@
-{# login.html.j2  (mgd) #}
+{# login.html.j2 (mgd) #}
 
 {% set dlgClose= False %}
 
@@ -6,65 +6,57 @@
 
 {% block formContent %}
 
-   <!-- { User Name -->
-   <div class="form-group">
-      <label class="formLabel" for="user_name">{{ userLabel }}</label>
-      <div class="input-group">
-            <!-- Font Awesome fas fa- ...-->
-            <span class="input-group-text">
-               <span class="fas fa-user"></span>
-            </span>
-            {{ form.username(class="form-control", id="user_name") }}
-      </div>
+<!-- { User Name -->
+<div class="form-group">
+   <label class="formLabel" for="user_name">{{ userLabel }}</label>
+   <div class="input-group">
+      <!-- Font Awesome fas fa- ...-->
+      <span class="input-group-text">
+         <span class="fas fa-user"></span>
+      </span>
+      {{ form.username(class="form-control", id="user_name") }}
    </div>
-   <!-- User Name } -->
+</div>
+<!-- User Name } -->
 
-   <!--{ Password  -->
-   <div class="form-group mt-3">
-      <label class="formLabel" for="pwd_login">{{ passwordLabel }}</label>
-      <div class="input-group">
-            <span class="input-group-text">
-               <span class="fas fa-unlock-alt"></span>
-            </span>
-            {{ form.password(class="form-control", id="pwd_login") }}
-      </div>
+<!--{ Password  -->
+<div class="form-group mt-3">
+   <label class="formLabel" for="pwd_login">{{ passwordLabel }}</label>
+   <div class="input-group">
+      <span class="input-group-text">
+         <span class="fas fa-unlock-alt"></span>
+      </span>
+      {{ form.password(class="form-control", id="pwd_login") }}
    </div>
-   <!-- Password }-->
+</div>
+<!-- Password }-->
 
-   <!-- { RememberMe & ForgotPw -->
-   <div class="form-group mt-3">
-      <!-- { RememberMe -->
-      <div class="">
-         {{ form.remember_me(class="formCheckBtn", id="rememberMe") }}
-         <label class="form-check-label formLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
-      </div>
-      <!-- RememberMe } -->
+<!-- { RememberMe & ForgotPw -->
+<div class="form-group mt-3">
+   <!-- { RememberMe -->
+   <div class="">
+      {{ form.remember_me(class="formCheckBtn", id="rememberMe") }}
+      <label class="form-check-label formLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
    </div>
-   <!-- RememberMe & ForgotPw } -->
+   <!-- RememberMe } -->
+</div>
+<!-- RememberMe & ForgotPw } -->
 {% endblock formContent %}
 
 {% block formBelow %}
-   <!-- { Register Info -->
-   <div class="formTwoCells">
-      <!-- docs/file is a virtual path -->
-      <span>
-            <a href="docs/disclaimer" class="formLink">{{ disclaimer }}</a>
-      </span>
-      <span>
-         <a href="{{ url_for('authentication_blueprint.passwordrecovery') }}" class="formLink">{{ forgotPassword }}</a>
-      </span>
+<div class="row no-gutters mt-3">
+   <div class="col-6">
+      <a href="docs/disclaimer" class="formLink">{{ disclaimer }}</a>
    </div>
-   <!-- Register Info } -->
-
-   <!-- { forgot | register -->
-   <div class="formTwoCells">
-      <span>
-         <a href="docs/especificacaoSetor" class="formLink">{{ termsOfUse }}</a>
-      </span>
-      <span>
-         <a href="{{ url_for('authentication_blueprint.register') }}" class="formLink">{{ gotoRegister }}</a>
-      </span>
+   <div class="col-6 text-right">
+      <a href="{{ url_for('authentication_blueprint.passwordrecovery') }}" class="formLink">{{ forgotPassword }}</a>
    </div>
-   <!-- forgot | register } -->
+   <div class="col-6">
+      <a href="docs/especificacaoSetor" class="formLink">{{ termsOfUse }}</a>
+   </div>
+   <div class="col-6 text-right">
+      <a href="{{ url_for('authentication_blueprint.register') }}" class="formLink">{{ gotoRegister }}</a>
+   </div>
+</div>
 {% endblock formBelow %}
 {# eof #}

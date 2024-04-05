@@ -1,13 +1,13 @@
 {#
-   apps\templates\layouts\dialog.html
-   ----------------------------------
+apps\templates\layouts\dialog.html
+----------------------------------
 
-   Highly configurable template for (modal or normal) dialogs
-   Displays:
-      - apps\templates\layouts\form.html.j2
-      - apps\templates\home\document.html.j2
+Highly configurable template for (modal or normal) dialogs
+Displays:
+- apps\templates\layouts\form.html.j2
+- apps\templates\home\document.html.j2
 
-   mgd
+mgd
 #}
 
 {% extends "./layouts/base.html" %}
@@ -15,19 +15,25 @@
 
 {% block content %}
 <section>
-   <div class= "modal{%+ if not (dlgCentered|default(False)) %} {{dlgTop}}{% endif %}" style="{{(dlgStyle|default('display: block;'))}}" tabindex="-1" id="dlg-id-main" >
-      <div class="modal-dialog {{dlgSize}} {%+ if dlgCentered %}modal-dialog-centered{% endif %} {%+ if dlgScroll %}modal-dialog-scrollable{% endif %} {{dlgDialog}}">
+   <div class="modal{%+ if not (dlgCentered|default(False)) %} {{dlgTop}}{% endif %}"
+      style="{{(dlgStyle|default('display: block;'))}}" tabindex="-1" id="dlg-id-main">
+      <div
+         class="modal-dialog {{dlgSize}} {%+ if dlgCentered %}modal-dialog-centered{% endif %} {%+ if dlgScroll %}modal-dialog-scrollable{% endif %} {{dlgDialog}}">
          <div class="modal-content {{dlgContent}}">
             <div class="modal-header {{dlgHeader}}">
                <h5 class="modal-title {{dlgTitle}}">{{ (formTitle | default('Caatinga')) }}</h5>
-               <button type="button" class="btn-close {{dlgBtnClose}}" data-bs-dismiss="modal" {%+ if not (dlgClose|default(True)) %}style='display: none;'{% endif %} aria-label="Close" id="dlg-id-close"></button>
+               <button type="button" class="btn-close {{dlgBtnClose}}" data-bs-dismiss="modal" {%+ if not
+                  (dlgClose|default(True)) %}style='display: none;' {% endif %} aria-label="Close"
+                  id="dlg-id-img-close"></button>
             </div>
             <div class="modal-body {{dlgBody}}">
                {% block dlgContent %}
                {% endblock dlgContent %}
             </div>
             <div class="modal-footer {{dlgFooter}}">
-               <button type="button" class="btn btn-primary {{dlgBtnOk}}" data-bs-dismiss="modal" id="dlg-id-close">{{ (dlgBtnText | default("OK")) }}</button>
+               <button type="button" class="btn btn-primary {{dlgBtnOk}}" data-bs-dismiss="modal"
+                  id="dlg-id-btn-close">{{
+                  (dlgBtnText | default("OK")) }}</button>
             </div>
          </div>
       </div>
@@ -39,11 +45,10 @@
 {% block dlgJavascript %}
 {% endblock dlgJavascript %}
 <script>
-   const btnClose = document.getElementById("dlg-id-close");
-   if (btnClose){
-      btnClose.addEventListener("click", ()=>{ window.location.href = "{{ url_for('home_blueprint.index') }}"});
-   }
-   </script>
+   const f = (id) => document.getElementById(id).addEventListener('click', () => { window.location.href = "{{ url_for('home_blueprint.index') }}" })
+   f('dlg-id-btn-close');
+   f('dlg-id-img-close');
+</script>
 {% endblock javascripts %}
 
 {# eof #}
