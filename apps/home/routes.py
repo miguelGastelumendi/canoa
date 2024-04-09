@@ -3,15 +3,13 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from apps.home import blueprint
 
-# mgd from flask import render_template, request, Markup
-from flask import render_template
-from flask_login import login_required
-from jinja2 import TemplateNotFound
-from apps.home import helper
-import apps.home.logHelper as logHelper
+import os
+
+# from app import app
+from flask import render_template, url_for
 from apps.home.texts import get_text, get_row
+from apps.home import blueprint, logHelper, htmlHelper
 
 log = logHelper.Log2Database()
 
@@ -26,19 +24,31 @@ def index():
 # ============= Documents ============== #
 @blueprint.route("/docs/<docName>")
 def docs(docName):
-    group = "document_part"
-    base = docName
-    template = f"{base}_{{}}"
-    tag = template.format("body")
-    body, title = get_row(tag, group)
-    if body:
-        style = get_text(template.format("style"), group)
-    else:
+    group = docName
+    images, title = get_row("images", group)
+    body = "" if (title == "") else get_text("body", group)
+
+    if (title == "") or (body == ""):
+        # TODO text:
         body = f"<h4>O documento '{docName}' não foi localizado.</h4>"
         style = ""
         title = "Exibir Documento"
+    else:
+        images = "image4.png"
+        img_path = os.path.join("..", "static", "docs", docName, "img")
+        if images != "":
+            os.makedirs(img_path, exist_ok=True)
+            # TODO Create images
+
+        body = htmlHelper.change_img_paths(body, img_path)
+        style = get_text("style", group)
 
     return render_template(
         "./home/document.html.j2",
-        **{"pageTitle": "Documento", "formTitle": title, "documentStyle": style, "documentBody": body},
+        **{
+            "pageTitle": "Documento",
+            "formTitle": title,
+            "documentStyle": style,
+            "documentBody": body,
+        },
     )

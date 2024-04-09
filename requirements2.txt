@@ -10,6 +10,7 @@ plotly #apps\home\dbquery.py (listed in requirements.txt but...)
 ## escape  depreciated from flask, use markupsafe => fixed inf `apps\home\helper.py`
 ## Markup not found in apps\home\routes.pys
 numpy_financial #apps\home\ui_projectEnd.py
+beautifulsoup4 #apps\home\htmlHelper.py mgd
 
 # Caating Need,
 Jinja2 # update ==3.0.2

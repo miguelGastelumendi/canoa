@@ -34,10 +34,11 @@ apps/static/assets/.temp
 apps/config.py
 
 # mgd
+*.hlp
 test.js
 test.html
 caat/
-*.hlp
+apps/static/docs/
 
 ### Flask template
 instance/*
