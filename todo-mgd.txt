@@ -111,6 +111,19 @@
 2024-04-08
       # Inicio de Imagens para HTML
 
+2024-04-09
+      # Exibir HTML pronto
+        1. Criar um alias para el documento HTML derivado do título, eg  `especificacaosetor`
+        2. Salvar na tabela texto_grupo.grupo <- alias (antes: suporteusuariogrupo.nome)
+        3. Salvar o documento em texto_item.nome HTML em partes: (antes: suporteusuarioelemento.tag)
+            - documento.body -> body
+            - document.style -> style
+            - pageTitle (do tab browser), formTitle (do formulário)
+            - images -> a lista de imagens (separadas por ,) que estão na tabela texto_item
+            - imagem1.png -> imagem encode64
+            * se salvar as imagens diretamente no diretório, `images` pode ser '',
+            * o diretório é \static\docs\{alias}\img\*
+
 
 
       - changepassword/token -> token invalido -> solicitar um novo
