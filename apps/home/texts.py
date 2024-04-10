@@ -23,18 +23,20 @@ def get_select(cols: str, grupo: str, tag: str = None):
 
 # returns a dict<string, string>
 def get_texts(grupo: str) -> str:
-    return dbquery.getDictResultset(get_select("tag, texto", grupo))
+    query = get_select("tag, texto", grupo)
+    return dbquery.getDictResultset(query)
 
 
-# returns texto e titulo
+# returns texto e titulo (a descrição do grupo)
 def get_row(tag: str, grupo: str) -> tuple[str, str]:
     select = get_select("texto, titulo", grupo, tag)
     result = dbquery.getValues(select)
-    return ('', '') if result == None else result
+    return ("", "") if result == None else result
+
 
 # returns texto or, if not exists, a `warning message`
 def get_text(tag: str, grupo: str) -> str:
-    text, titulo = get_row(tag, grupo)
+    text, _ = get_row(tag, grupo)
     if text is None:
         text = f"Mensagem '{tag}' (não registrada, {grupo})."
     return text
@@ -53,6 +55,10 @@ def add_msg_error(tag: str, texts: dict[str, str] = None) -> str:
 
 def add_msg_success(tag: str, texts: dict[str, str] = None) -> str:
     return add_msg(tag, "msgSuccess", texts)
+
+
+def get_msg_error(tag: str) -> str:
+    return add_msg_error(tag)
 
 
 # eof

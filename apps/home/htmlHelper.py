@@ -8,27 +8,41 @@ from bs4 import BeautifulSoup
 import re
 import os
 
-"""
-Changes the path of the 'src' attribute in all <img> tags in the HTML content.
+# split fil path into 3 components
+def file_fullname_parse(filepath: str) -> tuple[str, str, str]:
+   drive, path = os.path.splitdrive(filepath)
+   directory, filename = os.path.split(path)
+   return (drive, path, filename)
 
-Args:
-   html_content (str): The HTML content as a string.
-   new_path (str): The new path to replace the existing paths of the img TAG.
 
-Returns:
-   str: The modified HTML content with updated image paths.
-"""
-def change_img_paths(html_content: str, new_img_path:str) -> str:
+# Change img tag `src` path to a new_img_path & return the modified html
+def img_change_path(html_content: str, new_img_path: str) -> str:
 
-    soup = BeautifulSoup(html_content, 'html.parser')
-    img_tags = soup.find_all('img')
+    soup = BeautifulSoup(html_content, "html.parser")
+    img_tags = soup.find_all("img")
 
     for img_tag in img_tags:
-        src = img_tag.get('src', '')
+        src = img_tag.get("src", "")
         if src:
             # Extract the existing path (excluding the image name)
-            existing_path, image_name = re.match(r'(.*/)(.*)', src).groups()
-            new_src = os.path.join(new_img_path,image_name);
-            img_tag['src'] = new_src
+            existing_path, image_name = re.match(r"(.*/)(.*)", src).groups()
+            new_src = os.path.join(new_img_path, image_name)
+            img_tag["src"] = new_src
 
     return str(soup)
+
+# Eeturns a list of all img tag `src` filename
+def img_filenames(html_content: str) -> str:
+
+    soup = BeautifulSoup(html_content, "html.parser")
+    img_tags = soup.find_all("img")
+    images = []
+    for img_tag in img_tags:
+        src = img_tag.get("src", "")
+        if src:
+            (_, _, filename) = file_fullname_parse(src)
+            images.append(filename)
+
+    return images
+
+# eof

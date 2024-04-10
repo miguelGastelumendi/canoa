@@ -5,11 +5,11 @@
    mgd 2024.03
 #}
 
-
+{# classes #}
 {% set dlgCentered= True %}
-{% set dlgTitle= 'formTitle' %}
-{% set dlgHeader= 'formHeader' %}
 {% set dlgSize= 'modal-lg' %}
+
+{# variables#}
 {% set dlgScroll= True %}
 
 {% extends "/layouts/dialog.html.j2" %}
@@ -22,3 +22,5 @@
 {% block dlgContent %}
 {{ documentBody | safe }}
 {% endblock dlgContent %}
+
+{# eof #}
