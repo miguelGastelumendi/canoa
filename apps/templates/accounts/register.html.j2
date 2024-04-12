@@ -51,11 +51,11 @@
 <!-- Password } -->
 
 <div class="row no-gutters mt-3">
-   <div class="col-1">
-      <input class="formCheckBtn" type="checkbox" onclick="fTermsAccepted()" id="termsAccepted">
+   <div class="col-1" style="width: 1px">
+      <input class="formCheckBtn" type="checkbox" onclick="fTermsAccepted()" id="id-termsAccepted">
    </div>
    <div class="col-7">
-      <label class="formText formLine" class="form-check-label" for="termsAccepted"> {{ termsLabel }}&nbsp;</label>
+      <label class="formText formLine" class="form-check-label" for="id-termsAccepted"> {{ termsLabel }}&nbsp;</label>
       <a class="formLink formLine" href="docs/politica_de_privacidade">{{ termsLink }}</a>
    </div>
    <div class="col-4 text-right">
@@ -67,15 +67,15 @@
 {% endblock formContent %}
 
 
-{% block dlgJavascript %}
+{% block dlgBJavascript %}
 {% if not success %}
 <script>
-   const btnSubmit = document.getElementById("formMainBtn-id");
-   const btnAccepted = document.getElementById("termsAccepted");
+   const btnSubmit = document.getElementById("id-formMainBtn");
+   const btnAccepted = document.getElementById("id-termsAccepted");
    btnSubmit.disabled = true;
    btnAccepted.checked = !btnSubmit.disabled;
    function fTermsAccepted() { btnSubmit.disabled = !btnAccepted.checked; }
 </script>
 {% endif %}
-{% endblock dlgJavascript %}
+{% endblock dlgBJavascript %}
 {# eof #}

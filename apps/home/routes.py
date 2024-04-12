@@ -8,8 +8,9 @@
 
 import os
 import base64
-from flask import render_template
+from flask import render_template, redirect, url_for
 
+from apps.authentication.util import is_user_logged
 from apps.home.pyHelper import is_str_none_or_empty
 from apps.home.texts import get_msg_error, get_text
 from apps.home import blueprint, logHelper, htmlHelper
@@ -18,7 +19,7 @@ log = logHelper.Log2Database()
 
 
 # ============= private ============= #
-def _prepare_files(
+def _prepare_img_files(
     html_images: list[str], db_images: list[str], img_path: str, group: str
 ) -> bool:
 
@@ -27,17 +28,18 @@ def _prepare_files(
 
     for file_name in html_images:
         if img_path_ready and os.path.exists(os.path.join(img_path, file_name)):
-            missing_files.remove(file_name)  # this is not missing.
+            missing_files.remove(file_name)  # this img is not missing.
 
-    # folder for images & a list of missing_files, ready.
-    # available_files are files that are not on the file,
-    #   but can be retrieved from the DB (db_images)
+    # folder for images & a list of missing_files, are ready.
+    # available_files are files that are not on the file system,
+    #   but can be retrieved from the DB (db_images says so)
     available_files = [file for file in missing_files if file in db_images]
     if missing_files.count == 0:
-        return False  # every file in file system
+        return True  # every file is in file system!
 
     elif available_files.count == 0:
-        return False  # TODO: log this # missing files and no db files to fix
+        return True  # some files missing, but I can't fix it :-(
+        # TODO: log this # missing files and no db files to fix
 
     for file in available_files:
         try:
@@ -47,33 +49,52 @@ def _prepare_files(
                 with open(os.path.join(img_path, file), "wb") as file:
                     file.write(image_data)
         except Exception as e:
-            pass  # TODO: log
+            pass
+            # TODO: log
 
     return True
+
+
+# ============= Home =============== #
+@blueprint.route("/home")
+# @login_required não pode ter, index é 'livre', depende do menu
+def home():
+    if is_user_logged():
+      return redirect(url_for('home_blueprint.index'))
+    else:
+      return redirect(url_for('authentication_blueprint.login'))
 
 
 # ============= Index ============== #
 @blueprint.route("/index")
 # @login_required não pode ter, index é 'livre', depende do menu
 def index():
-    return render_template("home/index.html", pageTitle="Home")
+    if is_user_logged():
+        return render_template("home/index.html", pageTitle="Index")
+    else:
+      return redirect(url_for('authentication_blueprint.login'))
+
 
 
 # ============= Documents ============== #
 @blueprint.route("/docs/<docName>")
 def docs(docName: str):
     group = docName
-    images = get_text("images", group)
     pageTitle = get_text("pageTitle", group)
     formTitle = get_text("formTitle", group)
     body = get_text("body", group)
+    style = get_text("style", group)
+    # a comma separated list of images.ext names available on the db,
+    # see below db_images & _prepare_img_files
+    images = get_text("images", group)
 
     db_images = (
         [] if is_str_none_or_empty(images) else [s.strip() for s in images.split(",")]
-    )
+    )  # list of img names in db
+
     html_images = (
         [] if is_str_none_or_empty(body) else sorted(htmlHelper.img_filenames(body))
-    )  # list of img tag in HTML
+    )  # list of img tags in HTML
 
     # TODO: check if this is the best way to get a path
     img_path = os.path.join("\\", "static", "docs", docName, "img")
@@ -85,16 +106,16 @@ def docs(docName: str):
         formTitle = "Documento"
 
     elif html_images.count == 0:
-        pass  # html has no images
+        pass
+        # html has no images
 
     elif db_images.count == 0:
-        pass  # can't help, no images in db
+        pass
+        # if any images are missing in the folder,
+        # I can't help, no images in the db
 
-    elif _prepare_files(
-        html_images, db_images, img_path, group
-    ):  # html has no missing images
+    elif _prepare_img_files(html_images, db_images, img_path, group):
         body = htmlHelper.img_change_path(body, img_path)
-        style = get_text("style", group)
 
     return render_template(
         "./home/document.html.j2",
@@ -105,3 +126,5 @@ def docs(docName: str):
             "documentBody": body,
         },
     )
+
+# eof

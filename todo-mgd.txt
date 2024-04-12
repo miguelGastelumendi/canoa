@@ -114,15 +114,19 @@
 2024-04-09
       # Exibir HTML pronto
         1. Criar um alias para el documento HTML derivado do título, eg  `especificacaosetor`
-        2. Salvar na tabela texto_grupo.grupo <- alias (antes: suporteusuariogrupo.nome)
-        3. Salvar o documento em texto_item.nome HTML em partes: (antes: suporteusuarioelemento.tag)
+        2. Salvar na tabela textos_grupo.grupo <- alias (antes: suporteusuariogrupo.nome)
+        3. Salvar o documento em textos_item.nome HTML em partes: (antes: suporteusuarioelemento.tag)
             - documento.body -> body
             - document.style -> style
-            - pageTitle (do tab browser), formTitle (do formulário)
-            - images -> a lista de imagens (separadas por ,) que estão na tabela texto_item
-            - imagem1.png -> imagem encode64
+            - título do documento -> pageTitle (do tab browser), formTitle (do formulário)
+            - lista de imagens (separadas por ,) que estão na tabela texto_item -> images
+            - imagem 1 encode64 -> imagem1.png
             * se salvar as imagens diretamente no diretório, `images` pode ser '',
-            * o diretório é \static\docs\{alias}\img\*
+            * O diretório é \static\docs\{alias}\img\*
+            * home/routes.py [docs] cuida de:
+                - Recreate images from DB when needed and are available
+                - Updates url of img tag for the folder in the HTML
+
 
 
 

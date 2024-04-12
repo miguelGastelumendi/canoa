@@ -7,6 +7,7 @@
 
 import datetime
 import requests
+import secrets
 import os
 
 from flask import render_template, redirect, request, url_for
@@ -18,15 +19,13 @@ from flask_login import (
    fresh_login_required
 )
 from sqlalchemy import or_
+from flask_login import login_required
 from apps import db, login_manager
 from apps.authentication import blueprint
-from flask_login import login_required
 from apps.authentication.forms import LoginForm, RegisterForm, NewPasswordForm, PasswordRecoveryForm
 from apps.authentication.models import users
-from apps.authentication.util import verify_pass, hash_pass
+from apps.authentication.util import verify_pass, hash_pass, is_user_logged
 from apps.home.emailstuff import sendEmail
-from apps.home.dbquery import executeSQL, getValues
-import secrets
 from apps.home.texts import get_texts, add_msg_success, add_msg_error
 from apps.home.logHelper import Log2Database
 
@@ -42,19 +41,6 @@ log= Log2Database()
 def to_str(s: str):
     return '' if s is None else s.strip()
 # to_str } ------------------------------------------------
-
-# { is_user_logged ========================================
-# in some context, current_user is an 'invalid pointer'
-# see models.py:request_loader
-def is_user_logged():
-   logged = False
-   try:
-      logged = current_user.is_authenticated if current_user else None
-   except:
-      logged = False
-
-   return logged
-# is_user_logged } ----------------------------------------
 
 # { get_user_row ==========================================
 def get_user_row():

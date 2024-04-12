@@ -6,11 +6,11 @@
 #}
 
 {# classes #}
-{% set dlgCentered= True %}
-{% set dlgSize= 'modal-lg' %}
+{% set dlgVVCentered= True %}
+{% set dlgCSize= 'modal-lg' %}
 
 {# variables#}
-{% set dlgScroll= True %}
+{% set dlgVScroll= True %}
 
 {% extends "/layouts/dialog.html.j2" %}
 
@@ -19,8 +19,8 @@
 {% endblock stylesheets %}
 
 
-{% block dlgContent %}
+{% block dlgBContent %}
 {{ documentBody | safe }}
-{% endblock dlgContent %}
+{% endblock dlgBContent %}
 
 {# eof #}

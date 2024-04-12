@@ -14,16 +14,16 @@
 #}
 
 
-{% set dlgCentered= False %}
-{% set dlgHeader= 'formHeader' %}
-{% set dlgTitle= 'formTitle' %}
-{% set dlgSize= '' %}   {#  Size: sm, <>, lg, xl #}
-{% set dlgTop= 'mt-6' %}
-{% set dlgFooter= 'collapse' %}
+{% set dlgVVCentered= False %}
+{% set dlgCHeader= 'formHeader' %}
+{% set dlgCTitle= 'formTitle' %}
+{% set dlgCSize= '' %}   {#  Size: sm, <>, lg, xl #}
+{% set dlgCTop= 'mt-6' %}
+{% set dlgCFooter= 'collapse' %}
 
 {% extends "./layouts/dialog.html.j2" %}
 
-{% block dlgContent %}
+{% block dlgBContent %}
    <!-- { BackendMessage -->
    <div class="text-center text-md-center mt-md-0 mb-3">
       <span class="font-weight-normal">
@@ -53,7 +53,7 @@
 
          <!-- { Submit -->
          <div class="d-grid mt-3">
-            <button class="form-control formMainBtn" id="formMainBtn-id" type="submit">{{ submitButton }}</button>
+            <button class="form-control formMainBtn" id="id-formMainBtn" type="submit">{{ submitButton }}</button>
          </div>
          <!-- Submit } -->
       </form>
@@ -63,5 +63,5 @@
    {% block formBelow %}
    {% endblock formBelow %}
 
-{% endblock dlgContent %}
+{% endblock dlgBContent %}
 {# eof #}
