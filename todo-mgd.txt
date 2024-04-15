@@ -131,6 +131,8 @@
     # Novos documentos: 'Termo de Uso', 'Política de Privacidade' e 'Bem-vindo ao aplicativo Caatinga'
         1. Exibir os documentos
         2. Ajustes vários para melhor exibição
+        3. Remover bug que acontece quando o usuário esta logado e abre a pagina de login.
+
 
       - changepassword/token -> token invalido -> solicitar um novo
       - changepassword -> request current

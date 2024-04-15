@@ -115,7 +115,7 @@ def login():
 
    # TODO: Ask for logout
    if is_user_logged() and not is_post:
-      return unauthorized_handler()
+      return redirect(url_for('home_blueprint.index'))
 
    tmpl_form= LoginForm(request.form)
    texts= get_texts(route)
