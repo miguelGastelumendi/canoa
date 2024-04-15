@@ -111,7 +111,7 @@
 2024-04-08
       # Inicio de Imagens para HTML
 
-2024-04-09
+2024-04-09 -- 12
       # Exibir HTML pronto
         1. Criar um alias para el documento HTML derivado do título, eg  `especificacaosetor`
         2. Salvar na tabela textos_grupo.grupo <- alias (antes: suporteusuariogrupo.nome)
@@ -127,8 +127,10 @@
                 - Recreate images from DB when needed and are available
                 - Updates url of img tag for the folder in the HTML
 
-
-
+2024-04-15
+    # Novos documentos: 'Termo de Uso', 'Política de Privacidade' e 'Bem-vindo ao aplicativo Caatinga'
+        1. Exibir os documentos
+        2. Ajustes vários para melhor exibição
 
       - changepassword/token -> token invalido -> solicitar um novo
       - changepassword -> request current
