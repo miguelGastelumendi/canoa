@@ -1,6 +1,6 @@
 {# login.html.j2 (mgd) #}
 
-{% set dlgVClose= False %}
+{% set dlg_var_close= False %}
 
 {% extends "./layouts/form.html.j2" %}
 
@@ -46,13 +46,13 @@
 {% block formBelow %}
 <div class="row no-gutters mt-3">
    <div class="col-6">
-      <a href="docs/disclaimer" class="formLink">{{ disclaimer }}</a>
+      <a href="docs/privacyPolicy" class="formLink">{{ privacyPolicy }}</a>
    </div>
    <div class="col-6 text-right">
       <a href="{{ url_for('authentication_blueprint.passwordrecovery') }}" class="formLink">{{ forgotPassword }}</a>
    </div>
    <div class="col-6">
-      <a href="docs/especificacaoSetor" class="formLink">{{ termsOfUse }}</a>
+      <a href="docs/termsOfUse" class="formLink">{{ termsOfUse }}</a>
    </div>
    <div class="col-6 text-right">
       <a href="{{ url_for('authentication_blueprint.register') }}" class="formLink">{{ gotoRegister }}</a>

@@ -50,15 +50,16 @@
 </div>
 <!-- Password } -->
 
-<div class="row no-gutters mt-3">
+<div class="row mt-3">
    <div class="col-1" style="width: 1px">
       <input class="formCheckBtn" type="checkbox" onclick="fTermsAccepted()" id="id-termsAccepted">
    </div>
-   <div class="col-7">
+   <div class="col-8">
       <label class="formText formLine" class="form-check-label" for="id-termsAccepted"> {{ termsLabel }}&nbsp;</label>
-      <a class="formLink formLine" href="docs/politica_de_privacidade">{{ termsLink }}</a>
+      <a class="formLink formlink" href="docs/termsOfUse">{{ termsOfUse }}</a>
+      <a href="docs/privacyPolicy" class="formLink">{{ privacyPolicy }}</a>
    </div>
-   <div class="col-4 text-right">
+   <div class="col-3 text-right">
       <a class="formLink" href="{{ url_for('authentication_blueprint.login') }}">{{ gotoLogin }}</a>
    </div>
 </div>

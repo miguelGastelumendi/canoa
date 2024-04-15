@@ -14,9 +14,7 @@ from flask import render_template, redirect, request, url_for
 from flask_login import (
    current_user,
    login_user,
-   logout_user,
-   confirm_login,
-   fresh_login_required
+   logout_user
 )
 from sqlalchemy import or_
 from flask_login import login_required

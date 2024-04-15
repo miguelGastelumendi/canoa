@@ -30,10 +30,16 @@ body {
    display: block !important;
 }
 
+.dlgBtnClose {
+    background-color: var(--buttonBackColor);
+    border: none;
+    color: var(--buttonTextColor);
+    min-width: 5rem;
+}
 
 
 /* ============================================
- *     apps\templates\accounts\*.html
+ *     apps\templates\layouts\form.html
  * ============================================ */
 .formHeader {
    background-color: var(--titleBackColor);
@@ -92,7 +98,6 @@ body {
    background-color: var(--buttonBackColor);
    filter: brightness(60%);
 }
-
 
 /* ============================================
  *          responsive design

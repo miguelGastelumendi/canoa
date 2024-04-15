@@ -14,12 +14,12 @@
 #}
 
 
-{% set dlgVVCentered= False %}
-{% set dlgCHeader= 'formHeader' %}
-{% set dlgCTitle= 'formTitle' %}
-{% set dlgCSize= '' %}   {#  Size: sm, <>, lg, xl #}
-{% set dlgCTop= 'mt-6' %}
-{% set dlgCFooter= 'collapse' %}
+{% set dlg_var_vCentered= False %}
+{% set dlg_clas_header= 'formHeader' %}
+{% set dlg_cls_title= 'formTitle' %}
+{% set dlg_cls_size= '' %}   {#  Size: sm, <>, lg, xl #}
+{% set dlg_cls_top= 'mt-6' %}
+{% set dlg_cls_footer= 'collapse' %}
 
 {% extends "./layouts/dialog.html.j2" %}
 
@@ -32,7 +32,7 @@
             {{ msgError | safe }}
          </div>
          {% elif msgSuccess %}
-         <div class="alert alert-success mt-3">
+         <div class="alert alert-success mt-3" inert>
             {{ msgSuccess | safe }}
          </div>
          {% endif %}

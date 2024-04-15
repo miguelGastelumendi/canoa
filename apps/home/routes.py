@@ -112,7 +112,7 @@ def docs(docName: str):
     elif db_images.count == 0:
         pass
         # if any images are missing in the folder,
-        # I can't help, no images in the db
+        # I can't help, no images found in db
 
     elif _prepare_img_files(html_images, db_images, img_path, group):
         body = htmlHelper.img_change_path(body, img_path)

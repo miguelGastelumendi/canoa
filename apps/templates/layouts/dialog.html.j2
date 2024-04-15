@@ -9,36 +9,34 @@ Displays:
 
 - names:
     dlg<x>Name, x:
-        V => Variable
-        C => Class
+        -Var- => Variable
+        -Cls- => Class
         -id- => ID
-
 
 
 mgd
 #}
 
-{# % extends "./layouts/base.html" % #}
 {% extends "./home/index.html" %}
 
 {% block content %}
 <section>
-   <div class="modal{%+ if not (dlgVVCentered|default(False)) %} {{dlgCTop}}{% endif %}" style="{{(dlgVStyle|default('display: block;'))}}" tabindex="-1" id="dlg-id-main">
-      <div class="modal-dialog {{dlgCSize}} {%+ if dlgVVCentered %}modal-dialog-centered{% endif %} {%+ if dlgVScroll %}modal-dialog-scrollable{% endif %} {{dlgCDialog}}">
-         <div class="modal-content {{dlgBContent}}">
-            <div class="modal-header {{dlgCHeader}}">
-               <h5 class="modal-title {{dlgCTitle}}">{{ (formTitle | default('Caatinga')) }}</h5>
-               <button type="button" class="btn-close {{dlgCBtnClose}}" data-bs-dismiss="modal"
-                    {%+ if not (dlgVClose|default(True)) %}style='display: none;' {% endif %} aria-label="Close"
-                    id="dlg-id-img-close"></button>
+   <div class="modal{%+ if not (dlg_var_vCentered|default(False)) %} {{dlg_cls_top}}{% endif %}" style="{{(dlg_var_style|default('display: block;'))}}" tabindex="-1" id="dlg-id-main">
+      <div class="modal-dialog {{dlg_cls_size}} {%+ if dlg_var_vCentered %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dalog}}">
+         <div class="modal-content dlgContent {{dlg_cls_content}}">
+            <div class="modal-header dlgHeader {{dlg_clas_header}}" inert>
+               <h5 class="modal-title {{dlg_cls_title}}">{{ (formTitle | default('Caatinga')) }}</h5>
+               <button type="button"
+                    class="btn-close {{dlg_cls_btnClose}}" data-bs-dismiss="modal"
+                    {%+ if not (dlg_var_close|default(True)) %}style='display: none;' {% endif %} aria-label="Close"
+                    id="dlg-id-hdr-btn-close"></button>
             </div>
-            <div class="modal-body {{dlgCBody}}">
+            <div class="modal-body dlgBody {{dlg_cls_body}}">
                {% block dlgBContent %}
                {% endblock dlgBContent %}
             </div>
-            <div class="modal-footer {{dlgCFooter}}">
-               <button type="button" class="btn btn-primary {{dlgCBtnOk}}" data-bs-dismiss="modal"
-                  id="dlg-id-btn-close">{{(dlgVBtnText | default("OK")) }}</button>
+            <div class="modal-footer justify-content-center {{dlg_cls_footer}}">
+               <button type="button" class="btn btn-primary dlgBtnClose {{dlg_cls_btnClose}}" data-bs-dismiss="modal" id="dlg-id-ftr-btn-close">{{(dlg_VarBtnText | default("OK")) }}</button>
             </div>
          </div>
       </div>
@@ -51,8 +49,8 @@ mgd
 {% endblock dlgBJavascript %}
 <script>
    const f = (id) => document.getElementById(id).addEventListener('click', () => { window.location.href = "{{ url_for('home_blueprint.index') }}" })
-   f('dlg-id-btn-close');
-   f('dlg-id-img-close');
+   f('dlg-id-hdr-btn-close');
+   f('dlg-id-ftr-btn-close');
 </script>
 {% endblock javascripts %}
 
