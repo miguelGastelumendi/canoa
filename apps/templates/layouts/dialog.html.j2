@@ -47,8 +47,12 @@ mgd
 {% block javascripts %}
 {% block dlgBJavascript %}
 {% endblock dlgBJavascript %}
+
 <script>
-   const f = (id) => document.getElementById(id).addEventListener('click', () => { window.location.href = "{{ url_for('home_blueprint.index') }}" })
+   const f = (id) => document.getElementById(id).addEventListener('click', () => {
+        {# window.location.href = "{{ url_for('home_blueprint.index') }}" #}
+        history.back();
+     });
    f('dlg-id-hdr-btn-close');
    f('dlg-id-ftr-btn-close');
 </script>

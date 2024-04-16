@@ -133,6 +133,11 @@
         2. Ajustes vários para melhor exibição
         3. Remover bug que acontece quando o usuário esta logado e abre a pagina de login.
 
+    #  login->login, 'Política de Privacidade' texto completo, 'memoria' para login e register
+        1. Não da erro quando o usuário logado tenta logar e novo.
+        2. Faltou um segmento do texto Política de Privacidade'
+        3. Se na tela de login ou register vai para o documento, perde o já escrito.
+        4. Não enviar e-mail ANTES de registrar ao usuário (processo proposto por mgd, negado)
 
       - changepassword/token -> token invalido -> solicitar um novo
       - changepassword -> request current

@@ -82,10 +82,17 @@ def tokenValid(time_stamp, max: int) -> bool:
    return 0 <= days <= max
 # tokenValid } --------------------------------------------
 
-# { internalLogout  =======================================
+# { internal_logout  ======================================
 def internal_logout():
    logout_user()
-# internalLogout } ========================================
+# internal_logout } =======================================
+
+# { get_input_text  =======================================
+def get_input_text(name: str) -> str:
+    text = request.form.get(name)
+    return to_str(text)
+
+# get_input_text } ========================================
 
 
 # ---------------------------------------------------------
@@ -121,8 +128,8 @@ def login():
    texts= get_texts(route)
 
    if is_post:
-      username= to_str(request.form['username'])
-      password= to_str(request.form['password'])
+      username= get_input_text('username')
+      password= get_input_text('password')
       search_for= to_str(username).lower()
 
       user= users.query.filter(or_(users.search_name == search_for, users.email == search_for)).first()
@@ -162,8 +169,8 @@ def changepassword():
    template= f'accounts/rst_chg_password.html.j2'
    is_get= is_method_get()
    success= False
-   password= '' if is_get else to_str(request.form['password'])
-   confirm_password= '' if is_get else to_str(request.form['confirm_password'])
+   password= '' if is_get else get_input_text('password')
+   confirm_password= '' if is_get else get_input_text('confirm_password')
    user= None if is_get else get_user_row()
    logger(f'@{request.method.lower()}:/{route}/')
 
@@ -215,8 +222,8 @@ def resetpassword(token= None):
    success= False
    token_str= to_str(token)
    logger(f'@{request.method.lower()}:/{route}/{token_str}')
-   password= '' if is_get else to_str(request.form['password'])
-   confirm_password= '' if is_get else to_str(request.form['confirm_password'])
+   password= '' if is_get else get_input_text('password')
+   confirm_password= '' if is_get else get_input_text('confirm_password')
 
    tmpl_form= NewPasswordForm(request.form)
    texts= get_texts(route)
@@ -284,7 +291,7 @@ def passwordrecovery():
 
    texts= get_texts(route)
    tmpl_form= PasswordRecoveryForm(request.form)
-   send_to= '' if is_get else to_str(request.form['user_email']).lower()
+   send_to= '' if is_get else get_input_text('user_email').lower()
    user= None if is_get else users.query.filter_by(email = send_to).first()
    apiKey = None if is_get else os.environ.get('CAATINGA_EMAIL_API_KEY')
 
@@ -335,24 +342,24 @@ def register():
                              **texts)
 
    #else is_post:
-   username= to_str(request.form['username'])
-   email= to_str(request.form['email'])
+   username= get_input_text('username')
+   email= get_input_text('email')
 
    user= users.query.filter_by(search_name = username.lower()).first()
    if user:  # user exists!
       add_msg_error('userAlreadyRegistered', texts);
       return render_template(template,
-                              success=False,
-                              form=tmpl_form,
-                              **texts)
+                            success=False,
+                            form=tmpl_form,
+                            **texts)
 
    user= users.query.filter_by(email = email.lower()).first()
    if user: # e-mail exists!
          add_msg_error('emailAlreadyRegistered', texts)
          return render_template(template,
-                              success=False,
-                              form=tmpl_form,
-                              **texts)
+                                success=False,
+                                form=tmpl_form,
+                                **texts)
 
    # else we can create the user not disabled ;-)
 
