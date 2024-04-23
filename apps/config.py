@@ -44,8 +44,6 @@ engine = create_engine(connection_url)
     # Assets Management
     ASSETS_ROOT = os.getenv('ASSETS_ROOT', '/static/assets')
 
-    MAPBOX_TOKEN = 'pk.eyJ1IjoiYXNzaXNtYXVybyIsImEiOiJja3RvcGt2eTgwZXc5Mm9taGd6MTltZ2o2In0.FJ2GqIssNuJxeYh0ewTpLw'
-
 # Load all possible configurations
 config_dict = {
     'Production': Config,
