@@ -27,13 +27,13 @@
    <!-- { BackendMessage -->
    <div class="text-center text-md-center mt-md-0 mb-3">
       <span class="font-weight-normal">
-         {% if msgError %}
+         {% if secError %}
          <div class="alert alert-danger mt-3">
-            {{ msgError | safe }}
+            {{ secError | safe }}
          </div>
-         {% elif msgSuccess %}
+         {% elif secSuccess %}
          <div class="alert alert-success mt-3" inert>
-            {{ msgSuccess | safe }}
+            {{ secSuccess | safe }}
          </div>
          {% endif %}
       </span>
@@ -43,7 +43,7 @@
    {% block formAbove %}
    {% endblock formAbove %}
 
-   {% if not msgSuccess %}
+   {% if not success %}
       <!-- { Form  -->
       <form method="post" action="" class="mt-2">
          {{ form.hidden_tag() }}

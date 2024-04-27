@@ -5,7 +5,7 @@
 """
 
 
-def is_str_none_or_empty( s: str)-> bool:
+def is_str_none_or_empty(s: str)-> bool:
    return True if (s is None) or (s + "").strip() == "" else False
 
 

@@ -5,7 +5,7 @@
 """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField
+from wtforms import StringField, PasswordField, BooleanField, FileField
 from wtforms.validators import Email, DataRequired, Length, EqualTo
 
 # login and registration
@@ -37,4 +37,15 @@ class NewPasswordForm(FlaskForm):
 class PasswordRecoveryForm(FlaskForm):
     user_email = StringField('Email para envio do link',
                              validators=[DataRequired(), Email()])
+
+class UploadFileForm(FlaskForm):
+    filename = FileField('Arquivo', validators= [DataRequired()]) #, Regexp('^[^/\\]\.zip$')])
+
+
+#eof
+
+
+
+
+
 # eof #

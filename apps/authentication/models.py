@@ -14,12 +14,12 @@ class users(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True)
-    search_name = db.Column(db.String(64), unique=True)
+    username = db.Column(db.String(100), unique=True)
+    username_lower = db.Column(db.String(100), unique=True)
     email = db.Column(db.String(64), unique=True)
     password = db.Column(db.LargeBinary)
-    recoveremailtoken = db.Column(db.String(100))
-    recoveremailtimestamp = db.Column(db.DateTime())
+    recover_email_token = db.Column(db.String(100))
+    recover_email_token_at = db.Column(db.DateTime())
     disabled = db.Column(db.Boolean)
 
 
@@ -52,5 +52,5 @@ def request_loader(request):
       return None # mgd
 
    username = request.form.get('username')
-   user = users.query.filter_by(search_name = username.lower()).first()
+   user = users.query.filter_by(username_lower = username.lower()).first()
    return user if user else None

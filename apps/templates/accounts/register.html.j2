@@ -1,82 +1,81 @@
 {# register.html.j2 (mgd) #}
 
-
 {% extends "./layouts/form.html.j2" %}
 
 {% block formAbove %}
-{% if success %}
-<div class="d-grid">
-   <button type="button" class="btn formMainBtn"
-      onclick="window.location.href='{{ url_for('authentication_blueprint.login') }}'">{{ gotoLogin }}</button>
-</div>
-{% endif %}
+    {% if success %}
+        <div class="d-grid">
+        <button type="button" class="btn formMainBtn"
+            onclick="window.location.href='{{ url_for('authentication_blueprint.login') }}'">{{ gotoLogin }}</button>
+        </div>
+    {% endif %}
 {% endblock formAbove %}
 
 {% block formContent %}
-{% if not success %}
-<!-- { User Name -->
-<div class="form-group">
-   <label class="formLabel" inert for="userName">{{ userLabel }}</label>
-   <div class="input-group">
-      <span class="input-group-text" id="basic-addon1">
-         <span class="fas fa-user"></span>
-      </span>
-      {{ form.username(class="form-control", id= "userName") }}
-   </div>
-</div>
-<!-- User Name } -->
+    {% if not success %}
+        <!-- { User Name -->
+        <div class="form-group">
+        <label class="formLabel" inert for="userName">{{ userLabel }}</label>
+        <div class="input-group">
+            <span class="input-group-text" id="basic-addon1">
+                <span class="fas fa-user"></span>
+            </span>
+            {{ form.username(class="form-control", id= "userName") }}
+        </div>
+        </div>
+        <!-- User Name } -->
 
-<!-- Email  -->
-<div class="form-group mt-3">
-   <label class="formLabel" inert for="user_email">{{ emailLabel }}</label>
-   <div class="input-group">
-      <span class="input-group-text" id="basic-addon3">
-         <span class="fas fa-envelope"></span>
-      </span>
-      {{ form.email(class="form-control", type="email", id="user_email") }}
-   </div>
-</div>
-<!-- Email } -->
+        <!-- Email  -->
+        <div class="form-group mt-3">
+        <label class="formLabel" inert for="user_email">{{ emailLabel }}</label>
+        <div class="input-group">
+            <span class="input-group-text" id="basic-addon3">
+                <span class="fas fa-envelope"></span>
+            </span>
+            {{ form.email(class="form-control", type="email", id="user_email") }}
+        </div>
+        </div>
+        <!-- Email } -->
 
-<!-- { Password  -->
-<div class="form-group mt-3">
-   <label class="formLabel" inert for="password">{{ passwordLabel }}</label>
-   <div class="input-group">
-      <span class="input-group-text" id="basic-addon4">
-         <span class="fas fa-unlock-alt"></span>
-      </span>
-      {{ form.password(class="form-control", type="password", id="password") }}
-   </div>
-</div>
-<!-- Password } -->
+        <!-- { Password  -->
+        <div class="form-group mt-3">
+        <label class="formLabel" inert for="password">{{ passwordLabel }}</label>
+        <div class="input-group">
+            <span class="input-group-text" id="basic-addon4">
+                <span class="fas fa-unlock-alt"></span>
+            </span>
+            {{ form.password(class="form-control", type="password", id="password") }}
+        </div>
+        </div>
+        <!-- Password } -->
 
-<div class="row mt-3">
-   <div class="col-1" style="width: 1px">
-      <input class="formCheckBtn" type="checkbox" onclick="fTermsAccepted()" id="id-termsAccepted">
-   </div>
-   <div class="col-8">
-      <label class="formText formLine" class="form-check-label" for="id-termsAccepted"> {{ termsLabel }}&nbsp;</label>
-      <a class="formLink formlink" href="docs/termsOfUse">{{ termsOfUse }}</a>
-      <a href="docs/privacyPolicy" class="formLink">{{ privacyPolicy }}</a>
-   </div>
-   <div class="col-3 text-right">
-      <a class="formLink" href="{{ url_for('authentication_blueprint.login') }}">{{ gotoLogin }}</a>
-   </div>
-</div>
+        <div class="row mt-3">
+        <div class="col-1" style="width: 1px">
+            <input class="formCheckBtn" type="checkbox" onclick="fTermsAccepted()" id="id-termsAccepted">
+        </div>
+        <div class="col-8">
+            <label class="formText formLine" class="form-check-label" for="id-termsAccepted"> {{ termsLabel }}&nbsp;</label>
+            <a class="formLink formlink" href="docs/termsOfUse">{{ termsOfUse }}</a>
+            <a href="docs/privacyPolicy" class="formLink">{{ privacyPolicy }}</a>
+        </div>
+        <div class="col-3 text-right">
+            <a class="formLink" href="{{ url_for('authentication_blueprint.login') }}">{{ gotoLogin }}</a>
+        </div>
+        </div>
 
-{% endif %}
+    {% endif %}
 {% endblock formContent %}
 
 
 {% block dlgBJavascript %}
-{% if not success %}
-<script>
-   const btnSubmit = document.getElementById("id-formMainBtn");
-   const btnAccepted = document.getElementById("id-termsAccepted");
-   btnSubmit.disabled = true;
-   btnAccepted.checked = !btnSubmit.disabled;
-   function fTermsAccepted() { btnSubmit.disabled = !btnAccepted.checked; }
-</script>
-{% endif %}
+    {% if not success %}
+        <script>
+            const btnSubmit = document.getElementById("id-formMainBtn");
+            const btnAccepted = document.getElementById("id-termsAccepted");
+            btnSubmit.disabled = true;
+            btnAccepted.checked = !btnSubmit.disabled;
+            function fTermsAccepted() { btnSubmit.disabled = !btnAccepted.checked; }
+        </script>
+    {% endif %}
 {% endblock dlgBJavascript %}
 {# eof #}

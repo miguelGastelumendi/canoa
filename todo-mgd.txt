@@ -139,8 +139,30 @@
         3. Se na tela de login ou register vai para o documento, perde o já escrito.
         4. Não enviar e-mail ANTES de registrar ao usuário (processo proposto por mgd, negado)
 
-      - changepassword/token -> token invalido -> solicitar um novo
+
+2012-04-16..19,23--26
+    # Refatoração do DB
+        1. As tabelas foram traduzidas ao ingles.
+        2. Criação de índices e relacionamentos.
+        3. Modernizar tabela `users`.
+    # Novas Tabelas e Views
+        1. Criar tabela `roles`.
+        2. Criar tabela 'sepcombined_user` que relaciona os sep (vw_sepcombined) com o usuários (users).
+        3. Criação de Views a partir de common.schema:
+            a. vw_schema -> common.schema
+            b. vw_sepcombined (junta as tabelas `sep` de cada db.schema listado na tabela common.schema)
+               A view é criada por generate_vw_sepcombined()
+            c. vw_ui_texts junta as tabelas com os textos do User Interface (ui_*) para ser usada pelo app
+    # Novo Formulário
+        1. Inicio do Upload File
+
+
+
+
+      - changepassword/token -> token invalido -> link para solicitar um novo (O token de recuperação não foi reconhecido ou não existe )
       - changepassword -> request current
+      - get_Html
+
 
 
 Significant system improvements:

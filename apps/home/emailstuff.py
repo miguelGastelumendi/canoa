@@ -2,7 +2,7 @@
 import base64
 import os
 from sendgrid import (SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition)
-from apps.home.texts import get_texts
+from apps.home.texts import get_section
 
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started
 # curl --request POST \
@@ -24,7 +24,7 @@ fromEmail = 'assismauro@hotmail.com'
 #response = requests.post('https://api.sendgrid.com/v3/mail/send', headers=headers, json=json_data)
 
 def sendEmail(toMail: str, emailType: str, toReplace: dict, apiKey: str, file2SendPath: str = None):
-    eMailTexts = get_texts(emailType)
+    eMailTexts = get_section(emailType)
     for eMailTextsKey in eMailTexts.keys():
         for toReplaceKey in toReplace.keys():
             eMailTexts[eMailTextsKey] = eMailTexts[eMailTextsKey].replace('{' + toReplaceKey + '}',
