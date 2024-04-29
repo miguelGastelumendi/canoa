@@ -67,7 +67,7 @@
 {% endblock formContent %}
 
 
-{% block dlgBJavascript %}
+{% block dlgBlcJavascript %}
     {% if not success %}
         <script>
             const btnSubmit = document.getElementById("id-formMainBtn");
@@ -77,5 +77,5 @@
             function fTermsAccepted() { btnSubmit.disabled = !btnAccepted.checked; }
         </script>
     {% endif %}
-{% endblock dlgBJavascript %}
+{% endblock dlgBlcJavascript %}
 {# eof #}

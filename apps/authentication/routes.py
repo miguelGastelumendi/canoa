@@ -3,7 +3,7 @@
  The Caatinga Team 2024
  ----------------------
  """
-# cSpell:ignore passwordrecovery recover_email_token  lastpasswordchange tmpl errorhandler assis
+# cSpell:ignore passwordrecovery recover_email_token  lastpasswordchange tmpl errorhandler assis, uploadfile
 
 import datetime
 import requests
@@ -24,6 +24,7 @@ from apps.authentication.forms import LoginForm, RegisterForm, NewPasswordForm, 
 from apps.authentication.models import users
 from apps.authentication.util import verify_pass, hash_pass, is_user_logged
 from apps.home.emailstuff import sendEmail
+from apps.home.pyHelper import current_milliseconds, to_base
 from apps.home.texts import get_section, add_msg_success, add_msg_error
 from apps.home.logHelper import Log2Database
 
@@ -32,16 +33,22 @@ log= Log2Database()
 
 
 # ---------------------------------------------------------
-#   Account Routes Helpers
+#  Routes Helpers
 # ---------------------------------------------------------
 
+# { now ===================================================
+def _now():
+    return datetime.datetime.now()
+# now } ---------------------------------------------------
+
+
 # { to_str ================================================
-def to_str(s: str):
+def _to_str(s: str):
     return '' if s is None else s.strip()
 # to_str } ------------------------------------------------
 
 # { get_user_row ==========================================
-def get_user_row():
+def _get_user_row():
    user_row = None
    if is_user_logged():
       user_row= users.query.filter_by(id = current_user.id).first()
@@ -52,18 +59,17 @@ def get_user_row():
 
 # { Logger ================================================
 # mgd 2024.03.21
-def logger(url: str):
-   idProjectKey= '_projeto_id'
+def logger( sMsg, type = 'info', *args):
    logged= is_user_logged()
-   idProject= db.session[idProjectKey] if logged and hasattr(db.session, 'keys') and idProjectKey in db.session.keys(idProjectKey) else -1
    idUser= current_user.id if logged else -1
-
+   log_str= (sMsg + '').format(args) if args else sMsg
+   print( log_str )
    # assis log.logActivity2Database(idUser, idProject, url)
 # Logger } ------------------------------------------------
 
 # { is_method_get =========================================
 # mgd 2024.03.21
-def is_method_get():
+def _is_method_get():
    is_get= True
    if request.method == 'POST':
       is_get= False
@@ -78,7 +84,7 @@ def is_method_get():
 #  True when the number of days since issuance is less than
 #  or equal to `max`
 def tokenValid(time_stamp, max: int) -> bool:
-   days= (datetime.datetime.now() - time_stamp).days
+   days= (_now() - time_stamp).days
    return 0 <= days <= max
 # tokenValid } --------------------------------------------
 
@@ -90,7 +96,7 @@ def internal_logout():
 # { get_input_text  =======================================
 def get_input_text(name: str) -> str:
     text = request.form.get(name)
-    return to_str(text)
+    return _to_str(text)
 
 # get_input_text } ========================================
 
@@ -109,27 +115,53 @@ def route_default():
 
 # default route } =========================================
 
-# { login =================================================
+# { upload file ============================================
+@login_required
 @blueprint.route('/uploadfile', methods= ['GET', 'POST'])
 def uploadfile():
    route= 'uploadfile'
    template= f'accounts/{route}.html.j2'
-   is_post= not is_method_get()
+   is_get= _is_method_get()
    logger(f'@{request.method.lower()}:/{route}')
-   success = False
 
    if not is_user_logged() and not is_post:
       return redirect(url_for('home_blueprint.index'))
 
    tmpl_form= UploadFileForm(request.form)
    texts= get_section(route)
+   file_obj= None if (is_get or not request.files) else request.files[tmpl_form.filename.id]
 
-   if is_post:
-      file_name= get_input_text('filename')
+   if is_get:
+      pass
+   elif not request.files:
+      add_msg_error('uploadFileError', texts, 0)
+   elif file_obj is None:
+      add_msg_error('uploadFileError', texts, 1)
+   else:
+      _file = ""
+      try:
+        cod = 790
+        file_data= file_obj.read()
+        cod+= 1 #791
+        _file = f"{to_base(current_user.id, 12).zfill(6)}_{_now().strftime('%Y-%m-%d')}_{current_milliseconds():08d}"
+        file_name = f"{_file}_{file_obj.filename}"
+        _file = os.path.join("\\", "static", "files")
+        cod+= 1 #792
+        if not os.path.isdir(_file):
+            os.makedirs(_file)
+
+        cod+= 1 #793
+        _file = os.path.join(_file, file_obj.filename)
+        with open(_file, "wb") as file:
+            cod+= 1 #794
+            file.write(file_data)
+
+        add_msg_success('uploadFileSuccess', texts)
+      except Exception as e: #TODO: log
+        logger( f"{add_msg_error('uploadFileError', texts, cod)} | File stage '{_file}' | Error '{e}'." )
 
    return render_template(
        template,
-       success= success,
        form= tmpl_form,
        **texts
       )
@@ -140,7 +172,7 @@ def uploadfile():
 def login():
    route= 'login'
    template= f'accounts/{route}.html.j2'
-   is_post= not is_method_get()
+   is_post= not _is_method_get()
    logger(f'@{request.method.lower()}:/{route}')
 
 
@@ -154,7 +186,7 @@ def login():
    if is_post:
       username= get_input_text('username')
       password= get_input_text('password')
-      search_for= to_str(username).lower()
+      search_for= _to_str(username).lower()
 
       user= users.query.filter(or_(users.username_lower == search_for, users.email == search_for)).first()
       if not user or not verify_pass(password, user.password):
@@ -164,7 +196,7 @@ def login():
          add_msg_error('userIsDisabled', texts)
 
       else:
-         remember_me = to_str(request.form.get('remember_me')); # not always returns
+         remember_me = _to_str(request.form.get('remember_me')); # not always returns
          login_user(user, remember_me)
          # test: confirm_login()
          return redirect(url_for('home_blueprint.index'))
@@ -191,11 +223,11 @@ def changepassword():
 
    route= 'changepassword'
    template= f'accounts/rst_chg_password.html.j2'
-   is_get= is_method_get()
+   is_get= _is_method_get()
    success= False
    password= '' if is_get else get_input_text('password')
    confirm_password= '' if is_get else get_input_text('confirm_password')
-   user= None if is_get else get_user_row()
+   user= None if is_get else _get_user_row()
    logger(f'@{request.method.lower()}:/{route}/')
 
    tmpl_form= NewPasswordForm(request.form)
@@ -242,9 +274,9 @@ def changepassword():
 def resetpassword(token= None):
    route= 'resetpassword'
    template= f'accounts/rst_chg_password.html.j2'
-   is_get= is_method_get()
+   is_get= _is_method_get()
    success= False
-   token_str= to_str(token)
+   token_str= _to_str(token)
    logger(f'@{request.method.lower()}:/{route}/{token_str}')
    password= '' if is_get else get_input_text('password')
    confirm_password= '' if is_get else get_input_text('confirm_password')
@@ -309,7 +341,7 @@ def passwordrecovery():
 
    route= 'passwordrecovery'
    template= f'accounts/{route}.html.j2'
-   is_get=  is_method_get()
+   is_get=  _is_method_get()
    logger(f'@{request.method.lower()}:/{route}')
    success = False
 
@@ -353,7 +385,7 @@ def passwordrecovery():
 def register():
    route= 'register'
    template= f'accounts/{route}.html.j2'
-   is_get= is_method_get()
+   is_get= _is_method_get()
    logger(f'@{request.method.lower()}:/{route}')
 
    texts= get_section('register')

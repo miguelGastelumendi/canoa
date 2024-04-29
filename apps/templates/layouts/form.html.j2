@@ -9,10 +9,9 @@
          - passwordrecovery.html.j2
          - register.html.j2
          - rst_chg_password.html.j2
-
+         - uploadfile.html.js
    mgd
 #}
-
 
 {% set dlg_var_vCentered= False %}
 {% set dlg_clas_header= 'formHeader' %}
@@ -23,29 +22,32 @@
 
 {% extends "./layouts/dialog.html.j2" %}
 
-{% block dlgBContent %}
-   <!-- { BackendMessage -->
-   <div class="text-center text-md-center mt-md-0 mb-3">
-      <span class="font-weight-normal">
-         {% if secError %}
-         <div class="alert alert-danger mt-3">
-            {{ secError | safe }}
-         </div>
-         {% elif secSuccess %}
-         <div class="alert alert-success mt-3" inert>
-            {{ secSuccess | safe }}
-         </div>
-         {% endif %}
-      </span>
-   </div>
-   <!-- BackendMessage } -->
+{% block dlgBlcBody %}
+    {% if msgError or msgSuccess %}
+        <!-- { BackendMessage -->
+        <div class="text-center text-md-center mt-md-0 mb-3">
+        <span class="font-weight-normal">
+            {% if msgError %}
+                <div class="alert alert-danger mt-3">
+                    {{ msgError | safe }}
+                </div>
+            {% elif msgSuccess %}
+                <div class="alert alert-success mt-3" inert>
+                    {{ msgSuccess | safe }}
+                </div>
+            {% endif %}
+        </span>
+        </div>
+        <!-- BackendMessage } -->
+   {% endif %}
 
    {% block formAbove %}
    {% endblock formAbove %}
 
-   {% if not success %}
+   {#  display the form when always except when sucess (when normal displat or with an error)   #}
+   {% if not msgSuccess %}
       <!-- { Form  -->
-      <form method="post" action="" class="mt-2">
+      <form method="post" action="" class="mt-2" {{ formAttribute|default('') }}>
          {{ form.hidden_tag() }}
 
          {% block formContent %}
@@ -63,5 +65,5 @@
    {% block formBelow %}
    {% endblock formBelow %}
 
-{% endblock dlgBContent %}
+{% endblock dlgBlcBody %}
 {# eof #}

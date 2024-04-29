@@ -11,7 +11,7 @@ import os
 # split fil path into 3 components
 def file_fullname_parse(filepath: str) -> tuple[str, str, str]:
    drive, path = os.path.splitdrive(filepath)
-   directory, filename = os.path.split(path)
+   _, filename = os.path.split(path)
    return (drive, path, filename)
 
 
@@ -25,13 +25,13 @@ def img_change_path(html_content: str, new_img_path: str) -> str:
         src = img_tag.get("src", "")
         if src:
             # Extract the existing path (excluding the image name)
-            existing_path, image_name = re.match(r"(.*/)(.*)", src).groups()
+            _, image_name = re.match(r"(.*/)(.*)", src).groups()
             new_src = os.path.join(new_img_path, image_name)
             img_tag["src"] = new_src
 
     return str(soup)
 
-# Eeturns a list of all img tag `src` filename
+# Returns a list of all img tag `src` filename
 def img_filenames(html_content: str) -> str:
 
     soup = BeautifulSoup(html_content, "html.parser")

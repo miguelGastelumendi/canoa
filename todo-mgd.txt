@@ -140,7 +140,7 @@
         4. Não enviar e-mail ANTES de registrar ao usuário (processo proposto por mgd, negado)
 
 
-2012-04-16..19,23--26
+2014-04-16..19,23--26
     # Refatoração do DB
         1. As tabelas foram traduzidas ao ingles.
         2. Criação de índices e relacionamentos.
@@ -157,8 +157,16 @@
         1. Inicio do Upload File
 
 
+2014-04-27,29 v α21
+    # Upload File
+        1. Formulário, pronto
+        2. Recepção, ok.
 
 
+
+
+      - rever lógica de passwordrecovery, etc: tirar (success)
+      - rever history.back(); de dialog.html
       - changepassword/token -> token invalido -> link para solicitar um novo (O token de recuperação não foi reconhecido ou não existe )
       - changepassword -> request current
       - get_Html

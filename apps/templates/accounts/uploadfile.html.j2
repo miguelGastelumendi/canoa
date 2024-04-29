@@ -2,16 +2,24 @@
 
 {% extends "./layouts/form.html.j2" %}
 
+{% block formAbove %}
+    {% if msgSuccess %}
+        <div class="d-grid">
+        <button type="button" class="btn formMainBtn"
+            onclick="window.location.href='{{ url_for('authentication_blueprint.login') }}'">{{ successButton }}</button>
+        </div>
+    {% endif %}
+{% endblock formAbove %}
 
 {% block formContent %}
-    {% if not success %}
-    <div class="form-group mb-3">
-    <label class="formLabel" inert for="upload_file">{{ fileLabel }}</label>
-    <div class="input-group">
-        {{ form.filename(class="form-control", id="upload_file") }}
-    </div>
-    </div>
-{% endif %}
+    {% if not msgSuccess %}
+        <div class="form-group mb-3">
+        <label class="formLabel" inert for="upload_file">{{ fileLabel }}</label>
+        <div class="input-group">
+            {{ form.filename(class="form-control", id="upload_file", accept=fileAccept) }}
+        </div>
+        </div>
+    {% endif %}
 {% endblock formContent %}
 
 

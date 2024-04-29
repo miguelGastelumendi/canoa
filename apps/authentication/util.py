@@ -40,7 +40,7 @@ def verify_pass(provided_password, stored_password):
 def is_user_logged():
     logged = False
     try:
-        logged = None if not current_user else current_user.is_authenticated
+        logged = None if not current_user else current_user.is_authenticated and (current_user.id > 0)
     except:
         logged = False
 

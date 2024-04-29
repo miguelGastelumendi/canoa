@@ -38,15 +38,15 @@ def getFormText(form: str):
     return filterReturns(dbquery.getDictResultset(f"select Tag, Texto from suporteusuarioelemento a "
                                     f"inner join suporteusuariogrupo b "
                                     f"on a.idsuporteusuariogrupo = b.id where b.nome = '{form}' or b.nome = 'wizard'"))
-
+# mgd
 # def getTexts(group: str):
 #     return dbquery.getDictResultset(f"select tag, texto from suporteusuarioelemento a "
 #                              f"inner join suporteusuariogrupo b "
 #                              f"on a.idsuporteusuariogrupo = b.id where b.nome = '{group.lower()}'")
 
 
-def getErrorMessage(tag: str) -> str:
-    return add_msg(tag)
+# def getErrorMessage(tag: str) -> str:
+#    return add _ msg(tag)
 
 
 def getTipText(form: str):

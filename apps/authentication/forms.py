@@ -39,7 +39,7 @@ class PasswordRecoveryForm(FlaskForm):
                              validators=[DataRequired(), Email()])
 
 class UploadFileForm(FlaskForm):
-    filename = FileField('Arquivo', validators= [DataRequired()]) #, Regexp('^[^/\\]\.zip$')])
+    filename = FileField('Arquivo', validators= [DataRequired()])
 
 
 #eof

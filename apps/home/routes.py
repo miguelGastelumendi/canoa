@@ -79,14 +79,14 @@ def index():
 # ============= Documents ============== #
 @blueprint.route("/docs/<docName>")
 def docs(docName: str):
-    group = docName
-    pageTitle = get_text("pageTitle", group)
-    formTitle = get_text("formTitle", group)
-    body = get_text("body", group)
-    style = get_text("style", group)
+    section = docName
+    pageTitle = get_text("pageTitle", section)
+    formTitle = get_text("formTitle", section)
+    body = get_text("body", section)
+    style = get_text("style", section)
     # a comma separated list of images.ext names available on the db,
     # see below db_images & _prepare_img_files
-    images = get_text("images", group)
+    images = get_text("images", section)
 
     db_images = (
         [] if is_str_none_or_empty(images) else [s.strip() for s in images.split(",")]
@@ -114,7 +114,7 @@ def docs(docName: str):
         # if any images are missing in the folder,
         # I can't help, no images found in db
 
-    elif _prepare_img_files(html_images, db_images, img_path, group):
+    elif _prepare_img_files(html_images, db_images, img_path, section):
         body = htmlHelper.img_change_path(body, img_path)
 
     return render_template(
