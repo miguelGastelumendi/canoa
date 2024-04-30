@@ -5,7 +5,7 @@ from apps.home.updateProjectDataSQL import sqls
 from apps.config import Config
 import apps.home.XLSXHelper as XLSXHelper
 import argparse
-import apps.home.logHelper as logHelper
+import apps.caatinga.logHelper as logHelper
 
 config = Config()
 

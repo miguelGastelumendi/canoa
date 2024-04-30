@@ -3,7 +3,7 @@ import apps.home.dbquery as dbquery
 #mgd from flask import escape
 from markupsafe import escape
 from sqlalchemy import engine
-from  apps.home.texts import add_msg
+from  apps.caatinga.texts import add_msg
 
 
 def getValueFromHTMLName(template: str):

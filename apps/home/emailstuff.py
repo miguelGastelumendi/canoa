@@ -2,7 +2,7 @@
 import base64
 import os
 from sendgrid import (SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition)
-from apps.home.texts import get_section
+from apps.caatinga.texts import get_section
 
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started
 # curl --request POST \

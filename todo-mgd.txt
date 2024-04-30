@@ -160,12 +160,26 @@
 2014-04-27,29 v α21
     # Upload File
         1. Formulário, pronto
-        2. Recepção, ok.
+        2. Recepção, ok
+
+2014-04-29,30 v α22
+    # Criar Classe
+         ./apps/caatinga/config.py
+         com paths a lugares de upload
+    # Upload File
+        1. Guardar os arquivo na pasta  ./apps/caatinga/config.CaatingaConfig.folder_uploaded_files
 
 
 
 
-      - rever lógica de passwordrecovery, etc: tirar (success)
+      - spinner on form.html.j2's submit
+      - rever lógica de passwordrecovery, etc: tirar (success):
+         form_mode in (normal, success)
+            normal: display normally (as a expected for a form)
+                    can have or not a msgError
+            success: display the form with mgsSuccess and maybe
+
+            , modal +error
       - rever history.back(); de dialog.html
       - changepassword/token -> token invalido -> link para solicitar um novo (O token de recuperação não foi reconhecido ou não existe )
       - changepassword -> request current

@@ -9,7 +9,7 @@
 
 # from dbquery import getDictResultset, getValues
 import apps.home.dbquery as dbquery
-from apps.home.pyHelper import is_str_none_or_empty
+from apps.caatinga.pyHelper import is_str_none_or_empty
 
 
 # Local vars & defs

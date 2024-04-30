@@ -17,7 +17,6 @@ def file_fullname_parse(filepath: str) -> tuple[str, str, str]:
 
 # Change img tag `src` path to a new_img_path & return the modified html
 def img_change_path(html_content: str, new_img_path: str) -> str:
-
     soup = BeautifulSoup(html_content, "html.parser")
     img_tags = soup.find_all("img")
 
@@ -33,7 +32,6 @@ def img_change_path(html_content: str, new_img_path: str) -> str:
 
 # Returns a list of all img tag `src` filename
 def img_filenames(html_content: str) -> str:
-
     soup = BeautifulSoup(html_content, "html.parser")
     img_tags = soup.find_all("img")
     images = []

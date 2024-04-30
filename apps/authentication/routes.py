@@ -24,10 +24,11 @@ from apps.authentication.forms import LoginForm, RegisterForm, NewPasswordForm, 
 from apps.authentication.models import users
 from apps.authentication.util import verify_pass, hash_pass, is_user_logged
 from apps.home.emailstuff import sendEmail
-from apps.home.pyHelper import current_milliseconds, to_base
-from apps.home.texts import get_section, add_msg_success, add_msg_error
-from apps.home.logHelper import Log2Database
 
+from apps.caatinga.logHelper import Log2Database
+from apps.caatinga.pyHelper import current_milliseconds, to_base
+from apps.caatinga.texts import get_section, add_msg_success, add_msg_error
+from apps.caatinga.config import CaatingaConfig
 
 log= Log2Database()
 
@@ -119,14 +120,15 @@ def route_default():
 @login_required
 @blueprint.route('/uploadfile', methods= ['GET', 'POST'])
 def uploadfile():
+   # TODO
    route= 'uploadfile'
    template= f'accounts/{route}.html.j2'
    is_get= _is_method_get()
    logger(f'@{request.method.lower()}:/{route}')
 
-   if not is_user_logged() and not is_post:
+   if is_get and not is_user_logged():
       return redirect(url_for('home_blueprint.index'))
-
+   ## TODO ^Func
    tmpl_form= UploadFileForm(request.form)
    texts= get_section(route)
    file_obj= None if (is_get or not request.files) else request.files[tmpl_form.filename.id]
@@ -143,15 +145,15 @@ def uploadfile():
         cod = 790
         file_data= file_obj.read()
         cod+= 1 #791
-        _file = f"{to_base(current_user.id, 12).zfill(6)}_{_now().strftime('%Y-%m-%d')}_{current_milliseconds():08d}"
-        file_name = f"{_file}_{file_obj.filename}"
-        _file = os.path.join("\\", "static", "files")
+        file_id= f"{CaatingaConfig.user_code(current_user.id)}_{_now().strftime('%Y-%m-%d')}_{current_milliseconds():08d}"
+        file_name = f"{file_id}_{file_obj.filename}"
         cod+= 1 #792
+        _file = CaatingaConfig.folder_uploaded_files
         if not os.path.isdir(_file):
             os.makedirs(_file)
 
         cod+= 1 #793
-        _file = os.path.join(_file, file_obj.filename)
+        _file = os.path.join(_file, file_name)
         with open(_file, "wb") as file:
             cod+= 1 #794
             file.write(file_data)

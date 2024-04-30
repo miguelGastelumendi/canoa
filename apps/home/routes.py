@@ -11,9 +11,10 @@ import base64
 from flask import render_template, redirect, url_for
 
 from apps.authentication.util import is_user_logged
-from apps.home.pyHelper import is_str_none_or_empty
-from apps.home.texts import get_msg_error, get_text
-from apps.home import blueprint, logHelper, htmlHelper
+from apps.caatinga import htmlHelper, logHelper
+from apps.caatinga.pyHelper import is_str_none_or_empty
+from apps.caatinga.texts import get_msg_error, get_text
+from apps.home import blueprint
 
 log = logHelper.Log2Database()
 
