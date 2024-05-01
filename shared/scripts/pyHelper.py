@@ -1,11 +1,22 @@
 """
- The Caatinga Team
+ Equipe da Caatinga
 
  mgd 2024-04-09--27
 """
 import time
+from os import path
 
-def is_str_none_or_empty(s: str)-> bool:
+
+def path_remove_last(dir: str) -> str:
+    folders = dir.split(path.sep)
+    if len(folders) < 2:
+        return None
+
+    short_dir = path.sep.join(folders[:-1])
+    return short_dir
+
+
+def is_str_none_or_empty(s: str) -> bool:
    return True if (s is None) or (s + "").strip() == "" else False
 
 def current_milliseconds():

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-us
 """
- The Caatinga Team 2024
+ Equipe da Caatinga 2024
  ----------------------
 """
 

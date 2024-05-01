@@ -1,5 +1,5 @@
 """
- The Caatinga Team
+ Equipe da Caatinga
 
  mgd 2024-04-08
 """

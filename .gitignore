@@ -30,8 +30,6 @@ package-lock.json
 apps/static/assets/node_modules
 apps/static/assets/yarn.lock
 apps/static/assets/.temp
-apps/caatinga/user_data
-
 apps/config.py
 
 # mgd
@@ -40,6 +38,8 @@ test.js
 test.html
 caat/
 apps/static/docs/
+shared/user_data/
+_rural/
 
 ### Flask template
 instance/*

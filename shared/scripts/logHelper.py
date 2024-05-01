@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from datetime import datetime
-import apps.home.dbquery as dbquery
+import shared.scripts.dbquery as dbquery
 class Log():
     def __init__(self, fname: str):
         self.fname = fname

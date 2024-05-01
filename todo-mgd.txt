@@ -140,7 +140,7 @@
         4. Não enviar e-mail ANTES de registrar ao usuário (processo proposto por mgd, negado)
 
 
-2014-04-16..19,23--26
+2024-04-16..19,23--26
     # Refatoração do DB
         1. As tabelas foram traduzidas ao ingles.
         2. Criação de índices e relacionamentos.
@@ -157,20 +157,39 @@
         1. Inicio do Upload File
 
 
-2014-04-27,29 v α21
+2024-04-27,29 v α21
     # Upload File
         1. Formulário, pronto
         2. Recepção, ok
 
-2014-04-29,30 v α22
+2024-04-29,30 v α22
     # Criar Classe
          ./apps/caatinga/config.py
          com paths a lugares de upload
+
+2024-04-29,30 v α23
     # Upload File
-        1. Guardar os arquivo na pasta  ./apps/caatinga/config.CaatingaConfig.folder_uploaded_files
+        1. Criar pasta compartilhada entre Canoa e o validador:
+            <root>/shared
+        2. Compartilhar os scripts (que acho) necessários para a comunicação `Validador` e Canoa email
+            <root>/shared/scripts
+        3. Guardar os arquivo na especificada em
+            <root>/shared/scripts/config.py
+           Agora é:
+            <root>/shared/user_data/upload_files
+        4. Persistir os dados do arruivo na tabela user_data_files
+        5. Criar view com os dados necessários para enviar e-mail com
+           o resultado da validação.
+    # Mudar texto de Caatinga a Canoa
 
 
 
+
+#TODO
+
+    . Se Upload der error, fechar o formulário.
+
+      - Move DOCS path to new Caatinga.Config
 
       - spinner on form.html.j2's submit
       - rever lógica de passwordrecovery, etc: tirar (success):
@@ -181,10 +200,13 @@
 
             , modal +error
       - rever history.back(); de dialog.html
+      - check users table & other permissions
       - changepassword/token -> token invalido -> link para solicitar um novo (O token de recuperação não foi reconhecido ou não existe )
       - changepassword -> request current
       - get_Html
 
+      // OK
+      - email de envio originator: usar mauro
 
 
 Significant system improvements:
@@ -197,3 +219,37 @@ Significant system improvements:
       D:\Projects\AdaptaBrasil\Caatinga\apps\templates\home\page-404.html
 
 - Clean caatinga.css
+
+-- File filters
+*.html.js, *.html,
+
+
+---------------------------------- Typical Flask
+
+my_flask_app/
+    app.py
+    config.py
+    requirements.txt
+    .gitignore
+    app/
+        __init__.py
+        models.py
+        routes.py
+        utils.py
+        forms.py
+        extensions.py
+    static/
+        css/
+        js/
+        img/
+    templates/
+        base.html
+        index.html
+        ...
+uploaded_files/
+    file1.txt
+    file2.jpg
+    ...
+scripts/
+    data_processing.py
+    cleanup_script.py

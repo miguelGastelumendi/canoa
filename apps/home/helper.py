@@ -1,9 +1,9 @@
 import re
-import apps.home.dbquery as dbquery
+# import shared.scripts.dbquery as dbquery
 #mgd from flask import escape
 from markupsafe import escape
 from sqlalchemy import engine
-from  apps.caatinga.texts import add_msg
+
 
 
 def getValueFromHTMLName(template: str):
@@ -34,25 +34,32 @@ def get_segment(request):
     except:
         return None
 
-def getFormText(form: str):
-    return filterReturns(dbquery.getDictResultset(f"select Tag, Texto from suporteusuarioelemento a "
-                                    f"inner join suporteusuariogrupo b "
-                                    f"on a.idsuporteusuariogrupo = b.id where b.nome = '{form}' or b.nome = 'wizard'"))
-# mgd
-# def getTexts(group: str):
-#     return dbquery.getDictResultset(f"select tag, texto from suporteusuarioelemento a "
-#                              f"inner join suporteusuariogrupo b "
-#                              f"on a.idsuporteusuariogrupo = b.id where b.nome = '{group.lower()}'")
 
 
-# def getErrorMessage(tag: str) -> str:
-#    return add _ msg(tag)
+# ===========================================
+#     ver ./shared/scripts/textsHelper.py
+# ===========================================
 
 
-def getTipText(form: str):
-    return dbquery.getJSONStrResultset(
-        f"select Texto as text, 'Dica' as title from SuporteUsuarioElemento a "
-        f"inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
-        f"where b.Nome = '{form}' and Tag = 'tip'").replace('\r','').replace('\n','')
+# def getFormText(form: str):
+#     return filterReturns(dbquery.getDictResultset(f"select Tag, Texto from suporteusuarioelemento a "
+#                                     f"inner join suporteusuariogrupo b "
+#                                     f"on a.idsuporteusuariogrupo = b.id where b.nome = '{form}' or b.nome = 'wizard'"))
+# # mgd
+# # def getTexts(group: str):
+# #     return dbquery.getDictResultset(f"select tag, texto from suporteusuarioelemento a "
+# #                              f"inner join suporteusuariogrupo b "
+# #                              f"on a.idsuporteusuariogrupo = b.id where b.nome = '{group.lower()}'")
+
+
+# # def getErrorMessage(tag: str) -> str:
+# #    return add _ msg(tag)
+
+
+# def getTipText(form: str):
+#     return dbquery.getJSONStrResultset(
+#         f"select Texto as text, 'Dica' as title from SuporteUsuarioElemento a "
+#         f"inner join SuporteUsuarioGrupo b on a.idSuporteUsuarioGrupo = b.id "
+#         f"where b.Nome = '{form}' and Tag = 'tip'").replace('\r','').replace('\n','')
 
 

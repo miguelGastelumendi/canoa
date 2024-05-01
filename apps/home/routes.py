@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 """
- The Caatinga Team
+ Equipe da Caatinga
 
  mgd 2024-04-09
 """
@@ -10,11 +10,12 @@ import os
 import base64
 from flask import render_template, redirect, url_for
 
-from apps.authentication.util import is_user_logged
-from apps.caatinga import htmlHelper, logHelper
-from apps.caatinga.pyHelper import is_str_none_or_empty
-from apps.caatinga.texts import get_msg_error, get_text
+from .htmlHelper import img_filenames, img_change_path
 from apps.home import blueprint
+from apps.authentication.util import is_user_logged
+from shared.scripts import logHelper
+from shared.scripts.pyHelper import is_str_none_or_empty
+from shared.scripts.textsHelper import get_msg_error, get_text
 
 log = logHelper.Log2Database()
 
@@ -76,8 +77,11 @@ def index():
       return redirect(url_for('authentication_blueprint.login'))
 
 
-
 # ============= Documents ============== #
+# TODO:
+#    1. Move path to new Caatinga.Config
+#    1. Only show Public docs if not logged.
+#    2. check if body exists else error
 @blueprint.route("/docs/<docName>")
 def docs(docName: str):
     section = docName
@@ -94,7 +98,7 @@ def docs(docName: str):
     )  # list of img names in db
 
     html_images = (
-        [] if is_str_none_or_empty(body) else sorted(htmlHelper.img_filenames(body))
+        [] if is_str_none_or_empty(body) else sorted(img_filenames(body))
     )  # list of img tags in HTML
 
     # TODO: check if this is the best way to get a path
@@ -116,7 +120,7 @@ def docs(docName: str):
         # I can't help, no images found in db
 
     elif _prepare_img_files(html_images, db_images, img_path, section):
-        body = htmlHelper.img_change_path(body, img_path)
+        body = img_change_path(body, img_path)
 
     return render_template(
         "./home/document.html.j2",

@@ -1,40 +1,20 @@
-from sqlalchemy import create_engine
 import pandas as pd
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import scoped_session
+from sqlalchemy import create_engine
 from sqlalchemy import text
 from apps import config
 import json
 
-engine = create_engine(config.Config.SQLALCHEMY_DATABASE_URI,
-                         isolation_level="READ UNCOMMITTED", connect_args={'connect_timeout': 600})
-
-# def getEngine():
-#     global engine
-#     if not engine:
-#         engine = create_engine(config.Config.SQLALCHEMY_DATABASE_URI,
-#                          isolation_level="READ UNCOMMITTED", connect_args={'connect_timeout': 600})
-#     return engine
-
-
-#def getSession():
-#    session_factory = sessionmaker(getEngine())
-#    return scoped_session(session_factory)
-
-
-# def connectDB():
-#     global engine, connection
-#     if not connection:
-#         engine = getEngine()
-#         connection = engine.connect()
-#     return connection
+engine = create_engine(
+    config.Config.SQLALCHEMY_DATABASE_URI,
+    isolation_level="READ UNCOMMITTED",
+    connect_args={'connect_timeout': 600}
+)
 
 
 def executeSQL(sql):
     global engine
     with engine.connect() as conn:
         return conn.execute(text(sql))
-
 
 def getValues(sql):
     rows = executeSQL(sql)
@@ -81,10 +61,8 @@ def getDictFieldNamesValuesResultset(sql):
 def getJSONStrResultset(sql):
     return json.dumps(getListDictResultset(sql)[0])
 
-
 def getDataframeResultset(sql):
     return pd.read_sql(sql, connectDB())
-
 
 def getListResultset(sql):
     return [row[0] for row in executeSQL(sql)]

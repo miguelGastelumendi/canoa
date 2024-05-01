@@ -4,13 +4,23 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask_login import UserMixin
-
 from apps import db, login_manager
-
 from apps.authentication.util import hash_pass
 
-class users(db.Model, UserMixin):
 
+
+class UserDataFiles(db.Model):
+    __tablename__ = 'user_data_files'
+
+    id = db.Column(db.Integer, primary_key=True)
+    id_users = db.Column(db.Integer)
+    file_size = db.Column(db.Integer)
+    file_crc32 = db.Column(db.Integer)
+    file_name = db.Column(db.String(100))
+    ticket = db.Column(db.String(40))
+
+
+class Users(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -19,7 +29,6 @@ class users(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True)
     password = db.Column(db.LargeBinary)
     recover_email_token = db.Column(db.String(100))
-    recover_email_token_at = db.Column(db.DateTime())
     disabled = db.Column(db.Boolean)
 
 
@@ -43,7 +52,7 @@ class users(db.Model, UserMixin):
 
 @login_manager.user_loader
 def user_loader(id):
-    return users.query.filter_by(id=id).first()
+    return Users.query.filter_by(id=id).first()
 
 
 @login_manager.request_loader
@@ -52,5 +61,7 @@ def request_loader(request):
       return None # mgd
 
    username = request.form.get('username')
-   user = users.query.filter_by(username_lower = username.lower()).first()
+   user = Users.query.filter_by(username_lower = username.lower()).first()
    return user if user else None
+
+
