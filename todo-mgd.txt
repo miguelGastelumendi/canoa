@@ -182,7 +182,9 @@
            o resultado da validação.
     # Mudar texto de Caatinga a Canoa
 
-
+2024-05-03 v α24
+    1. Renomeado Caatinga -> Canoa
+    2. Nova imagem/ favicon
 
 
 #TODO

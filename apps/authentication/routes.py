@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-us
 """
- Equipe da Caatinga 2024
+ Equipe da Canoa -- 2024
  ----------------------
  """
 # cSpell:ignore passwordrecovery recover_email_token  lastpasswordchange tmpl errorhandler assis, uploadfile

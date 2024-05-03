@@ -1,8 +1,7 @@
 """
- config_caatinga.py
- ------------------
 
- Equipe da Caatinga
+ Equipe da Canoa -- 2024
+
  mgd 2024-04-29
 
 """

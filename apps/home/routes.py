@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 """
- Equipe da Caatinga
+ Equipe da Canoa -- 2024
 
  mgd 2024-04-09
 """
