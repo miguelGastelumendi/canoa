@@ -1,0 +1,120 @@
+/* ============================================
+ *     carranca\static\css\canoa.css
+ *
+ *  2024-02-12
+ *  Miguel Gastelumendi -- mgd
+ * ============================================ */
+
+:root {
+   --project-name: 'Canoa';
+
+   --buttonBackColor: #647663;
+   --buttonTextColor: white;
+   --titleBackColor: #c4884c;
+   --titleTextColor: white;
+   --labelTextColor: #c4884c;
+   --linkTextColor: #60370e;
+}
+
+body {
+   background: url(/static/img/pages/canoa_fundo.jpeg) no-repeat fixed;
+   background-size: cover;
+}
+
+
+/* ============================================
+ *     carranca\templates\layouts\dialog.tmpl
+ * ============================================ */
+
+.dlgShow {
+   display: block !important;
+}
+
+.dlgBtnClose {
+    background-color: var(--buttonBackColor);
+    border: none;
+    color: var(--buttonTextColor);
+    min-width: 5rem;
+}
+
+
+/* ============================================
+ *     carranca\templates\layouts\form.html
+ * ============================================ */
+.formHeader {
+   background-color: var(--titleBackColor);
+}
+
+.formTitle {
+   color: var(--titleTextColor);
+   font-size: 1.5rem;
+}
+
+.formLabel {
+   color: var(--labelTextColor);
+   padding: 0 .4em;
+}
+
+.formText {
+   color: var(--labelTextColor);
+}
+
+.formLine {
+   margin-bottom: 0px;
+}
+
+.formLink {
+   color: var(--linkTextColor);
+   font-weight: 400;
+}
+
+.formLink:hover {
+   text-decoration: underline;
+}
+
+.formTwoCells {
+   display: flex;
+   justify-content: space-between;
+   margin: 6px 0 6px;
+}
+
+.formCheckBtn {
+   accent-color: var(--buttonBackColor);
+}
+
+.formMainBtn {
+   background-color: var(--buttonBackColor);
+   border: none;
+   color: var(--buttonTextColor);
+   font-size: 1.1rem;
+}
+
+.formMainBtn:hover {
+   background-color: var(--buttonBackColor);
+   filter: brightness(120%);
+}
+
+.formMainBtn:disabled {
+   background-color: var(--buttonBackColor);
+   filter: brightness(60%);
+}
+
+/* ============================================
+ *          responsive design
+ * ============================================ */
+
+@media screen and (max-width: 992px) {
+   .divInputProjectName {
+      width: 60%;
+   }
+
+   .divRememberLogin {
+      font-size: 13px;
+   }
+}
+
+::-webkit-input-placeholder {
+   font-style: italic;
+}
+
+/*~*/

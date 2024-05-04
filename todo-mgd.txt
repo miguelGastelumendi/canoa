@@ -186,6 +186,14 @@
     1. Renomeado Caatinga -> Canoa
     2. Nova imagem/ favicon
 
+2024-05-03 v α25
+    1. Renomeado  `apps` -> carranca (font-end da canoa)
+    2. Bug no Upload solucionado (somente DB)
+       Como zlib.crc32 -> int  (32b)  na tabela e fiz a coluna file_crc::int4
+       Mas, na realdade (desde a versão 3), é um uint.
+       Ja que em Postgres não tem tipo uint mudei o tipo de dado da coluna: file_crc::bingint
+    3. Communication module with 'validate_data' started
+
 
 #TODO
 
@@ -218,7 +226,7 @@ Significant system improvements:
    http://127.0.0.1:5000/requestemail <> http://127.0.0.1:5000/requestEmail
 
 - Faltam error pages
-      D:\Projects\AdaptaBrasil\Caatinga\apps\templates\home\page-404.html
+      D:\Projects\AdaptaBrasil\Caatinga\carranca\templates\home\page-404.html
 
 - Clean caatinga.css
 

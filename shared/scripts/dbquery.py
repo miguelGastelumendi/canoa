@@ -1,7 +1,7 @@
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy import text
-from apps import config
+from carranca import config
 import json
 
 engine = create_engine(

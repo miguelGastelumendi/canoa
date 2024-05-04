@@ -27,11 +27,11 @@ _templates
 package-lock.json
 .vscode/symbols.json
 
-apps/static/assets/node_modules
-apps/static/assets/yarn.lock
-apps/static/assets/.temp
+carranca/static/assets/node_modules
+carranca/static/assets/yarn.lock
+carranca/static/assets/.temp
 
-apps/config.py
+carranca/config.py
 
 # mgd
 test.js

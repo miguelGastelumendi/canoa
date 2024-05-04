@@ -3,7 +3,7 @@ import base64
 import os
 from sendgrid import (SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition)
 from .textsHelper import get_section
-from .config import CanoaConfig
+from .config import CarrancaConfig
 
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started
 # curl --request POST \
@@ -28,7 +28,7 @@ def send_email(toMail: str, textSection: str, toReplace: dict, apiKey: str, file
             eMailTexts[eMailTextsKey] = eMailTexts[eMailTextsKey].replace('{' + toReplaceKey + '}',
                 toReplace[toReplaceKey])
     message = Mail(
-        from_email = CanoaConfig.email_originator,
+        from_email = CarrancaConfig.email_originator,
         to_emails = toMail,
         subject = eMailTexts['Subject'],
         html_content = eMailTexts['Text'])

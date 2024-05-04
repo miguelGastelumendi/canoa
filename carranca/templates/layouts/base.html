@@ -1,0 +1,46 @@
+{#
+   carranca\templates\layouts\base.html
+   --------------------------------
+
+   The Base Template for Canoa
+
+   mgd
+#}
+
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Canoa {%+ if pageTitle %} &ndash; {{pageTitle}}{% endif %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="title" content="Canoa">
+        <meta name="author" content="Equipe `Canoa`">
+        <meta name="description" content="Canoa">
+
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32.png') }}">
+        <link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='img/favicon/favicon-64.png') }}">
+
+        <!-- Fontawesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <!-- Pixel CSS -->
+        <link type="text/css" href="{{ url_for('static', filename='css/pixel.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='css/canoa.css') }}" rel="stylesheet">
+
+
+        {% block stylesheets %}{% endblock stylesheets %}
+
+    </head>
+    <body>
+         <main>
+         {% block content %}{% endblock content %}
+         </main>
+         {% block htmlHelpers %}{% endblock htmlHelpers %}
+
+         {% include 'includes/scripts.html' %}
+
+         {% block javascripts %}{% endblock javascripts %}
+    </body>
+</html>
