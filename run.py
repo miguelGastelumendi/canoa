@@ -1,14 +1,15 @@
 # -*- encoding: utf-8 -*-
 import os
 #from flask_migrate import Migrate
-from flask_minify import Minify
 from sys import exit
-
-from carranca.config import config_dict
+from flask_minify import Minify
 from carranca import create_app, db
+from carranca.config import Config, config_dict
+
+
 
 # WARNING: Don't run with debug turned on in production!
-DEBUG = (os.getenv('DEBUG', 'False') == 'True')
+DEBUG = (Config.getenv('DEBUG', 'False') == 'True')
 
 # The configuration
 get_config_mode = 'Debug' if DEBUG else 'Production'
@@ -22,6 +23,7 @@ except KeyError:
     exit('Error: Invalid <config_mode>. Expected values [Debug, Production] ')
 
 app = create_app(app_config)
+host, port = app_config.SERVER_ADDRESS.split(':');
 
 
 if not DEBUG:
@@ -32,9 +34,8 @@ if DEBUG:
     app.logger.info('Page Compression = ' + 'FALSE' if DEBUG else 'TRUE')
     app.logger.info('DBMS             = ' + app_config.SQLALCHEMY_DATABASE_URI)
     app.logger.info('ASSETS_ROOT      = ' + app_config.ASSETS_ROOT)
+    app.logger.info('Host:Port        = ' +  f"{host}:{port}")
 
-
-host, port = os.getenv('CAATINGA_SERVER_ADDRESS', '0.0.0.0:5000').split(':');
 
 if __name__ == "__main__":
     app.run(host=host, port=int(port))

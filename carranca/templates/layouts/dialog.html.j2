@@ -49,9 +49,9 @@ mgd
 {% block dlgBlcJavascript %}
 {% endblock dlgBlcJavascript %}
 
+{# window.location.href = "{{ url_for('home_blueprint.index') }}" #}
 <script>
    const f = (id) => document.getElementById(id).addEventListener('click', () => {
-        {# window.location.href = "{{ url_for('home_blueprint.index') }}" #}
         history.back();
      });
    f('dlg-id-hdr-btn-close');

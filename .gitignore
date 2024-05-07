@@ -30,7 +30,6 @@ package-lock.json
 carranca/static/assets/node_modules
 carranca/static/assets/yarn.lock
 carranca/static/assets/.temp
-carranca/config.py
 
 # mgd
 *.hlp

@@ -51,7 +51,7 @@
 
         <div class="row mt-3">
         <div class="col-1" style="width: 1px">
-            <input class="formCheckBtn" type="checkbox" onclick="fTermsAccepted()" id="id-termsAccepted">
+            <input class="formCheckBtn" type="checkbox" id="id-termsAccepted" required>
         </div>
         <div class="col-8">
             <label class="formText formLine" class="form-check-label" for="id-termsAccepted"> {{ termsLabel }}&nbsp;</label>
@@ -66,16 +66,4 @@
     {% endif %}
 {% endblock formContent %}
 
-
-{% block dlgBlcJavascript %}
-    {% if not success %}
-        <script>
-            const btnSubmit = document.getElementById("id-formMainBtn");
-            const btnAccepted = document.getElementById("id-termsAccepted");
-            btnSubmit.disabled = true;
-            btnAccepted.checked = !btnSubmit.disabled;
-            function fTermsAccepted() { btnSubmit.disabled = !btnAccepted.checked; }
-        </script>
-    {% endif %}
-{% endblock dlgBlcJavascript %}
 {# eof #}

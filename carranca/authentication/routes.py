@@ -12,25 +12,20 @@ import os
 
 from zlib import crc32
 from flask import render_template, redirect, request, url_for
-from flask_login import (
-   current_user,
-   login_user,
-   logout_user
-)
 from sqlalchemy import or_
+from flask_login import current_user, login_user, logout_user
 from flask_login import login_required
 from carranca import db, login_manager
 from carranca.authentication import blueprint
 from .forms import LoginForm, RegisterForm, NewPasswordForm, PasswordRecoveryForm, UploadFileForm
 from .models import Users, UserDataFiles
 from .util import verify_pass, hash_pass, is_user_logged
-from shared.scripts.email_sender import send_email
 
+from shared.scripts.email_sender import send_email
 from shared.scripts.logHelper import Log2Database
 from shared.scripts.pyHelper import current_milliseconds, is_str_none_or_empty
 from shared.scripts.textsHelper import get_section, add_msg_success, add_msg_error
-
-from shared.scripts.config import CarrancaConfig
+from shared.scripts.carranca_shared_info import CarrancaSharedInfo
 from shared.scripts.validate import data_validate
 import asyncio
 
@@ -158,12 +153,12 @@ def uploadfile():
       file_written = False
       err_cod+= 3 #79_
       try:
-        user_code = CarrancaConfig.user_code(current_user.id)
+        user_code = CarrancaSharedInfo.user_code(current_user.id)
 
         file_ticket = f"{user_code}_{_now().strftime('%Y-%m-%d')}_{current_milliseconds():08d}"
         file_name = f"{file_ticket}_{file_obj.filename}"
 
-        _file = os.path.join(CarrancaConfig.folder_uploaded_files, user_code)
+        _file = os.path.join(CarrancaSharedInfo.folder_uploaded_files, user_code)
         file_folder = _file
         if not os.path.isdir(_file):
             os.makedirs(_file)

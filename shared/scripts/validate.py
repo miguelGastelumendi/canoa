@@ -2,7 +2,7 @@ import asyncio
 import shutil
 from os import makedirs, path
 from shared.scripts.pyHelper import path_remove_last
-from .config import CarrancaConfig
+from .carranca_shared_info import CarrancaSharedInfo
 
 # ====================================================================
 #  This function knows all about module [data_validate]
@@ -41,8 +41,8 @@ async def data_validate(file_folder: str, file_name: str, user_code: str):
     source = path.join(file_folder, file_name)
 
     #TODO if (working) raise Error
-    folder_common = path_remove_last(CarrancaConfig.folder_channel)
-    destiny_folder = path.join(CarrancaConfig.folder_channel, user_code)
+    folder_common = path_remove_last(CarrancaSharedInfo.folder_channel)
+    destiny_folder = path.join(CarrancaSharedInfo.folder_channel, user_code)
     if not path.isdir(destiny_folder):
         makedirs(destiny_folder)
 

@@ -194,10 +194,18 @@
        Ja que em Postgres não tem tipo uint mudei o tipo de dado da coluna: file_crc::bingint
     3. Communication module with 'validate_data' started
 
+2024-05-06 v α26
+    1. Environ vars must start with CANOA_
+    1. Forms fixups
+
+
 
 #TODO
 
-    . Se Upload der error, fechar o formulário.
+
+
+
+        . Se Upload der error, fechar o formulário.
 
       - Move DOCS path to new Caatinga.Config
 

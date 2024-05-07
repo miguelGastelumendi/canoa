@@ -1,19 +1,16 @@
 """
-
  Equipe da Canoa -- 2024
 
  mgd 2024-04-29
-
 """
 
 from os import path, makedirs
-from carranca.config import Config
 from .pyHelper import to_base, path_remove_last
+from carranca.config import Config
 
+class CarrancaSharedInfo:
 
-class CarrancaConfig:
     _shift_id = 903
-    # from 'frontEnd' -> .../Canoa/carranca
     folder_html_docs = path.join(Config.basedir, "html_docs")
 
     # shared scripts with data_validator
@@ -28,12 +25,11 @@ class CarrancaConfig:
     if not path.isdir(folder_channel):
         makedirs(folder_channel)
 
-
-    email_originator = "assismauro@hotmail.com"
-
     """ External user code """
     def user_code(id: int) -> str:
-        return to_base(CarrancaConfig._shift_id + id, 12).zfill(4)
+        return to_base(CarrancaSharedInfo._shift_id + id, 12).zfill(5)
 
     # def user_id(code: str) -> int:
     #     return from_base(code, 12) - CaatingaConfig._shift_id
+
+#eof
