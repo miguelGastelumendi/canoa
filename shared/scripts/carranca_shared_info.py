@@ -19,11 +19,11 @@ class CarrancaSharedInfo:
     folder_data = path.join(folder_shared,  "user_data")
     folder_uploaded_files = path.join(folder_data, "uploaded_files")
 
-    # transitional data channel folder
+    # folder to exchange files: folder_data_tunnel
     inter_common = path_remove_last(_common)
-    folder_channel = path.join(inter_common, "data_channel")
-    if not path.isdir(folder_channel):
-        makedirs(folder_channel)
+    folder_data_tunnel = path.join(inter_common, "data_tunnel")
+    if not path.isdir(folder_data_tunnel):
+        makedirs(folder_data_tunnel)
 
     """ External user code """
     def user_code(id: int) -> str:

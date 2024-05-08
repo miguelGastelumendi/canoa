@@ -54,7 +54,11 @@ def _get_row(item: str, section: str) -> tuple[str, str]:
 # returns text for the item/section pair & adds/replace name:(key, value) to the dictionary
 def _add_msg(item: str, section: str, name: str, texts: dict[str, str] = None, *args) -> str:
     s = get_text(item, section)
-    value = '' if s is None else (s.format(*args) if args else s)
+    try:
+        value = '' if s is None else (s.format(*args) if args else s)
+    except:
+        value = s
+
     if texts:
         texts[name] = value
 

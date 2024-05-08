@@ -56,8 +56,10 @@ async def _run_validator(file_common, file_folder: str):
 
 
     # Decode the output from bytes to string
-    stdout_str = ansi_to_html(stdout.decode())
-    stderr_str = ansi_to_html(stderr.decode())
+    # stdout_str = ansi_to_html(stdout.decode())
+    # stderr_str = ansi_to_html(stderr.decode())
+    stderr_str = '' if stderr.strip() else 'Some error'
+    stdout_str = ''
 
     return stdout_str, stderr_str
 # -------------------------------------------------------------------
@@ -65,16 +67,16 @@ async def _run_validator(file_common, file_folder: str):
 # ====================================================================
 #  This function knows all about module [carranca]
 def send_to_validate(file_folder: str, file_name: str, user_code: str):
-
     msg_str = ''
     error_code = 0
     code = 1
     source = path.join(file_folder, file_name)
 
+    # Unzip file in data_tunnel folder
     try:
-        folder_common = path_remove_last(CarrancaSharedInfo.folder_channel)
+        folder_common = path_remove_last(CarrancaSharedInfo.folder_data_tunnel)
         code+= 1
-        destiny_folder = path.join(CarrancaSharedInfo.folder_channel, user_code)
+        destiny_folder = path.join(CarrancaSharedInfo.folder_data_tunnel, user_code)
         if not path.isdir(destiny_folder):
             code+= 1
             makedirs(destiny_folder)
@@ -93,29 +95,31 @@ def send_to_validate(file_folder: str, file_name: str, user_code: str):
 
     except Exception as e:
         error_code = code
+        return error_code, msg_str, ""
 
-    if (error_code > 0):
-        return error_code, msg_str
 
+    # Run the validator
+    code= +1
     stdout, stderr = asyncio.run(_run_validator(folder_common, destiny_folder))
 
+    info_str = ''
     msg_str = ''
-    # print("Standard Output:", stdout)
-    # print("Standard Error:", stderr)
     code= +1
-    if is_str_none_or_empty(stderr) and is_str_none_or_empty(stdout):
+    if is_str_none_or_empty(stderr) and is_str_none_or_empty(stdout): # nothing returned by the validator
         error_code = code + 1
+        msg_str = "uploadFileError"
 
-    elif is_str_none_or_empty(stderr):
+    elif is_str_none_or_empty(stderr): # No error
         error_code = 0
         msg, wrn = _find_err_and_warn(stdout)
-        msg_str= f"Quantidade de erros: {msg}, de avisos {wrn}."
+        info_str = f"Quantidade de erros: {msg}, de avisos {wrn}."
+        msg_str= "uploadFileSuccess"
 
     else:
-        error_code = code + 2
-        msg_str = "Aguarde o resultado."
+        error_code = 0
+        msg_str = "uploadFileWarning"
 
-    return error_code, msg_str
+    return error_code, msg_str, info_str
 
     # send e-mail
 # -------------------------------------------------------------------

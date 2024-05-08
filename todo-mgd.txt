@@ -195,18 +195,20 @@
     3. Communication module with 'validate_data' started
 
 2024-05-06 v α26
-    1. Environ vars must start with CANOA_
+    1.Environ vars must start with CANOA_
     2 Forms fixups
 
 2024-05-06 v α27
-    0. Refactoring dos nomes de block em flask de base.html
-    1. Primer de upload com validação
-    2. Falta limpar aquivos, email e testes
+    1. Refactoring dos nomes de block em flask de base.html
+    2. Primer de upload com validação
+    3. Falta limpar aquivos, email e testes
 
-2024-05-06 v α28
+2024-05-07 v α28
     1. Teste sem path.txt
     2. Undo apikey
 
+2024-05-086 v α29
+    1. Several improvements on UploadFile
 
     TODO: arrumar
 

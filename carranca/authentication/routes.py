@@ -211,6 +211,7 @@ def uploadfile():
         #err_code+= 6
     else:
         file_written = False
+        user_error = ''
         err_code= 800
         try:
             # create ticket code
@@ -219,6 +220,7 @@ def uploadfile():
             err_code+= 1 #801
             _file = os.path.join(CarrancaSharedInfo.folder_uploaded_files, user_code)
             file_folder = _file
+            err_code+= 1 #802
             if not os.path.isdir(_file):
                 os.makedirs(_file)
 
@@ -228,14 +230,13 @@ def uploadfile():
 
             err_code= 820
             # send to validate (project `data_validate`)
-            send_code, send_str = send_to_validate(file_folder, file_name, user_code)
-            if send_code == 0:
+            sent_code, sent_str, info_str = send_to_validate(file_folder, file_name, user_code)
+            if sent_code == 0:
                 err_code = 0
-                add_msg_success('uploadFileSuccess', texts, file_ticket, current_user.email, send_str)
+                add_msg_success(sent_str, texts, file_ticket, current_user.email, info_str)
             else:
-                err_code+= send_code
-                user_error = send_str
-
+                err_code+= sent_code
+                user_error = add_msg_error(sent_str, texts, err_code)
 
         except Exception as e:
             try:
@@ -250,8 +251,7 @@ def uploadfile():
 
 
     if (err_code != 0):
-        msg = add_msg_error(user_error, texts, err_code)
-        logger( f"{msg} | File stage '{_file}' |{removed} Code {err_code} | Exception Error '{except_error}'." )
+        logger( f"{user_error} | File stage '{_file}' |{removed} Code {err_code} | Exception Error '{except_error}'." )
 
 
     return render_template(
