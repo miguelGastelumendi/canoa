@@ -21,7 +21,7 @@ from carranca.config import Config
 #}
 #response = requests.post('https://api.sendgrid.com/v3/mail/send', headers=headers, json=json_data)
 
-def send_email(toMail: str, textSection: str, toReplace: dict,  file2SendPath: str = None):
+def send_email(toMail: str, textSection: str, toReplace: dict, apiKey: str, file2SendPath: str = None):
     eMailTexts = get_section(textSection)
     for eMailTextsKey in eMailTexts.keys():
         for toReplaceKey in toReplace.keys():
@@ -44,7 +44,6 @@ def send_email(toMail: str, textSection: str, toReplace: dict,  file2SendPath: s
         attachment.disposition = Disposition('attachment')
         message.attachment = attachment
     try:
-        apiKey= os.environ.get('CANOA_EMAIL_API_KEY')  # mgd GIT -> x
         sendgrid_client = SendGridAPIClient(apiKey)
         response = sendgrid_client.send(message)
         return response

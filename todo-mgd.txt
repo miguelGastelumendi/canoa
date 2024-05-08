@@ -203,6 +203,13 @@
     1. Primer de upload com validação
     2. Falta limpar aquivos, email e testes
 
+2024-05-06 v α28
+    1. Teste sem path.txt
+    2. Undo apikey
+
+
+    TODO: arrumar
+
 #TODO
 
 

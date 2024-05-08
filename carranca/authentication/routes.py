@@ -17,6 +17,7 @@ from flask_login import current_user, login_user, logout_user
 from flask_login import login_required
 from carranca import db, login_manager
 from carranca.authentication import blueprint
+from carranca.config import Config
 from .forms import LoginForm, RegisterForm, NewPasswordForm, PasswordRecoveryForm, UploadFileForm
 from .models import Users, UserDataFiles
 from .util import verify_pass, hash_pass, is_user_logged
@@ -442,7 +443,7 @@ def passwordrecovery():
    tmpl_form= PasswordRecoveryForm(request.form)
    send_to= '' if is_get else get_input_text('user_email').lower()
    user= None if is_get else Users.query.filter_by(email = send_to).first()
-   # GIT -> apiKey = None if is_get else os.environ.get('CAATINGA_EMAIL_API_KEY')
+   apiKey = None if is_get else Config.EMAIL_API_KEY
 
    if is_get:
       pass
@@ -458,7 +459,7 @@ def passwordrecovery():
          url= f"http://{ip}:50051{url_for('authentication_blueprint.resetpassword', token=token)}"
 
 
-         send_email(send_to, 'emailPasswordRecovery', {'url': url} ) # GIT ->, apiKey)
+         send_email(send_to, 'emailPasswordRecovery', {'url': url}, apiKey)
          user.recover_email_token= token   # recover_email_token_at updated in trigger
          db.session.add(user)
          db.session.commit()
