@@ -442,7 +442,7 @@ def passwordrecovery():
    tmpl_form= PasswordRecoveryForm(request.form)
    send_to= '' if is_get else get_input_text('user_email').lower()
    user= None if is_get else Users.query.filter_by(email = send_to).first()
-   apiKey = None if is_get else os.environ.get('CAATINGA_EMAIL_API_KEY')
+   # GIT -> apiKey = None if is_get else os.environ.get('CAATINGA_EMAIL_API_KEY')
 
    if is_get:
       pass
@@ -458,7 +458,7 @@ def passwordrecovery():
          url= f"http://{ip}:50051{url_for('authentication_blueprint.resetpassword', token=token)}"
 
 
-         send_email(send_to, 'emailPasswordRecovery', {'url': url}, apiKey)
+         send_email(send_to, 'emailPasswordRecovery', {'url': url} ) # GIT ->, apiKey)
          user.recover_email_token= token   # recover_email_token_at updated in trigger
          db.session.add(user)
          db.session.commit()
