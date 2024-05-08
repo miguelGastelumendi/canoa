@@ -2,16 +2,16 @@
 
 {% extends "./layouts/form.html.j2" %}
 
-{% block formAbove %}
+{% block frm_blc_above %}
     {% if success %}
         <div class="d-grid">
         <button type="button" class="btn formMainBtn"
             onclick="window.location.href='{{ url_for('authentication_blueprint.login') }}'">{{ gotoLogin }}</button>
         </div>
     {% endif %}
-{% endblock formAbove %}
+{% endblock frm_blc_above %}
 
-{% block formContent %}
+{% block frm_blc_content %}
     {% if not success %}
         <!-- { User Name -->
         <div class="form-group">
@@ -64,6 +64,6 @@
         </div>
 
     {% endif %}
-{% endblock formContent %}
+{% endblock frm_blc_content %}
 
 {# eof #}

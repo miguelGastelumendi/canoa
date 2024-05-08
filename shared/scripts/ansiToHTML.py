@@ -37,6 +37,8 @@ def ansi_to_html(ansi_text):
             in_escape_code = False
         elif char == "\n":
             html_text += "<br>"
+        elif char == "\r":
+            html_text += ""
         else:
             html_text += char
 
@@ -46,10 +48,11 @@ def ansi_to_html(ansi_text):
 
     return html_text
 
+
 # Example ANSI text
-ansi_text = "\x1b[37m\x1b[1mNúmero de erros: 0\x1b[33m\x1b[1mNúmero de avisos: 3\x1b[34m\x1b[1m\nTempo total de execução: 4.1 segundos\x1b[0m"
+# ansi_text = "\x1b[37m\x1b[1mNúmero de erros: 0\x1b[33m\x1b[1mNúmero de avisos: 3\x1b[34m\x1b[1m\nTempo total de execução: 4.1 segundos\x1b[0m"
 
 # Convert ANSI text to HTML
-html_text = ansi_to_html(ansi_text)
+# html_text = ansi_to_html(ansi_text)
 
-print(html_text)
+# print(html_text)

@@ -1,12 +1,31 @@
 import asyncio
-import shutil
+import re
 from os import makedirs, path
-from shared.scripts.pyHelper import path_remove_last
+import zipfile
+from shared.scripts.pyHelper import is_str_none_or_empty, path_remove_last
 from .carranca_shared_info import CarrancaSharedInfo
+from .ansiToHTML import ansi_to_html
+
+# ====================================================================
+def _find_err_and_warn(text):
+    # Define the regex pattern to find X and Y
+    pattern = r"Número de erros: (\d+)\s+Número de avisos: (\d+)"
+
+    # Search for the pattern in the text
+    match = re.search(pattern, text)
+
+    # If the pattern is found, extract X and Y
+    if match:
+        err = int(match.group(1))
+        wrn = int(match.group(2))
+        return err, wrn
+    else:
+        return None, None
+
 
 # ====================================================================
 #  This function knows all about module [data_validate]
-async def _run_validator(file_common, file_folder: str, file_name: str):
+async def _run_validator(file_common, file_folder: str):
     module = "data_validate"
     script = "main.py"
     script_name = path.join(file_common, module , script)
@@ -29,31 +48,67 @@ async def _run_validator(file_common, file_folder: str, file_name: str):
     stdout, stderr = await process.communicate()
 
     # Decode the output from bytes to string
-    stdout_str = stdout.decode()
-    stderr_str = stderr.decode()
+    stdout_str = ansi_to_html(stdout.decode())
+    stderr_str = ansi_to_html(stderr.decode())
 
     return stdout_str, stderr_str
 # -------------------------------------------------------------------
 
 # ====================================================================
 #  This function knows all about module [carranca]
-async def data_validate(file_folder: str, file_name: str, user_code: str):
+def send_to_validate(file_folder: str, file_name: str, user_code: str):
+
+    msg_str = ''
+    error_code = 0
+    code = 1
     source = path.join(file_folder, file_name)
 
-    #TODO if (working) raise Error
-    folder_common = path_remove_last(CarrancaSharedInfo.folder_channel)
-    destiny_folder = path.join(CarrancaSharedInfo.folder_channel, user_code)
-    if not path.isdir(destiny_folder):
-        makedirs(destiny_folder)
+    try:
+        folder_common = path_remove_last(CarrancaSharedInfo.folder_channel)
+        code+= 1
+        destiny_folder = path.join(CarrancaSharedInfo.folder_channel, user_code)
+        if not path.isdir(destiny_folder):
+            code+= 1
+            makedirs(destiny_folder)
 
-    destiny = path.join(destiny_folder, file_name)
-    shutil.copy2(source, destiny)
+        # check & unzip
+        code+= 1
+        msg_str= "uploadFileZip_unknown"
+        with zipfile.ZipFile(source, 'r') as zip_file:
+            if zip_file.testzip() is not None:
+                code+= 1
+                msg_str= "uploadFileZip_corrupted"
+            else:
+                code+= 2
+                msg_str = "uploadFileZip_extraction_error"
+                zip_file.extractall(destiny_folder)
 
-    stdout, stderr = await _run_validator(folder_common, destiny_folder, file_name)
+    except Exception as e:
+        error_code = code
 
-    print("Standard Output:", stdout)
-    print("Standard Error:", stderr)
-    # convert
+    if (error_code > 0):
+        return error_code, msg_str
+
+    stdout, stderr = asyncio.run(_run_validator(folder_common, destiny_folder))
+
+    msg_str = ''
+    # print("Standard Output:", stdout)
+    # print("Standard Error:", stderr)
+    code= +1
+    if is_str_none_or_empty(stderr) and is_str_none_or_empty(stdout):
+        error_code = code + 1
+
+    elif is_str_none_or_empty(stderr):
+        error_code = 0
+        msg, wrn = _find_err_and_warn(stdout)
+        msg_str= f"Quantidade de erros: {msg}, de avisos {wrn}."
+
+    else:
+        error_code = code + 2
+        msg_str = "Aguarde o resultado."
+
+    return error_code, msg_str
+
     # send e-mail
 # -------------------------------------------------------------------
 

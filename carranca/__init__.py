@@ -2,6 +2,7 @@
 """
     Equipe Canoa
 """
+# cSpell:ignore sqlalchemy
 
 from flask import Flask
 from flask_login import LoginManager

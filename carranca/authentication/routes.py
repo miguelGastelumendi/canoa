@@ -3,7 +3,7 @@
  Equipe da Canoa -- 2024
  ----------------------
  """
-# cSpell:ignore passwordrecovery recover_email_token  lastpasswordchange tmpl errorhandler assis, uploadfile, sqlalchemy
+# cSpell:ignore passwordrecovery recover_email_token  lastpasswordchange tmpl errorhandler assis, uploadfile, sqlalchemy, werkzeug
 
 import datetime
 import requests
@@ -20,14 +20,15 @@ from carranca.authentication import blueprint
 from .forms import LoginForm, RegisterForm, NewPasswordForm, PasswordRecoveryForm, UploadFileForm
 from .models import Users, UserDataFiles
 from .util import verify_pass, hash_pass, is_user_logged
+from werkzeug.utils import secure_filename
 
 from shared.scripts.email_sender import send_email
 from shared.scripts.logHelper import Log2Database
 from shared.scripts.pyHelper import current_milliseconds, is_str_none_or_empty
 from shared.scripts.textsHelper import get_section, add_msg_success, add_msg_error
 from shared.scripts.carranca_shared_info import CarrancaSharedInfo
-from shared.scripts.validate import data_validate
-import asyncio
+from shared.scripts.validate import send_to_validate
+
 
 log= Log2Database()
 
@@ -58,6 +59,7 @@ def _get_user_row():
 # get_user_row } ------------------------------------------
 
 
+
 # { Logger ================================================
 # mgd 2024.03.21
 def logger( sMsg, type = 'info', *args):
@@ -81,17 +83,62 @@ def _is_method_get():
    return is_get
 # is_method_get } -----------------------------------------
 
+# { _save_and_record ======================================
+def _save_and_record(file_obj, file_folder, file_ticket, file_ok_name):
+    task = 'saving file'
+    error_code = 0
+    task_id = 0
+    try:
+        # make unique file name
+        file_name = f"{file_ticket}_{file_ok_name}"
+
+        file_size = 0
+        file_crc32 = 0
+        _file = os.path.join(file_folder, file_name)
+        file_written = False
+
+        with open(_file, "wb") as file:
+            task_id+= 1 #1
+            file_data = file_obj.read()
+            task_id+= 1 #2
+            file_crc32 = crc32(file_data)
+            task_id+= 1 #3
+            file_size = file.write(file_data)
+            file_written = True
+
+        #save a record for this operation
+        task = 'registering file'
+        task_id= 10
+        df = UserDataFiles(
+            id_users = current_user.id
+            , file_size = file_size
+            , file_crc32 = file_crc32
+            , file_name = file_ok_name
+            , ticket = file_ticket
+        )
+        task_id+= 1 #11
+        db.session.add(df)
+        task_id+= 1 #12
+        db.session.commit()
+    except Exception as e:
+        error_code = task_id
+        logger(f"Error {task_id} while {task}, {e}")
+
+    return error_code, file_written, file_name, _file
+
+# _save_and_record } --------------------------------------
+
 # { tokenValid ============================================
 #  True when the number of days since issuance is less than
 #  or equal to `max`
 def tokenValid(time_stamp, max: int) -> bool:
-   days= (_now() - time_stamp).days
-   return 0 <= days <= max
+    days= (_now() - time_stamp).days
+    return 0 <= days <= max
 # tokenValid } --------------------------------------------
 
 # { internal_logout  ======================================
 def internal_logout():
-   logout_user()
+    logout_user()
 # internal_logout } =======================================
 
 # { get_input_text  =======================================
@@ -117,100 +164,100 @@ def route_default():
 # default route } =========================================
 
 # { upload file ============================================
+# see https://flask.palletsprojects.com/en/3.0.x/patterns/fileuploads/
 @login_required
 @blueprint.route('/uploadfile', methods= ['GET', 'POST'])
 def uploadfile():
-   msg_error = 'uploadFileError'
-   # TODO
-   route= 'uploadfile'
-   template= f'accounts/{route}.html.j2'
-   is_get= _is_method_get()
-   logger(f'@{request.method.lower()}:/{route}')
+    # TODO
+    route= 'uploadfile'
+    template= f'accounts/{route}.html.j2'
+    is_get= _is_method_get()
+    logger(f'@{request.method.lower()}:/{route}')
 
 
-   if not is_user_logged():
-      return redirect(url_for('home_blueprint.index'))
-   ## TODO ^Func
+    if not is_user_logged():
+        return redirect(url_for('home_blueprint.index'))
+    ## TODO ^Func
 
-   err_cod = 790
-   tmpl_form= UploadFileForm(request.form)
-   texts= get_section(route)
-   file_obj= None if (is_get or not request.files) else request.files[tmpl_form.filename.id]
+    tmpl_form= UploadFileForm(request.form)
+    texts= get_section(route)
+    file_obj= None if (is_get or not request.files) else request.files[tmpl_form.filename.id]
+    file_ok_name = None if file_obj == None else secure_filename(file_obj.filename)
 
-   if is_get:
-      pass
-   elif not request.files:
-      add_msg_error(msg_error, texts, err_cod)
-   elif file_obj is None:
-      err_cod+= 1 #791
-      add_msg_error(msg_error, texts, err_cod)
-   elif is_str_none_or_empty(current_user.email):
-      err_cod+= 1 #792
-      add_msg_error(msg_error, texts, err_cod)
+    # error helpers
+    err_code = 790
+    _file = ""
+    user_error = 'uploadFileError'
+    except_error = ""
+    removed = ""
+    ve = texts["validExtensions"]
+    valid_extensions = ".zip" if is_str_none_or_empty(ve) else ve.lower()
 
-   else:
-      _file = ""
-      file_written = False
-      err_cod+= 3 #79_
-      try:
-        user_code = CarrancaSharedInfo.user_code(current_user.id)
+    # start the check!
+    if is_get:
+        err_code = 0
+    elif not request.files:
+        err_code+= 1
+    elif file_obj is None:
+        err_code+= 2
+    elif is_str_none_or_empty(current_user.email):
+        err_code+= 3
+    elif is_str_none_or_empty(file_ok_name):
+        err_code+= 4
+    elif not any(file_ok_name.lower().endswith(ext.strip()) for ext in valid_extensions.split(',')):
+        err_code+= 5
+    #elif not response.headers.get('Content-Type') == ct in valid_content_types.split(',')):
+        #err_code+= 6
+    else:
+        file_written = False
+        err_code= 800
+        try:
+            # create ticket code
+            user_code = CarrancaSharedInfo.user_code(current_user.id)
+            file_ticket = f"{user_code}_{_now().strftime('%Y-%m-%d')}_{current_milliseconds():08d}"
+            err_code+= 1 #801
+            _file = os.path.join(CarrancaSharedInfo.folder_uploaded_files, user_code)
+            file_folder = _file
+            if not os.path.isdir(_file):
+                os.makedirs(_file)
 
-        file_ticket = f"{user_code}_{_now().strftime('%Y-%m-%d')}_{current_milliseconds():08d}"
-        file_name = f"{file_ticket}_{file_obj.filename}"
+            task_id, file_written, file_name, _file = _save_and_record(file_obj, _file, file_ticket, file_ok_name)
+            if (task_id > 0):
+               raise Exception("Error persisting the file", 810 + task_id)
 
-        _file = os.path.join(CarrancaSharedInfo.folder_uploaded_files, user_code)
-        file_folder = _file
-        if not os.path.isdir(_file):
-            os.makedirs(_file)
-
-        err_cod+= 1 #794
-        file_size = 0
-        file_crc32 = 0
-        _file = os.path.join(_file, file_name)
-        with open(_file, "wb") as file:
-            err_cod+= 1 #7955
-            file_data = file_obj.read()
-            err_cod+= 1 #796
-            file_crc32 = crc32(file_data)
-            err_cod+= 1 #797
-            file_size = file.write(file_data)
-            file_written = True
+            err_code= 820
+            # send to validate (project `data_validate`)
+            send_code, send_str = send_to_validate(file_folder, file_name, user_code)
+            if send_code == 0:
+                err_code = 0
+                add_msg_success('uploadFileSuccess', texts, file_ticket, current_user.email, send_str)
+            else:
+                err_code+= send_code
+                user_error = send_str
 
 
-        #TODO: Check if file already exist
-        err_cod+= 1 #798
-        df = UserDataFiles(
-              id_users = current_user.id
-            , file_size = file_size
-            , file_crc32 = file_crc32
-            , file_name = file_obj.filename
-            , ticket = file_ticket
+        except Exception as e:
+            try:
+                except_error = str(e)
+                UserDataFiles.update(file_ticket, error_code= err_code, error_msg= except_error)
+                if file_written:
+                    os.remove(_file)
+                    removed = " File removed | "
+
+            except Exception as x:
+               logger(f"Error removing file or updating `UserDataFile` {x}", 'err')
+
+
+    if (err_code != 0):
+        msg = add_msg_error(user_error, texts, err_code)
+        logger( f"{msg} | File stage '{_file}' |{removed} Code {err_code} | Exception Error '{except_error}'." )
+
+
+    return render_template(
+        template,
+        form= tmpl_form,
+        **texts
         )
-        err_cod+= 1 #799
-        db.session.add(df)
-        err_cod+= 1 #800
-        db.session.commit()
-        err_cod+= 1 #801
-
-        asyncio.run(data_validate(file_folder, file_name, user_code))
-        err_cod+= 1 #802
-
-        add_msg_success('uploadFileSuccess', texts, file_ticket, current_user.email)
-
-      except Exception as e:
-        removed = ""
-        if file_written:
-           os.remove(_file)
-           removed = " File removed | "
-           mgs = add_msg_error(msg_error, texts, err_cod)
-           logger( f"{mgs} | File stage '{_file}' |{removed} Code {err_cod} | Error '{e}'." )
-
-
-   return render_template(
-       template,
-       form= tmpl_form,
-       **texts
-      )
 
 
 # { login =================================================

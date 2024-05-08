@@ -1,11 +1,11 @@
-{% extends "layouts/base.html" %}
+{% extends "layouts/base.html.j2" %}
 
 {% block title %} Blank Page {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block base_blc_head_css %}{% endblock base_blc_head_css %}
 
-{% block content %}
+{% block base_blc_content %}
 
     <main>
 
@@ -25,7 +25,7 @@
 
     {% include 'includes/footer.html' %}
 
-{% endblock content %}
+{% endblock base_blc_content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block base_blc_body_js %}{% endblock base_blc_body_js %}

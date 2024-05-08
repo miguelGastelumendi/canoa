@@ -12,7 +12,7 @@ Displays:
         _var_ => Variable
         _cls_ => Class
         -id-  => ID
-        Blc   => Block
+        _blc_ => Block
 
 
 mgd
@@ -20,12 +20,12 @@ mgd
 
 {% extends "./home/index.html" %}
 
-{% block content %}
+{% block base_blc_content %}
 <section>
    <div class="modal{%+ if not (dlg_var_vCentered|default(False)) %} {{dlg_cls_top}}{% endif %}" style="{{(dlg_var_style|default('display: block;'))}}" tabindex="-1" id="dlg-id-main">
       <div class="modal-dialog {{dlg_cls_size}} {%+ if dlg_var_vCentered %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dalog}}">
          <div class="modal-content dlgContent {{dlg_cls_content}}">
-            <div class="modal-header dlgHeader {{dlg_clas_header}}">
+            <div class="modal-header dlgHeader {{dlg_cls_header}}">
                <h5 class="modal-title {{dlg_cls_title}}" inert>{{ (formTitle | default('Canoa')) }}</h5>
                <button type="button"
                     class="btn-close {{dlg_cls_btnClose}}"
@@ -33,8 +33,8 @@ mgd
                     {%+ if not (dlg_var_close|default(True)) %}style='display: none;' {% endif %} aria-label="Close" id="dlg-id-hdr-btn-close"></button>
             </div>
             <div class="modal-body dlgBody {{dlg_cls_body}}">
-               {% block dlgBlcBody %}
-               {% endblock dlgBlcBody %}
+               {% block dlg_blc_body %}
+               {% endblock dlg_blc_body %}
             </div>
             <div class="modal-footer justify-content-center {{dlg_cls_footer}}">
                <button type="button" class="btn btn-primary dlgBtnClose {{dlg_cls_btnClose}}" data-bs-dismiss="modal" id="dlg-id-ftr-btn-close">{{(dlg_VarBtnText | default("OK")) }}</button>
@@ -43,20 +43,21 @@ mgd
       </div>
    </div>
 </section>
-{% endblock content %}
+{% endblock base_blc_content %}
 
-{% block javascripts %}
-{% block dlgBlcJavascript %}
-{% endblock dlgBlcJavascript %}
+{% block base_blc_body_js %}
+{% block dlg_blc_javascript %}
+{% endblock dlg_blc_javascript %}
 
 {# window.location.href = "{{ url_for('home_blueprint.index') }}" #}
 <script>
    const f = (id) => document.getElementById(id).addEventListener('click', () => {
+        window.location.href = "{{ url_for('home_blueprint.index') }}"
         history.back();
      });
    f('dlg-id-hdr-btn-close');
    f('dlg-id-ftr-btn-close');
 </script>
-{% endblock javascripts %}
+{% endblock base_blc_body_js %}
 
 {# eof #}

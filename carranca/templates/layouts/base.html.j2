@@ -1,13 +1,10 @@
 {#
-   carranca\templates\layouts\base.html
+   carranca\templates\layouts\base.html.j2
    --------------------------------
-
    The Base Template for Canoa
 
    mgd
 #}
-
-
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -29,18 +26,19 @@
         <link type="text/css" href="{{ url_for('static', filename='css/pixel.css') }}" rel="stylesheet">
         <link type="text/css" href="{{ url_for('static', filename='css/canoa.css') }}" rel="stylesheet">
 
-
-        {% block stylesheets %}{% endblock stylesheets %}
-
+        {% block base_blc_head_js %}{% endblock base_blc_head_js %}
+        {% block base_blc_head_css %}{% endblock base_blc_head_css %}
     </head>
     <body>
          <main>
-         {% block content %}{% endblock content %}
+         {% block base_blc_content %}
+         {% endblock base_blc_content %}
          </main>
-         {% block htmlHelpers %}{% endblock htmlHelpers %}
+
+         {% block base_blc_htmlHelpers %}{% endblock base_blc_htmlHelpers %}
 
          {% include 'includes/scripts.html' %}
 
-         {% block javascripts %}{% endblock javascripts %}
+         {% block base_blc_body_js %}{% endblock base_blc_body_js %}
     </body>
 </html>

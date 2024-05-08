@@ -196,9 +196,12 @@
 
 2024-05-06 v α26
     1. Environ vars must start with CANOA_
-    1. Forms fixups
+    2 Forms fixups
 
-
+2024-05-06 v α27
+    0. Refactoring dos nomes de block em flask de base.html
+    1. Primer de upload com validação
+    2. Falta limpar aquivos, email e testes
 
 #TODO
 
@@ -261,7 +264,7 @@ my_flask_app/
         js/
         img/
     templates/
-        base.html
+        base.html.j2
         index.html
         ...
 uploaded_files/

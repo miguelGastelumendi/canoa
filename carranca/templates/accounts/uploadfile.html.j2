@@ -2,16 +2,16 @@
 
 {% extends "./layouts/form.html.j2" %}
 
-{% block formAbove %}
+{% block frm_blc_above %}
     {% if msgSuccess %}
         <div class="d-grid">
         <button type="button" class="btn formMainBtn"
             onclick="window.location.href='{{ url_for('authentication_blueprint.login') }}'">{{ successButton }}</button>
         </div>
     {% endif %}
-{% endblock formAbove %}
+{% endblock frm_blc_above %}
 
-{% block formContent %}
+{% block frm_blc_content %}
     {% if not msgSuccess %}
         <div class="form-group mb-3">
         <label class="formLabel" inert for="upload_file">{{ fileLabel }}</label>
@@ -20,7 +20,7 @@
         </div>
         </div>
     {% endif %}
-{% endblock formContent %}
+{% endblock frm_blc_content %}
 
 
 {# eof #}

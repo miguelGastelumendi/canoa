@@ -4,7 +4,7 @@
 {% block wizardPageTitle %}{{ pageTitle|safe }}{% endblock %}
 
 
-{% block content %}
+{% block base_blc_content %}
    {% include 'includes/navigation.html' %}
 
    {# Wizard Template
@@ -60,13 +60,13 @@
       <!-- ==== Container end ==== -->
    </div>
    <!-- ==== Wizard end ==== -->
-{% endblock content %}
+{% endblock base_blc_content %}
 
-{% block htmlHelpers %}
+{% block base_blc_htmlHelpers %}
    {% include 'includes/modal.html' %}
-{% endblock htmlHelpers %}
+{% endblock base_blc_htmlHelpers %}
 
-{% block javascripts %}
+{% block base_blc_body_js %}
    <script src="/static/assets/js/wizard.js"></script>
-{% endblock javascripts %}
+{% endblock base_blc_body_js %}
 

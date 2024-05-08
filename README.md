@@ -29,12 +29,12 @@ Baseado em:
 - 👉 [Flask Pixel Lite](https://appseed.us/product/pixel-bootstrap/flask/) - product page
 - 👉 [Flask Pixel Lite](https://flask-pixel-lite.appseed-srv1.com/) - LIVE Deployment
 - ✅ Compatible with [LIVE Deployer](https://appseed.us/go-live/)
-  - [Deploy Flask Pixel with Drag & Drop](https://youtu.be/InVMfrzEwBQ) - `video material` 
+  - [Deploy Flask Pixel with Drag & Drop](https://youtu.be/InVMfrzEwBQ) - `video material`
 
 
 ## ✨ Start the app in `Docker`
 
-> 👉 **Step 1** - Download the code from the GH repository (using `GIT`) 
+> 👉 **Step 1** - Download the code from the GH repository (using `GIT`)
 
 ```bash
 $ git clone https://github.com/app-generator/flask-pixel.git
@@ -46,16 +46,16 @@ $ cd flask-pixel
 > 👉 **Step 2** - Start the APP in `Docker`
 
 ```bash
-$ docker-compose up --build 
+$ docker-compose up --build
 ```
 
 Visit `http://localhost:5085` in your browser. The app should be up & running.
 
-<br />  
+<br />
 
 ## ✨ How to use it
 
-> Download the code 
+> Download the code
 
 ```bash
 $ git clone https://github.com/app-generator/flask-pixel.git
@@ -64,9 +64,9 @@ $ cd flask-pixel
 
 <br />
 
-### 👉 Set Up for `Unix`, `MacOS` 
+### 👉 Set Up for `Unix`, `MacOS`
 
-> Install modules via `VENV`  
+> Install modules via `VENV`
 
 ```bash
 $ virtualenv env
@@ -91,13 +91,13 @@ $ export FLASK_ENV=development
 $ flask run
 ```
 
-At this point, the app runs at `http://127.0.0.1:5000/`. 
+At this point, the app runs at `http://127.0.0.1:5000/`.
 
 <br />
 
-### 👉 Set Up for `Windows` 
+### 👉 Set Up for `Windows`
 
-> Install modules via `VENV` (windows) 
+> Install modules via `VENV` (windows)
 
 ```
 $ virtualenv env
@@ -110,7 +110,7 @@ $ pip3 install -r requirements.txt
 > Set Up Flask Environment
 
 ```bash
-$ # CMD 
+$ # CMD
 $ set FLASK_APP=run.py
 $ set FLASK_ENV=development
 $
@@ -127,13 +127,13 @@ $ $env:FLASK_ENV = "development"
 $ flask run
 ```
 
-At this point, the app runs at `http://127.0.0.1:5000/`. 
+At this point, the app runs at `http://127.0.0.1:5000/`.
 
 <br />
 
 ### 👉 Create users
 
-By default, the app redirects guest users to authenticate. In order to access the private pages, follow this set up: 
+By default, the app redirects guest users to authenticate. In order to access the private pages, follow this set up:
 
 - Start the app via `flask run`
 - Access the `registration` page and create a new user:
@@ -166,9 +166,9 @@ The project is coded using blueprints, app factory pattern, dual configuration p
    |    |    |-- routes.py                  # Define app routes
    |    |
    |    |-- authentication/                 # Handles auth routes (login and register)
-   |    |    |-- routes.py                  # Define authentication routes  
-   |    |    |-- models.py                  # Defines models  
-   |    |    |-- forms.py                   # Define auth forms (login and register) 
+   |    |    |-- routes.py                  # Define authentication routes
+   |    |    |-- models.py                  # Defines models
+   |    |    |-- forms.py                   # Define auth forms (login and register)
    |    |
    |    |-- static/
    |    |    |-- <css, JS, images>          # CSS files, Javascripts files
@@ -182,7 +182,7 @@ The project is coded using blueprints, app factory pattern, dual configuration p
    |    |    |
    |    |    |-- layouts/                   # Master pages
    |    |    |    |-- base-fullscreen.html  # Used by Authentication pages
-   |    |    |    |-- base.html             # Used by common pages
+   |    |    |    |-- base.html.j2             # Used by common pages
    |    |    |
    |    |    |-- accounts/                  # Authentication pages
    |    |    |    |-- login.html            # Login page
@@ -192,7 +192,7 @@ The project is coded using blueprints, app factory pattern, dual configuration p
    |    |         |-- index.html            # Index page
    |    |         |-- 404-page.html         # 404 page
    |    |         |-- *.html                # All other pages
-   |    |    
+   |    |
    |  config.py                             # Set up the app
    |    __init__.py                         # Initialize the app
    |

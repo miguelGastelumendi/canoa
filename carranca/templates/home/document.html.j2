@@ -14,13 +14,13 @@
 
 {% extends "/layouts/dialog.html.j2" %}
 
-{% block stylesheets %}
+{% block base_blc_head_css %}
 {{ documentStyle | safe }}
-{% endblock stylesheets %}
+{% endblock base_blc_head_css %}
 
 
-{% block dlgBlcBody %}
+{% block dlg_blc_body %}
 {{ documentBody | safe }}
-{% endblock dlgBlcBody %}
+{% endblock dlg_blc_body %}
 
 {# eof #}

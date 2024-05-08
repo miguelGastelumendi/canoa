@@ -1,11 +1,11 @@
-{% extends "layouts/base.html" %}
+{% extends "layouts/base.html.j2" %}
 
 
-{% block content %}
+{% block base_blc_content %}
    {% include 'includes/navigation.html' %}
-{% endblock content %}
+{% endblock base_blc_content %}
 
-{% block javascripts %}
+{% block base_blc_body_js %}
    <script>
       function logout(){ if (confirm("Confirma sair de Canoa?")) window.location.href="./logout"; }
       function working(text){ alert(text) }
@@ -15,4 +15,4 @@
       }
    setTimeout(()=> display(), 500);
 </script>
-{% endblock javascripts %}
+{% endblock base_blc_body_js %}

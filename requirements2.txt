@@ -9,9 +9,8 @@ pandas #carranca\home\dbquery.py (listed in requirements.txt but...)
 plotly #carranca\home\dbquery.py (listed in requirements.txt but...)
 ## escape  depreciated from flask, use markupsafe => fixed inf `carranca\home\helper.py`
 ## Markup not found in carranca\home\routes.pys
-numpy_financial #carranca\home\ui_projectEnd.py
 beautifulsoup4 #carranca\home\htmlHelper.py mgd
 
-# Caating Need,
+# Canoa Needs,
 Jinja2 # update ==3.0.2
 pipreqs

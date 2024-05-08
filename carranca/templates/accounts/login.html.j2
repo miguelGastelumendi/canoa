@@ -3,7 +3,7 @@
 {% set dlg_var_close= False %}
 {% extends "./layouts/form.html.j2" %}
 
-{% block formContent %}
+{% block frm_blc_content %}
 
 <!-- { User Name -->
 <div class="form-group">
@@ -40,9 +40,9 @@
    <!-- RememberMe } -->
 </div>
 <!-- RememberMe & ForgotPw } -->
-{% endblock formContent %}
+{% endblock frm_blc_content %}
 
-{% block formBelow %}
+{% block frm_blc_below %}
 <div class="row no-gutters mt-3">
    <div class="col-6">
       <a href="docs/privacyPolicy" class="formLink">{{ privacyPolicy }}</a>
@@ -57,5 +57,5 @@
       <a href="{{ url_for('authentication_blueprint.register') }}" class="formLink">{{ gotoRegister }}</a>
    </div>
 </div>
-{% endblock formBelow %}
+{% endblock frm_blc_below %}
 {# eof #}

@@ -18,6 +18,20 @@ class UserDataFiles(db.Model):
     file_crc32 = db.Column(db.Integer)
     file_name = db.Column(db.String(100))
     ticket = db.Column(db.String(40))
+    error_code = db.Column(db.Integer)
+    error_msg = db.Column(db.String(200))
+
+    def update(uTicket, **kwargs):
+        try:
+            record_to_update = db.session.query(UserDataFiles).filter_by(ticket= uTicket).first()
+            if record_to_update:
+                for attr, value in kwargs.items():
+                    setattr(record_to_update, attr, value)
+
+            db.session.commit()
+        except Exception as e:
+            print( f"Cannot update {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}.")
+
 
 
 class Users(db.Model, UserMixin):
