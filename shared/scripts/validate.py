@@ -28,7 +28,7 @@ def _find_err_and_warn(text):
 async def _run_validator(file_common, file_folder: str):
     module = "data_validate"
     script = "main.py"
-    script_name = path.join(file_common, module , script)
+    script_name = path.join(file_common, module, script)
     script_command = [
         "python3",
         script_name,
@@ -39,10 +39,16 @@ async def _run_validator(file_common, file_folder: str):
         "--debug",
     ]
 
+
     # Run the script command asynchronously
-    process = await asyncio.create_subprocess_exec(
-        *script_command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-    )
+    script= " ".join(script_command)
+    try:
+        process = await asyncio.create_subprocess_exec(
+            *script_command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
+    except Exception as e:
+        print(f"Error running {script}: {e}")
+        return '', 'Internal Error'
 
     # Wait for the process to complete
     stdout, stderr = await process.communicate()
