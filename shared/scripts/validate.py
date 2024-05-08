@@ -46,12 +46,14 @@ async def _run_validator(file_common, file_folder: str):
         process = await asyncio.create_subprocess_exec(
             *script_command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
+
+        # Wait for the process to complete
+        stdout, stderr = await process.communicate()
+
     except Exception as e:
         print(f"Error running {script}: {e}")
         return '', 'Internal Error'
 
-    # Wait for the process to complete
-    stdout, stderr = await process.communicate()
 
     # Decode the output from bytes to string
     stdout_str = ansi_to_html(stdout.decode())
