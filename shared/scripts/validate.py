@@ -97,16 +97,15 @@ def send_to_validate(source_folder: str, file_name: str, user_code: str):
 
     except:
         error_code = code
-        return error_code, msg_str, ""
+        return error_code, msg_str, "", ""
 
 
     # Run the validator
     result = ""
+    info_str = ''
     try:
         code= 10
         stdout, stderr = asyncio.run(_run_validator(folder_common, destiny_folder))
-
-        info_str = ''
         code+= 1
         report = path.join(destiny_folder, 'report.pdf')
         file_pdf = change_file_ext(file_name, '.pdf')

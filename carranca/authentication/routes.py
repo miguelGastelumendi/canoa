@@ -233,7 +233,7 @@ def uploadfile():
             sent_code, sent_str, info_str, file_result = send_to_validate(file_folder, file_name, user_code)
             if sent_code != 0:
                 err_code+= sent_code
-                user_error = add_msg_error(sent_str, texts, err_code)
+                user_error = sent_str
 
             elif send_email(current_user.email, "emailUploadedFile", {'url': 'miguel'}, file_result, "application/pdf"):
                 err_code = 0
@@ -241,9 +241,11 @@ def uploadfile():
 
             else:
                 err_code= 830
-                user_error = add_msg_error("uploadFileError", texts, err_code)
+                user_error = "uploadFileError"
+
 
         except Exception as e:
+            err_code = 890
             try:
                 except_error = str(e)
                 UserDataFiles.update(file_ticket, error_code= err_code, error_msg= except_error)
@@ -256,7 +258,8 @@ def uploadfile():
 
 
     if (err_code != 0):
-        logger( f"{user_error} | File stage '{_file}' |{removed} Code {err_code} | Exception Error '{except_error}'." )
+        show_error = add_msg_error(user_error, texts, err_code)
+        logger( f"{show_error} | File stage '{_file}' |{removed} Code {err_code} | Exception Error '{except_error}'." )
 
 
     return render_template(

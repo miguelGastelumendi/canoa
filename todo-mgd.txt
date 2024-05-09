@@ -210,12 +210,11 @@
 2024-05-08 v α29
     1. Several improvements on UploadFile
 
-
 2024-05-09 v α30
     1. Versão beta do validador
 
-
-
+2024-05-09 v α31
+    1. Versão beta2 do validador
 
 #TODO
 
