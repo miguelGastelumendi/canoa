@@ -207,10 +207,15 @@
     1. Teste sem path.txt
     2. Undo apikey
 
-2024-05-086 v α29
+2024-05-08 v α29
     1. Several improvements on UploadFile
 
-    TODO: arrumar
+
+2024-05-09 v α30
+    1. Versão beta do validador
+
+
+
 
 #TODO
 
