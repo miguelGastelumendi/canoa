@@ -235,12 +235,12 @@ def uploadfile():
                 err_code+= sent_code
                 user_error = sent_str
 
-            elif send_email(current_user.email, "emailUploadedFile", {'url': 'miguel'}, file_result, "application/pdf"):
+            elif send_email(current_user.email, "emailUploadedFile", {'url': 'miguel'}, file_result, "text/html"): # "application/pdf"):
                 err_code = 0
                 add_msg_success("uploadFileSuccess", texts, file_ticket, current_user.email, info_str)
 
             else:
-                err_code= 830
+                err_code= 880
                 user_error = "uploadFileError"
 
 

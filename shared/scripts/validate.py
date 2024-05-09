@@ -103,13 +103,17 @@ def send_to_validate(source_folder: str, file_name: str, user_code: str):
     # Run the validator
     result = ""
     info_str = ''
+    result_ext = ".html"
     try:
         code= 10
-        stdout, stderr = asyncio.run(_run_validator(folder_common, destiny_folder))
+        try:
+            stdout, stderr = asyncio.run(_run_validator(folder_common, destiny_folder))
+        except:
+            pass
         code+= 1
-        report = path.join(destiny_folder, 'report.pdf')
-        file_pdf = change_file_ext(file_name, '.pdf')
-        result = path.join(source_folder, file_pdf)
+        report = path.join(destiny_folder, f"report{result_ext}")
+        file = change_file_ext(file_name, '.html')
+        result = path.join(source_folder, file)
         if path.exists(report):
             code+= 1
             shutil.copy(report, result)
@@ -121,7 +125,7 @@ def send_to_validate(source_folder: str, file_name: str, user_code: str):
     except:
         error_code = code
 
-    shutil.rmtree(destiny_folder)
+    #shutil.rmtree(destiny_folder)
     msg_str = "uploadFileSuccess" if error_code == 0 else "uploadFileProcessError"
     return error_code, msg_str, info_str, result
 

@@ -216,6 +216,10 @@
 2024-05-09 v α31
     1. Versão beta2 do validador
 
+2024-05-09 v α32
+    1. Versão beta3 do validador
+
+
 #TODO
 
 
