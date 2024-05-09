@@ -230,13 +230,18 @@ def uploadfile():
 
             err_code= 820
             # send to validate (project `data_validate`)
-            sent_code, sent_str, info_str = send_to_validate(file_folder, file_name, user_code)
-            if sent_code == 0:
-                err_code = 0
-                add_msg_success(sent_str, texts, file_ticket, current_user.email, info_str)
-            else:
+            sent_code, sent_str, info_str, file_result = send_to_validate(file_folder, file_name, user_code)
+            if sent_code != 0:
                 err_code+= sent_code
                 user_error = add_msg_error(sent_str, texts, err_code)
+
+            elif send_email(current_user.email, "emailUploadedFile", {'url': 'miguel'}, file_result, "application/pdf"):
+                err_code = 0
+                add_msg_success("uploadFileSuccess", texts, file_ticket, current_user.email, info_str)
+
+            else:
+                err_code= 830
+                user_error = add_msg_error("uploadFileError", texts, err_code)
 
         except Exception as e:
             try:
@@ -443,7 +448,6 @@ def passwordrecovery():
    tmpl_form= PasswordRecoveryForm(request.form)
    send_to= '' if is_get else get_input_text('user_email').lower()
    user= None if is_get else Users.query.filter_by(email = send_to).first()
-   apiKey = None if is_get else Config.EMAIL_API_KEY
 
    if is_get:
       pass
@@ -458,8 +462,7 @@ def passwordrecovery():
          ip= requests.get('https://checkip.amazonaws.com').text.strip()
          url= f"http://{ip}:50051{url_for('authentication_blueprint.resetpassword', token=token)}"
 
-
-         send_email(send_to, 'emailPasswordRecovery', {'url': url}, apiKey)
+         send_email(send_to, 'emailPasswordRecovery', {'url': url})
          user.recover_email_token= token   # recover_email_token_at updated in trigger
          db.session.add(user)
          db.session.commit()

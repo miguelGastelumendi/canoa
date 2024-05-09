@@ -16,13 +16,16 @@ def path_remove_last(dir: str) -> str:
     return short_dir
 
 
+def change_file_ext(file: str, ext: str):
+    root, _ = path.splitext(file)
+    new_file= root + ext
+    return new_file
+
+
 def is_str_none_or_empty(s: str) -> bool:
    return True if (s is None) or (s + "").strip() == "" else False
 
 def current_milliseconds():
-    # now = datetime.now()
-    # midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    # return (now - midnight).microseconds // 1000
     return time.time_ns() // 1_000_000
 
 def to_base(number, base):

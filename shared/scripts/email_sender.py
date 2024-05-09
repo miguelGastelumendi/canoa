@@ -21,7 +21,7 @@ from carranca.config import Config
 #}
 #response = requests.post('https://api.sendgrid.com/v3/mail/send', headers=headers, json=json_data)
 
-def send_email(toMail: str, textSection: str, toReplace: dict, apiKey: str, file2SendPath: str = None):
+def send_email(toMail: str, textSection: str, toReplace: dict, file2SendPath: str = None, file2SendType: str = None):
     eMailTexts = get_section(textSection)
     for eMailTextsKey in eMailTexts.keys():
         for toReplaceKey in toReplace.keys():
@@ -39,13 +39,16 @@ def send_email(toMail: str, textSection: str, toReplace: dict, apiKey: str, file
         fileName = os.path.basename(file2SendPath)
         attachment = Attachment()
         attachment.file_content = FileContent(encoded)
-        attachment.file_type = FileType('Microsoft Excel 2007+')
+        attachment.file_type = FileType(file2SendType) #  'Microsoft Excel 2007+', "application/pdf"
         attachment.file_name = FileName(fileName)
         attachment.disposition = Disposition('attachment')
         message.attachment = attachment
     try:
+        apiKey = Config.EMAIL_API_KEY
         sendgrid_client = SendGridAPIClient(apiKey)
         response = sendgrid_client.send(message)
         return response
     except Exception as e:
         print(e)
+
+    return None

@@ -1,10 +1,12 @@
 import asyncio
 import re
+import shutil
 from os import makedirs, path
 import zipfile
-from shared.scripts.pyHelper import is_str_none_or_empty, path_remove_last
+
+from .pyHelper import change_file_ext, path_remove_last
 from .carranca_shared_info import CarrancaSharedInfo
-from .ansiToHTML import ansi_to_html
+
 
 # ====================================================================
 def _find_err_and_warn(text):
@@ -56,9 +58,9 @@ async def _run_validator(file_common, file_folder: str):
 
 
     # Decode the output from bytes to string
-    # stdout_str = ansi_to_html(stdout.decode())
-    # stderr_str = ansi_to_html(stderr.decode())
-    stderr_str = '' if stderr.strip() else 'Some error'
+    stdout_str = stdout.decode()
+    stderr_str = stderr.decode()
+    stderr_str = '' if stderr.strip() == b'' else 'Some error'
     stdout_str = ''
 
     return stdout_str, stderr_str
@@ -66,11 +68,11 @@ async def _run_validator(file_common, file_folder: str):
 
 # ====================================================================
 #  This function knows all about module [carranca]
-def send_to_validate(file_folder: str, file_name: str, user_code: str):
+def send_to_validate(source_folder: str, file_name: str, user_code: str):
     msg_str = ''
     error_code = 0
     code = 1
-    source = path.join(file_folder, file_name)
+    source = path.join(source_folder, file_name)
 
     # Unzip file in data_tunnel folder
     try:
@@ -93,33 +95,52 @@ def send_to_validate(file_folder: str, file_name: str, user_code: str):
                 msg_str = "uploadFileZip_extraction_error"
                 zip_file.extractall(destiny_folder)
 
-    except Exception as e:
+    except:
         error_code = code
         return error_code, msg_str, ""
 
 
     # Run the validator
-    code= +1
-    stdout, stderr = asyncio.run(_run_validator(folder_common, destiny_folder))
+    result = ""
+    try:
+        code= 10
+        stdout, stderr = asyncio.run(_run_validator(folder_common, destiny_folder))
 
-    info_str = ''
-    msg_str = ''
-    code= +1
-    if is_str_none_or_empty(stderr) and is_str_none_or_empty(stdout): # nothing returned by the validator
-        error_code = code + 1
-        msg_str = "uploadFileError"
+        info_str = ''
+        code+= 1
+        report = path.join(destiny_folder, 'report.pdf')
+        file_pdf = change_file_ext(file_name, '.pdf')
+        result = path.join(source_folder, file_pdf)
+        if path.exists(report):
+            code+= 1
+            shutil.copy(report, result)
+            code = 0 if path.exists(result) else code
+        else:
+            code+= 1
 
-    elif is_str_none_or_empty(stderr): # No error
-        error_code = 0
-        msg, wrn = _find_err_and_warn(stdout)
-        info_str = f"Quantidade de erros: {msg}, de avisos {wrn}."
-        msg_str= "uploadFileSuccess"
+        error_code = code
+    except:
+        error_code = code
 
-    else:
-        error_code = 0
-        msg_str = "uploadFileWarning"
+    shutil.rmtree(destiny_folder)
+    msg_str = "uploadFileSuccess" if error_code == 0 else "uploadFileProcessError"
+    return error_code, msg_str, info_str, result
 
-    return error_code, msg_str, info_str
+    # if is_str_none_or_empty(stderr) and is_str_none_or_empty(stdout): # nothing returned by the validator
+    #     error_code = code + 1
+    #     msg_str = "uploadFileError"
+
+    # elif is_str_none_or_empty(stderr): # No error
+    #     error_code = 0
+    #     msg, wrn = _find_err_and_warn(stdout)
+    #     info_str = f"Quantidade de erros: {msg}, de avisos {wrn}."
+    #     msg_str= "uploadFileSuccess"
+
+    # else:
+    #     error_code = 0
+    #     msg_str = "uploadFileWarning"
+
+    # return error_code, msg_str, info_str
 
     # send e-mail
 # -------------------------------------------------------------------
