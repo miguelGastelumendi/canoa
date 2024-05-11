@@ -1,6 +1,9 @@
+
+
+
+
 import pandas as pd
-from sqlalchemy import create_engine
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
 from carranca import config
 import json
 

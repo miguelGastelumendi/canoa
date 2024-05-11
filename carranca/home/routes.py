@@ -13,9 +13,9 @@ from flask import render_template, redirect, url_for
 from .htmlHelper import img_filenames, img_change_path
 from carranca.home import blueprint
 from carranca.authentication.util import is_user_logged
-from shared.scripts import logHelper
-from shared.scripts.pyHelper import is_str_none_or_empty
-from shared.scripts.textsHelper import get_msg_error, get_text
+from scripts import logHelper
+from scripts.pyHelper import is_str_none_or_empty
+from scripts.textsHelper import get_msg_error, get_text
 
 log = logHelper.Log2Database()
 

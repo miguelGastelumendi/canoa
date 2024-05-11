@@ -5,8 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 from flask_login import UserMixin
 from carranca import db, login_manager
-from carranca.authentication.util import hash_pass
-
+from util import hash_pass
 
 
 class UserDataFiles(db.Model):
@@ -16,7 +15,7 @@ class UserDataFiles(db.Model):
     id_users = db.Column(db.Integer)
     file_size = db.Column(db.Integer)
     file_crc32 = db.Column(db.Integer)
-    file_name = db.Column(db.String(100))
+    file_name = db.Column(db.String(140))
     ticket = db.Column(db.String(40))
     error_code = db.Column(db.Integer)
     error_msg = db.Column(db.String(200))

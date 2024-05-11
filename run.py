@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+#cSpell:ignore SQLALCHEMY
+
 import os
 #from flask_migrate import Migrate
 from sys import exit
@@ -9,10 +11,11 @@ from carranca.config import Config, config_dict
 
 
 # WARNING: Don't run with debug turned on in production!
-DEBUG = (Config.getenv('DEBUG', 'False') == 'True')
+# mgd went to config.py  DEBUG = (Config.getenv('DEBUG', 'False') == 'True')
+#   DEBUG -> Config.DEBUG
 
 # The configuration
-get_config_mode = 'Debug' if DEBUG else 'Production'
+get_config_mode = 'Debug' if Config.DEBUG else 'Production'
 
 try:
 
@@ -26,12 +29,12 @@ app = create_app(app_config)
 host, port = app_config.SERVER_ADDRESS.split(':');
 
 
-if not DEBUG:
+if not Config.DEBUG:
     Minify(app=app, html=True, js=False, cssless=False)
 
-if DEBUG:
-    app.logger.info('DEBUG            = ' + str(DEBUG))
-    app.logger.info('Page Compression = ' + 'FALSE' if DEBUG else 'TRUE')
+if Config.DEBUG:
+    app.logger.info('DEBUG            = ' + str(Config.DEBUG))
+    app.logger.info('Page Compression = ' + 'FALSE' if Config.DEBUG else 'TRUE')
     app.logger.info('DBMS             = ' + app_config.SQLALCHEMY_DATABASE_URI)
     app.logger.info('ASSETS_ROOT      = ' + app_config.ASSETS_ROOT)
     app.logger.info('Host:Port        = ' +  f"{host}:{port}")

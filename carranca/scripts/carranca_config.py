@@ -8,7 +8,7 @@ from os import path, makedirs
 from .pyHelper import to_base, path_remove_last
 from carranca.config import Config
 
-class CarrancaSharedInfo:
+class CarrancaConfig:
 
     _shift_id = 903
     folder_html_docs = path.join(Config.basedir, "html_docs")
@@ -27,7 +27,7 @@ class CarrancaSharedInfo:
 
     """ External user code """
     def user_code(id: int) -> str:
-        return to_base(CarrancaSharedInfo._shift_id + id, 12).zfill(5)
+        return to_base(CarrancaConfig._shift_id + id, 12).zfill(5)
 
     # def user_id(code: str) -> int:
     #     return from_base(code, 12) - CaatingaConfig._shift_id

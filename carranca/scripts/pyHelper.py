@@ -4,7 +4,16 @@
  mgd 2024-04-09--27
 """
 import time
+import datetime
 from os import path
+
+# { now ===================================================
+def now():
+    """
+        current date time
+    """
+    return datetime.datetime.now()
+# now } ---------------------------------------------------
 
 
 def path_remove_last(dir: str) -> str:

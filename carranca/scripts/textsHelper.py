@@ -1,8 +1,11 @@
 """
-   texts.py
+   Equipe da Canoa -- 2024
+
+   textsHelper.py
    Retrieve ui texts item for current language
    (refactored from helper.py)
-   mgd
+   mgd 2024-04-03
+
 """
 
 # cSpell:ignore getDictResultset dbquery
