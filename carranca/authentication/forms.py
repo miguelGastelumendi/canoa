@@ -1,33 +1,20 @@
 # -*- encoding: utf-8 -*-us
 """
  Equipe da Canoa -- 2024
+ See .\carranca\home\forms.py
 
  mgd 2024-04-09,27
  ----------------------
 """
+#cSpell: ignore: wtforms
+
+
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, FileField
-from wtforms.validators import Email, DataRequired, Length, EqualTo
-
-# login and registration
-
-class LoginForm(FlaskForm):
-    username = StringField('Username',
-                     validators=[DataRequired()])
-    password = PasswordField('Password',
-                     validators=[DataRequired()])
-    remember_me = BooleanField('Remember_me')
+from wtforms import PasswordField, FileField
+from wtforms.validators import DataRequired, Length, EqualTo
 
 
-class RegisterForm(FlaskForm):
-    username = StringField('Username',
-                     validators=[DataRequired()])
-    email = StringField('Email',
-                     validators=[DataRequired(), Email()])
-    password = PasswordField('Password',
-                     validators=[DataRequired(), Length(min=6)])
-    disabled = BooleanField('Disabled')
 
 class NewPasswordForm(FlaskForm):
     password = PasswordField('Nova senha',
@@ -36,18 +23,9 @@ class NewPasswordForm(FlaskForm):
     confirm_password = PasswordField('Confirme a nova senha',
                      validators=[DataRequired(), Length(min=6)])
 
-class PasswordRecoveryForm(FlaskForm):
-    user_email = StringField('Email para envio do link',
-                             validators=[DataRequired(), Email()])
 
 class UploadFileForm(FlaskForm):
     filename = FileField('Arquivo', validators= [DataRequired()])
 
 
 #eof
-
-
-
-
-
-# eof #

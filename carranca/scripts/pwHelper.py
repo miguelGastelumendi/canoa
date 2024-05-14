@@ -2,11 +2,13 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
+#cSpell: ignore urandom pwdhash hexlify
+
 
 import os
 import hashlib
 import binascii
-from flask_login import current_user
+from flask_login import current_user, logout_user
 
 
 # Inspiration -> https://www.vitoshacademy.com/hashing-passwords-in-python/
@@ -47,4 +49,10 @@ def is_user_logged():
     return logged
 # is_user_logged } ----------------------------------------
 
+# { internal_logout  ======================================
+def internal_logout():
+    logout_user()
+    return
+
+# internal_logout } ---------------------------------------
 #eof

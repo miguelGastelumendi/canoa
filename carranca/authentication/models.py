@@ -5,7 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 from flask_login import UserMixin
 from carranca import db, login_manager
-from util import hash_pass
+from ..scripts.pwHelper import hash_pass
 
 
 class UserDataFiles(db.Model):
@@ -13,25 +13,29 @@ class UserDataFiles(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     id_users = db.Column(db.Integer)
+    file_name = db.Column(db.String(140))
     file_size = db.Column(db.Integer)
     file_crc32 = db.Column(db.Integer)
-    file_name = db.Column(db.String(140))
     ticket = db.Column(db.String(40))
+    email_sent =  db.Column(db.Boolean, default=False)
     error_code = db.Column(db.Integer)
     error_msg = db.Column(db.String(200))
 
     def update(uTicket, **kwargs):
+        result = False
         try:
             record_to_update = db.session.query(UserDataFiles).filter_by(ticket= uTicket).first()
             if record_to_update:
                 for attr, value in kwargs.items():
                     setattr(record_to_update, attr, value)
 
+            db.session.add(record_to_update)
             db.session.commit()
+            result = True
         except Exception as e:
-            print( f"Cannot update {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}.")
+            raise RuntimeError( f"Cannot update {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}.")
 
-
+        return result
 
 class Users(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -51,7 +55,7 @@ class Users(db.Model, UserMixin):
             # unpack it's value (when **kwargs is request.form, some values
             # will be a 1-element list)
             if hasattr(value, '__iter__') and not isinstance(value, str):
-                # the ,= unpack of a singleton fails PEP8 (travis flake8 test)
+                # the ,= unpack of a singleton fails PEP8 (tra_vis flake8 test)
                 value = value[0]
 
             if property == 'password':
@@ -61,7 +65,6 @@ class Users(db.Model, UserMixin):
 
     def __repr__(self):
         return str(self.username)
-
 
 @login_manager.user_loader
 def user_loader(id):

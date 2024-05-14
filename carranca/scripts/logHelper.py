@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from datetime import datetime
-import shared.scripts.dbquery as dbquery
+from .dbQuery import executeSQL
+
 class Log():
     def __init__(self, fname: str):
         self.fname = fname
@@ -16,7 +17,7 @@ class Log():
 class Log2Database():
     def logActivity2Database(self, idUsuario: str, idProjeto: str, url: str):
         try:
-            dbquery.executeSQL(f"""INSERT INTO RURALLEGAL.dbo.LogAcesso
+            executeSQL(f"""INSERT INTO RURALLEGAL.dbo.LogAcesso
     (idUsuario, Url, idProjeto)
     VALUES('{idUsuario}', '{url.replace(chr(39),chr(35))}', '{idProjeto}');
         """)

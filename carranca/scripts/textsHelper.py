@@ -8,9 +8,9 @@
 
 """
 
-# cSpell:ignore getDictResultset dbquery
+# cSpell:ignore getDictResultset dbquery connstr adaptabrasil
 
-from .dbquery import getValues, getDictResultset
+from .dbQuery import getValues, getDictResultset
 from .pyHelper import is_str_none_or_empty
 
 
@@ -40,8 +40,11 @@ msg_success= 'msgSuccess'
 def _get_select(cols: str, section: str, item: str = None):
     # use SQL lower(item) better than item.lower (use db locale)
     item_filter = "" if item is None else f" and (item_lower = lower('{item}'))"
+    # ** /!\ ******************************************************************
+    #  don't use <schema>.table_name. Must set
+    #  ALTER ROLE canoa_connstr IN DATABASE adaptabrasil SET search_path=canoa;
     query = (
-        f"select {cols} from caatinga.vw_ui_texts "
+        f"select {cols} from vw_ui_texts "
         f"where "
         f"(locale = '{user_locale}') and (section_lower = lower('{section}')){item_filter};"
     )
@@ -75,11 +78,11 @@ def _texts_init():
 
 # ======================   Public ==================
 
-# returns a dict<string, string> with the HTML info except for.. not ready, still working...
+# TODO: returns a dict<string, string> with the HTML info except for.. not ready, still working...
 def get_html(section: str) -> dict[str, str]:
     imgList = get_text('images', section);
     # filter if not is_str_none_or_empty(imgList)
-    # select item, text from vw_ui_texts v where v.section_lower = 'especificacasetor' and item not in ('image3.png',  'image4.png')
+    # select item, text from vw_ui_texts v where v.section_lower = 'html_file' and item not in ('image3.png',  'image4.png')
     query = _get_select("item, text", section)
     return getDictResultset(query)
 
@@ -91,7 +94,7 @@ def get_section(section: str) -> dict[str, str]:
 # returns text for the item/section pair. if not found, a `warning message`
 def get_text(item: str, section: str) -> str:
     text, _ = _get_row(item, section)
-    if text is None:
+    if is_str_none_or_empty(text):
         text =  msg_not_found.format(item, section)
     return text
 

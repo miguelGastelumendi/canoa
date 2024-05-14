@@ -3,7 +3,6 @@
 
 import base64
 import os
-from run import app
 from sendgrid import (SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition)
 from carranca.config import Config
 from .textsHelper import get_section
@@ -34,9 +33,9 @@ def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: s
        file2SendType =  "application/pdf"
     elif ext == '.json':
         file2SendType = 'application/json'
-    elif ext in ['.xls', 'xlsx']:
+    elif ext in ['.xls', '.xlsx']:
         file2SendType = "Microsoft Excel 2007+"
-    elif ext in ['.htm', 'html']:
+    elif ext in ['.htm', '.html']:
         file2SendType = "text/html"
     elif ext == '.txt' :
         file2SendType = "text/plain"
@@ -44,10 +43,7 @@ def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: s
         file2SendType = "text/csv"
     else:
         error = f"Unknown MIME type for extension [{ext}], cannot send email."
-        app.logger.error(error)
-        if Config.DEBUG:
-            raise ValueError(error)
-        return False
+        raise ValueError(error)
 
     if not is_str_none_or_empty(textsSection):
         texts = get_section(textsSection)
@@ -58,8 +54,8 @@ def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: s
     message = Mail(
         from_email = Config.email_originator,
         to_emails = toMail,
-        subject = texts['Subject'],
-        html_content = texts['Text'])
+        subject = texts['subject'],
+        html_content = texts['content'])
 
     task = ''
     try:
@@ -77,14 +73,14 @@ def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: s
             )
             message.attachment = attachment
 
-        task = f"sending email with subject [{message.subject}]."
+        task = f"email with subject [{message.subject}]."
         apiKey = Config.EMAIL_API_KEY
         send_grid_client = SendGridAPIClient(apiKey)
         response = send_grid_client.send(message)
         return response
     except Exception as e:
-        error = f"Error on sendGrid {task}"
-        app.logger.error(error)
+        error = f"Error on sendGrid {task} error [{e}]."
+        #app.logger.error(error)
         if Config.DEBUG:
             raise RuntimeError(error)
         return False

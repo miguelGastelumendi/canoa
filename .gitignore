@@ -37,8 +37,8 @@ test.js
 test.html
 caat/
 carranca/static/docs/
-shared/user_data/
-_rural/
+uploaded_files/
+
 
 ### Flask template
 instance/*

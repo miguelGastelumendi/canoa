@@ -11,25 +11,25 @@ from carranca.config import Config
 class CarrancaConfig:
 
     _shift_id = 903
-    folder_html_docs = path.join(Config.basedir, "html_docs")
+    path_html_docs = path.join(Config.basedir, 'html_docs')
 
     # shared scripts with data_validator
     _common = path_remove_last(Config.basedir)
-    folder_shared = path.join(("." if _common == None else _common), "shared")
-    folder_data = path.join(folder_shared,  "user_data")
-    folder_uploaded_files = path.join(folder_data, "uploaded_files")
+    path_uploaded_files = path.join(('.' if _common == None else _common), 'uploaded_files')
 
-    # folder to exchange files: folder_data_tunnel
+    # path to exchange files:
     inter_common = path_remove_last(_common)
-    folder_data_tunnel = path.join(inter_common, "data_tunnel")
-    if not path.isdir(folder_data_tunnel):
-        makedirs(folder_data_tunnel)
+    path_data_tunnel = path.join(inter_common, 'data_tunnel')
+    folder_validate_output =  'report'
 
     """ External user code """
     def user_code(id: int) -> str:
-        return to_base(CarrancaConfig._shift_id + id, 12).zfill(5)
+        """
+            maxInt -> (2**53 - 1) -> 1F FFFF FFFF FFFF -> base 21=> 14f01e5ec7fda
+        """
+        return to_base(CarrancaConfig._shift_id + id, 21).zfill(5)
 
     # def user_id(code: str) -> int:
-    #     return from_base(code, 12) - CaatingaConfig._shift_id
+    #     return from_base(code, 12) - CarrancaConfig._shift_id
 
 #eof

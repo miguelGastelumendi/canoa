@@ -1,11 +1,9 @@
 # -*- encoding: utf-8 -*-
-#cSpell:ignore SQLALCHEMY
+#cSpell:ignore SQLALCHEMY, cssless
 
-import os
-#from flask_migrate import Migrate
 from sys import exit
 from flask_minify import Minify
-from carranca import create_app, db
+from carranca import create_app
 from carranca.config import Config, config_dict
 
 
