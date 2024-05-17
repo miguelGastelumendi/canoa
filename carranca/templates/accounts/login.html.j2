@@ -48,13 +48,13 @@
       <a href="docs/privacyPolicy" class="formLink">{{ privacyPolicy }}</a>
    </div>
    <div class="col-6 text-right">
-      <a href="{{ url_for('authentication_blueprint.passwordrecovery') }}" class="formLink">{{ forgotPassword }}</a>
+      {# <a href="{{ public_route('passwordrecovery') }}" class="formLink">{{ forgotPassword }}</a> BUG2 #}
    </div>
    <div class="col-6">
       <a href="docs/termsOfUse" class="formLink">{{ termsOfUse }}</a>
    </div>
    <div class="col-6 text-right">
-      <a href="{{ url_for('authentication_blueprint.register') }}" class="formLink">{{ gotoRegister }}</a>
+      {# <a href="{{ public_route('register') }}" class="formLink">{{ gotoRegister }}</a> #}
    </div>
 </div>
 {% endblock frm_blc_below %}

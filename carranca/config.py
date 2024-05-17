@@ -7,7 +7,7 @@
 # cSpell:ignore  SQLALCHEMY,
 
 from os import path, getenv as os_getenv
-from .scripts.pyHelper import is_str_none_or_empty
+from .scripts.py_helper import is_str_none_or_empty
 
 class Config():
 
@@ -36,7 +36,7 @@ Config.EMAIL_API_KEY = Config.getenv('EMAIL_API_KEY')
 Config.SQLALCHEMY_DATABASE_URI = Config.getenv('SQLALCHEMY_DATABASE_URI')
 Config.ASSETS_ROOT = Config.getenv('ASSETS_ROOT', '/static/assets')
 Config.SERVER_ADDRESS = Config.getenv('SERVER_ADDRESS', '0.0.0.0:5000')
-Config.DEBUG = False; #(Config.getenv('DEBUG', 'False') == 'True')   # from run.py 2024.05.10
+#Config.DEBUG = Config.getenv('DEBUG', 'False') == 'True'   # from run.py 2024.05.10
 
 if (Config.SQLALCHEMY_DATABASE_URI == '') or (Config.EMAIL_API_KEY == ''):
     exit("Verifique se as variáveis de ambiente estão definidas.")

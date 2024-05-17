@@ -14,3 +14,5 @@ beautifulsoup4 #carranca\home\htmlHelper.py mgd
 # Canoa Needs,
 Jinja2 # update ==3.0.2
 pipreqs
+
+

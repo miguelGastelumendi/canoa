@@ -5,7 +5,7 @@
 """
 
 from os import path, makedirs
-from .pyHelper import to_base, path_remove_last
+from .py_helper import to_base, path_remove_last
 from carranca.config import Config
 
 class CarrancaConfig:

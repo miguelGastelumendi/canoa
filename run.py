@@ -1,11 +1,14 @@
-# -*- encoding: utf-8 -*-
+"""
+ Equipe da Canoa -- 2024
+
+"""
+
 #cSpell:ignore SQLALCHEMY, cssless
 
 from sys import exit
 from flask_minify import Minify
 from carranca import create_app
 from carranca.config import Config, config_dict
-
 
 
 # WARNING: Don't run with debug turned on in production!
@@ -16,7 +19,6 @@ from carranca.config import Config, config_dict
 get_config_mode = 'Debug' if Config.DEBUG else 'Production'
 
 try:
-
     # Load the configuration using the default values
     app_config = config_dict[get_config_mode.capitalize()]
 
@@ -40,3 +42,5 @@ if Config.DEBUG:
 
 if __name__ == "__main__":
     app.run(host=host, port=int(port))
+
+#eof

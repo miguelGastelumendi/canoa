@@ -3,10 +3,10 @@
 
 import base64
 import os
-from sendgrid import (SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition)
+from sendgrid import SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition
 from carranca.config import Config
-from .textsHelper import get_section
-from ..scripts.pyHelper import is_str_none_or_empty
+from .texts_helper import get_section
+from .py_helper import is_str_none_or_empty
 
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started
 # curl --request POST \

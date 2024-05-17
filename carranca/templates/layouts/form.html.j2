@@ -26,17 +26,17 @@
     {% if msgError or msgSuccess %}
         <!-- { BackendMessage -->
         <div class="text-center text-md-center mt-md-0 mb-3">
-        <span class="font-weight-normal">
-            {% if msgError %}
-                <div class="alert alert-danger mt-3">
-                    {{ msgError | safe }}
-                </div>
-            {% elif msgSuccess %}
-                <div class="alert alert-success mt-3">
-                    {{ msgSuccess | safe }}
-                </div>
-            {% endif %}
-        </span>
+            <span class="font-weight-normal">
+                {% if msgError %}
+                    <div class="alert alert-danger mt-3">
+                        {{ msgError | safe }}
+                    </div>
+                {% elif msgSuccess %}
+                    <div class="alert alert-success mt-3">
+                        {{ msgSuccess | safe }}
+                    </div>
+                {% endif %}
+            </span>
         </div>
         <!-- BackendMessage } -->
    {% endif %}

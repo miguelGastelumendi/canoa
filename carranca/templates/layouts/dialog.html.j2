@@ -18,7 +18,7 @@ Displays:
 mgd
 #}
 
-{% extends "./home/index.html" %}
+{% extends "./layouts/base.html.j2" %}
 
 {% block base_blc_content %}
 <section>
@@ -52,7 +52,7 @@ mgd
 {# window.location.href = "{{ url_for('home_blueprint.index') }}" #}
 <script>
    const f = (id) => document.getElementById(id).addEventListener('click', () => {
-        window.location.href = "{{ url_for('home_blueprint.index') }}"
+        {# window.location.href = "{{ url_for('home_blueprint.index') }}"   #}
         history.back();
      });
    f('dlg-id-hdr-btn-close');

@@ -6,7 +6,7 @@
     {% if msgSuccess %}
         <div class="d-grid">
         <button type="button" class="btn formMainBtn"
-            onclick="window.location.href='{{ url_for('authentication_blueprint.login') }}'">{{ successButton }}</button>
+            onclick="window.location.href='{{ login_route() }}'">{{ successButton }}</button>
         </div>
     {% endif %}
 {% endblock frm_blc_above %}

@@ -219,12 +219,14 @@
 2024-05-09 v α32
     1. Versão beta3 do validador
 
-2024-05-09--14 v α33
+2024-05-09--16 v α33
     1. Versão beta4 do validador
     2. Refatorar pastas carranca\authentication e carranca\home
-        > authentication: usuário tem que estar logado
-        > home: não logado
+        > private: usuário tem que estar logado
+        > public: não logado
     3. Banco de Dados renomeado a `canoa`
+    4. Blueprint refeito (ver bp_public, bp_private)
+
 
 
 #TODO

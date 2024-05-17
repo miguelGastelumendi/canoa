@@ -1,4 +1,5 @@
 {# register.html.j2 (mgd) #}
+{# uses href= public_route() #}
 
 {% extends "./layouts/form.html.j2" %}
 
@@ -6,7 +7,7 @@
     {% if success %}
         <div class="d-grid">
         <button type="button" class="btn formMainBtn"
-            onclick="window.location.href='{{ url_for('authentication_blueprint.login') }}'">{{ gotoLogin }}</button>
+            onclick="window.location.href='{{ href('login')() }}'">{{ gotoLogin }}</button>
         </div>
     {% endif %}
 {% endblock frm_blc_above %}
@@ -59,7 +60,7 @@
             <a href="docs/privacyPolicy" class="formLink">{{ privacyPolicy }}</a>
         </div>
         <div class="col-3 text-right">
-            <a class="formLink" href="{{ url_for('authentication_blueprint.login') }}">{{ gotoLogin }}</a>
+            <a class="formLink" href="{{ href('login') }}">{{ gotoLogin }}</a>
         </div>
         </div>
 
