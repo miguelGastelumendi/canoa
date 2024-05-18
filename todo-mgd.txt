@@ -238,6 +238,8 @@
         .__init__.py.register_blueprints
     3. Pasta scripts -> helpers
 
+2024-05-16--18 v α35
+    1. Typo in base.html.j2
 
 #TODO
 
