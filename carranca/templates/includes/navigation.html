@@ -6,17 +6,17 @@
     style="height: 70px; padding: 0 !important; background-color:#ffffff7a;"
   >
     <div class="container">
-      <a class="me-lg-5" href="#" onclick="working('O menu ainda está em desenvolvimento.')">
+      <!-- <a class="me-lg-5" href="#" onclick="working('O menu ainda está em desenvolvimento.')">
         <img
           src="../../static/img/logo-login.png"
           alt="Logo Canoa"
           height="42px"
         />
-      </a>
-      <a type="button" href="./changepassword">[Mudar senha]</a>&nbsp;
-      <a type="button" href="./uploadfile">[Validar dados]</a>
-      <a href="docs/termsofuse">[Pol&iacute;tica de Privacidade]</a>
-      <a type="button" onclick= "working('Sobre Canoa, versão \u03B1 32')">[Sobre]</a>
+      </a> -->
+      <a type="button" href="{{ private_route('changepassword') }}">[Mudar senha]</a>
+      <a type="button" href="{{ private_route('uploadfile') }}">[Validar dados]</a>
+      <a type="button" href="docs/termsofuse">[Pol&iacute;tica de Privacidade]</a>
+      <a type="button" onclick= "working('Sobre Canoa, versão \u03B1 33')">[Sobre]</a>
       <a type="button" onclick= "logout()">[Sair:&nbsp;&nbsp;{{ current_user.username }}]</a>
 
       <!--
@@ -88,7 +88,7 @@
                 <div class="list-group list-group-flush">
                   <div class="d-flex align-items-center">
                     <a
-                      href="{{ url_for('authentication_blueprint.logout') }}"
+                      href="{ {  } }"
                       class="btn d-none d-lg-inline me-md-3"
                     >
                       <span class="fas fa-sign-out-alt me-2"></span>

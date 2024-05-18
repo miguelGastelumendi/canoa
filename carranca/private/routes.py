@@ -7,20 +7,21 @@
 # cSpell: ignore werkzeug uploadfile tmpl
 
 import os
-from flask import Blueprint, render_template, redirect, request, url_for
+from flask import Blueprint, render_template, request
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
+from carranca import db
 from .models import Users
 from .forms import NewPasswordForm, UploadFileForm
 from .validate import folder_must_exist, data_validate
 
-from ..scripts.pw_helper import internal_logout, hash_pass, is_user_logged
-from ..scripts.py_helper import is_same_file_name, is_str_none_or_empty
-from ..scripts.log_helper import Log2Database
-from ..scripts.texts_helper import add_msg_success, add_msg_error, get_section
-from ..scripts.routes_helpers import bp_name, base_route_private, get_input_text, get_route_data, login_route, redirect_to
-from ..scripts.carranca_config import CarrancaConfig
+from ..helpers.pw_helper import internal_logout, hash_pass, nobody_logged, someone_logged
+from ..helpers.py_helper import is_same_file_name, is_str_none_or_empty
+from ..helpers.log_helper import Log2Database
+from ..helpers.texts_helper import add_msg_success, add_msg_error, get_section
+from ..helpers.route_helper import bp_name, base_route_private, get_input_text, get_account_form_data, get_private_form_data, login_route, private_route, public_route, redirect_to
+from ..helpers.carranca_config import CarrancaConfig
 
 # === module variables ====================================
 log= Log2Database()
@@ -32,7 +33,7 @@ bp_private = Blueprint(bp_name(base_route_private), base_route_private, url_pref
 # { Logger ================================================
 # mgd 2024.03.21
 def logger(sMsg, type = 'info', *args) -> str:
-   logged= is_user_logged()
+   logged= someone_logged()
    idUser= current_user.id if logged else -1
    log_str= (sMsg + '').format(args) if args else sMsg
    print( log_str )
@@ -40,37 +41,36 @@ def logger(sMsg, type = 'info', *args) -> str:
 # Logger } ------------------------------------------------
 
 
-def _get_user_row():
-   user_row = None
-   if is_user_logged():
-      user_row= Users.query.filter_by(id = current_user.id).first()
-   return user_row
-
-
 # === routes =============================================
 
 @bp_private.route("/home")
 def home():
-    route = 'home'
-    if not is_user_logged():
+    """
+    `home` page is the _landing page_
+     for *users* (logged visitors).
+
+    It displays the main menu.
+    """
+
+    if not someone_logged():
         return redirect_to(login_route(), None)
 
-    template = f"{route}/home.html.j2"
-    texts = get_section(route)
+    template, _, texts = get_private_form_data('home')
 
     return render_template(
         template,
-        **texts
+        **texts,
+        private_route = private_route
     )
 
 
 @login_required
 @bp_private.route('/uploadfile', methods= ['GET', 'POST'])
 def uploadfile():
-    template, is_get, login_route, texts = get_route_data('uploadfile')
-    if login_route: # not logged, send to login
-       return redirect_to(login_route)
+    if nobody_logged():
+       return redirect_to(login_route())
 
+    template, is_get, texts = get_private_form_data('uploadfile')
     tmpl_form = UploadFileForm(request.form)
     file_obj = None if (is_get or not request.files) else request.files[tmpl_form.filename.id]
     file_name_secure = None if file_obj == None else secure_filename(file_obj.filename)
@@ -128,6 +128,7 @@ def uploadfile():
     return render_template(
         template,
         form= tmpl_form,
+        private_route= private_route,
         **texts
     )
 
@@ -140,36 +141,45 @@ def uploadfile():
 @login_required
 @bp_private.route('/changepassword', methods= ['GET','POST'])
 def changepassword():
-    template, is_get, login_route, texts = get_route_data('changepassword', 'rst_chg_password')
-    if login_route: # not logged, 401
-        return redirect_to(login_route)
+    """
+    `changepassword` page, as it's name
+    implies, allows the user to change
+    is password, for what ever reason
+    at all or none.
+    Whew! That's four lines :--)
+    """
 
+    if nobody_logged():
+       return redirect_to(login_route())
+
+    template, is_get, texts = get_account_form_data('changepassword', 'rst_chg_password')
     success = False
     password = '' if is_get else get_input_text('password')
     confirm_password = '' if is_get else get_input_text('confirm_password')
-    user = None if is_get else _get_user_row()
-    tmpl_form= None if is_get else NewPasswordForm(request.form)
+    user = None if is_get else Users.query.filter_by(id = current_user.id).first()
+    tmpl_form= NewPasswordForm(request.form)
 
     if is_get:
         pass
-
-    elif (len(password) < 6): # TODO: tmpl_form.password.validators[1].min
+    elif len(password) < 6: # TODO: tmpl_form.password.validators[1].min
         add_msg_error('invalidPassword', texts)
     elif password != confirm_password:
         add_msg_error('passwordsAreDifferent', texts)
     elif user == None:
         internal_logout()
-        return redirect_to(login_route)
+        return redirect_to(login_route())
     else: #TODO try/catch
         user.password= hash_pass(password)
-        # db.session.add(user)
-        # db.session.commit()
+        db.session.add(user)
+        db.session.commit()
         add_msg_success('chgPwSuccess', texts)
         internal_logout()
         success= True
+
     return render_template(
             template,
             form= tmpl_form,
+            public_route = public_route,
             success= success,
             **texts
         )

@@ -1,19 +1,18 @@
 {# register.html.j2 (mgd) #}
-{# uses href= public_route() #}
 
 {% extends "./layouts/form.html.j2" %}
 
 {% block frm_blc_above %}
-    {% if success %}
+    {% if msgSuccess %}
         <div class="d-grid">
-        <button type="button" class="btn formMainBtn"
-            onclick="window.location.href='{{ href('login')() }}'">{{ gotoLogin }}</button>
+            <button type="button" class="btn formMainBtn"
+                onclick="window.location.href='{{ public_route('login')() }}'">{{ gotoLogin }}</button>
         </div>
     {% endif %}
 {% endblock frm_blc_above %}
 
 {% block frm_blc_content %}
-    {% if not success %}
+    {% if not msgSuccess %}
         <!-- { User Name -->
         <div class="form-group">
         <label class="formLabel" inert for="userName">{{ userLabel }}</label>
@@ -60,7 +59,7 @@
             <a href="docs/privacyPolicy" class="formLink">{{ privacyPolicy }}</a>
         </div>
         <div class="col-3 text-right">
-            <a class="formLink" href="{{ href('login') }}">{{ gotoLogin }}</a>
+            <a class="formLink" href="{{ public_route('login') }}">{{ gotoLogin }}</a>
         </div>
         </div>
 

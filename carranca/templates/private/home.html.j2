@@ -7,7 +7,7 @@
 
 {% block base_blc_body_js %}
     <script>
-        function logout(){ if (confirm("Confirma sair de Canoa?")) window.location.href="./logout"; }
+        function logout(){ if (confirm("Confirma sair de Canoa?")) window.location.href="./logout"; } {# TODO #}
         function working(text){ alert(text) }
         function display(){
             const modal = new bootstrap.Modal(document.getElementById('startUpInfo'), { keyboard: false})
@@ -17,4 +17,4 @@
     </script>
 {% endblock base_blc_body_js %}
 
-{% eof %}
+{# eof #}

@@ -12,9 +12,9 @@ from carranca import db
 
 from .models import UserDataFiles
 from .data_validate import submit_to_data_validate
-from ..scripts.email_sender import send_email
-from ..scripts.py_helper import current_milliseconds, path_remove_last, to_base, now, now_for_user
-from ..scripts.carranca_config import CarrancaConfig
+from ..helpers.email_sender import send_email
+from ..helpers.py_helper import current_milliseconds, path_remove_last, to_base, now, now_for_user
+from ..helpers.carranca_config import CarrancaConfig
 
 
 # { folder_must_exist =====================================

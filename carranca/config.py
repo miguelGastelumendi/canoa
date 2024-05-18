@@ -7,7 +7,7 @@
 # cSpell:ignore  SQLALCHEMY,
 
 from os import path, getenv as os_getenv
-from .scripts.py_helper import is_str_none_or_empty
+from .helpers.py_helper import is_str_none_or_empty
 
 class Config():
 

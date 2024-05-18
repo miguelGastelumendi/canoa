@@ -8,9 +8,10 @@
 
 import os
 import base64
+from typing import Any
 import requests
 import secrets
-from flask import Blueprint, render_template, url_for, request
+from flask import Blueprint, render_template, request
 from flask_login import login_user
 from sqlalchemy import or_
 
@@ -18,16 +19,16 @@ from carranca import db, login_manager
 from carranca.private.forms import NewPasswordForm #this form is shared with private
 
 from .forms import LoginForm, RegisterForm, PasswordRecoveryForm
-from .html_helper import img_filenames, img_change_src_path
+from ..helpers.html_helper import img_filenames, img_change_src_path
 
 from ..private.models import Users
 
-from ..scripts import log_helper
-from ..scripts.pw_helper import internal_logout, is_user_logged, verify_pass, hash_pass
-from ..scripts.py_helper import is_str_none_or_empty, to_str, now
-from ..scripts.texts_helper import add_msg_error, add_msg_success, get_msg_error, get_text, get_section
-from ..scripts.email_sender import send_email
-from ..scripts.routes_helpers import bp_name, base_route_public, get_input_text, get_route_data, home_route, index_route, is_method_get, login_route, private_route, public_route, redirect_to
+from ..helpers import log_helper
+from ..helpers.pw_helper import internal_logout, someone_logged, verify_pass, hash_pass
+from ..helpers.py_helper import is_str_none_or_empty, to_str, now
+from ..helpers.texts_helper import add_msg_error, add_msg_success, get_msg_error, get_text, get_section
+from ..helpers.email_sender import send_email
+from ..helpers.route_helper import bp_name, base_route_public, get_input_text, get_account_form_data, home_route, index_route, is_method_get, login_route, private_route, public_route, redirect_to
 
 # === module variables ====================================
 log = log_helper.Log2Database()  # TODO app
@@ -81,72 +82,93 @@ def _is_token_valid(time_stamp, max: int) -> bool:
 
 @bp_public.route('/')
 def route_default():
-    if is_user_logged():
-      return redirect_to(index_route())
-    else:
-      return redirect_to(login_route())
+    """
+    `default` page redirects a visitor
+        according to it's status.
+            if logged -> to `home`
+            else -> to `index`.
+    """
 
+    return redirect_to(
+        home_route() if someone_logged()
+            else
+        index_route()
+    )
 
 @bp_public.route("/index")
 def index():
-    # @login_required não pode ter, index é 'livre', depende do menu
-    # if is_user_logged():
-    #     return render_template("home/index.html", pageTitle="Index")
-    # else:
-    return redirect_to(url_for('authentication_blueprint.login'))
+    """
+    `index` page is the _landing page_
+    for *visitors* (any person with access
+    to the page, public).
+
+    For now, it only redirects to the login,
+    in the near future, it can be explained here
+    about the site.
+    """
+    return redirect_to(login_route())
+
+
 
 @bp_public.route('/register', methods= ['GET', 'POST'])
 def register():
-    template, is_get, login_route, texts = get_route_data('register')
+    """
+    The `register` page can convert
+    a visitor into a user,
+    if he fills in a form correctly.
+    """
 
-    if login_route == None: #user is logged
-        return redirect_to(home_route)
+    if someone_logged():
+       return redirect_to(login_route())
 
+    def __exists_user_that(**kwargs: Any) -> bool:
+        user= Users.query.filter_by(**kwargs).first()
+        return user is not None
+
+    template, is_get, texts = get_account_form_data('register')
     tmpl_form= RegisterForm(request.form)
-    if is_get:
-        return render_template(template,
-                             success=False,
-                             form=tmpl_form,
-                             href= public_route,
-                             **texts
-                            )
 
-    #post:
-    username= get_input_text('username')
-    email= get_input_text('email')
+    if is_get: # is_post
+        pass
 
-    user= Users.query.filter_by(username_lower = username.lower()).first()
-    if user:  # user exists
-        add_msg_error('userAlreadyRegistered', texts);
-        return render_template(template,
-                            success=False,
-                            form=tmpl_form,
-                            **texts)
+    elif __exists_user_that(username_lower = get_input_text('username').lower()):
+        add_msg_error('userAlreadyRegistered', texts) if user else ''
 
-    user= Users.query.filter_by(email = email.lower()).first()
-    if user: # e-mail exists
-        add_msg_error('emailAlreadyRegistered', texts)
-        return render_template(template,
-                                success=False,
-                                form=tmpl_form,
-                                **texts)
+    elif __exists_user_that(email = get_input_text('email').lower()).first():
+        add_msg_error('emailAlreadyRegistered', texts) if user else ''
 
-   # else we can create the user not disabled ;-)
-    user= Users(**request.form, disabled = False)  # mgd2: disable como param
-    #user.disabled = False
-    db.session.add(user)
-    db.session.commit()
-    add_msg_success('welcome', texts)
+    else:
+        try:
+            user= Users(**request.form, disabled = False)  # mgd2: disable como param
+            db.session.add(user)
+            db.session.commit()
+            add_msg_success('welcome', texts)
+        except Exception as e:
+            add_msg_error('registerError', texts) if user else ''
+            # TODO Log
+
 
     return render_template(template,
-                          success=True,
-                          form=tmpl_form,
-                          **texts)
+                        form=tmpl_form,
+                        public_route= public_route,
+                        **texts)
+
 
 @bp_public.route('/login', methods= ['GET', 'POST'])
 def login():
-    template, is_get, login_route, texts = get_route_data('login')
-    if login_route is None: # logged, sent to home
+    """
+    The `login` page can be access by everyone,
+    it is *public*.
+
+    It display a Login form that serves
+    as a Menu, that gives access to
+      [forget-password],
+      [register] and
+      the usual documents.
+    """
+
+    template, is_get, texts = get_account_form_data('login')
+    if is_get and someone_logged():
        return redirect_to(home_route())
 
     tmpl_form = LoginForm(request.form)
@@ -166,12 +188,13 @@ def login():
         else:
             remember_me = to_str(request.form.get('remember_me')); # not always returns
             login_user(user, remember_me)
-            # test: confirm_login()
             return redirect_to(home_route())
 
     return render_template(
             template,
             form= tmpl_form,
+            public_route= public_route,
+            private_route= private_route,
             **texts
         )
 
@@ -184,11 +207,11 @@ def resetpassword(token= None):
         email containing a link to a form where they can enter
         and confirm their new password.
     """
-    if is_user_logged():
+    if someone_logged():
         internal_logout()
         return unauthorized_handler()
 
-    template, is_get, _, texts = get_route_data('resetpassword', 'rst_chg_password')
+    template, is_get, texts = get_account_form_data('resetpassword', 'rst_chg_password')
     success = False
     token_str = to_str(token)
     password = '' if is_get else get_input_text('password')
@@ -233,55 +256,57 @@ def resetpassword(token= None):
 
 @bp_public.route('/passwordrecovery', methods= ['GET', 'POST'])
 def passwordrecovery():
-   """"
-    Password Recovery Form
+    """"
+    *Password Recovery Form*
     This form asks for the registered email so that a link
     with a token can be sent to it.
-    *user should not be authenticated*
-   """
 
-   if is_user_logged():
-      # como é que oc chegou aqui, vai para
-      return redirect_to(private_route('changepassword')) # url_for('authentication_blueprint.changepassword'))
+    *The user should not be authenticated*
+    """
 
-   route= 'passwordrecovery'
-   template= f'accounts/{route}.html.j2'
-   is_get=  is_method_get()
-   #logger(f'@{request.method.lower()}:/{route}')
-   success = False
+    if someone_logged():
+        # como é que oc chegou aqui, vai para
+        return redirect_to(private_route('changepassword'))
 
-   texts= get_section(route)
-   tmpl_form= PasswordRecoveryForm(request.form)
-   send_to= '' if is_get else get_input_text('user_email').lower()
-   user= None if is_get else Users.query.filter_by(email = send_to).first()
+    route= 'passwordrecovery'
+    template= f'accounts/{route}.html.j2'
+    is_get=  is_method_get()
+    #logger(f'@{request.method.lower()}:/{route}')
+    success = False
 
-   if is_get:
-      pass
+    texts= get_section(route)
+    tmpl_form= PasswordRecoveryForm(request.form)
+    send_to= '' if is_get else get_input_text('user_email').lower()
+    user= None if is_get else Users.query.filter_by(email = send_to).first()
 
-   elif user == None:
-      add_msg_error('emailNotRegistered', texts)
+    if is_get:
+        pass
 
-   else:
-      code = 7 #TODO, error code
-      try:
-         token= secrets.token_urlsafe()
-         ip= requests.get('https://checkip.amazonaws.com').text.strip()
-         url= f"http://{ip}:50051{url_for('authentication_blueprint.resetpassword', token=token)}"
+    elif user == None:
+        add_msg_error('emailNotRegistered', texts)
 
-         send_email(send_to, 'emailPasswordRecovery', {'url': url})
-         user.recover_email_token= token   # recover_email_token_at updated in trigger
-         db.session.add(user)
-         db.session.commit()
-         add_msg_success('emailSent', texts)
+    else:
+        code = 7 #TODO, error code
+        try:
+            token= secrets.token_urlsafe()
+            ip= requests.get('https://checkip.amazonaws.com').text.strip()
+            url= f"http://{ip}:50051{public_route('resetpassword', token=token)}"
 
-         success = True
-      except: #TODO: log
-         add_msg_error('emailNotSent', texts)
+            send_email(send_to, 'emailPasswordRecovery', {'url': url})
+            user.recover_email_token= token   # recover_email_token_at updated in trigger
+            db.session.add(user)
+            db.session.commit()
+            add_msg_success('emailSent', texts)
 
-   return render_template(template,
-                          success= success,
-                          form= tmpl_form,
-                          **texts)
+            success = True
+        except: #TODO: log
+            add_msg_error('emailNotSent', texts)
+
+    return render_template(template,
+                            success= success,
+                            form= tmpl_form,
+                            public_route= public_route,
+                            **texts)
 
 
 @bp_public.route("/docs/<docName>")

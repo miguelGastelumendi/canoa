@@ -227,14 +227,25 @@
     3. Banco de Dados renomeado a `canoa`
     4. Blueprint refeito (ver bp_public, bp_private)
 
+2024-05-16--18 v α34
+    1. Fim refatoração de (carranca\authentication e carranca\home) a
+        > private: usuário tem que estar logado
+        > public: não logado
+        > templates.private
+    2. Blueprint refeito, ver
+        *.routes.py
+        helpers\route.py bp_public, bp_private
+        .__init__.py.register_blueprints
+    3. Pasta scripts -> helpers
 
 
 #TODO
 
-
+    - Blueprint -> array of public & private names, => one func route_for( 'page') instead of public_route
 
 
         . Se Upload der error, fechar o formulário.
+        . success= success sumir
 
       - Move DOCS path to new Caatinga.Config
 

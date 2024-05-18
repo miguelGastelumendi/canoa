@@ -7,7 +7,7 @@ import asyncio
 import shutil
 from os import  path, stat
 
-from ..scripts.py_helper import change_file_ext
+from ..helpers.py_helper import change_file_ext
 
 
 async def _run_validator(file_common: str, input_folder: str, output_folder: str, debug_validator: bool = False):

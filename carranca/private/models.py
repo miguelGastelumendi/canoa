@@ -5,7 +5,7 @@
 
 from flask_login import UserMixin
 from carranca import db, login_manager
-from ..scripts.pw_helper import hash_pass
+from ..helpers.pw_helper import hash_pass
 
 
 class UserDataFiles(db.Model):
