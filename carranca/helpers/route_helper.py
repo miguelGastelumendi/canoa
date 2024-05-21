@@ -4,7 +4,7 @@
 # Python functions to assist routes.py
 #
 # mgd 2024-05-13
-# cSpell: ignore werkzeug uploadfile tmpl
+# cSpell:ignore werkzeug uploadfile tmpl
 
 from flask import redirect, request, url_for
 from .texts_helper import get_section
@@ -14,7 +14,7 @@ from .py_helper import to_str
 
 base_route_private = 'private'
 base_route_public = 'public'
-
+public_route_reset_password = 'resetpassword'
 
 def _route(base: str, page: str, *args) -> str:
     address = f"{bp_name(base)}.{page}"
@@ -23,7 +23,7 @@ def _route(base: str, page: str, *args) -> str:
 def bp_name(base: str) -> str:
     return f"bp_{base}"
 
-def private_route(page: str, *args) -> str:
+def private_route(page: str, *args) -> str: # TODO: merge with public_to
     return _route(base_route_private, page, *args)
 
 def public_route(page: str, *args) -> str:

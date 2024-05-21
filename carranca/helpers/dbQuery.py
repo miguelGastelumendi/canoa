@@ -4,15 +4,14 @@
 
 #import pandas as pd
 from sqlalchemy import create_engine, text
-from carranca import config
-import json
+from main import app_config
+#import json
 
 engine = create_engine(
-    config.Config.SQLALCHEMY_DATABASE_URI,
-    isolation_level="READ UNCOMMITTED",
+    app_config.SQLALCHEMY_DATABASE_URI,
+    isolation_level = "READ UNCOMMITTED",
     connect_args={'connect_timeout': 600}
 )
-
 
 def executeSQL(sql):
     global engine

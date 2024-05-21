@@ -9,7 +9,6 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 login_manager = LoginManager()
 
-
 def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
@@ -38,5 +37,6 @@ def create_app(config):
     register_blueprints(app)
     configure_database(app)
     return app
+
 
 #eof

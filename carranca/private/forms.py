@@ -1,8 +1,11 @@
 # Equipe da Canoa -- 2024
-#  See .\carranca\public\forms.py
+# .\private\forms.py
+#  See .\public\forms.py
 #
+# wtforms for private processes
+
 # mgd 2024-04-09,27
-# cSpell: ignore: wtforms
+# cSpell:ignore: wtforms
 
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, FileField

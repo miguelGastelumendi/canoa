@@ -1,10 +1,12 @@
 # pylint: disable=E1101
-#cSpell: ignore sendgrid Heya
+#cSpell:ignore sendgrid Heya
 
-import base64
-import os
+from os import path
+from base64 import b64encode
+
 from sendgrid import SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition
-from carranca.config import Config
+from main import app_config
+
 from .texts_helper import get_section
 from .py_helper import is_str_none_or_empty
 
@@ -25,8 +27,9 @@ from .py_helper import is_str_none_or_empty
 #response = requests.post('https://api.sendgrid.com/v3/mail/send', headers=headers, json=json_data)
 
 def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: str = None, file2SendType: str = None):
+    from main import app
 
-    ext = os.path.splitext(file2SendPath)[1].lower()
+    ext = path.splitext(file2SendPath)[1].lower()
     if not is_str_none_or_empty(file2SendType):
         pass
     elif ext == '.pdf':
@@ -52,7 +55,7 @@ def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: s
                 texts[key] = texts[key].replace('{' + toReplaceKey + '}', toReplace[toReplaceKey])
 
     message = Mail(
-        from_email = Config.email_originator,
+        from_email = app_config.EMAIL_ORIGINATOR,
         to_emails = toMail,
         subject = texts['subject'],
         html_content = texts['content'])
@@ -60,11 +63,11 @@ def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: s
     task = ''
     try:
         if file2SendPath is not None:
-            fileName = os.path.basename(file2SendPath)
+            fileName = path.basename(file2SendPath)
             task = f"reading file [{fileName}]."
             with open(file2SendPath, 'rb') as f:
                 data = f.read()
-            encoded = base64.b64encode(data).decode()
+            encoded = b64encode(data).decode()
             attachment = Attachment(
                 file_content = FileContent(encoded),
                 file_type = FileType(file2SendType),
@@ -74,14 +77,14 @@ def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: s
             message.attachment = attachment
 
         task = f"email with subject [{message.subject}]."
-        apiKey = Config.EMAIL_API_KEY
+        apiKey = app_config.EMAIL_API_KEY
         send_grid_client = SendGridAPIClient(apiKey)
         response = send_grid_client.send(message)
         return response
     except Exception as e:
         error = f"Error on sendGrid {task} error [{e}]."
         #app.logger.error(error)
-        if Config.DEBUG:
+        if app_config.DEBUG:
             raise RuntimeError(error)
         return False
 

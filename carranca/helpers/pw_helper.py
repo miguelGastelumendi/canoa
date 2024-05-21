@@ -2,7 +2,7 @@
 #
 # Password Helpers
 #
-# cSpell: ignore urandom pwdhash hexlify
+# cSpell:ignore urandom pwdhash hexlify
 
 
 import os

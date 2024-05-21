@@ -7,19 +7,20 @@ There are two main approaches to identify the truly used packages in a refactore
 
 This method is quick but may not be entirely accurate.
 
-Step 1: Activate your project's virtual environment (if applicable).
+Step 1: Activate your project''s virtual environment (if applicable).
 Step 2: Run pip freeze > requirements.txt. This creates a new requirements.txt listing all installed packages.
 Limitation: This includes packages that might have been installed for testing or experimentation but not actually used in the current code.
 
 2. Using a dedicated tool (More Accurate):
 
-These tools analyze your project's code to identify the actual imports and dependencies.
+These tools analyze your project''s code to identify the actual imports and dependencies.
 
 Option A: pipreqs:
 
 Install pipreqs: pip install pipreqs
 Navigate to your project directory and run: pipreqs .
 This creates a requirements.txt with only the used packages.
+
 Option B: Poetry/PDM/Hatch (For future projects):
 
 Consider using these dependency management tools for new projects.

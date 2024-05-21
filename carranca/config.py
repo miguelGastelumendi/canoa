@@ -3,48 +3,82 @@
  Equipe da Canoa -- 2024
 
  mgd 2024-05-06
+ mgd 2024-05-21: Base, Debug, Production
 """
 # cSpell:ignore  SQLALCHEMY,
 
-from os import path, getenv as os_getenv
+import requests
+from hashlib import sha384
+from os import path, getenv as os_getenv, environ
 from .helpers.py_helper import is_str_none_or_empty
 
-class Config():
+# Get environment variables
+# https://flask.palletsprojects.com/en/latest/config/
+# Couldn't make work (VC seems to change venv)
+#   https://flask.palletsprojects.com/en/latest/api/#flask.Config.from_prefixed_env
 
-    def app_name() -> str:
-        return 'Canoa'
 
-    def getenv(key: str, default=None) -> str:
-        _key = None if is_str_none_or_empty(key) else f"{Config.app_name().upper()}_{key}"
+# Base Class for App Config
+# https://flask.palletsprojects.com/en/latest/config/
+class BaseConfig():
+    app_name = 'Canoa'
+    #major.minor.patch,
+    app_version =  'α 1.36' # 1.36' &beta β;
+    environ_prefix = f"{app_name.upper()}_"
+
+
+    def get_os_env(key: str, default = None) -> str:
+        _key = None if is_str_none_or_empty(key) else BaseConfig.environ_prefix
         return os_getenv(_key, default)
 
-    email_originator = "assismauro@hotmail.com"
-
-    basedir = path.abspath(path.dirname(__file__))
-
+    EMAIL_ORIGINATOR = 'assismauro@hotmail.com'
+    ROOT_FOLDER = path.abspath(path.dirname(__file__))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     SECRET_KEY = ''
     SQLALCHEMY_DATABASE_URI = ''
-    SERVER_ADDRESS = ''
+    SERVER_ADDRESS = '127.0.0.1:5000'
+    SERVER_EXTERNAL_ADDRESS = requests.get('https://checkip.amazonaws.com').text.strip()
     EMAIL_API_KEY =  ''
     DEBUG = False
+    TESTING = False
 
 
-# Configuration Environment Variables
-Config.SECRET_KEY = Config.getenv('SECRET_KEY', 'S#perS3crEt_007')
-Config.EMAIL_API_KEY = Config.getenv('EMAIL_API_KEY')
-Config.SQLALCHEMY_DATABASE_URI = Config.getenv('SQLALCHEMY_DATABASE_URI')
-Config.ASSETS_ROOT = Config.getenv('ASSETS_ROOT', '/static/assets')
-Config.SERVER_ADDRESS = Config.getenv('SERVER_ADDRESS', '0.0.0.0:5000')
-#Config.DEBUG = Config.getenv('DEBUG', 'False') == 'True'   # from run.py 2024.05.10
+#initialize BaseConfig
+def init_envvar_of_config(cfg):
+    for key, value in environ.items():
+        attribute_name = key[len(BaseConfig.environ_prefix):]
+        if not key.startswith(BaseConfig.environ_prefix):
+            pass
+        elif hasattr(cfg, attribute_name):
+            value = bool(value) if value.capitalize() in [str(True), str(False)] else value
+            setattr(cfg, attribute_name, value)
+        elif BaseConfig.DEBUG:
+            print(f"Warning: {attribute_name} is not defined in the class attributes, cannot set envvar value.")
 
-if (Config.SQLALCHEMY_DATABASE_URI == '') or (Config.EMAIL_API_KEY == ''):
-    exit("Verifique se as variáveis de ambiente estão definidas.")
+
+# Init BasicConfig
+# used for securely signing the session cookie (mgd: change every version)
+unique = f"{BaseConfig.app_name} v{BaseConfig.app_version}".encode()
+BaseConfig.SECRET_KEY = sha384(unique).hexdigest()
+
+init_envvar_of_config(BaseConfig)
+
+
+
+# Debug Config
+class DebugConfig(BaseConfig):
+    SERVER_ADDRESS = 'http://127.0.0.1:5000'
+    DEBUG = True
+
+# Production Config
+class ProductionConfig(BaseConfig):
+    DEBUG = False  #Just to be sure & need some code here
 
 # Load all possible configurations
-config_dict = {
-    'Production': Config,
-    'Debug'     : Config
+config_modes = {
+    'Production': ProductionConfig(),
+    'Debug'     : DebugConfig()
 }
 
 #eof

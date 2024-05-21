@@ -4,17 +4,17 @@
  mgd 2024-04-29
 """
 
-from os import path, makedirs
+from os import path
 from .py_helper import to_base, path_remove_last
-from carranca.config import Config
+from main import app_config
 
 class CarrancaConfig:
 
     _shift_id = 903
-    path_html_docs = path.join(Config.basedir, 'html_docs')
+    path_html_docs = path.join(app_config.ROOT_FOLDER, 'html_docs')
 
     # shared scripts with data_validator
-    _common = path_remove_last(Config.basedir)
+    _common = path_remove_last(app_config.ROOT_FOLDER)
     path_uploaded_files = path.join(('.' if _common == None else _common), 'uploaded_files')
 
     # path to exchange files:

@@ -241,6 +241,12 @@
 2024-05-16--18 v α35
     1. Typo in base.html.j2
 
+2024-05-18--21 v α36
+    1. Config.py modernizado,
+        a. DebugConfig
+        b. ProductionConfig
+    2. Módulos atualizados q nova estrutura
+
 #TODO
 
     - Blueprint -> array of public & private names, => one func route_for( 'page') instead of public_route

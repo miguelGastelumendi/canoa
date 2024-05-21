@@ -39,7 +39,7 @@ def is_same_file_name(file1: str, file2: str):
 
 
 def is_str_none_or_empty(s: str) -> bool:
-   return True if (s is None) or (s + "").strip() == "" else False
+   return True if (s is None) or (s + '').strip() == '' else False
 
 
 def to_str(s: str) -> str:

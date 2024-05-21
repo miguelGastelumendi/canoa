@@ -12,7 +12,7 @@ from carranca import db
 
 from .models import UserDataFiles
 from .data_validate import submit_to_data_validate
-from ..helpers.email_sender import send_email
+from ..helpers.email_helper import send_email
 from ..helpers.py_helper import current_milliseconds, path_remove_last, to_base, now, now_for_user
 from ..helpers.carranca_config import CarrancaConfig
 
@@ -90,14 +90,14 @@ def _save_file_and_record(task_code: int, user_id: int, file_obj, file_folder: s
 def _unzip_file(task_code: int, upload_zip_file: str, unzip_folder: str):
     """
      Unzips the file
-     error_code: 0 if ok else [10 .. ]
+     error_code: 0 if ok else [1 .. 5]
      msg_err:    a msg_err (db.ui_items)
     """
 
     msg_err = "uploadFileError"
     error_code = 0
 
-    # Unzip file in data_tunnel folder, proc_code: [1, 6]
+    # Unzip file in data_tunnel folder, task_code: [1, 6]
     task_code+= 1  #tc+1
     if not folder_must_exist(unzip_folder):
         return task_code, msg_err
@@ -172,7 +172,7 @@ def data_validate(task_code: int, current_user: any, user_code: str, file_obj,  
                 task_code+= 1 #tc+41
                 UserDataFiles.update(file_ticket, email_sent= True)
             else:
-                task_code+= 42
+                task_code+= 2
                 raise RuntimeError(error_msg)
     except Exception as e:
         error_code = task_code if error_code == 0 else error_code

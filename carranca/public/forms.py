@@ -1,15 +1,21 @@
 # Equipe da Canoa -- 2024
-#  See .\carranca\private\forms.py
-# mgd 2024-04-07
+# .\public\forms.py
+#  See .\private\forms.py
 #
-# cSpell: ignore: wtforms
+# mgd 2024-04-07
+# cSpell:ignore: wtforms
+"""
+    *wtforms* HTML forms
+    Part of Public Authentication Processes
+"""
+
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import Email, DataRequired, Length
 
 # Public forms
-# Text here ha no relevance, the ui_text table is actually used.
+# Text here have no relevance, the ui_text table is actually used.
 
 class LoginForm(FlaskForm):
     username = StringField('Username',

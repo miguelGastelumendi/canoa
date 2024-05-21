@@ -12,10 +12,10 @@ from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
 from carranca import db
-from .models import Users
 from .forms import NewPasswordForm, UploadFileForm
 from .validate import folder_must_exist, data_validate
 
+from ..public.models import Users
 from ..helpers.pw_helper import internal_logout, hash_pass, nobody_logged, someone_logged
 from ..helpers.py_helper import is_same_file_name, is_str_none_or_empty
 from ..helpers.log_helper import Log2Database
@@ -153,10 +153,9 @@ def changepassword():
        return redirect_to(login_route())
 
     template, is_get, texts = get_account_form_data('changepassword', 'rst_chg_password')
-    success = False
     password = '' if is_get else get_input_text('password')
     confirm_password = '' if is_get else get_input_text('confirm_password')
-    user = None if is_get else Users.query.filter_by(id = current_user.id).first()
+    user = None if is_get else Users.query.filter_by(id = current_user.id).first() # TODO: Login_Manager
     tmpl_form= NewPasswordForm(request.form)
 
     if is_get:
@@ -174,13 +173,11 @@ def changepassword():
         db.session.commit()
         add_msg_success('chgPwSuccess', texts)
         internal_logout()
-        success= True
 
     return render_template(
             template,
             form= tmpl_form,
             public_route = public_route,
-            success= success,
             **texts
         )
 
