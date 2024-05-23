@@ -9,11 +9,11 @@
 import os
 from flask import Blueprint, render_template, request
 from flask_login import current_user, login_required
-from werkzeug.utils import secure_filename
 
 from carranca import db
 from .forms import NewPasswordForm, UploadFileForm
-from .validate import folder_must_exist, data_validate
+from .upload_prepare import folder_must_exist, data_validate
+from .upload_file import upload_file_process
 
 from ..public.models import Users
 from ..helpers.pw_helper import internal_logout, hash_pass, nobody_logged, someone_logged
@@ -21,7 +21,7 @@ from ..helpers.py_helper import is_same_file_name, is_str_none_or_empty
 from ..helpers.log_helper import Log2Database
 from ..helpers.texts_helper import add_msg_success, add_msg_error, get_section
 from ..helpers.route_helper import bp_name, base_route_private, get_input_text, get_account_form_data, get_private_form_data, login_route, private_route, public_route, redirect_to
-from ..helpers.carranca_config import CarrancaConfig
+
 
 # === module variables ====================================
 log= Log2Database()
@@ -67,63 +67,35 @@ def home():
 @login_required
 @bp_private.route('/uploadfile', methods= ['GET', 'POST'])
 def uploadfile():
+    """
+    Throw this route, the user submits a zip file to validate.
+    If it passes the simple validations confronted in upload_file.py,
+    it is unzipped (see prepare_file.py) and
+    sent to the app data_validate (see data_validate.py).
+    It's produced report  goes to the via a e-mail and a message is
+    displayed to the user.
+    Part of Canoa `File Validation` Processes
+    """
+
     if nobody_logged():
        return redirect_to(login_route())
 
     template, is_get, texts = get_private_form_data('uploadfile')
     tmpl_form = UploadFileForm(request.form)
-    file_obj = None if (is_get or not request.files) else request.files[tmpl_form.filename.id]
-    file_name_secure = None if file_obj == None else secure_filename(file_obj.filename)
-    user_code = CarrancaConfig.user_code(current_user.id)
-    uploaded_files_path = os.path.join(CarrancaConfig.path_uploaded_files, user_code)
-    user_data_tunnel_path = os.path.join(CarrancaConfig.path_data_tunnel, user_code)
 
-    # error helpers
-    _file = ''
-    file_ticket = ''
-    upload_msg = 'uploadFileError'
-    except_error = ''
-    removed = ''
-    ve = texts["validExtensions"]
-    valid_extensions = ".zip" if is_str_none_or_empty(ve) else ve.lower()
-    task_code = 0
+    if not is_get:
+        ve = texts["validExtensions"]
+        valid_extensions = (".zip" if is_str_none_or_empty(ve) else ve.lower()).split(',')
 
-    # start the check!
-    if is_get:
-        task_code = 0
-    elif not request.files:
-        task_code+= 1
-    elif file_obj is None:
-        task_code+= 2
-    elif is_str_none_or_empty(current_user.email):
-        task_code+= 3
-    elif is_str_none_or_empty(file_name_secure):
-        task_code+= 4
-    elif not is_same_file_name(file_obj.filename, file_name_secure): #invalid name, be careful
-        task_code+= 5
-    elif len(file_name_secure) > 130: # UserDataFiles.file_name.length
-        task_code+= 6
-    elif not any(file_name_secure.lower().endswith(ext.strip()) for ext in valid_extensions.split(',')):
-        task_code+= 7
-    #elif not response.headers.get('Content-Type') == ct in valid_content_types.split(',')): #check if really zip
-        #task_code+= 8
-    elif not folder_must_exist(uploaded_files_path):
-        task_code+= 9
-    elif not folder_must_exist(os.path.join(user_data_tunnel_path, CarrancaConfig.folder_validate_output)): # create both: .\<user_code>\<report>
-        task_code+= 10
-    else:
-        task_code+= 20
-        task_code, upload_msg, file_ticket = data_validate(task_code, current_user, user_code, file_obj, file_name_secure, uploaded_files_path, user_data_tunnel_path)
+        file_obj = request.files[tmpl_form.filename.id] if request.files else None
+        task_code, file_ticket = upload_file_process(current_user, file_obj, valid_extensions)
 
-
-    if is_get:
-       pass
-    elif (task_code == 0):
-        log_msg = add_msg_success(upload_msg, texts, file_ticket, current_user.email)
-        logger( f"Uploadfile: {log_msg}." )
-    else:
-        log_msg = add_msg_error(upload_msg, texts, task_code)
-        logger( f"Uploadfile: {log_msg} | File stage '{_file}' |{removed} Code {task_code} | Exception Error '{except_error}'." )
+        if task_code == 0:
+            log_msg = add_msg_success('uploadFileSuccess', texts, file_ticket, current_user.email)
+            logger( f"Uploadfile: {log_msg}." )
+        else:
+            log_msg = add_msg_error('uploadFileError', texts, task_code)
+            logger( f"Uploadfile: {log_msg} | File stage '{_file}' |{removed} Code {task_code} | Exception Error '{except_error}'." )
 
     return render_template(
         template,

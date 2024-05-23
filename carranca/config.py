@@ -12,20 +12,15 @@ from hashlib import sha384
 from os import path, getenv as os_getenv, environ
 from .helpers.py_helper import is_str_none_or_empty
 
-# Get environment variables
-# https://flask.palletsprojects.com/en/latest/config/
-# Couldn't make work (VC seems to change venv)
-#   https://flask.palletsprojects.com/en/latest/api/#flask.Config.from_prefixed_env
-
 
 # Base Class for App Config
-# https://flask.palletsprojects.com/en/latest/config/
-class BaseConfig():
+# see https://flask.palletsprojects.com/en/latest/config/ for other attributes
+class BaseConfig:
     app_name = 'Canoa'
     #major.minor.patch,
     app_version =  'α 1.36' # 1.36' &beta β;
     environ_prefix = f"{app_name.upper()}_"
-
+    app_mode = 'None'
 
     def get_os_env(key: str, default = None) -> str:
         _key = None if is_str_none_or_empty(key) else BaseConfig.environ_prefix
@@ -37,14 +32,15 @@ class BaseConfig():
 
     SECRET_KEY = ''
     SQLALCHEMY_DATABASE_URI = ''
-    SERVER_ADDRESS = '127.0.0.1:5000'
+    SERVER_ADDRESS = ''
     SERVER_EXTERNAL_ADDRESS = requests.get('https://checkip.amazonaws.com').text.strip()
+    ASSETS_ROOT = '/static/assets'
     EMAIL_API_KEY =  ''
     DEBUG = False
     TESTING = False
 
 
-#initialize BaseConfig
+# === Init BasicConfig
 def init_envvar_of_config(cfg):
     for key, value in environ.items():
         attribute_name = key[len(BaseConfig.environ_prefix):]
@@ -56,29 +52,36 @@ def init_envvar_of_config(cfg):
         elif BaseConfig.DEBUG:
             print(f"Warning: {attribute_name} is not defined in the class attributes, cannot set envvar value.")
 
-
-# Init BasicConfig
-# used for securely signing the session cookie (mgd: change every version)
-unique = f"{BaseConfig.app_name} v{BaseConfig.app_version}".encode()
-BaseConfig.SECRET_KEY = sha384(unique).hexdigest()
-
+# Retrieve values from envvars
 init_envvar_of_config(BaseConfig)
 
+# SECRET_KEY
+# used for securely signing the session cookie (mgd: change every version)
+# https://flask.palletsprojects.com/en/latest/config/#SECRET_KEY
+if is_str_none_or_empty(BaseConfig.SECRET_KEY):
+    unique = f"{BaseConfig.app_name} v{BaseConfig.app_version}".encode()
+    BaseConfig.SECRET_KEY = sha384(unique).hexdigest()
+
+# === Available app/config modes, add yours here (extend )
+app_mode_production = 'Production' # capital P
+app_mode_debug = 'Debug' # capital D
 
 
 # Debug Config
 class DebugConfig(BaseConfig):
     SERVER_ADDRESS = 'http://127.0.0.1:5000'
     DEBUG = True
+    app_mode = app_mode_debug
 
 # Production Config
 class ProductionConfig(BaseConfig):
     DEBUG = False  #Just to be sure & need some code here
+    app_mode = app_mode_production
 
 # Load all possible configurations
 config_modes = {
-    'Production': ProductionConfig(),
-    'Debug'     : DebugConfig()
+    app_mode_production: ProductionConfig(),
+    app_mode_debug     : DebugConfig()
 }
 
 #eof

@@ -57,7 +57,7 @@ def _prepare_img_files(html_images: list[str], db_images: list[str], img_path: s
 
     # ============= Documents ============== #
     # TODO:
-    #    1. Move path to new CarrancaConfig
+    #    1. Move path to ...
     #    1. Only show Public docs if not logged.
     #    2. check if body exists else error
 
@@ -81,6 +81,7 @@ def do_display_html(docName: str):
     )  # list of img tags in HTML
 
     # TODO: check if this is the best way to get a path
+    # TODO  path_html_docs = path.join(app_config.ROOT_FOLDER, 'html_docs')
     img_path = os.path.join("\\", "static", "docs", docName, "img")
     if is_str_none_or_empty(body):
         msg = get_msg_error("documentNotFound").format(docName)

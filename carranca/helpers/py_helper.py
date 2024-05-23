@@ -1,22 +1,17 @@
 """
  Equipe da Canoa -- 2024
 
+ Some functions that I missed. Brought to Py
  mgd 2024-04-09--27
 """
 import time
 import datetime
-from os import path
+from os import path, makedirs
 
 
 def now():
     # current date time
     return datetime.datetime.now()
-
-
-def now_for_user():
-    # current date time for user
-    ##- TODO: get from ui_texts
-    return now().strftime('%d/%m/%Y às %H:%M')
 
 
 def path_remove_last(dir: str) -> str:
@@ -34,21 +29,34 @@ def change_file_ext(file: str, ext: str):
     return new_file
 
 
+def folder_must_exist(uploaded_files_folder) -> bool:
+    done = path.isdir(uploaded_files_folder)
+    try:
+        if not done:
+            makedirs(uploaded_files_folder)
+            done = True
+    except Exception as e:
+        done = False
+        #app.logger.error(f"Error creating folder {uploaded_files_folder}, {e}")
+
+    return done
+
+
 def is_same_file_name(file1: str, file2: str):
     return path.normcase(file1) == path.normcase(file2)
 
 
 def is_str_none_or_empty(s: str) -> bool:
-   return True if (s is None) or (s + '').strip() == '' else False
+   return (s is None) or ((s + '').strip() == '')
 
 
 def to_str(s: str) -> str:
-    return '' if is_str_none_or_empty(s) else s.strip()
+    return '' if is_str_none_or_empty(s) else (s + '').strip()
 
 
 def current_milliseconds():
     """
-        max -> d86400000 -> x526 5C00 -> (22)ggi.48g
+    max -> d86400000 -> x526 5C00 -> (22)ggi.48g
     """
     return time.time_ns() // 1_000_000
 

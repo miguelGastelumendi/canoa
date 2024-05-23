@@ -12,7 +12,7 @@ from carranca import db
 
 from ..helpers.py_helper import now, to_str
 from ..helpers.pw_helper import hash_pass
-from ..helpers.error_helper import SectionErrorCode
+from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.texts_helper import add_msg_error, add_msg_success
 from ..helpers.route_helper import get_account_form_data, get_input_text, public_route_reset_password
 
@@ -59,7 +59,7 @@ def do_password_reset(token):
 
         else:
             # TODO: try/catch
-            task_code = SectionErrorCode.PASSWORD_RESET
+            task_code = ModuleErrorCode.PASSWORD_RESET
             user.password = hash_pass(password)
             user.recover_email_token = None
             db.session.add(user)

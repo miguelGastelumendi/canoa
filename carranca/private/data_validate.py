@@ -58,6 +58,7 @@ async def _run_validator(file_common: str, input_folder: str, output_folder: str
 
     return stdout_str, stderr_str
 
+
 def submit_to_data_validate(task_code: int, uploaded_file_name: str, folder_common: str, validate_input_path: str, validate_output_path: str):
     """
      This function knows all about this module [carranca]

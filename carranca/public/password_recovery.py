@@ -14,7 +14,7 @@ import secrets
 
 from ..helpers.route_helper import get_account_form_data, get_input_text, public_route, public_route_reset_password
 from ..helpers.texts_helper import add_msg_error, add_msg_success
-from ..helpers.error_helper import SectionErrorCode
+from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.email_helper import send_email
 
 from .models import Users
@@ -36,7 +36,7 @@ def do_password_recovery():
         add_msg_error('emailNotRegistered', texts)
 
     else:
-        task_code = SectionErrorCode.PASSWORD_RECOVERY.value
+        task_code = ModuleErrorCode.PASSWORD_RECOVERY.value
         try:
             token= secrets.token_urlsafe()
             task_code+= 1

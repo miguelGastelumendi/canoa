@@ -27,7 +27,6 @@ from .py_helper import is_str_none_or_empty
 #response = requests.post('https://api.sendgrid.com/v3/mail/send', headers=headers, json=json_data)
 
 def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: str = None, file2SendType: str = None):
-    from main import app
 
     ext = path.splitext(file2SendPath)[1].lower()
     if not is_str_none_or_empty(file2SendType):

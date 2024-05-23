@@ -10,7 +10,8 @@
 
 from enum import Enum
 
-class SectionErrorCode(Enum):
+class ModuleErrorCode(Enum):
     # public
     PASSWORD_RECOVERY = 110
     PASSWORD_RESET = 120
+    UPLOAD_FILE_CHECK = 130

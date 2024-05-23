@@ -6,7 +6,8 @@
 """
     *Routes*
     Part of Public Authentication Processes
-    This routes are public, users _must_ not be registered
+    This routes are public, users _must_ not be logged
+    (they will be redirect or raise an error, unauthorized_handler)
 """
 from flask import Blueprint, render_template
 from carranca import login_manager
@@ -98,11 +99,11 @@ def login():
 @bp_public.route(f'/{public_route_reset_password}/<token>', methods= ['GET','POST'])
 def resetpassword(token= None):
     """
-        # mgd 2024.03.21
         Password Reset Form:
         When a user forgets their password, they will receive an
         email containing a link to a form where they can enter
         and confirm their new password.
+        mgd 2024.03.21
     """
     if someone_logged():
         internal_logout()
@@ -147,6 +148,7 @@ def access_forbidden(error):
 @bp_public.errorhandler(404)
 def not_found_error(error):
     return render_template('home/page-404.html'), 404
+
 
 @bp_public.errorhandler(500)
 def internal_error(error):

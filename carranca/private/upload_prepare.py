@@ -4,7 +4,6 @@
 # cSpell:ignore
 
 
-
 import zipfile
 import os
 from zlib import crc32
@@ -12,27 +11,11 @@ from carranca import db
 
 from .models import UserDataFiles
 from .data_validate import submit_to_data_validate
+from ..helpers.py_helper import current_milliseconds, path_remove_last, to_base, now
+from ..helpers.user_helper import now_as_text
 from ..helpers.email_helper import send_email
-from ..helpers.py_helper import current_milliseconds, path_remove_last, to_base, now, now_for_user
-from ..helpers.carranca_config import CarrancaConfig
 
 
-# { folder_must_exist =====================================
-def folder_must_exist(uploaded_files_folder) -> bool:
-    done = os.path.isdir(uploaded_files_folder)
-    try:
-        if not done:
-            os.makedirs(uploaded_files_folder)
-            done = True
-    except Exception as e:
-        done = False
-        #app.logger.error(f"Error creating folder {uploaded_files_folder}, {e}")
-
-    return done
-# folder_must_exist } -------------------------------------
-
-
-# { _save_file_and_record =================================
 def _save_file_and_record(task_code: int, user_id: int, file_obj, file_folder: str, file_ticket: str, file_name_secure: str):
     """
         Persist upload file into UserDataFiles table
@@ -83,9 +66,6 @@ def _save_file_and_record(task_code: int, user_id: int, file_obj, file_folder: s
 
     return error_code, file_full_name
 
-# _save_file_and_record } ---------------------------------
-
-# { _unzip_file ===========================================
 
 def _unzip_file(task_code: int, upload_zip_file: str, unzip_folder: str):
     """
@@ -122,9 +102,7 @@ def _unzip_file(task_code: int, upload_zip_file: str, unzip_folder: str):
 
     return error_code, msg_err
 
-# _unzip_file } -------------------------------------------
 
-# { data_validate =========================================
 def data_validate(task_code: int, current_user: any, user_code: str, file_obj,  file_name_secure: str, uploaded_files_folder: str, user_data_tunnel_path: str):
     """
         saves the file, records in user_data_file stable, submits to data validation and sends an email
@@ -142,7 +120,7 @@ def data_validate(task_code: int, current_user: any, user_code: str, file_obj,  
     # ticket or 'número de protocolo'
     ms = to_base(current_milliseconds(), 22).zfill(6)  # max ggi.48g
     file_ticket = f"{user_code}_{now().strftime('%Y-%m-%d')}_{ms}"
-    email_params = {'ticket': file_ticket, 'when': now_for_user()}
+    email_params = {'ticket': file_ticket, 'when': now_as_text()}
 
     # save the user-file to storage & register in table task 1+[0..8]
     task_code+= 0 #tc+= 0
@@ -188,5 +166,5 @@ def data_validate(task_code: int, current_user: any, user_code: str, file_obj,  
 
     return error_code, ('uploadFileSuccess' if error_code == 0 else error_msg), file_ticket
 
-# data_validate } -----------------------------------------
+
 #eof

@@ -247,6 +247,28 @@
         b. ProductionConfig
     2. Módulos atualizados q nova estrutura
 
+2024-05-18--22 v α37
+    1. run.py renomeado a main.py
+    2. main.py atualizado
+    3. Validação: nova estrutura do folder compartilhado:
+        <top-folder>
+            |- canoa
+            |   |- carranca
+            |   |- uploaded_files
+            |   :
+            |
+            |- data_validate
+            |   :
+            |
+            |- data_tunnel
+                |- <user_1>
+                |   |- data
+                |   |- report
+                |- <user_2>
+                :
+
+TODO:
+    4. dividir cada processo de validação em um módulo.
 #TODO
 
     - Blueprint -> array of public & private names, => one func route_for( 'page') instead of public_route
