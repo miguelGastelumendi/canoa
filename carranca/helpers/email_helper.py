@@ -5,7 +5,6 @@ from os import path
 from base64 import b64encode
 
 from sendgrid import SendGridAPIClient, Mail, Attachment, FileContent, FileName, FileType, Disposition
-from main import app_config
 
 from .texts_helper import get_section
 from .py_helper import is_str_none_or_empty
@@ -27,6 +26,7 @@ from .py_helper import is_str_none_or_empty
 #response = requests.post('https://api.sendgrid.com/v3/mail/send', headers=headers, json=json_data)
 
 def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: str = None, file2SendType: str = None):
+    from main import app_config
 
     ext = path.splitext(file2SendPath)[1].lower()
     if not is_str_none_or_empty(file2SendType):

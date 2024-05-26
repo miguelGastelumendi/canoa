@@ -19,10 +19,11 @@ from ..helpers.email_helper import send_email
 
 from .models import Users
 from .forms import PasswordRecoveryForm
-from  main import app_config
 
 
 def do_password_recovery():
+    from  main import app_config
+
     template, is_get, texts = get_account_form_data('passwordrecovery')
     tmpl_form = PasswordRecoveryForm(request.form)
 

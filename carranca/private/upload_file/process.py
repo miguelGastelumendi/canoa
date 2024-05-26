@@ -10,8 +10,6 @@ Performs the complete validation process:
 Part of Canoa `File Validation` Processes
 """
 
-from main import app_config
-
 from ..models import UserDataFiles
 from ...helpers.user_helper import LoggedUser
 from ...helpers.py_helper import is_str_none_or_empty, path_remove_last
@@ -27,6 +25,7 @@ from .email import email
 
 
 def process(logged_user: LoggedUser, file_obj: object, valid_ext: list[str]) -> list[int, str, str]:
+    from main import app_config
 
     def _get_params(cargo: Cargo) -> list[object, dict]:
         """

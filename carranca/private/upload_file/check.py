@@ -19,6 +19,7 @@ from .Cargo import Cargo
 
 
 def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
+    from main import app_config
 
     error_code = 0
     msg_exception = ''
@@ -31,31 +32,31 @@ def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
             task_code = 1
         elif is_str_none_or_empty(cargo.user.email):
             task_code = 2
-        elif is_str_none_or_empty(cargo.storage.uploaded_file_name):
+        elif is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
             task_code = 3
-        elif is_str_none_or_empty(cargo.storage.data_validate.file_name):
+        elif is_str_none_or_empty(cargo.storage.uploaded_file_name):
             task_code = 4
+        elif is_str_none_or_empty(cargo.storage.data_validate.file_name):
+            task_code = 5
         elif is_str_none_or_empty(cargo.storage.data_validate.file_ext):
             task_code = 5
         elif not is_same_file_name(file_obj.filename, cargo.storage.uploaded_file_name):
             # invalid name, be careful
-            task_code = 6
+            task_code = 7
         elif len(cargo.storage.uploaded_file_name) > 80:
             # UserDataFiles.file_name.length
-            task_code = 6
+            task_code = 8
         elif not any(cargo.storage.uploaded_file_name.lower().endswith(ext.strip().lower()) for ext in valid_ext):
             # lower() is to much Windows?
-            task_code = 7
+            task_code = 9
         # elif not response.headers.get('Content-Type') == ct in valid_content_types.split(',')): #check if really zip
-            # task_code+= 9
+            # task_code+= 10
         elif not folder_must_exist(cargo.storage.path.user):
-            task_code = 10
-        elif not folder_must_exist(cargo.storage.path.data_tunnel_user_read):
             task_code = 11
-        elif not folder_must_exist(cargo.storage.path.data_tunnel_user_write):
+        elif not folder_must_exist(cargo.storage.path.data_tunnel_user_read):
             task_code = 12
-        # elif not path.exists(file_obj.filename): #????
-        #     task_code = 13
+        elif not folder_must_exist(cargo.storage.path.data_tunnel_user_write):
+            task_code = 13
         else:
             task_code = 0
     except Exception as e:

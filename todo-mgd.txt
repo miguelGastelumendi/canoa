@@ -271,6 +271,10 @@
     1. Modularizar o processo de validação, ver .private/upload_file/process.py
     2. Versão beta5 do validador
 
+
+2024-05-25 v α39
+    1. Ajustes para o servidor
+
 TODO:
 #TODO
 
