@@ -11,15 +11,16 @@ from flask import Blueprint, render_template, request
 from flask_login import current_user, login_required
 
 from carranca import db
+from carranca.helpers.user_helper import LoggedUser
 from .forms import NewPasswordForm, UploadFileForm
-from .upload_prepare import folder_must_exist, data_validate
-from .upload_file import upload_file_process
 
+from .upload_file.process import process as upload_file_process
 from ..public.models import Users
 from ..helpers.pw_helper import internal_logout, hash_pass, nobody_logged, someone_logged
-from ..helpers.py_helper import is_same_file_name, is_str_none_or_empty
+from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.log_helper import Log2Database
-from ..helpers.texts_helper import add_msg_success, add_msg_error, get_section
+from ..helpers.user_helper import LoggedUser
+from ..helpers.texts_helper import add_msg_success, add_msg_error
 from ..helpers.route_helper import bp_name, base_route_private, get_input_text, get_account_form_data, get_private_form_data, login_route, private_route, public_route, redirect_to
 
 
@@ -86,16 +87,16 @@ def uploadfile():
     if not is_get:
         ve = texts["validExtensions"]
         valid_extensions = (".zip" if is_str_none_or_empty(ve) else ve.lower()).split(',')
-
+        logged_user = LoggedUser(current_user)
         file_obj = request.files[tmpl_form.filename.id] if request.files else None
-        task_code, file_ticket = upload_file_process(current_user, file_obj, valid_extensions)
+        error_code, msg_error, msg_exception, data = upload_file_process(logged_user, file_obj, valid_extensions)
 
-        if task_code == 0:
-            log_msg = add_msg_success('uploadFileSuccess', texts, file_ticket, current_user.email)
+        if error_code == 0:
+            log_msg = add_msg_success('uploadFileSuccess', texts, data.get('file_ticket'), logged_user.email)
             logger( f"Uploadfile: {log_msg}." )
         else:
-            log_msg = add_msg_error('uploadFileError', texts, task_code)
-            logger( f"Uploadfile: {log_msg} | File stage '{_file}' |{removed} Code {task_code} | Exception Error '{except_error}'." )
+            log_msg = add_msg_error(msg_error, texts, error_code)
+            #logger( f"Uploadfile: {log_msg} | File stage '{_file}' |{removed} Code {task_code} | Exception Error '{except_error}'." )
 
     return render_template(
         template,

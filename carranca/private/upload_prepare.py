@@ -141,7 +141,7 @@ def data_validate(task_code: int, current_user: any, user_code: str, file_obj,  
         if error_code == 0:
             # send to validate (project `data_validate`) 20+[0|10, 6|16]
             task_code+= 10 #tc+= 20
-            error_code, error_msg, except_msg, file_name_result = submit_to_data_validate(task_code, uploaded_zip_file, common_folder, validate_input_path, validate_output_path)
+        #    error_code, error_msg, except_msg, file_name_result = submit_to_data_validate(task_code, uploaded_zip_file, common_folder, validate_input_path, validate_output_path)
 
         if error_code == 0:
             task_code+= 20 #tc+= 40

@@ -29,15 +29,15 @@ def change_file_ext(file: str, ext: str):
     return new_file
 
 
-def folder_must_exist(uploaded_files_folder) -> bool:
-    done = path.isdir(uploaded_files_folder)
+def folder_must_exist(full_path) -> bool:
+    done = path.isdir(full_path)
     try:
         if not done:
-            makedirs(uploaded_files_folder)
+            makedirs(full_path)
             done = True
     except Exception as e:
         done = False
-        #app.logger.error(f"Error creating folder {uploaded_files_folder}, {e}")
+        #app.logger.error(f"Error creating folder {full_path}, {e}")
 
     return done
 

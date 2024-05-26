@@ -267,8 +267,11 @@
                 |- <user_2>
                 :
 
+2024-05-22--25 v α38
+    1. Modularizar o processo de validação, ver .private/upload_file/process.py
+    2. Versão beta5 do validador
+
 TODO:
-    4. dividir cada processo de validação em um módulo.
 #TODO
 
     - Blueprint -> array of public & private names, => one func route_for( 'page') instead of public_route

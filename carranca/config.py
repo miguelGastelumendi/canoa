@@ -16,14 +16,21 @@ from .helpers.py_helper import is_str_none_or_empty
 # Base Class for App Config
 # see https://flask.palletsprojects.com/en/latest/config/ for other attributes
 class BaseConfig:
+    """
+    The Base Configuration Class for the App
+    """
     app_name = 'Canoa'
     #major.minor.patch,
     app_version =  'α 1.36' # 1.36' &beta β;
-    environ_prefix = f"{app_name.upper()}_"
+    envvars_prefix = f"{app_name.upper()}_"
     app_mode = 'None'
 
+    # app `data_validate` output file name and extension
+    data_validate_file_name = 'report'
+    data_validate_file_ext = '.pdf'
+
     def get_os_env(key: str, default = None) -> str:
-        _key = None if is_str_none_or_empty(key) else BaseConfig.environ_prefix
+        _key = None if is_str_none_or_empty(key) else BaseConfig.envvars_prefix
         return os_getenv(_key, default)
 
     EMAIL_ORIGINATOR = 'assismauro@hotmail.com'
@@ -43,8 +50,8 @@ class BaseConfig:
 # === Init BasicConfig
 def init_envvar_of_config(cfg):
     for key, value in environ.items():
-        attribute_name = key[len(BaseConfig.environ_prefix):]
-        if not key.startswith(BaseConfig.environ_prefix):
+        attribute_name = key[len(BaseConfig.envvars_prefix):]
+        if not key.startswith(BaseConfig.envvars_prefix):
             pass
         elif hasattr(cfg, attribute_name):
             value = bool(value) if value.capitalize() in [str(True), str(False)] else value
@@ -69,16 +76,25 @@ app_mode_debug = 'Debug' # capital D
 
 # Debug Config
 class DebugConfig(BaseConfig):
+    """
+    The Debug Configuration Class for the App
+    """
+
     SERVER_ADDRESS = 'http://127.0.0.1:5000'
     DEBUG = True
     app_mode = app_mode_debug
 
 # Production Config
 class ProductionConfig(BaseConfig):
+    """
+    The Production Configuration Class for the App
+    """
+
     DEBUG = False  #Just to be sure & need some code here
     app_mode = app_mode_production
 
 # Load all possible configurations
+""" List[BaseConfiguration]  list of configuration modes """
 config_modes = {
     app_mode_production: ProductionConfig(),
     app_mode_debug     : DebugConfig()

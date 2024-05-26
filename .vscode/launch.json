@@ -5,10 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Flask",
+      "name": "Python: Flask Main.py",
       "type": "python",
       "request": "launch",
       "module": "flask",
+      "console": "integratedTerminal",
       "env": {
         "FLASK_APP": "main.py",
         "FLASK_DEBUG": "1"
@@ -16,7 +17,7 @@
       "args": [
         "run",
         "--no-debugger",
-        "--no-reload"
+        "--no-reload",
       ],
       "jinja": true,
       "justMyCode": true

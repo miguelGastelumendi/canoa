@@ -1,6 +1,6 @@
 # Equipe da Canoa -- 2024
 #
-# cSpell:ignore: wtforms
+# cSpell:ignore: nullable
 
 from carranca import db
 
@@ -13,9 +13,11 @@ class UserDataFiles(db.Model):
     file_size = db.Column(db.Integer)
     file_crc32 = db.Column(db.Integer)
     ticket = db.Column(db.String(40))
+    upload_start_at = db.Column(db.DateTime)
+    report_ready_at  = db.Column(db.DateTime)
     email_sent =  db.Column(db.Boolean, default=False)
-    error_code = db.Column(db.Integer)
-    error_msg = db.Column(db.String(200))
+    error_code = db.Column(db.Integer, nullable=True )
+    error_msg = db.Column(db.String(200), nullable=True)
 
     def update(uTicket, **kwargs):
         result = False
