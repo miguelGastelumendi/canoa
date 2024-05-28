@@ -275,10 +275,29 @@
 2024-05-25 v α39
     1. Ajustes para o servidor
 
+2024-05-27 v α40
+    1. Versão beta6 do validador
+    2. Ajustes data_validate para que rode sem problemas:
+        2.1 text_html, substituir asc > 126 por &entity;
+            para evitar erro em:
+            save_html_pdf_report: template = self.env.get_template(self.template_name)
+        2.2 text_html tem um script sem fechas </script>
+            para evitar erro em:
+            gera_pdf
+        2.3 `coverage` não está no requirements.txt
+    3. Ajustes para o servidor (circular import)
+
+
+2024-05-2
+    1. Email CC
+    2. Não validar aquivo sem tem dados da pasta
+
+
 TODO:
 #TODO
 
     - Blueprint -> array of public & private names, => one func route_for( 'page') instead of public_route
+
 
 
         . Se Upload der error, fechar o formulário.

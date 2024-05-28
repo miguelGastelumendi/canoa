@@ -82,4 +82,17 @@ def to_base(number, base):
 
     return result
 
+
+
+# class MyCustomDict(dict):
+#     def __getattr__(self, attr):
+#         if attr in self:
+#             return self[attr]
+#         else:
+#             raise AttributeError(f"'MyCustomDict' object has no attribute '{attr}'")
+
+# # Usage:
+# my_dict = MyCustomDict({'key1': 'value1', 'key2': 'value2'})
+
+
 # eof

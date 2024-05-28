@@ -18,6 +18,8 @@ class UserDataFiles(db.Model):
     email_sent =  db.Column(db.Boolean, default=False)
     error_code = db.Column(db.Integer, nullable=True )
     error_msg = db.Column(db.String(200), nullable=True)
+    error_text = db.Column(db.Text, nullable=True)
+    success_text = db.Column(db.Text, nullable=True)
 
     def update(uTicket, **kwargs):
         result = False

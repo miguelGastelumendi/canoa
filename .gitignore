@@ -33,8 +33,10 @@ carranca/static/assets/.temp
 
 # mgd
 *.hlp
+*.bat
 test.js
 test.html
+
 caat/
 carranca/static/docs/
 uploaded_files/

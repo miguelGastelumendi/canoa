@@ -13,18 +13,18 @@ from carranca import db
 from carranca.helpers.user_helper import LoggedUser
 from .forms import NewPasswordForm, UploadFileForm
 
-from .upload_file.process import process as upload_file_process
 from ..public.models import Users
 from ..helpers.pw_helper import internal_logout, hash_pass, nobody_logged, someone_logged
 from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.log_helper import Log2Database
+#O from ..helpers.log_helper import Log2Database
+#Od from .upload_file.process import process as upload_file_process
 from ..helpers.user_helper import LoggedUser
 from ..helpers.texts_helper import add_msg_success, add_msg_error
 from ..helpers.route_helper import bp_name, base_route_private, get_input_text, get_account_form_data, get_private_form_data, login_route, private_route, public_route, redirect_to
 
 
 # === module variables ====================================
-log= Log2Database()
+#O log= Log2Database()
 bp_private = Blueprint(bp_name(base_route_private), base_route_private, url_prefix= '')
 
 
@@ -76,6 +76,8 @@ def uploadfile():
     displayed to the user.
     Part of Canoa `File Validation` Processes
     """
+    from .upload_file.process import process as upload_file_process
+
 
     if nobody_logged():
        return redirect_to(login_route())

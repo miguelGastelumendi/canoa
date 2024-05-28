@@ -12,6 +12,16 @@ from hashlib import sha384
 from os import path, getenv as os_getenv, environ
 from .helpers.py_helper import is_str_none_or_empty
 
+from collections import UserDict
+
+# class MyCustomDict(UserDict):
+#     def __getattr__(self, attr):
+#         if attr in self.data:
+#             return self.data[attr]
+#         else:
+#             raise AttributeError(f"'MyCustomDict' object has no attribute '{attr}'")
+
+
 
 # Base Class for App Config
 # see https://flask.palletsprojects.com/en/latest/config/ for other attributes
@@ -25,8 +35,8 @@ class BaseConfig:
     envvars_prefix = f"{app_name.upper()}_"
     app_mode = 'None'
 
-    # app `data_validate` output file name and extension
-    data_validate_file_name = 'report'
+    # app `data_validate` configuration:
+    data_validate_file_name = 'data_report'
     data_validate_file_ext = '.pdf'
 
     def get_os_env(key: str, default = None) -> str:

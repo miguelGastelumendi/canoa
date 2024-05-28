@@ -20,7 +20,6 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
     Send an email to the user with the
     data_validate report attached.
     """
-
     error_code = 0
     msg_exception = ''
     task_code = 0

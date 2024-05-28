@@ -22,8 +22,13 @@ class StorageInfo():
     class _DataValidate:
         def __init__(self, data_validate: dict):
             # app `data_validate` output file name and extension
+            # see .py_helper.MyCustomDict
             self.file_name = data_validate['file_name']
             self.file_ext = data_validate['file_ext']
+            self.batch_file_name = 'run.bat'
+            self.app_name = 'data_validate'
+            self.args = "--no-spellchecker"
+
 
     class _Folder:
         # names are from the point of view of data_validate

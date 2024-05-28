@@ -18,7 +18,7 @@ def register_blueprints(app):
     #  for module_name in ('authentication', 'home'):
     #      module = import_module('carranca.{}.routes'.format(module_name))
     #      app.register_blueprint(module.blueprint)
-    from .private.routes import bp_private
+    from .private.routes import bp_private #carranca\private\routes.py", line 16
     from .public.routes import bp_public
     app.register_blueprint(bp_private)
     app.register_blueprint(bp_public)

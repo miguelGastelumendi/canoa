@@ -9,8 +9,6 @@
 """
 
 # cSpell:ignore getDictResultset dbquery connstr adaptabrasil
-
-from .dbQuery import getValues, getDictResultset
 from .py_helper import is_str_none_or_empty
 
 
@@ -42,7 +40,7 @@ sec_Success = 'secSuccess'
 
 # === local def ===========================================
 
-def _get_select(cols: str, section: str, item: str = None):
+def __get_select(cols: str, section: str, item: str = None):
     # returns Select query for the current locale, section and, eventually, for only one item
     # use SQL lower(item) better than item.lower (use db locale)
     item_filter = "" if item is None else f" and (item_lower = lower('{item}'))"
@@ -56,10 +54,15 @@ def _get_select(cols: str, section: str, item: str = None):
     )
     return query
 
+def _get_result_set(query):
+    from .dbQuery import getDictResultset
+    return getDictResultset(query)
+
 
 # returns tuple(text, title) for the item/section pair
 def _get_row(item: str, section: str) -> tuple[str, str]:
-    select = _get_select("text, title", section, item)
+    from .dbQuery import getValues
+    select = __get_select("text, title", section, item)
     result = getValues(select)
     return ("", "") if result == None else result
 
@@ -89,13 +92,13 @@ def get_html(section: str) -> dict[str, str]:
     imgList = get_text('images', section);
     # filter if not is_str_none_or_empty(imgList)
     # select item, text from vw_ui_texts v where v.section_lower = 'html_file' and item not in ('image3.png',  'image4.png')
-    query = _get_select("item, text", section)
-    return getDictResultset(query)
+    query = __get_select("item, text", section)
+    return _get_result_set(query)
 
 def get_section(section: str) -> dict[str, str]:
     # returns a dict<string, string>
-    query = _get_select("item, text", section)
-    return getDictResultset(query)
+    query = __get_select("item, text", section)
+    return _get_result_set(query)
 
 def get_text(item: str, section: str) -> str:
     # returns text for the item/section pair. if not found, a `warning message`
@@ -120,6 +123,6 @@ def get_msg_error(item: str) -> str:
     # returns text for the item/'sec_Error' pair, adds the pair to texts => texts.add( text, 'msgError')
     return add_msg_error(item)
 
-msg_not_found = _texts_init()
+msg_not_found = 'messageNotFound' #O _texts_init()
 
 # eof
