@@ -19,7 +19,7 @@ try:
     app_config = config_modes[app_mode]
 
 except KeyError:
-    exit(f"Error: Invalid <app_mode>. Expected values [{app_mode_debug}, {app_mode_production}].")
+    exit(f"Error: Invalid <app_mode>. Expected a value from [{app_mode_debug}, {app_mode_production}].")
 
 
 app = create_app(app_config)   # carranca\__init__.py 37

@@ -22,7 +22,7 @@ except KeyError:
     exit(f"Error: Invalid <app_mode>. Expected values [{app_mode_debug}, {app_mode_production}].")
 
 
-app = create_app(app_config)   # carranca\__init__.py 37
+app = create_app(app_config)   # > carranca\__init__.py 37
 """
     app.config vs app_config
     ------------------------

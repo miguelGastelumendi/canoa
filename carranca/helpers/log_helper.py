@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from datetime import datetime
-from .dbQuery import executeSQL
+
 
 class Log():
     def __init__(self, fname: str):
@@ -16,6 +16,7 @@ class Log():
 
 class Log2Database():
     def logActivity2Database(self, idUsuario: str, idProjeto: str, url: str):
+        from .dbQuery import executeSQL
         try:
             executeSQL(f"""INSERT INTO RURALLEGAL.dbo.LogAcesso
     (idUsuario, Url, idProjeto)

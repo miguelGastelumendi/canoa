@@ -1,4 +1,147 @@
+TODO:
 
+    2024-05-2
+        1. Email CC
+        2. Não validar aquivo sem tem dados da pasta
+
+--------------------------------------------------
+  Logbook
+--------------------------------------------------
+2024-05-28 v α42
+    1. Remove circular import
+
+2024-05-28 v α41
+    1. requirements.txt minimized
+
+2024-05-27 v α40
+    1. Versão beta6 do validador
+    2. Ajustes data_validate para que rode sem problemas:
+        2.1 text_html, substituir asc > 126 por &entity;
+            para evitar erro em:
+            save_html_pdf_report: template = self.env.get_template(self.template_name)
+        2.2 text_html tem um script sem fechas </script>
+            para evitar erro em:
+            gera_pdf
+        2.3 `coverage` não está no requirements.txt
+    3. Ajustes para o servidor (circular import)
+
+
+2024-05-25 v α39
+    1. Ajustes para o servidor
+
+2024-05-22--25 v α38
+    1. Modularizar o processo de validação, ver .private/upload_file/process.py
+    2. Versão beta5 do validador
+
+2024-05-18--22 v α37 (a)
+    1. run.py renomeado a main.py
+    2. main.py atualizado
+    3. Validação: nova estrutura do folder compartilhado:
+        <top-folder>
+            |- canoa
+            |   |- carranca
+            |   |- uploaded_files
+            |   :
+            |
+            |- data_validate
+            |   :
+            |
+            |- data_tunnel
+                |- <user_1>
+                |   |- data
+                |   |- report
+                |- <user_2>
+                :
+
+2024-05-18--22 v α37
+    1. run.py renomeado a main.py
+    2. main.py atualizado
+    3. Validação: nova estrutura do folder compartilhado:
+        <top-folder>
+            |- canoa
+            |   |- carranca
+            |   |- uploaded_files
+            |   :
+            |
+            |- data_validate
+            |   :
+            |
+            |- data_tunnel
+                |- <user_1>
+                |   |- data
+                |   |- report
+                |- <user_2>
+                :
+
+2024-05-18--21 v α36
+    1. Config.py modernizado,
+        a. DebugConfig
+        b. ProductionConfig
+    2. Módulos atualizados q nova estrutura
+
+2024-05-16--18 v α35
+    1. Typo in base.html.j2
+
+2024-05-16--18 v α34
+    1. Fim refatoração de (carranca\authentication e carranca\home) a
+        > private: usuário tem que estar logado
+        > public: não logado
+        > templates.private
+    2. Blueprint refeito, ver
+        *.routes.py
+        helpers\route.py bp_public, bp_private
+        .__init__.py.register_blueprints
+    3. Pasta scripts -> helpers
+
+2024-05-09--16 v α33
+    1. Versão beta4 do validador
+    2. Refatorar pastas carranca\authentication e carranca\home
+        > private: usuário tem que estar logado
+        > public: não logado
+    3. Banco de Dados renomeado a `canoa`
+    4. Blueprint refeito (ver bp_public, bp_private)
+
+2024-05-09 v α32
+    1. Versão beta3 do validador
+
+2024-05-09 v α31
+    1. Versão beta2 do validador
+
+2024-05-09 v α30
+    1. Versão beta do validador
+
+2024-05-08 v α29
+    1. Several improvements on UploadFile
+
+2024-05-07 v α28
+    1. Teste sem path.txt
+    2. Undo apikey
+
+2024-05-06 v α27
+    1. Refactoring dos nomes de block em flask de base.html
+    2. Primer de upload com validação
+    3. Falta limpar aquivos, email e testes
+
+2024-05-06 v α26
+    1.Environ vars must start with CANOA_
+    2 Forms fixups
+
+2024-05-03 v α25
+    1. Renomeado  `apps` -> carranca (font-end da canoa)
+    2. Bug no Upload solucionado (somente DB)
+       Como zlib.crc32 -> int  (32b)  na tabela e fiz a coluna file_crc::int4
+       Mas, na realdade (desde a versão 3), é um uint.
+       Ja que em Postgres não tem tipo uint mudei o tipo de dado da coluna: file_crc::bingint
+    3. Communication module with 'validate_data' started
+
+2024-05-03 v α24
+    1. Renomeado Caatinga -> Canoa
+    2. Nova imagem/ favicon
+
+
+
+
+======================
 2024-03-19
    #new template `documentDisplay.html` & refactoring.
     » Visão geral, documentDisplay.html
@@ -181,123 +324,6 @@
         5. Criar view com os dados necessários para enviar e-mail com
            o resultado da validação.
     # Mudar texto de Caatinga a Canoa
-
-2024-05-03 v α24
-    1. Renomeado Caatinga -> Canoa
-    2. Nova imagem/ favicon
-
-2024-05-03 v α25
-    1. Renomeado  `apps` -> carranca (font-end da canoa)
-    2. Bug no Upload solucionado (somente DB)
-       Como zlib.crc32 -> int  (32b)  na tabela e fiz a coluna file_crc::int4
-       Mas, na realdade (desde a versão 3), é um uint.
-       Ja que em Postgres não tem tipo uint mudei o tipo de dado da coluna: file_crc::bingint
-    3. Communication module with 'validate_data' started
-
-2024-05-06 v α26
-    1.Environ vars must start with CANOA_
-    2 Forms fixups
-
-2024-05-06 v α27
-    1. Refactoring dos nomes de block em flask de base.html
-    2. Primer de upload com validação
-    3. Falta limpar aquivos, email e testes
-
-2024-05-07 v α28
-    1. Teste sem path.txt
-    2. Undo apikey
-
-2024-05-08 v α29
-    1. Several improvements on UploadFile
-
-2024-05-09 v α30
-    1. Versão beta do validador
-
-2024-05-09 v α31
-    1. Versão beta2 do validador
-
-2024-05-09 v α32
-    1. Versão beta3 do validador
-
-2024-05-09--16 v α33
-    1. Versão beta4 do validador
-    2. Refatorar pastas carranca\authentication e carranca\home
-        > private: usuário tem que estar logado
-        > public: não logado
-    3. Banco de Dados renomeado a `canoa`
-    4. Blueprint refeito (ver bp_public, bp_private)
-
-2024-05-16--18 v α34
-    1. Fim refatoração de (carranca\authentication e carranca\home) a
-        > private: usuário tem que estar logado
-        > public: não logado
-        > templates.private
-    2. Blueprint refeito, ver
-        *.routes.py
-        helpers\route.py bp_public, bp_private
-        .__init__.py.register_blueprints
-    3. Pasta scripts -> helpers
-
-2024-05-16--18 v α35
-    1. Typo in base.html.j2
-
-2024-05-18--21 v α36
-    1. Config.py modernizado,
-        a. DebugConfig
-        b. ProductionConfig
-    2. Módulos atualizados q nova estrutura
-
-2024-05-18--22 v α37
-    1. run.py renomeado a main.py
-    2. main.py atualizado
-    3. Validação: nova estrutura do folder compartilhado:
-        <top-folder>
-            |- canoa
-            |   |- carranca
-            |   |- uploaded_files
-            |   :
-            |
-            |- data_validate
-            |   :
-            |
-            |- data_tunnel
-                |- <user_1>
-                |   |- data
-                |   |- report
-                |- <user_2>
-                :
-
-2024-05-22--25 v α38
-    1. Modularizar o processo de validação, ver .private/upload_file/process.py
-    2. Versão beta5 do validador
-
-
-2024-05-25 v α39
-    1. Ajustes para o servidor
-
-2024-05-27 v α40
-    1. Versão beta6 do validador
-    2. Ajustes data_validate para que rode sem problemas:
-        2.1 text_html, substituir asc > 126 por &entity;
-            para evitar erro em:
-            save_html_pdf_report: template = self.env.get_template(self.template_name)
-        2.2 text_html tem um script sem fechas </script>
-            para evitar erro em:
-            gera_pdf
-        2.3 `coverage` não está no requirements.txt
-    3. Ajustes para o servidor (circular import)
-
-Ajustes para o Servidor:  (circular import)
-
-2024-05-28 v α41
-    1. requirements.txt minimizado
-
-
-
-
-2024-05-2
-    1. Email CC
-    2. Não validar aquivo sem tem dados da pasta
 
 
 TODO:
