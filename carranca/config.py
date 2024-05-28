@@ -90,7 +90,7 @@ class DebugConfig(BaseConfig):
     The Debug Configuration Class for the App
     """
 
-    SERVER_ADDRESS = 'http://127.0.0.1:5000'
+    SERVER_ADDRESS = 'http://127.0.0.1:5000' if (BaseConfig.SERVER_ADDRESS == '') else BaseConfig.SERVER_ADDRESS
     DEBUG = True
     app_mode = app_mode_debug
 

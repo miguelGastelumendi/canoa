@@ -7,6 +7,10 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-05-28 v α43
+    1. Give default value of config only when empty
+
+
 2024-05-28 v α42
     1. Remove circular import
 
