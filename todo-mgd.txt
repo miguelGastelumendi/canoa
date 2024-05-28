@@ -287,6 +287,11 @@
         2.3 `coverage` não está no requirements.txt
     3. Ajustes para o servidor (circular import)
 
+Ajustes para o Servidor:  (circular import)
+
+2024-05-27 v α40.a
+
+
 
 2024-05-2
     1. Email CC
