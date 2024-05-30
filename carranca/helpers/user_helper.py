@@ -36,7 +36,7 @@ class LoggedUser:
         - email: User's email address. (str)
 
     """
-    def __init__(self, current_user ):
+    def __init__(self, current_user):
         self.code = user_code(current_user.id)
         self.id = current_user.id
         self.email = current_user.email

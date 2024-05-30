@@ -14,13 +14,13 @@ from ..helpers.py_helper import now, to_str
 from ..helpers.pw_helper import hash_pass
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.texts_helper import add_msg_error, add_msg_success
-from ..helpers.route_helper import get_account_form_data, get_input_text, public_route_reset_password
+from ..helpers.route_helper import get_account_form_data, get_input_text, public_route_reset_password, public_route
 
 from ..private.forms import NewPasswordForm
 
 from .models import Users
 
-def _is_token_valid(time_stamp, max: int) -> bool:
+def __is_token_valid(time_stamp, max: int) -> bool:
     """
     True when the number of days since issuance is less than
     or equal to `max`
@@ -54,7 +54,7 @@ def do_password_reset(token):
         if user == None:
             add_msg_error('invalidToken', texts)
 
-        elif not _is_token_valid(user.recover_email_token_at, 5):
+        elif not __is_token_valid(user.recover_email_token_at, 5):
             add_msg_error('expiredToken', texts)
 
         else:
@@ -66,9 +66,11 @@ def do_password_reset(token):
             db.session.commit()
             add_msg_success('resetPwSuccess', texts)
 
+
     return render_template(
-            template,
-            form= tmpl_form,
-            **texts
-        )
+        template,
+        form= tmpl_form,
+        public_route= public_route,
+        **texts
+    )
 #eof

@@ -1,6 +1,6 @@
 """
  Equipe da Canoa -- 2024
-
+    see https://flask.palletsprojects.com/en/latest/tutorial/factory/
 """
 
 #cSpell:ignore SQLALCHEMY, cssless
@@ -22,7 +22,7 @@ except KeyError:
     exit(f"Error: Invalid <app_mode>. Expected a value from [{app_mode_debug}, {app_mode_production}].")
 
 
-app = create_app(app_config)   # carranca\__init__.py 37
+app = create_app(app_config)
 """
     app.config vs app_config
     ------------------------

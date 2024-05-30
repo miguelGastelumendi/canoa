@@ -16,18 +16,18 @@ base_route_private = 'private'
 base_route_public = 'public'
 public_route_reset_password = 'resetpassword'
 
-def _route(base: str, page: str, *args) -> str:
+def _route(base: str, page: str, **params) -> str:
     address = f"{bp_name(base)}.{page}"
-    return url_for(address, *args)
+    return url_for(address, **params)
 
 def bp_name(base: str) -> str:
     return f"bp_{base}"
 
-def private_route(page: str, *args) -> str: # TODO: merge with public_to
-    return _route(base_route_private, page, *args)
+def private_route(page: str, **params) -> str: # TODO: merge with public_to
+    return _route(base_route_private, page, **params)
 
-def public_route(page: str, *args) -> str:
-    return _route(base_route_public, page, *args)
+def public_route(page: str, **params) -> str:
+    return _route(base_route_public, page, **params)
 
 def login_route() -> str:
     return public_route('login')

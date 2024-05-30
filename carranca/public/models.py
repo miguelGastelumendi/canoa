@@ -16,12 +16,14 @@ from ..helpers.pw_helper import hash_pass
 class Users(db.Model, UserMixin):
     __tablename__ = 'users'
 
+    #https://docs.sqlalchemy.org/en/13/core/type_basics.html
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
     username_lower = db.Column(db.String(100), unique=True)
     email = db.Column(db.String(64), unique=True)
     password = db.Column(db.LargeBinary)
     recover_email_token = db.Column(db.String(100))
+    recover_email_token_at = db.Column(db.DateTime)
     disabled = db.Column(db.Boolean)
 
 

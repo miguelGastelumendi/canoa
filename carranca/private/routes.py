@@ -52,7 +52,7 @@ def home():
     It displays the main menu.
     """
 
-    if not someone_logged():
+    if nobody_logged():
         return redirect_to(login_route(), None)
 
     template, _, texts = get_private_form_data('home')
@@ -103,6 +103,7 @@ def uploadfile():
         template,
         form= tmpl_form,
         private_route= private_route,
+        public_route= public_route,
         **texts
     )
 

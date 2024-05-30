@@ -48,11 +48,10 @@ def do_login():
             return redirect_to(home_route())
 
     return render_template(
-            template,
-            form= tmpl_form,
-            public_route= public_route,
-            private_route= private_route,
-            **texts
-        )
-
+        template,
+        form= tmpl_form,
+        public_route= public_route,
+        private_route= private_route,
+        **texts
+    )
 #eof

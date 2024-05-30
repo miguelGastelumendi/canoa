@@ -19,6 +19,7 @@
 {% set dlg_cls_size= '' %}   {#  Size: sm, <>, lg, xl #}
 {% set dlg_cls_top= 'mt-6' %}
 {% set dlg_cls_footer= 'collapse' %}
+{% set dlg_spt_frm= 'const onSumbmit = () => ' %}
 
 {% extends "./layouts/dialog.html.j2" %}
 
@@ -47,7 +48,7 @@
    {#  display the form when always except when sucess (when normal displat or with an error)   #}
    {% if not msgSuccess %}
       <!-- { Form  -->
-      <form method="post" action="" class="mt-2" onsubmit="onSubmit()" {{ formAttribute|default('') }}>
+      <form method="post" action="" class="mt-2" onsubmit="document.getElementById('id-formMainBtn').disabled=true;" {{ formAttribute|default('') }}>
          {{ form.hidden_tag() }}
 
          {% block frm_blc_content %}
@@ -68,6 +69,7 @@
 {% endblock dlg_blc_body %}
 
 {% block frm_blc_script %}
+
 {% endblock frm_blc_script %}
 
 {# eof #}

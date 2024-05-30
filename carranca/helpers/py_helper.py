@@ -3,7 +3,10 @@
 
  Some functions that I missed. Brought to Py
  mgd 2024-04-09--27
-"""
+
+ """
+ # cSpell:ignore latin
+
 import time
 import datetime
 from os import path, makedirs
@@ -75,14 +78,38 @@ def to_base(number, base):
     elif base == 16:
         result = format(number, 'x')
     else:
-        base_digits = "0123456789abcdefghijklmnopqrstuvwxyz"[:base]  # Digits for the specified base
+        base_digits = '0123456789abcdefghijklmnopqrstuvwxyz'[:base]  # Digits for the specified base
         while number:
             number, remainder = divmod(number, base)
             result = base_digits[remainder] + result
 
     return result
 
+def decode_std_text(std_text):
+    """Decodes standard output/error from a subprocess, handling potential encoding issues.
 
+    Args:
+    output: The byte output from the subprocess.
+
+    Returns:
+    A string containing the decoded output.
+    """
+    if is_str_none_or_empty(std_text):
+        return ''
+
+    try:
+        # Try UTF-8 first, as it's commonly used
+        return std_text.decode('utf-8')
+    except UnicodeDecodeError:
+        # If UTF-8 fails, try common encodings for Windows and latin-1
+        for encoding in ('latin-1', 'cp1252'):
+            try:
+                return std_text.decode(encoding)
+            except Exception:
+                pass
+
+    # If all encodings fail, return the raw bytes as a string
+    return str(std_text)
 
 # class MyCustomDict(dict):
 #     def __getattr__(self, attr):

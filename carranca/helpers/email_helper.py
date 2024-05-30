@@ -28,8 +28,8 @@ from .py_helper import is_str_none_or_empty
 def send_email(toMail: str, textsSection: str, toReplace: dict, file2SendPath: str = None, file2SendType: str = None):
     from main import app_config
 
-    ext = path.splitext(file2SendPath)[1].lower()
-    if not is_str_none_or_empty(file2SendType):
+    ext = None if is_str_none_or_empty(file2SendType) else path.splitext(file2SendPath)[1].lower()
+    if ext == None:
         pass
     elif ext == '.pdf':
        file2SendType =  "application/pdf"

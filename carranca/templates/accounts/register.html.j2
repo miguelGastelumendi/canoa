@@ -5,8 +5,9 @@
 {% block frm_blc_above %}
     {% if msgSuccess %}
         <div class="d-grid">
-            <button type="button" class="btn formMainBtn"
-                onclick="window.location.href='{{ public_route('login')() }}'">{{ gotoLogin }}</button>
+            <form action="{{ public_route('login') }}" method="post">
+                <button type="submit" class="btn formMainBtn">{{ gotoLogin }}</button>
+            </form>
         </div>
     {% endif %}
 {% endblock frm_blc_above %}

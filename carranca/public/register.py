@@ -11,8 +11,6 @@ from flask import render_template, request
 from typing import Any
 from carranca import db
 
-
-
 from ..helpers.texts_helper import add_msg_success, add_msg_error
 from ..helpers.route_helper import get_account_form_data, get_input_text, public_route
 
@@ -46,9 +44,10 @@ def do_register():
             add_msg_error('registerError', texts) if user else ''
             # TODO Log
 
-    return render_template(template,
-                        form=tmpl_form,
-                        public_route= public_route,
-                        **texts)
-
+    return render_template(
+        template,
+        form=tmpl_form,
+        public_route= public_route,
+        **texts
+    )
 #eof

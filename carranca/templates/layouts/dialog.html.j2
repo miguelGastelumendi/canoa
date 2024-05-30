@@ -13,6 +13,7 @@ Displays:
         _cls_ => Class
         -id-  => ID
         _blc_ => Block
+        _spt_ => Script
 
 
 mgd
@@ -26,18 +27,21 @@ mgd
       <div class="modal-dialog {{dlg_cls_size}} {%+ if dlg_var_vCentered %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dalog}}">
          <div class="modal-content dlgContent {{dlg_cls_content}}">
             <div class="modal-header dlgHeader {{dlg_cls_header}}">
-               <h5 class="modal-title {{dlg_cls_title}}" inert>{{ (formTitle | default('Canoa')) }}</h5>
-               <button type="button"
-                    class="btn-close {{dlg_cls_btnClose}}"
-                    data-bs-dismiss="modal"
-                    {%+ if not (dlg_var_close|default(True)) %}style='display: none;' {% endif %} aria-label="Close" id="dlg-id-hdr-btn-close"></button>
+                <h5 class="modal-title {{dlg_cls_title}}" inert>{{ (formTitle | default('Canoa')) }}</h5>
+                <form action="{{ public_route('login') }}" method="GET">
+                    <button type="submit" class="btn-close {{dlg_cls_btnClose}}" data-bs-dismiss="modal"
+                        {%+ if not (dlg_var_close|default(True)) %}style='display: none;' {% endif %} aria-label="Close">
+                    </button>
+                </form>
             </div>
             <div class="modal-body dlgBody {{dlg_cls_body}}">
                {% block dlg_blc_body %}
                {% endblock dlg_blc_body %}
             </div>
             <div class="modal-footer justify-content-center {{dlg_cls_footer}}">
-               <button type="button" class="btn btn-primary dlgBtnClose {{dlg_cls_btnClose}}" data-bs-dismiss="modal" id="dlg-id-ftr-btn-close">{{(dlg_VarBtnText | default("OK")) }}</button>
+                <form action="{{ public_route('login') }}" method="GET">
+                    <button type="submit" class="btn btn-primary dlgBtnClose {{dlg_cls_btnClose}}">{{(dlg_VarBtnText | default("OK")) }}</button>
+                </form>
             </div>
          </div>
       </div>
@@ -49,14 +53,8 @@ mgd
 {% block dlg_blc_javascript %}
 {% endblock dlg_blc_javascript %}
 
-{# window.location.href = "{{ url_for('home_blueprint.index') }}" #}
 <script>
-   const f = (id) => document.getElementById(id).addEventListener('click', () => {
-        {# window.location.href = "{{ url_for('home_blueprint.index') }}"   #}
-        history.back();
-     });
-   f('dlg-id-hdr-btn-close');
-   f('dlg-id-ftr-btn-close');
+   {{dlg_spt_frm}}
 </script>
 {% endblock base_blc_body_js %}
 

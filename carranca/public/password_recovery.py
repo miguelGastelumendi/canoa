@@ -7,7 +7,7 @@
     *Password Recovery*
     Part of Public Authentication Processes
 """
-from flask import  render_template, request
+from flask import  render_template, request, url_for
 from carranca import db
 
 import secrets
@@ -41,7 +41,7 @@ def do_password_recovery():
         try:
             token= secrets.token_urlsafe()
             task_code+= 1
-            url= f"http://{app_config.SERVER_EXT_ADDRESS}/{public_route(public_route_reset_password, token=token)}"
+            url= f"http://{app_config.SERVER_EXTERNAL_ADDRESS}{public_route(public_route_reset_password, token= token)}"
             task_code+= 1 #+2
             send_email(send_to, 'emailPasswordRecovery', {'url': url})
             task_code+= 1 #+3
@@ -50,13 +50,15 @@ def do_password_recovery():
             task_code+= 1 #+4
             db.session.commit()
             add_msg_success('emailSent', texts)
-        except: #TODO: log
+        except Exception as e: #TODO: log
+            print(e)
             add_msg_error('emailNotSent', texts, task_code)
 
 
-    return render_template(template,
-                            form= tmpl_form,
-                            public_route= public_route,
-                            **texts)
-
+    return render_template(
+        template,
+        form= tmpl_form,
+        public_route= public_route,
+        **texts
+    )
 #eof

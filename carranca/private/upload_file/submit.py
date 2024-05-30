@@ -13,7 +13,7 @@ import shutil
 from os import path, stat
 
 from .Cargo import Cargo
-from ...helpers.py_helper import change_file_ext, is_str_none_or_empty, now
+from ...helpers.py_helper import change_file_ext, decode_std_text, is_str_none_or_empty, now
 from ...helpers.error_helper import ModuleErrorCode
 
 async def _run_validator(apps_parent_path: str, cfg: object, input_folder: str, output_folder: str, debug_validator: bool = False):
@@ -42,13 +42,16 @@ async def _run_validator(apps_parent_path: str, cfg: object, input_folder: str, 
         return '', f"{cfg.app_name}.running: {e}"
 
     # Decode the output from bytes to string
-    stdout_str = ""
-    stderr_str = ""
-    try:
-        stdout_str = "" if stdout == None else stdout.decode()
-        stderr_str = "" if stderr == None else stderr.decode()
-    except Exception as e:
-        return '', f"{cfg.app_name}.reading_output: {e}"
+    stdout_str = decode_std_text(stdout)
+    stderr_str = decode_std_text(stderr)
+
+    # std = "out"
+    # try:
+    #     stdout_str = decode_std_text()'' if stdout == None else stdout.decode()
+    #     std = "err"
+    #     stderr_str = '' if stderr == None else stderr.decode()
+    # except Exception as e:
+    #     return '', f"{cfg.app_name}.reading_std{std}: {e}"
 
     return stdout_str, stderr_str
 
