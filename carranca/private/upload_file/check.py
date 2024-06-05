@@ -17,9 +17,7 @@ from ...helpers.py_helper import (folder_must_exist, is_same_file_name, is_str_n
 
 from .Cargo import Cargo
 
-
 def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
-    from main import app_config
 
     error_code = 0
     msg_exception = ''
@@ -32,13 +30,13 @@ def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
             task_code = 1
         elif is_str_none_or_empty(cargo.user.email):
             task_code = 2
-        elif is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
+        elif is_str_none_or_empty(cargo.modules_cfg.email.originator):
             task_code = 3
         elif is_str_none_or_empty(cargo.storage.uploaded_file_name):
             task_code = 4
-        elif is_str_none_or_empty(cargo.storage.data_validate.file_name):
+        elif is_str_none_or_empty(cargo.modules_cfg.output_file.name):
             task_code = 5
-        elif is_str_none_or_empty(cargo.storage.data_validate.file_ext):
+        elif is_str_none_or_empty(cargo.modules_cfg.output_file.ext):
             task_code = 5
         elif not is_same_file_name(file_obj.filename, cargo.storage.uploaded_file_name):
             # invalid name, be careful
@@ -64,7 +62,7 @@ def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
         task_code = 19 # is the highest possible (see ModuleErrorCode.UPLOAD_FILE_CHECK + 1)
 
 
-    # goto register.py
+    # goto module register.py
     error_code = 0 if task_code == 0 else ModuleErrorCode.UPLOAD_FILE_CHECK + task_code
     return cargo.update(error_code, '', msg_exception, {'file_obj': file_obj})
 

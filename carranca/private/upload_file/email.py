@@ -25,10 +25,11 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
     task_code = 0
 
     try:
-        email_params = {'ticket': cargo.user_data_file_key, 'when': now_as_text()}
-        attachment = user_report_full_name
+        email_body_params = {'ticket': cargo.user_data_file_key, 'when': now_as_text()}
+        send_file = user_report_full_name
         task_code+= 1 # 1
-        if send_email(cargo.user.email, "uploadedFile_email", email_params, attachment):
+        email_to = { 'to': cargo.user.email, 'cc': cargo.modules_cfg.email.cc }
+        if send_email(email_to, 'uploadedFile_email', email_body_params, send_file):
             task_code+= 1 #2
             UserDataFiles.update(cargo.user_data_file_key, email_sent = True, report_ready_at = cargo.report_ready_at)
             task_code= 0

@@ -13,33 +13,52 @@ import shutil
 from os import path, stat
 
 from .Cargo import Cargo
-from ...helpers.py_helper import change_file_ext, decode_std_text, is_str_none_or_empty, now
+from .ModulesConfig import DataApp
+from ...helpers.py_helper import (
+    change_file_ext,
+    decode_std_text,
+    is_str_none_or_empty,
+    now,
+)
 from ...helpers.error_helper import ModuleErrorCode
 
-async def _run_validator(apps_parent_path: str, cfg: object, input_folder: str, output_folder: str, debug_validator: bool = False):
+
+async def _run_validator(
+    batch_full_name: str,
+    app: DataApp,
+    input_folder: str,
+    output_folder: str,
+    debug_validator: bool = False,
+):
     #  This function knows quite a lot of how to run [data_validate]
 
-    external_app_path = path.join(apps_parent_path, cfg.app_name)
-    batch_full_name = path.join(external_app_path, cfg.batch_file_name)
-    run_command = [batch_full_name, "--input_folder", input_folder, "--output_folder", output_folder, cfg.args]
+    run_command = [
+        batch_full_name,
+        app.na_in_folder,  # Named Argument
+        input_folder,
+        app.na_out_folder,
+        output_folder,
+        app.flags,
+    ]
 
     if debug_validator:
-        run_command.add("--debug")
+        run_command.append(app.flag_debug)
+        print(" ".join(run_command))  # TODO  LOG
 
     # Run the script command asynchronously
     stdout = None
     stderr = None
-    script= " ".join(run_command)
+
     try:
         process = await asyncio.create_subprocess_exec(
-            *run_command, stdout = asyncio.subprocess.PIPE, stderr = asyncio.subprocess.PIPE
+            *run_command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
 
         # Wait for the process to complete
         stdout, stderr = await process.communicate()
 
     except Exception as e:
-        return '', f"{cfg.app_name}.running: {e}"
+        return "", f"{app.app_name}.running: {e}"
 
     # Decode the output from bytes to string
     stdout_str = decode_std_text(stdout)
@@ -66,65 +85,95 @@ def submit(cargo: Cargo) -> Cargo:
         except the parameters needed to call 'main.py'
     """
 
-    user_report_full_name = '<not produced>'
-    msg_error = 'uploadFileProcessError'
+    user_report_full_name = "<not produced>"
+    msg_error = "uploadFileProcessError"
     error_code = 0
-    msg_exception = ''
+    msg_exception = ""
     task_code = 0
-
     stdout_str = None
 
     try:
-        data_validate_cfg= cargo.storage.data_validate
+        task_code += 1  #1
+        # shortcuts
+        _cfg = cargo.modules_cfg
+        _path = cargo.storage.path
+
+        external_app_path = path.join(_path.apps_parent_path, _cfg.app.name)
+        batch_full_name = path.join(external_app_path, _cfg.app.batch)
+
+        if not path.exists(batch_full_name):
+            task_code += 1  #2
+            raise Exception(
+                f"The data_validate caller [{batch_full_name}] was not found."
+            )
 
         try:
-            _path = cargo.storage.path
-            task_code= 1 #1
-            stdout_str, stderr_str = asyncio.run(_run_validator(_path.apps_parent_path, data_validate_cfg, _path.data_tunnel_user_write, _path.data_tunnel_user_read, False))
-            task_code+= 1 #2
+            task_code += 2  #3
+            stdout_str, stderr_str = asyncio.run(
+                _run_validator(
+                    batch_full_name,
+                    _cfg.app,
+                    _path.data_tunnel_user_write,
+                    _path.data_tunnel_user_read,
+                    cargo.in_debug_mode,
+                )
+            )
+            task_code += 1  #4
             if not is_str_none_or_empty(stderr_str):
-                raise Exception(f"{data_validate_cfg.app_name}.stderr: {stderr_str}")
+                raise Exception(f"{_cfg.app.name}.stderr: {stderr_str}")
         except Exception as e:
             msg_exception = str(e)
             raise Exception(e)
-
 
         # Ok, final report should be waiting for us ;—)
 
         cargo.report_ready_at = now()
 
-        task_code+= 1  #3
-        result_ext = data_validate_cfg.file_ext
-        final_report_file_name = f"{data_validate_cfg.file_name}{result_ext}"
-        final_report_full_name = path.join(cargo.storage.path.data_tunnel_user_read, final_report_file_name)
+        task_code += 1  #5
+        result_ext = _cfg.output_file.ext
+        final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
+        final_report_full_name = path.join(
+            cargo.storage.path.data_tunnel_user_read, final_report_file_name
+        )
         if not path.exists(final_report_full_name):
-            task_code+= 1  #4
-            error_code= task_code
+            task_code += 1  #6
+            error_code = task_code
         elif stat(final_report_full_name).st_size < 200:
-            task_code+= 2  #5
-            error_code= task_code
+            task_code += 2  #7
+            error_code = task_code
         else:
             # copy the final_report file to the same folder and
             # with the same name as the uploaded file:
-            user_report_full_name = change_file_ext(cargo.storage.user_file_full_name(), result_ext)
-            task_code+= 3  #6
+            user_report_full_name = change_file_ext(
+                cargo.storage.user_file_full_name(), result_ext
+            )
+            task_code += 3  #8
             shutil.move(final_report_full_name, user_report_full_name)
-            task_code+= 4  #7
+            task_code += 1  #9
             error_code = 0 if path.exists(user_report_full_name) else task_code
             try:
-                task_code+= 1  #8
+                task_code += 1  #10
                 shutil.rmtree(cargo.storage.path.data_tunnel_user_read)
                 shutil.rmtree(cargo.storage.path.data_tunnel_user_write)
             except:
-                print('As pastas de comunicação não foram apagadas.')  #TODO  log
+                print("As pastas de comunicação não foram apagadas.")  # TODO  log
 
     except Exception as e:
         error_code = task_code
         msg_exception = str(e)
-        print(msg_exception)  #TODO  log
+        print(msg_exception)  # TODO  log
 
     # goto email.py
-    error_code = 0 if (error_code == 0) else error_code + ModuleErrorCode.UPLOAD_FILE_SUBMIT
-    return cargo.update(error_code, msg_error, msg_exception, {'user_report_full_name': user_report_full_name}, {'msg_success':  stdout_str })
+    error_code = (
+        0 if (error_code == 0) else error_code + ModuleErrorCode.UPLOAD_FILE_SUBMIT
+    )
+    return cargo.update(
+        error_code,
+        msg_error,
+        msg_exception,
+        {"user_report_full_name": user_report_full_name},
+        {"msg_success": stdout_str},
+    )
 
-#eof
+
+# eof

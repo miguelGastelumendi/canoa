@@ -33,7 +33,7 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
     file_ticket = f"{cargo.user.code}_{now().strftime('%Y-%m-%d')}_{ms}"
 
     try:
-        ''' This is a unique column in UserDataFiles, use for updates '''
+        ''' This is a unique column in UserDataFiles, used for updates '''
         cargo.user_data_file_key = file_ticket
         # make unique file name
         cargo.storage.user_file_name = f"{file_ticket}_{cargo.storage.uploaded_file_name}"
@@ -66,7 +66,7 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
         task_code += 1 # +6
         db.session.commit()
         file_registered = True
-        task_code = 0 # very important
+        task_code = 0 # very important!
     except Exception as e:
         task_code += 10
         msg_exception= str(e)
@@ -74,7 +74,7 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
             os.remove(user_file_full_name)
 
 
-    # goto unzip
+    # goto module unzip
     error_code = 0 if task_code == 0 else ModuleErrorCode.UPLOAD_FILE_REGISTER + task_code
     return cargo.update(error_code, '', msg_exception, {}, {'file_ticket': file_ticket})
 

@@ -2,55 +2,26 @@
 
 TODO:
 
-    2024-05-2
-        1. Send email with CC
-        2. Do not validate when there are files in data folder (simultaneous validation)
-        3. Confirm if run.bat exists
-        4. do_password_reset task_code
-        5. <form action="{{ url_for('handle_click') }}" method="post"><button type="submit">Go to Other Location</button></form> instead of Buttons
 
 
-from flask import Flask, render_template
+    2024-06-
+        1. Do not validate when there are files in data folder (simultaneous validation)
+        2. do_password_reset task_code
+        3. <form action="{{ url_for('handle_click') }}" method="post"><button type="submit">Go to Other Location</button></form> instead of Buttons
 
-app = Flask(__name__)
-
-def format_price(price):
-    return f"{price:.2f}$"  # Example formatting
-
-app.jinja_env.filters['format_price'] = format_price
-
-@app.route('/')
-def index():
-    price = 12.34
-    return render_template('index.html', price=price)
-
-# index.html
-Price: {{ price | format_price }}
-
-==========
-from flask import Flask, render_template
-
-app = Flask(__name__)
-
-def format_price(price, decimals=2, prefix='$'):
-  return f"{price:{decimals}f}{prefix}"
-
-app.jinja_env.filters['format_price'] = format_price
-
-@app.route('/')
-def index():
-  price = 12.3456
-  return render_template('index.html', price=price)
-
-# index.html
-Price with 2 decimals and '$' prefix: {{ price | format_price(decimals=2, prefix='$') }}
-Price with 1 decimal and '€' prefix: {{ price | format_price(decimals=1, prefix='€') }}
 
 
 
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+
+
+2024-06-03..04 v α45
+    1. Send email with CC mgd (testing) when data_validate
+    2. Confirm if run.bat exists
+    3. New Cargo object ModulesConfig.py
+
 
 2024-05-30 v α44
     1. Fix several minor bugs on the authentication process html.j2 files

@@ -94,7 +94,7 @@ def decode_std_text(std_text):
     Returns:
     A string containing the decoded output.
     """
-    if is_str_none_or_empty(std_text):
+    if std_text == None or std_text == b'':
         return ''
 
     try:

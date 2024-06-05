@@ -46,7 +46,7 @@ def unzip(cargo: Cargo) -> Cargo:
         error_code= task_code + ModuleErrorCode.UPLOAD_FILE_UNZIP
         # TODO: Log full_name
 
-    # goto register.py
+    # goto module submit.py
     return cargo.update(error_code, msg_error, msg_exception)
 
 #eof

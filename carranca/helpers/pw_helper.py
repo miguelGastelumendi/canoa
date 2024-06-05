@@ -19,6 +19,7 @@ def __dopwh(text: str, salt: str) -> str:
     pwd_hashed = binascii.hexlify(pwd_digest)
     return pwd_hashed
 
+
 # Inspiration -> https://www.vitoshacademy.com/hashing-passwords-in-python/
 
 def hash_pass(user_password: str) -> str:

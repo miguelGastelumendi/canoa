@@ -12,8 +12,8 @@ from hashlib import sha384
 from os import path, getenv as os_getenv, environ
 from .helpers.py_helper import is_str_none_or_empty
 
-from collections import UserDict
 
+# from collections import UserDict
 # class MyCustomDict(UserDict):
 #     def __getattr__(self, attr):
 #         if attr in self.data:
@@ -28,6 +28,9 @@ from collections import UserDict
 class BaseConfig:
     """
     The Base Configuration Class for the App
+
+    For the `data_validate` process's
+      parameters/configuration see: ./private/upload_file/Params.py
     """
     app_name = 'Canoa'
     #major.minor.patch,
@@ -35,24 +38,24 @@ class BaseConfig:
     envvars_prefix = f"{app_name.upper()}_"
     app_mode = 'None'
 
-    # app `data_validate` configuration:
-    data_validate_file_name = 'data_report'
-    data_validate_file_ext = '.pdf'
 
     def get_os_env(key: str, default = None) -> str:
         _key = None if is_str_none_or_empty(key) else BaseConfig.envvars_prefix
         return os_getenv(_key, default)
 
     EMAIL_ORIGINATOR = 'assismauro@hotmail.com'
+    EMAIL_API_KEY =  ''
+
     ROOT_FOLDER = path.abspath(path.dirname(__file__))
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     SECRET_KEY = ''
     SQLALCHEMY_DATABASE_URI = ''
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     SERVER_ADDRESS = ''
     SERVER_EXTERNAL_ADDRESS = requests.get('https://checkip.amazonaws.com').text.strip()
+
     ASSETS_ROOT = '/static/assets'
-    EMAIL_API_KEY =  ''
     DEBUG = False
     TESTING = False
 
