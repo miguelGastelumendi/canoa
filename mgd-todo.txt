@@ -16,6 +16,11 @@ TODO:
   Logbook
 --------------------------------------------------
 
+2024-06-05 v α46
+    1. Send email with CC to @pedro-andrade-inpe when data_validate
+       Test fails, recipient receive, but cc doesn't
+    2. Published in Sommelier (SAtelier's Windows server)
+
 
 2024-06-03..04 v α45
     1. Send email with CC mgd (testing) when data_validate

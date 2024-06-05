@@ -29,25 +29,25 @@ def do_register():
         pass
 
     elif __exists_user_that(username_lower = get_input_text('username').lower()):
-        add_msg_error('userAlreadyRegistered', texts) if user else ''
+        add_msg_error('userAlreadyRegistered', texts) if user_record_to_update else ''
 
     elif __exists_user_that(email = get_input_text('email').lower()).first():
-        add_msg_error('emailAlreadyRegistered', texts) if user else ''
+        add_msg_error('emailAlreadyRegistered', texts) if user_record_to_update else ''
 
     else:
         try:
-            user= Users(**request.form, disabled = False)
-            db.session.add(user)
+            user_record_to_update= Users(**request.form, disabled = False)
+            db.session.add(user_record_to_update)
             db.session.commit()
             add_msg_success('welcome', texts)
         except Exception as e:
-            add_msg_error('registerError', texts) if user else ''
+            add_msg_error('registerError', texts) if user_record_to_update else ''
             # TODO Log
 
     return render_template(
         template,
         form=tmpl_form,
+        **texts,
         public_route= public_route,
-        **texts
     )
 #eof

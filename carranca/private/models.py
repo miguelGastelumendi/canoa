@@ -24,12 +24,12 @@ class UserDataFiles(db.Model):
     def update(uTicket, **kwargs):
         result = False
         try:
-            record_to_update = db.session.query(UserDataFiles).filter_by(ticket= uTicket).first()
-            if record_to_update:
+            user_record_to_update = db.session.query(UserDataFiles).filter_by(ticket= uTicket).first()
+            if user_record_to_update:
                 for attr, value in kwargs.items():
-                    setattr(record_to_update, attr, value)
+                    setattr(user_record_to_update, attr, value)
 
-            db.session.add(record_to_update)
+            db.session.add(user_record_to_update)
             db.session.commit()
             result = True
         except Exception as e:

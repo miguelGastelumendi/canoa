@@ -76,6 +76,13 @@ class Cargo:
             msg_exception (str):      exception error message, to be logged, in order to assist in the debugging process
             next (dict):              parameters for the `next` procedure
             final (dict):             collects items for the final result: `return final`
+
+        Returns:
+            tuple:
+            int   error code (0 none)
+            str   an entry in vw_ui_texts (see texts_helper.py[get_msg_error()])
+            str   exception error message, to be logged, in order to assist in the debugging process
+            obj   self, the Cargo instance
         """
         self.step += 1
         self.error_code = error_code

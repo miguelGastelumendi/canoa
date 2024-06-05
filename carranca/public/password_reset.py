@@ -50,19 +50,19 @@ def do_password_reset(token):
         add_msg_error('passwordsAreDifferent', texts)
 
     else:
-        user = Users.query.filter_by(recover_email_token = token_str).first()
-        if user == None:
+        user_record_to_update = Users.query.filter_by(recover_email_token = token_str).first()
+        if user_record_to_update == None:
             add_msg_error('invalidToken', texts)
 
-        elif not __is_token_valid(user.recover_email_token_at, 5):
+        elif not __is_token_valid(user_record_to_update.recover_email_token_at, 5):
             add_msg_error('expiredToken', texts)
 
         else:
             # TODO: try/catch
             task_code = ModuleErrorCode.PASSWORD_RESET
-            user.password = hash_pass(password)
-            user.recover_email_token = None
-            db.session.add(user)
+            user_record_to_update.password = hash_pass(password)
+            user_record_to_update.recover_email_token = None
+            db.session.add(user_record_to_update)
             db.session.commit()
             add_msg_success('resetPwSuccess', texts)
 
@@ -70,7 +70,7 @@ def do_password_reset(token):
     return render_template(
         template,
         form= tmpl_form,
+        **texts,
         public_route= public_route,
-        **texts
     )
 #eof

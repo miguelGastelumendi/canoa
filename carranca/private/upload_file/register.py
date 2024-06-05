@@ -53,7 +53,7 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
 
         #save a record for this operation
         task_code += 1 # +4
-        record = UserDataFiles(
+        user_record_to_update = UserDataFiles(
             id_users = cargo.user.id
             , file_size = file_size
             , file_crc32 = file_crc32
@@ -62,7 +62,7 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
             , upload_start_at = cargo.started_at
         )
         task_code += 1 # +5
-        db.session.add(record)
+        db.session.add(user_record_to_update)
         task_code += 1 # +6
         db.session.commit()
         file_registered = True

@@ -50,8 +50,8 @@ def do_login():
     return render_template(
         template,
         form= tmpl_form,
+        **texts,
         public_route= public_route,
-        private_route= private_route,
-        **texts
+        private_route= private_route
     )
 #eof
