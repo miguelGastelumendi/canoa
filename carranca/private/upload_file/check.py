@@ -30,25 +30,23 @@ def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
             task_code = 1
         elif is_str_none_or_empty(cargo.user.email):
             task_code = 2
-        elif is_str_none_or_empty(cargo.modules_cfg.email.originator):
-            task_code = 3
         elif is_str_none_or_empty(cargo.storage.uploaded_file_name):
-            task_code = 4
+            task_code = 3
         elif is_str_none_or_empty(cargo.modules_cfg.output_file.name):
-            task_code = 5
+            task_code = 4
         elif is_str_none_or_empty(cargo.modules_cfg.output_file.ext):
             task_code = 5
         elif not is_same_file_name(file_obj.filename, cargo.storage.uploaded_file_name):
             # invalid name, be careful
-            task_code = 7
+            task_code = 6
         elif len(cargo.storage.uploaded_file_name) > 80:
             # UserDataFiles.file_name.length
-            task_code = 8
+            task_code = 7
         elif not any(cargo.storage.uploaded_file_name.lower().endswith(ext.strip().lower()) for ext in valid_ext):
             # lower() is to much Windows?
-            task_code = 9
+            task_code = 8
         # elif not response.headers.get('Content-Type') == ct in valid_content_types.split(',')): #check if really zip
-            # task_code+= 10
+            # task_code = 10
         elif not folder_must_exist(cargo.storage.path.user):
             task_code = 11
         elif not folder_must_exist(cargo.storage.path.data_tunnel_user_read):
@@ -59,8 +57,8 @@ def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
             task_code = 0
     except Exception as e:
         msg_exception= str(e)
-        task_code = 19 # is the highest possible (see ModuleErrorCode.UPLOAD_FILE_CHECK + 1)
-
+        # is the highest possible (see ModuleErrorCode.UPLOAD_FILE_CHECK + 1)
+        task_code = 19
 
     # goto module register.py
     error_code = 0 if task_code == 0 else ModuleErrorCode.UPLOAD_FILE_CHECK + task_code

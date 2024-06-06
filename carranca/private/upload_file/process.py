@@ -64,7 +64,7 @@ def process(
     storage = StorageInfo(logged_user.code, common_folder)
 
     # Modules configurable parameters
-    modules_cfg = ModulesConfig(app_config)
+    modules_cfg = ModulesConfig()
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(

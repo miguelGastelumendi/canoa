@@ -15,6 +15,8 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-06-05 v α47
+    1. Fixups for the Win Server
 
 2024-06-05 v α46
     1. Send email with CC to @pedro-andrade-inpe when data_validate
