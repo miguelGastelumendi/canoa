@@ -99,11 +99,11 @@ def login():
 @bp_public.route(f'/{public_route_reset_password}/<token>', methods= ['GET','POST'])
 def resetpassword(token= None):
     """
-        Password Reset Form:
-        When a user forgets their password, they will receive an
-        email containing a link to a form where they can enter
-        and confirm their new password.
-        mgd 2024.03.21
+    Password Reset Form:
+    When a user forgets their password, they will receive an
+    email containing a link to a form where they can enter
+    and confirm their new password.
+    mgd 2024.03.21
     """
     if someone_logged():
         internal_logout()

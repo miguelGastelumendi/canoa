@@ -1,20 +1,24 @@
-#spell:ignore onclick jinja apikey bingint vw_sepcombined
+#spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx
 
 TODO:
 
 
 
     2024-06-
-        1. Do not validate when there are files in data folder (simultaneous validation)
-        2. do_password_reset task_code
-        3. <form action="{{ url_for('handle_click') }}" method="post"><button type="submit">Go to Other Location</button></form> instead of Buttons
-
+        1. Install nginx on server
+        2. Do not validate when there are files in data folder (simultaneous validation)
+        3. do_password_reset task_code
+        4. <form action="{{ url_for('handle_click') }}" method="post"><button type="submit">Go to Other Location</button></form> instead of Buttons
 
 
 
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-06-07 v α48
+    1. Fixing the user registration process (Errors: defs, table, columns :-O)
+
+
 2024-06-05 v α47
     1. Fixups for the Win Server
 
@@ -175,42 +179,132 @@ TODO:
     2. Nova imagem/ favicon
 
 
+----------- 2024 - May -----------
+----------------------------------
+2024-04-29,30 v a23
+    # Upload File
+        1. Criar pasta compartilhada entre Canoa e o validador:
+            <root>/shared
+        2. Compartilhar os scripts (que acho) necessários para a comunicação `Validador` e Canoa email
+            <root>/shared/scripts
+        3. Guardar os arquivo na especificada em
+            <root>/shared/scripts/config.py
+           Agora é:
+            <root>/shared/user_data/upload_files
+        4. Persistir os dados do arruivo na tabela user_data_files
+        5. Criar view com os dados necessários para enviar e-mail com
+           o resultado da validação.
+    # Mudar texto de Caatinga a Canoa
 
 
-======================
-2024-03-19
-   #new template `documentDisplay.html` & refactoring.
-    » Visão geral, documentDisplay.html
-   #Login e Registro funcionando na UI (falta [x] Li Termos)
-    » Avoid print shadow document.css
-    » Create authentication template
-    » After login display new "window", import?
+2024-04-29,30 v a22
+    # Criar Classe
+         ./apps/caatinga/config.py
+         com paths a lugares de upload
 
-2024-03-20
-   #Login, Registro, Recuperar Senha funcionando na UI (falta changepassword.html)
-       » Registro: [ ] Li e ...
-       » getuseremail.html
-       » msg -> msgError
+2024-04-27,29 v a21
+    # Upload File
+        1. Formulário, pronto
+        2. Recepção, ok
+2024-04-16..19,23--26
+    # Refatoração do DB
+        1. As tabelas foram traduzidas ao ingles.
+        2. Criação de índices e relacionamentos.
+        3. Modernizar tabela `users`.
+    # Novas Tabelas e Views
+        1. Criar tabela `roles`.
+        2. Criar tabela 'sepcombined_user` que relaciona os sep (vw_sepcombined) com o usuários (users).
+        3. Criação de Views a partir de common.schema:
+            a. vw_schema -> common.schema
+            b. vw_sepcombined (junta as tabelas `sep` de cada db.schema listado na tabela common.schema)
+               A view é criada por generate_vw_sepcombined()
+            c. vw_ui_texts junta as tabelas com os textos do User Interface (ui_*) para ser usada pelo app
+    # Novo Formulário
+        1. Inicio do Upload File
 
-   #Ajustes, mas changepassword.html ainda não tem 'back form'
+
+2024-04-15
+    # Novos documentos: 'Termo de Uso', 'Política de Privacidade' e 'Bem-vindo ao aplicativo Caatinga'
+        1. Exibir os documentos
+        2. Ajustes vários para melhor exibição
+        3. Remover bug que acontece quando o usuário esta logado e abre a pagina de login.
+
+    #  login->login, 'Política de Privacidade' texto completo, 'memoria' para login e register
+        1. Não da erro quando o usuário logado tenta logar e novo.
+        2. Faltou um segmento do texto Política de Privacidade'
+        3. Se na tela de login ou register vai para o documento, perde o já escrito.
+        4. Não enviar e-mail ANTES de registrar ao usuário (processo proposto por mgd, negado)
 
 
-2024-03-21
-      #Login, Registro, Recuperar Senha e ChangePassword funcionando na UI, mas falta ChangePassword com Token
-      » ChangePassword, fazer token opcional e novo algoritmo (com get/post)
-      » ChangePassword.html com token não tem form :-O,  sim token, OK
+2024-04-09 -- 12
+      # Exibir HTML pronto
+        1. Criar um alias para el documento HTML derivado do título, eg  `especificacaosetor`
+        2. Salvar na tabela textos_grupo.grupo <- alias (antes: suporteusuariogrupo.nome)
+        3. Salvar o documento em textos_item.nome HTML em partes: (antes: suporteusuarioelemento.tag)
+            - documento.body -> body
+            - document.style -> style
+            - título do documento -> pageTitle (do tab browser), formTitle (do formulário)
+            - lista de imagens (separadas por ,) que estão na tabela texto_item -> images
+            - imagem 1 encode64 -> imagem1.png
+            * se salvar as imagens diretamente no diretório, `images` pode ser '',
+            * O diretório é \static\docs\{alias}\img\*
+            * home/routes.py [docs] cuida de:
+                - Recreate images from DB when needed and are available
+                - Updates url of img tag for the folder in the HTML
 
+2024-04-08
+      # Inicio de Imagens para HTML
 
-2024-03-22
-      #Login, Registro, Recuperar Senha e ChangePassword (com e sem token) UI funcionando. Loga e desloga.
-      » Geral em todos os formulários de autenticação
-      » Revisão no wtforms de accounts
-      » Novo mgsSuccess ('contrario do msgError'): mostra uma mensagem e so um botão (com link)
-      » Registro Ok
-      » Login ok
-      » Logout OK
-      » Change password quando logado, ok
-      » getuseremail.html -> requestemail.html
+2024-04-05
+      » Backup do db
+      » Planejamento de imagens para HTML + HTMLs anônimo/logado
+
+2024-04-04
+      # Diálogos e Formulários prontos com cores novas
+
+2024-04-03
+      #Atualização de git
+      » Remember-me Cookie
+      » vw_textos (atualizada)
+      » caatinga.css
+
+2024-04-02
+      #Formulário das Contas de Usuário revisão 2, novo background
+      #Display de documentos HTML (comparte dialog.tmpl com os formulários)
+
+2024-04-01
+      #Formulários funcionando, configuráveis
+
+---------- 2024 - March-----------
+----------------------------------
+2024-03-28
+      #Adaptar formulário sem imagem superior, passwordrecovery e resetpassword nao funcionam.
+
+2024-03-27
+      # Revisão de segurança e performance: app + db
+      » Set default schema for DB (user is not working)
+      » Usar users.search_name
+      » Trigger para users colunas 'internal' (de procura/where) e manter email <- lower
+
+2024-03-26
+      » Ajustar no programa o desenvolvido ontem.
+
+2024-03-25
+      » Enviar token pelo email
+      » Check if current_user.authentication, every where and checkout logout, refresh
+      » *Apresentação N 1*, foi boa sem bugs.
+      » Refazer os templates, para ter um em comum com: account.html + displayForm
+      » Recriar os usuários do DB para ter:
+         1. um super usuário caatinga_power
+         2. um grupo: caatinga_users
+         3. um usuário para ser connection string
+         4. desenvolvedores: mauro + miguel
+         5. as permissões concentradas em caatinga_users
+      » Trazer os schemas AdaptaBrasil para o nosso banco.
+      » Criar indices unique
+      » Criar vw_texts para a UI
+      » Novas colunas para user: last_password_date, created_at, active e real_name (To display => username)
+
 
 2024-03-23
       #Login, Registro, Recuperar Senha, ChangePassword e ResetPassword OK! Inicio de /index
@@ -235,177 +329,38 @@ TODO:
          - /logout
          - importar
 
-
-2024-03-25
-      » Enviar token pelo email
-      » Check if current_user.authentication, every where and checkout logout, refresh
-      » *Apresentação N 1*, foi boa sem bugs.
-      » Refazer os templates, para ter um em comum com: account.html + displayForm
-      » Recriar os usuários do DB para ter:
-         1. um super usuário caatinga_power
-         2. um grupo: caatinga_users
-         3. um usuário para ser connection string
-         4. desenvolvedores: mauro + miguel
-         5. as permissões concentradas em caatinga_users
-      » Trazer os schemas AdaptaBrasil para o nosso banco.
-      » Criar indices unique
-      » Criar vw_texts para a UI
-      » Novas colunas para user: last_password_date, created_at, active e real_name (To display => username)
-
-2024-03-26
-      » Ajustar no programa o desenvolvido ontem.
-
-2024-03-27
-      # Revisão de segurança e performance: app + db
-      » Set default schema for DB (user is not working)
-      » Usar users.search_name
-      » Trigger para users colunas 'internal' (de procura/where) e manter email <- lower
-
-2024-03-28
-      #Adaptar formulário sem imagem superior, passwordrecovery e resetpassword nao funcionam.
-
-2024-04-01
-      #Formulários funcionando, configuráveis
-
-2024-04-02
-      #Formulário das Contas de Usuário revisão 2, novo background
-
-2024-04-02
-      #Display de documentos HTML (comparte dialog.tmpl com os formulários)
-
-2024-04-03
-      #Atualização de git
-      » Remember-me Cookie
-      » vw_textos (atualizada)
-      » caatinga.css
-
-2024-04-04
-      # Diálogos e Formulários prontos com cores novas
+2024-03-22
+      #Login, Registro, Recuperar Senha e ChangePassword (com e sem token) UI funcionando. Loga e desloga.
+      » Geral em todos os formulários de autenticação
+      » Revisão no wtforms de accounts
+      » Novo mgsSuccess ('contrario do msgError'): mostra uma mensagem e so um botão (com link)
+      » Registro Ok
+      » Login ok
+      » Logout OK
+      » Change password quando logado, ok
+      » getuseremail.html -> requestemail.html
 
 
-2024-04-05
-      » Backup do db
-      » Planejamento de imagens para HTML + HTMLs anónimo/logado
+2024-03-21
+      #Login, Registro, Recuperar Senha e ChangePassword funcionando na UI, mas falta ChangePassword com Token
+      » ChangePassword, fazer token opcional e novo algoritmo (com get/post)
+      » ChangePassword.html com token não tem form :-O,  sim token, OK
 
-2024-04-08
-      # Inicio de Imagens para HTML
+2024-03-20
+   #Login, Registro, Recuperar Senha funcionando na UI (falta changepassword.html)
+       » Registro: [ ] Li e ...
+       » getuseremail.html
+       » msg -> msgError
 
-2024-04-09 -- 12
-      # Exibir HTML pronto
-        1. Criar um alias para el documento HTML derivado do título, eg  `especificacaosetor`
-        2. Salvar na tabela textos_grupo.grupo <- alias (antes: suporteusuariogrupo.nome)
-        3. Salvar o documento em textos_item.nome HTML em partes: (antes: suporteusuarioelemento.tag)
-            - documento.body -> body
-            - document.style -> style
-            - título do documento -> pageTitle (do tab browser), formTitle (do formulário)
-            - lista de imagens (separadas por ,) que estão na tabela texto_item -> images
-            - imagem 1 encode64 -> imagem1.png
-            * se salvar as imagens diretamente no diretório, `images` pode ser '',
-            * O diretório é \static\docs\{alias}\img\*
-            * home/routes.py [docs] cuida de:
-                - Recreate images from DB when needed and are available
-                - Updates url of img tag for the folder in the HTML
+   #Ajustes, mas changepassword.html ainda não tem 'back form'
 
-2024-04-15
-    # Novos documentos: 'Termo de Uso', 'Política de Privacidade' e 'Bem-vindo ao aplicativo Caatinga'
-        1. Exibir os documentos
-        2. Ajustes vários para melhor exibição
-        3. Remover bug que acontece quando o usuário esta logado e abre a pagina de login.
-
-    #  login->login, 'Política de Privacidade' texto completo, 'memoria' para login e register
-        1. Não da erro quando o usuário logado tenta logar e novo.
-        2. Faltou um segmento do texto Política de Privacidade'
-        3. Se na tela de login ou register vai para o documento, perde o já escrito.
-        4. Não enviar e-mail ANTES de registrar ao usuário (processo proposto por mgd, negado)
-
-
-2024-04-16..19,23--26
-    # Refatoração do DB
-        1. As tabelas foram traduzidas ao ingles.
-        2. Criação de índices e relacionamentos.
-        3. Modernizar tabela `users`.
-    # Novas Tabelas e Views
-        1. Criar tabela `roles`.
-        2. Criar tabela 'sepcombined_user` que relaciona os sep (vw_sepcombined) com o usuários (users).
-        3. Criação de Views a partir de common.schema:
-            a. vw_schema -> common.schema
-            b. vw_sepcombined (junta as tabelas `sep` de cada db.schema listado na tabela common.schema)
-               A view é criada por generate_vw_sepcombined()
-            c. vw_ui_texts junta as tabelas com os textos do User Interface (ui_*) para ser usada pelo app
-    # Novo Formulário
-        1. Inicio do Upload File
-
-
-2024-04-27,29 v α21
-    # Upload File
-        1. Formulário, pronto
-        2. Recepção, ok
-
-2024-04-29,30 v α22
-    # Criar Classe
-         ./apps/caatinga/config.py
-         com paths a lugares de upload
-
-2024-04-29,30 v α23
-    # Upload File
-        1. Criar pasta compartilhada entre Canoa e o validador:
-            <root>/shared
-        2. Compartilhar os scripts (que acho) necessários para a comunicação `Validador` e Canoa email
-            <root>/shared/scripts
-        3. Guardar os arquivo na especificada em
-            <root>/shared/scripts/config.py
-           Agora é:
-            <root>/shared/user_data/upload_files
-        4. Persistir os dados do arruivo na tabela user_data_files
-        5. Criar view com os dados necessários para enviar e-mail com
-           o resultado da validação.
-    # Mudar texto de Caatinga a Canoa
-
-
-TODO:
-#TODO
-
-    - Blueprint -> array of public & private names, => one func route_for( 'page') instead of public_route
-
-
-
-        . Se Upload der error, fechar o formulário.
-        . success= success sumir
-
-      - Move DOCS path to new Caatinga.Config
-
-      - spinner on form.html.j2's submit
-      - rever lógica de passwordrecovery, etc: tirar (success):
-         form_mode in (normal, success)
-            normal: display normally (as a expected for a form)
-                    can have or not a msgError
-            success: display the form with mgsSuccess and maybe
-
-            , modal +error
-      - rever history.back(); de dialog.html
-      - check users table & other permissions
-      - changepassword/token -> token invalido -> link para solicitar um novo (O token de recuperação não foi reconhecido ou não existe )
-      - changepassword -> request current
-      - get_Html
-
-      // OK
-      - email de envio originator: usar mauro
-
-
-Significant system improvements:
-
- - pixel.css bug
-
-   http://127.0.0.1:5000/requestemail <> http://127.0.0.1:5000/requestEmail
-
-- Faltam error pages
-      D:\Projects\AdaptaBrasil\Caatinga\carranca\templates\home\page-404.html
-
-- Clean caatinga.css
-
--- File filters
-*.html.js, *.html,
-
+2024-03-19
+   #new template `documentDisplay.html` & refactoring.
+    » Visão geral, documentDisplay.html
+   #Login e Registro funcionando na UI (falta [x] Li Termos)
+    » Avoid print shadow document.css
+    » Create authentication template
+    » After login display new "window", import?
 
 ---------------------------------- Typical Flask
 

@@ -7,8 +7,8 @@
 # cSpell:ignore werkzeug uploadfile tmpl
 
 from flask import redirect, request, url_for
+# from jinja2.environment import filters
 from .texts_helper import get_section
-from .pw_helper import someone_logged
 from .py_helper import to_str
 
 
@@ -23,9 +23,11 @@ def _route(base: str, page: str, **params) -> str:
 def bp_name(base: str) -> str:
     return f"bp_{base}"
 
-def private_route(page: str, **params) -> str: # TODO: merge with public_to
+# @filters.filter
+def private_route(page: str, **params) -> str:
     return _route(base_route_private, page, **params)
 
+#@filters.filter
 def public_route(page: str, **params) -> str:
     return _route(base_route_public, page, **params)
 

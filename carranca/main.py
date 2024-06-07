@@ -2,14 +2,17 @@
  Equipe da Canoa -- 2024
     see https://flask.palletsprojects.com/en/latest/tutorial/factory/
 """
-
 #cSpell:ignore SQLALCHEMY, cssless
 
 from sys import exit
+from jinja2 import Environment
 from flask_minify import Minify
 from urllib.parse import urlparse
+
 from . import create_app
+# from .helpers.route_helper import private_route, public_route
 from .config import config_modes, BaseConfig, app_mode_production, app_mode_debug
+
 
 # WARNING: Don't run with debug turned on in production!
 app_mode = BaseConfig.get_os_env("APP_MODE", app_mode_debug)
@@ -43,17 +46,28 @@ def _empty(key: str) -> bool:
         print(key)
     return empty
 
+
+# Check basic info
 if _empty("SQLALCHEMY_DATABASE_URI") or _empty("EMAIL_API_KEY") or _empty("SERVER_ADDRESS") or _empty("SECRET_KEY"):
+    """ Check if you have the basic information for proper operation """
     exit("Verifique se as variáveis de ambiente estão definidas.")
 
+# Register frequently used jinja functions
+# env = Environment()
+# env.filters['private_route'] = private_route
+# env.filters['public_route'] = public_route
 
+
+# Minified html/js if in production
 minified = False
 if not app_config.DEBUG:
     Minify(app=app, html=True, js=True, cssless=False)
     minified = True
 
 # TODO Argument --info
-app.logger.info('-------')
+
+# Display debug info
+app.logger.info('-----------------')
 app.logger.info(f"{app_config.app_name} started {app_config.app_mode} in mode :-).")
 if app_config.DEBUG:
     app.logger.info(f"DEBUG            : {app_config.DEBUG}")
@@ -64,10 +78,12 @@ if app_config.DEBUG:
     app.logger.info(f"External address : {app_config.SERVER_EXTERNAL_ADDRESS}")
 
 
+# Prepare for lunching...
 address = urlparse(app_config.SERVER_ADDRESS)
 host = address.hostname
 port = int(address.port)
 
+# Go!
 if __name__ == "__main__":
     app.run(host=host, port=port, debug=app_config.DEBUG)
 

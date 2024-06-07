@@ -16,7 +16,7 @@ class UserDataFiles(db.Model):
     upload_start_at = db.Column(db.DateTime)
     report_ready_at  = db.Column(db.DateTime)
     email_sent =  db.Column(db.Boolean, default=False)
-    error_code = db.Column(db.Integer, nullable=True )
+    error_code = db.Column(db.Integer, nullable=True)
     error_msg = db.Column(db.String(200), nullable=True)
     error_text = db.Column(db.Text, nullable=True)
     success_text = db.Column(db.Text, nullable=True)
