@@ -15,12 +15,15 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-06-07 v α49
+    1. Print error msg if user registration fails (TODO: LOG)
+
 2024-06-07 v α48
-    1. Fixing the user registration process (Errors: defs, table, columns :-O)
+    1. Fix the user registration process (Errors: defs, table, columns :-O)
 
 
 2024-06-05 v α47
-    1. Fixups for the Win Server
+    1. Fixes for the Win Server
 
 2024-06-05 v α46
     1. Send email with CC to @pedro-andrade-inpe when data_validate

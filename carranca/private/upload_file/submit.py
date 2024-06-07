@@ -96,7 +96,7 @@ def submit(cargo: Cargo) -> Cargo:
         if not path.exists(batch_full_name):
             task_code += 1  #2
             raise Exception(
-                f"The data_validate caller [{batch_full_name}] was not found."
+                f"The `data_validate` module caller [{batch_full_name}] was not found."
             )
 
         try:

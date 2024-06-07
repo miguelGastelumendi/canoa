@@ -29,21 +29,19 @@ def do_register():
 
     if is_get:  # is_post
         pass
-
     elif __exists_user_where(username_lower=get_input_text("username").lower()):
-        add_msg_error("userAlreadyRegistered", texts) if user_record_to_update else ""
-
+        add_msg_error("userAlreadyRegistered", texts)
     elif __exists_user_where(email=get_input_text("email").lower()):
-        add_msg_error("emailAlreadyRegistered", texts) if user_record_to_update else ""
-
+        add_msg_error("emailAlreadyRegistered", texts)
     else:
         try:
-            user_record_to_update = Users(**request.form)
-            db.session.add(user_record_to_update)
+            user_record_to_insert = Users(**request.form)
+            db.session.add(user_record_to_insert)
             db.session.commit()
             add_msg_success("welcome", texts)
         except Exception as e:
-            add_msg_error("registerError", texts) if user_record_to_update else ""
+            print(e)
+            add_msg_error("registerError", texts) if user_record_to_insert else ""
             # TODO Log
 
     return render_template(
