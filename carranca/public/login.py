@@ -51,7 +51,5 @@ def do_login():
         template,
         form= tmpl_form,
         **texts,
-        public_route= public_route,
-        private_route= private_route
     )
 #eof

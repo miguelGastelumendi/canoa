@@ -5,12 +5,11 @@
 #cSpell:ignore SQLALCHEMY, cssless
 
 from sys import exit
-from jinja2 import Environment
 from flask_minify import Minify
 from urllib.parse import urlparse
 
 from . import create_app
-# from .helpers.route_helper import private_route, public_route
+
 from .config import config_modes, BaseConfig, app_mode_production, app_mode_debug
 
 
@@ -51,11 +50,6 @@ def _empty(key: str) -> bool:
 if _empty("SQLALCHEMY_DATABASE_URI") or _empty("EMAIL_API_KEY") or _empty("SERVER_ADDRESS") or _empty("SECRET_KEY"):
     """ Check if you have the basic information for proper operation """
     exit("Verifique se as variáveis de ambiente estão definidas.")
-
-# Register frequently used jinja functions
-# env = Environment()
-# env.filters['private_route'] = private_route
-# env.filters['public_route'] = public_route
 
 
 # Minified html/js if in production

@@ -21,7 +21,7 @@ from ..helpers.html_helper import img_filenames, img_change_src_path
 from ..helpers.texts_helper import get_msg_error, get_text
 
 
-def _prepare_img_files(html_images: list[str], db_images: list[str], img_path: str, group: str) -> bool:
+def __prepare_img_files(html_images: list[str], db_images: list[str], img_path: str, group: str) -> bool:
 
     img_path_ready = os.path.exists(img_path)
     missing_files = html_images.copy()  # missing files from folder, assume all
@@ -66,8 +66,8 @@ def do_display_html(docName: str):
     section = docName
     pageTitle = get_text("pageTitle", section)
     formTitle = get_text("formTitle", section)
-    body = get_text("body", section)
-    style = get_text("style", section)
+    body = get_text("body", section, '')
+    style = get_text("style", section, '')
     # a comma separated list of images.ext names available on the db,
     # see below db_images & _prepare_img_files
     images = get_text("images", section)
@@ -100,7 +100,7 @@ def do_display_html(docName: str):
         # I can't help, no images found in db
         # TODO: have a not_found_image.img
 
-    elif _prepare_img_files(html_images, db_images, img_path, section):
+    elif __prepare_img_files(html_images, db_images, img_path, section):
         body = img_change_src_path(body, img_path)
 
     return render_template(

@@ -7,7 +7,6 @@
 # cSpell:ignore werkzeug uploadfile tmpl
 
 from flask import redirect, request, url_for
-# from jinja2.environment import filters
 from .texts_helper import get_section
 from .py_helper import to_str
 
@@ -23,11 +22,9 @@ def _route(base: str, page: str, **params) -> str:
 def bp_name(base: str) -> str:
     return f"bp_{base}"
 
-# @filters.filter
 def private_route(page: str, **params) -> str:
     return _route(base_route_private, page, **params)
 
-#@filters.filter
 def public_route(page: str, **params) -> str:
     return _route(base_route_public, page, **params)
 
@@ -70,11 +67,11 @@ def get_form_data(section: str, file: str, folder: str): # -> str, bool, dict[st
 
 def get_private_form_data(section: str, file: str = None): # -> str, bool, dict[str, str]:
     file = section if file is None else file
-    return get_form_data(section, file, 'private')
+    return get_form_data(section, file, './private')
 
 def get_account_form_data(section: str, file: str = None): # -> str, bool, dict[str, str]:
     file = section if file is None else file
-    return get_form_data(section, file, 'accounts')
+    return get_form_data(section, file, './accounts')
 
 def redirect_to(route: str, message: str = None) -> str:
     # TODO: display message 'redirecting to ...

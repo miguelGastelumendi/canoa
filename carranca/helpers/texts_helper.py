@@ -100,11 +100,15 @@ def get_section(section: str) -> dict[str, str]:
     query = __get_select("item, text", section)
     return _get_result_set(query)
 
-def get_text(item: str, section: str) -> str:
+def get_text(item: str, section: str, default: str= None) -> str:
     # returns text for the item/section pair. if not found, a `warning message`
     text, _ = _get_row(item, section)
-    if is_str_none_or_empty(text):
+    if not is_str_none_or_empty(text):
+        pass
+    elif default == None:
         text =  msg_not_found.format(item, section)
+    else:
+        text = ''
     return text
 
 def add_msg_error(item: str, texts: dict[str, str] = None, *args) -> str:

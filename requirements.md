@@ -28,3 +28,6 @@
 For production environments, using == for critical dependencies is recommended to ensure stability and avoid unexpected behavior from version changes.
 For development environments, >= or ~= offer more flexibility to get the latest bug fixes and features while maintaining compatibility within a reasonable range.
 Remember: It's always a good practice to refer to the documentation of the specific package you're installing to understand their recommended version ranges and any potential compatibility issues.
+
+
+pip install --upgrade jinja2

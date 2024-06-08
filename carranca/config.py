@@ -34,7 +34,7 @@ class BaseConfig:
     """
     app_name = 'Canoa'
     #major.minor.patch,
-    app_version =  'α 0.49' # &beta β;
+    app_version =  'α 0.50' # &beta β;
     envvars_prefix = f"{app_name.upper()}_"
     app_mode = 'None'
 

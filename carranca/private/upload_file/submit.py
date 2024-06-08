@@ -83,37 +83,47 @@ def submit(cargo: Cargo) -> Cargo:
     msg_exception = ""
     task_code = 0
     stdout_str = None
+    external_error = False
+    report_ready = False
 
     try:
-        task_code += 1  #1
+        task_code += 1  # 1
         # shortcuts
         _cfg = cargo.modules_cfg
         _path = cargo.storage.path
-
+        _path_read = cargo.storage.path.data_tunnel_user_read
+        _path_write = cargo.storage.path.data_tunnel_user_write
         external_app_path = path.join(_path.apps_parent_path, _cfg.app.name)
         batch_full_name = path.join(external_app_path, _cfg.app.batch)
 
-        if not path.exists(batch_full_name):
-            task_code += 1  #2
+        if not path.exists(batch_full_name):  # TODO send to check module
+            task_code += 1  # 2
             raise Exception(
-                f"The `data_validate` module caller [{batch_full_name}] was not found."
+                f"The `{_cfg.app.name}` module caller [{batch_full_name}] was not found."
             )
 
+        result_ext = _cfg.output_file.ext
+        final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
+        final_report_full_name = path.join(_path_read, final_report_file_name)
+
         try:
-            task_code += 2  #3
+            task_code += 2  # 3
             stdout_str, stderr_str = asyncio.run(
                 _run_validator(
                     batch_full_name,
                     _cfg.app,
-                    _path.data_tunnel_user_write,
-                    _path.data_tunnel_user_read,
+                    _path_write,
+                    _path_read,
                     cargo.in_debug_mode,
                 )
             )
-            task_code += 1  #4
-            if not is_str_none_or_empty(stderr_str):
+            task_code += 1  # 4
+            external_error = not is_str_none_or_empty(stderr_str)
+            report_ready = path.exists(final_report_full_name)
+            if external_error and not report_ready:
                 raise Exception(f"{_cfg.app.name}.stderr: {stderr_str}")
         except Exception as e:
+            external_error = True
             msg_exception = str(e)
             raise Exception(e)
 
@@ -121,17 +131,12 @@ def submit(cargo: Cargo) -> Cargo:
 
         cargo.report_ready_at = now()
 
-        task_code += 1  #5
-        result_ext = _cfg.output_file.ext
-        final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
-        final_report_full_name = path.join(
-            cargo.storage.path.data_tunnel_user_read, final_report_file_name
-        )
-        if not path.exists(final_report_full_name):
-            task_code += 1  #6
+        task_code += 1  # 5
+        if not report_ready:
+            task_code += 1  # 6
             error_code = task_code
         elif stat(final_report_full_name).st_size < 200:
-            task_code += 2  #7
+            task_code += 2  # 7
             error_code = task_code
         else:
             # copy the final_report file to the same folder and
@@ -139,21 +144,20 @@ def submit(cargo: Cargo) -> Cargo:
             user_report_full_name = change_file_ext(
                 cargo.storage.user_file_full_name(), result_ext
             )
-            task_code += 3  #8
+            task_code += 3  # 8
             shutil.move(final_report_full_name, user_report_full_name)
-            task_code += 1  #9
+            task_code += 1  # 9
             error_code = 0 if path.exists(user_report_full_name) else task_code
-            try:
-                task_code += 1  #10
-                shutil.rmtree(cargo.storage.path.data_tunnel_user_read)
-                shutil.rmtree(cargo.storage.path.data_tunnel_user_write)
-            except:
-                print("As pastas de comunicação não foram apagadas.")  # TODO  log
-
     except Exception as e:
         error_code = task_code
         msg_exception = str(e)
         print(msg_exception)  # TODO  log
+    finally:
+        try:
+            shutil.rmtree(_path_read)
+            shutil.rmtree(_path_write)
+        except:
+            print("As pastas de comunicação não foram apagadas.")  # TODO  log
 
     # goto email.py
     error_code = (

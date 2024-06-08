@@ -8,19 +8,29 @@ TODO:
         1. Install nginx on server
         2. Do not validate when there are files in data folder (simultaneous validation)
         3. do_password_reset task_code
-        4. <form action="{{ url_for('handle_click') }}" method="post"><button type="submit">Go to Other Location</button></form> instead of Buttons
+        4. <form action="{{ url_for('handle_click') }}" method="post/get"><button type="submit">Go to Other Location</button></form> instead of Buttons
+        5. Log
 
 
 
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-06-07 v α50
+    1. Jinja2's filter ready!
+    2. Fix HTML documents display
+    3. New About()
+
+2024-06-07 v α49
+    1. If data_validate 'fails' but produces a report,
+       record the error in user_data_files and continue.
+    2. Create jinja2 Filter for common functions (see __init__.py)
+
 2024-06-07 v α49
     1. Print error msg if user registration fails (TODO: LOG)
 
 2024-06-07 v α48
     1. Fix the user registration process (Errors: defs, table, columns :-O)
-
 
 2024-06-05 v α47
     1. Fixes for the Win Server
@@ -30,19 +40,16 @@ TODO:
        Test fails, recipient receive, but cc doesn't
     2. Published in Sommelier (SAtelier's Windows server)
 
-
 2024-06-03..04 v α45
     1. Send email with CC mgd (testing) when data_validate
     2. Confirm if run.bat exists
     3. New Cargo object ModulesConfig.py
-
 
 2024-05-30 v α44
     1. Fix several minor bugs on the authentication process html.j2 files
     2. Disable the submit button after it is pressed.
     3. use `<form action= {rout#} ..> instead of <button onclick = 'location.href = {route}....
        as should be for Flask apps
-
 
 2024-05-28 v α43
     1. Give default value of config only when empty !!
