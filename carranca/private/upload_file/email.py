@@ -22,14 +22,14 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
     data_validate report attached.
     """
     error_code = 0
-    msg_exception = ""
+    msg_exception = ''
     task_code = 0
 
     try:
         task_code += 1  # 1
-        email_body_params = {"ticket": cargo.user_data_file_key, "when": now_as_text()}
+        email_body_params = {"user_name": cargo.user.name, "ticket": cargo.user_receipt, "when": now_as_text()}
         send_file = user_report_full_name
-        email_to = {"to": cargo.user.email, "cc": cargo.modules_cfg.email.cc}
+        email_to = {"to": cargo.user.email, "cc": cargo.upload_cfg.email.cc}
 
         task_code += 1  # 2
         send_email(email_to, "uploadedFile_email", email_body_params, send_file)

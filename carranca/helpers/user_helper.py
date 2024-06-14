@@ -27,19 +27,22 @@ class LoggedUser:
     """
     LoggedUser is a documented option for flask_login' `current_user`
 
-    Args:
+    Params:
         current_user from flask_login
 
-    Attributes:
-        - code: Encrypted and unique user code derived from the user ID. (str)
-        - id: User's ID. (int)
-        - email: User's email address. (str)
+    Args:
+        name (str): user's name.
+        code (str): Encrypted and unique user code derived from the user ID.
+        id (int): User's ID.
+        email (str): User's email address.
 
     """
     def __init__(self, current_user):
+        self.name = current_user.username
         self.code = user_code(current_user.id)
         self.id = current_user.id
         self.email = current_user.email
+
 
 # TODO:
 # def user_id(code: str) -> int:

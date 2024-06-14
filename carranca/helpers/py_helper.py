@@ -57,6 +57,49 @@ def to_str(s: str) -> str:
     return '' if is_str_none_or_empty(s) else (s + '').strip()
 
 
+
+crc_table = [
+    0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
+    0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
+]
+
+def crc16(data: bytes | str) -> int:
+    """
+    Calculates CRC16 value for the given data (bytes or string).
+
+    https://www.askpython.com/python/examples/crc-16-bit-manual-calculation
+    https://crccalc.com/
+
+    data = 'Hello, World!'
+    crc16 = crc16(data) -> 0x3D65
+    max: 0xFFFF
+
+    Args:
+        data: The data to calculate CRC16 for (either bytes or string).
+
+    Returns:
+        The calculated CRC16 value (integer).
+    """
+
+    if (data == None):
+        return 0
+    elif not isinstance(data, str):
+        # supposing is bytes
+        pass
+    elif is_str_none_or_empty(data):
+        return 0
+    else: # Convert string to bytes
+        data = data.encode()
+
+    crc = 0xFFFF
+    for byte in data:
+        crc = ((crc >> 4) ^ crc_table[crc & 0x0f]) << 4
+        crc = crc ^ crc_table[byte & 0x0f]
+        crc = crc & 0xFFFF
+
+    return crc
+
+
 def current_milliseconds():
     """
     max -> d86400000 -> x526 5C00 -> (22)ggi.48g
@@ -86,7 +129,8 @@ def to_base(number, base):
     return result
 
 def decode_std_text(std_text):
-    """Decodes standard output/error from a subprocess, handling potential encoding issues.
+    """
+    Decodes standard output/error from a subprocess, handling potential encoding issues.
 
     Args:
     output: The byte output from the subprocess.

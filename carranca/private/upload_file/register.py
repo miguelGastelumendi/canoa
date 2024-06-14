@@ -1,7 +1,7 @@
 # Equipe da Canoa -- 2024
 #
 # mgd
-# cSpell:ignore
+# cSpell:ignore ccitt
 """
 Second step:
   - Save the file with a unique name in Uploaded_file
@@ -13,7 +13,7 @@ import os
 from zlib import crc32
 from carranca import db
 
-from ...helpers.py_helper import current_milliseconds, to_base, now
+from ...helpers.py_helper import current_milliseconds, to_base, now, crc16
 from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
 
@@ -30,11 +30,15 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
     user_file_full_name =''
 
     ms = to_base(current_milliseconds(), 22).zfill(6)  # max = ggi.48g
-    file_ticket = f"{cargo.user.code}_{now().strftime('%Y-%m-%d')}_{ms}"
+    now_str = now().strftime('%Y-%m-%d')
+    file_ticket = f"{cargo.user.code}_{now_str}_{ms}"
+    crc32 = format(crc16(file_ticket), '0x4')
+    user_receipt = f"{now_str}_{crc32}"
 
     try:
         ''' This is a unique column in UserDataFiles, used for updates '''
-        cargo.user_data_file_key = file_ticket
+        cargo.user_data_file_key = file_
+        cargo.user_receipt = user_receipt
         # make unique file name
         cargo.storage.user_file_name = f"{file_ticket}_{cargo.storage.uploaded_file_name}"
         user_file_full_name = cargo.storage.user_file_full_name()
@@ -59,6 +63,7 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
             , file_crc32 = file_crc32
             , file_name = cargo.storage.uploaded_file_name
             , ticket = file_ticket
+            , user_receipt = user_receipt
             , upload_start_at = cargo.started_at
         )
         task_code += 1 # +5

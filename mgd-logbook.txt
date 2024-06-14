@@ -8,7 +8,7 @@ TODO:
         1. Install nginx on server
         2. Do not validate when there are files in data folder (simultaneous validation)
         3. do_password_reset task_code
-        4. <form action="{{ url_for('handle_click') }}" method="post/get"><button type="submit">Go to Other Location</button></form> instead of Buttons
+        4. <form action="{{ url_for('handle_click') }}" method="post/get"><button type="submit">Go to Other Location</button></form> instead of href=
         5. Log
 
 
@@ -16,6 +16,10 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-06-13,14 v α51a
+    1. New ticket size (user_receipt)
+    2. new texts for upload
+
 2024-06-07 v α50
     1. Jinja2's filter ready!
     2. Fix HTML documents display

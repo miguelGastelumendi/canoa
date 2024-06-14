@@ -3,7 +3,12 @@
 # mgd
 # cSpell:ignore
 """
-Configurable Parameters for each step of the Process
+upload_config.py
+
+UploadConfig
+Configuration of the file upload process modules
+Stores the configurable parameters required at each step
+of the Upload Process
 
 see README.md
 Part of Canoa `File Validation` Processes
@@ -19,6 +24,7 @@ DataValidateApp = NamedTuple(
     name=str,
     flags=str,
     flag_debug=str,
+    # named arguments
     na_out_folder=str,
     na_in_folder=str,
 )
@@ -26,7 +32,7 @@ DataValidateApp = NamedTuple(
 Email = NamedTuple("Email", cc=str, bcc=str)
 
 
-class ModulesConfig:
+class UploadConfig:
     def __init__(self):  #: BaseConfig):
         # app `validate_data` app output file name and extension
         self.output_file = OutputFile(name="data_report", ext=".html")
@@ -34,7 +40,7 @@ class ModulesConfig:
             batch="run.bat",
             name="data_validate",
             flags="--no-spellchecker",
-            flag_debug="--debug",
+            flag_debug="", # --debug
             na_in_folder="--input_folder",  # named argument
             na_out_folder="--output_folder",
         )

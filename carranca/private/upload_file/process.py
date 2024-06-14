@@ -23,15 +23,15 @@ Performs the complete validation process:
 Part of Canoa `File Validation` Processes
 """
 
-from ..models import UserDataFiles
-from ...helpers.user_helper import LoggedUser
+from ...upload_config import UploadConfig
 from ...helpers.py_helper import is_str_none_or_empty, path_remove_last
+from ...helpers.user_helper import LoggedUser
 from ...helpers.error_helper import ModuleErrorCode
+from ..models import UserDataFiles
 
 from .Cargo import Cargo
-from .StorageInfo import StorageInfo
-from .ModulesConfig import ModulesConfig
 from .check import check
+from .StorageInfo import StorageInfo
 from .unzip import unzip
 from .register import register
 from .submit import submit
@@ -64,13 +64,13 @@ def process(
     storage = StorageInfo(logged_user.code, common_folder)
 
     # Modules configurable parameters
-    modules_cfg = ModulesConfig()
+    upload_cfg = UploadConfig()
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
         app_config.DEBUG,
         logged_user,
-        modules_cfg,
+        upload_cfg,
         storage,
         {"file_obj": file_obj, "valid_ext": valid_ext},  # first module parameters
     )

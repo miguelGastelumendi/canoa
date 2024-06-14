@@ -9,8 +9,8 @@ upload_file validation process loop.
 Part of Canoa `File Validation` Processes
 """
 
-from .ModulesConfig import ModulesConfig
 from .StorageInfo import StorageInfo
+from ...upload_config import UploadConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import LoggedUser, now
 
@@ -23,24 +23,24 @@ class Cargo:
         self,
         in_debug: bool,
         user: LoggedUser,
-        modules_cfg: ModulesConfig,
+        upload_cfg: UploadConfig,
         storage: StorageInfo,
         first: dict,
     ):
-        """ "
+        """
         Cargo is a class that helps to control the process loop.
 
         Args:
-            in_debug (bool):             app is in debug mode?
-            user (LoggedUser):           basic user info
-            modules_cfg (ModulesConfig): process's modules configurations
-            storage (StorageInfo):       keeps info of the folder structure and file names
-            first (dict):                parameters for the `first` module
+            in_debug (bool):            app is in debug mode?
+            user (LoggedUser):          basic user info
+            upload_cfg (UploadConfig):  configuration of the file upload process modules
+            storage (StorageInfo):      keeps info of the folder structure and file names
+            first (dict):               parameters for the `first` module
         """
         self.init()
         self.in_debug_mode = in_debug
         self.user = user
-        self.modules_cfg = modules_cfg
+        self.upload_cfg = upload_cfg
         self.storage = storage
         self.next = dict(first)
 
@@ -49,21 +49,22 @@ class Cargo:
         """ When the process began """
         self.started_at = now()
         self.report_ready_at = None
-        self.user_data_file_key = ""
+        self.user_data_file_key = ''
+        self.user_receipt = ''
 
     def init(self):
         """initialization of the error variables and `next module parameters` (next) at each loop"""
         self.error_code = 0
-        self.msg_error = ""
-        self.msg_exception = ""
+        self.msg_error = ''
+        self.msg_exception = ''
         self.next = {}
         return self
 
     def update(
         self,
         error_code: int,
-        msg_error: str = "",
-        msg_exception: str = "",
+        msg_error: str = '',
+        msg_exception: str = '',
         next: dict = {},
         final: dict = {},
     ) -> tuple[int, str, str, object]:

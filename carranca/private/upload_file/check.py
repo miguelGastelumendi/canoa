@@ -32,9 +32,9 @@ def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
             task_code = 2
         elif is_str_none_or_empty(cargo.storage.uploaded_file_name):
             task_code = 3
-        elif is_str_none_or_empty(cargo.modules_cfg.output_file.name):
+        elif is_str_none_or_empty(cargo.upload_cfg.output_file.name):
             task_code = 4
-        elif is_str_none_or_empty(cargo.modules_cfg.output_file.ext):
+        elif is_str_none_or_empty(cargo.upload_cfg.output_file.ext):
             task_code = 5
         elif not is_same_file_name(file_obj.filename, cargo.storage.uploaded_file_name):
             # invalid name, be careful

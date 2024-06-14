@@ -22,6 +22,9 @@ from ..helpers.pw_helper import (
 )
 from ..helpers.py_helper import is_str_none_or_empty
 
+
+from ..helpers.py_helper import  crc16
+
 # O from ..helpers.log_helper import Log2Database
 # Od from .upload_file.process import process as upload_file_process
 from ..helpers.user_helper import LoggedUser
@@ -71,6 +74,13 @@ def home():
 
     It displays the main menu.
     """
+    x = crc16("Hello, World!")
+    b= b"Hello, World!"
+    y= crc16(b)
+    z= crc16('')
+
+    print( f"{x} y:{y}  -- {y} ")
+    print( f"{x} y:{y} {y:04x} {x:04x} -- {y} ")
 
     if nobody_logged():
         return redirect_to(login_route(), None)
@@ -93,6 +103,7 @@ def uploadfile():
     Part of Canoa `File Validation` Processes
     """
     from .upload_file.process import process as upload_file_process
+
 
     if nobody_logged():
         return redirect_to(login_route())

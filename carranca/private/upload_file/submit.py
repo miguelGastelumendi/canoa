@@ -13,7 +13,7 @@ import shutil
 from os import path, stat
 
 from .Cargo import Cargo
-from .ModulesConfig import DataValidateApp
+from ...upload_config import DataValidateApp
 from ...helpers.py_helper import (
     change_file_ext,
     decode_std_text,
@@ -41,7 +41,7 @@ async def _run_validator(
         app.flags,
     ]
 
-    if debug_validator:
+    if debug_validator and not is_str_none_or_empty(app.flag_debug):
         run_command.append(app.flag_debug)
         print(" ".join(run_command))  # TODO  LOG
 
@@ -89,7 +89,7 @@ def submit(cargo: Cargo) -> Cargo:
     try:
         task_code += 1  # 1
         # shortcuts
-        _cfg = cargo.modules_cfg
+        _cfg = cargo.upload_cfg
         _path = cargo.storage.path
         _path_read = cargo.storage.path.data_tunnel_user_read
         _path_write = cargo.storage.path.data_tunnel_user_write

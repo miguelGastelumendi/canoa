@@ -13,6 +13,7 @@ class UserDataFiles(db.Model):
     file_size = db.Column(db.Integer)
     file_crc32 = db.Column(db.Integer)
     ticket = db.Column(db.String(40))
+    user_receipt  = db.Column(db.String(14))
     upload_start_at = db.Column(db.DateTime)
     report_ready_at  = db.Column(db.DateTime)
     email_sent =  db.Column(db.Boolean, default=False)
