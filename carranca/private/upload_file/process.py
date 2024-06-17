@@ -30,8 +30,9 @@ from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
 
 from .Cargo import Cargo
-from .check import check
 from .StorageInfo import StorageInfo
+
+from .check import check
 from .unzip import unzip
 from .register import register
 from .submit import submit

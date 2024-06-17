@@ -58,11 +58,6 @@ def to_str(s: str) -> str:
 
 
 
-crc_table = [
-    0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
-    0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
-]
-
 def crc16(data: bytes | str) -> int:
     """
     Calculates CRC16 value for the given data (bytes or string).
@@ -78,7 +73,7 @@ def crc16(data: bytes | str) -> int:
         data: The data to calculate CRC16 for (either bytes or string).
 
     Returns:
-        The calculated CRC16 value (integer).
+        The calculated CRC16 value (int).
     """
 
     if (data == None):
@@ -91,13 +86,20 @@ def crc16(data: bytes | str) -> int:
     else: # Convert string to bytes
         data = data.encode()
 
+
     crc = 0xFFFF
     for byte in data:
-        crc = ((crc >> 4) ^ crc_table[crc & 0x0f]) << 4
-        crc = crc ^ crc_table[byte & 0x0f]
-        crc = crc & 0xFFFF
+        crc ^= (byte << 8)
+        for _ in range(8):
+            if crc & 0x8000:
+                crc = (crc << 1) ^ 0x1021
+            else:
+                crc <<= 1
+
+            crc &= 0xFFFF
 
     return crc
+
 
 
 def current_milliseconds():

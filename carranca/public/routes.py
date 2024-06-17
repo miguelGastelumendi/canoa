@@ -40,7 +40,7 @@ bp_public = Blueprint(bp_name(base_route_public), base_route_public, url_prefix=
 def route_default():
     """
     `default` page redirects a visitor
-        according to it's status.
+        according to it's status:
             if logged -> to `home`
             else -> to `index`.
     """

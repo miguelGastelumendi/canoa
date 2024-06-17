@@ -6,10 +6,11 @@
 # mgd 2024-05-13
 # cSpell:ignore werkzeug uploadfile tmpl
 
+import requests
 from flask import redirect, request, url_for
+# from config import BaseConfig
 from .texts_helper import get_section
-from .py_helper import to_str
-
+from .py_helper import is_str_none_or_empty, to_str
 
 base_route_private = 'private'
 base_route_public = 'public'
@@ -77,5 +78,14 @@ def redirect_to(route: str, message: str = None) -> str:
     # TODO: display message 'redirecting to ...
     return redirect(route)
 
+def is_external_ip_ready(app_config): #: BaseConfig
+    if is_str_none_or_empty(app_config.SERVER_EXTERNAL_IP):
+        try:
+            app_config.SERVER_EXTERNAL_IP = requests.get(app_config.external_ip_service).text.strip()
+        except:
+            # LOG
+            app_config.SERVER_EXTERNAL_IP = ''
+
+    return not is_str_none_or_empty(app_config.SERVER_EXTERNAL_IP)
 
 #eof

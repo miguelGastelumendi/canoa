@@ -14,3 +14,4 @@ SQLAlchemy==1.4.29
 Werkzeug==2.0.3
 WTForms==3.0.0
 pipreqs
+#eof

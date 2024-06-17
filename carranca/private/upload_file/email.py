@@ -11,7 +11,7 @@ Part of Canoa `File Validation` Processes
 
 from .Cargo import Cargo
 from ..models import UserDataFiles
-from ...helpers.user_helper import now_as_text
+from ...helpers.user_helper import now_as_text, user_receipt
 from ...helpers.email_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode
 
@@ -27,7 +27,8 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
 
     try:
         task_code += 1  # 1
-        email_body_params = {"user_name": cargo.user.name, "ticket": cargo.user_receipt, "when": now_as_text()}
+        receipt =  user_receipt(cargo.final['file_ticket'])
+        email_body_params = {"user_name": cargo.user.name, "ticket": receipt, "when": now_as_text()}
         send_file = user_report_full_name
         email_to = {"to": cargo.user.email, "cc": cargo.upload_cfg.email.cc}
 

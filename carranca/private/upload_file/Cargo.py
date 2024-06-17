@@ -16,7 +16,7 @@ from ...helpers.user_helper import LoggedUser, now
 
 
 class Cargo:
-    name = "cargo"
+    name = "Cargo"
     default_error = "uploadFileError"
 
     def __init__(
@@ -49,8 +49,8 @@ class Cargo:
         """ When the process began """
         self.started_at = now()
         self.report_ready_at = None
+        """ same as upload ticket, a unique key in table UserDataFiles """
         self.user_data_file_key = ''
-        self.user_receipt = ''
 
     def init(self):
         """initialization of the error variables and `next module parameters` (next) at each loop"""

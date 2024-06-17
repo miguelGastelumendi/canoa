@@ -1,3 +1,4 @@
+<!-- spell:ignore Namedtuples namedtuples namedtuple mypy
 Which is the better class/dict/tuple in python in order to has editor hints?
 
 
@@ -75,7 +76,7 @@ Namedtuples are a good choice for representing small, fixed sets of data with cl
 
 
 
-Arguements fpr call proc
+Arguments fpr call proc
 
 There are actually a few different terms used to describe the parameters you mentioned in your example:
 

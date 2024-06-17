@@ -1,10 +1,12 @@
-#spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx
+#spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
+#spell: ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
 
 TODO:
 
 
 
     2024-06-
+        0. Revisar upload/email.py html body, email_sent_at
         1. Install nginx on server
         2. Do not validate when there are files in data folder (simultaneous validation)
         3. do_password_reset task_code
@@ -16,6 +18,10 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-06-14,15 v α51b
+    1. Continuar user_receipt
+
+
 2024-06-13,14 v α51a
     1. New ticket size (user_receipt)
     2. new texts for upload
