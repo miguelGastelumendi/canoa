@@ -7,7 +7,7 @@
     *Password Recovery*
     Part of Public Authentication Processes
 """
-from flask import render_template, request, url_for
+from flask import render_template, request
 from carranca import db
 
 import secrets
@@ -21,6 +21,7 @@ from ..helpers.route_helper import (
 from ..helpers.texts_helper import add_msg_error, add_msg_success
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.email_helper import send_email
+from ..helpers.route_helper import is_external_ip_ready
 
 from .models import Users
 from .forms import PasswordRecoveryForm
@@ -39,13 +40,15 @@ def do_password_recovery():
         pass
     elif user_record_to_update == None:
         add_msg_error("emailNotRegistered", texts)
+    elif not is_external_ip_ready(app_config):
+        add_msg_error("noExternalIP", texts)
     else:
         task_code = ModuleErrorCode.PASSWORD_RECOVERY.value
         try:
             task_code += 1  # 1
             token = secrets.token_urlsafe()
             task_code += 1  # 2
-            url = f"http://{app_config.SERVER_EXTERNAL_ADDRESS}{public_route(public_route_reset_password, token= token)}"
+            url = f"http://{app_config.SERVER_EXTERNAL_IP}{public_route(public_route_reset_password, token= token)}"
             task_code += 1  # 3
             send_email(send_to, "emailPasswordRecovery", {"url": url})
             task_code += 1  # 4

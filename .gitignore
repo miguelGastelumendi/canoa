@@ -35,10 +35,12 @@ carranca/static/assets/.temp
 *.bat
 test.js
 test.html
+venv/
 carranca/static/docs/
 uploaded_files/
 mgd-info.txt
 mgd-dicas-py.txt
+.gitignore
 
 
 ### Flask template

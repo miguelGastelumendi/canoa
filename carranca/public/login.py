@@ -14,7 +14,7 @@ from sqlalchemy import or_
 from ..helpers.py_helper import to_str
 from ..helpers.pw_helper import internal_logout, someone_logged, verify_pass
 from ..helpers.texts_helper import add_msg_error
-from ..helpers.route_helper import get_account_form_data, get_input_text, home_route, private_route, public_route, redirect_to
+from ..helpers.route_helper import get_account_form_data, get_input_text, home_route, redirect_to
 
 from .forms import LoginForm
 from .models import Users

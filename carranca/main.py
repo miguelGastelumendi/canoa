@@ -69,7 +69,7 @@ if app_config.DEBUG:
     app.logger.info(f"Database address : {app_config.SQLALCHEMY_DATABASE_URI}")
     app.logger.info(f"ASSETS_ROOT      : {app_config.ASSETS_ROOT}")
     app.logger.info(f"Server address   : {app_config.SERVER_ADDRESS}")
-    app.logger.info(f"External address : {app_config.SERVER_EXTERNAL_ADDRESS}")
+    app.logger.info(f"External address : {app_config.SERVER_EXTERNAL_IP}")
 
 
 # Prepare for lunching...

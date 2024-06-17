@@ -1,9 +1,9 @@
 """
  Equipe da Canoa -- 2024
 
+ cSpell:ignore SQLALCHEMY, cssless
 """
 
-#cSpell:ignore SQLALCHEMY, cssless
 
 from sys import exit
 from flask_minify import Minify
@@ -61,12 +61,16 @@ if app_config.DEBUG:
     app.logger.info(f"Database address : {app_config.SQLALCHEMY_DATABASE_URI}")
     app.logger.info(f"ASSETS_ROOT      : {app_config.ASSETS_ROOT}")
     app.logger.info(f"Server address   : {app_config.SERVER_ADDRESS}")
-    app.logger.info(f"External address : {app_config.SERVER_EXTERNAL_ADDRESS}")
+    app.logger.info(f"External IP      : {app_config.SERVER_EXTERNAL_IP}")
 
 
-address = urlparse(app_config.SERVER_ADDRESS)
-host = address.hostname
-port = int(address.port)
+try:
+    address = urlparse(app_config.SERVER_ADDRESS)
+    host = address.hostname
+    port = int(address.port)
+except Exception as e:
+    exit(f"Error parsing server address. Expect value is [HostName:Port], found: [{app_config.SERVER_ADDRESS}]. Error {e}")
+
 
 if __name__ == "__main__":
     app.run(host=host, port=port, debug=app_config.DEBUG)

@@ -6,7 +6,7 @@
   "configurations": [
     {
       "name": "Python: Flask Main.py",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "module": "flask",
       "console": "integratedTerminal",

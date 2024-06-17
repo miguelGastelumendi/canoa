@@ -1,11 +1,8 @@
 
 
-
-
 #import pandas as pd
 from sqlalchemy import create_engine, text
 from main import app_config
-#import json
 
 engine = create_engine(
     app_config.SQLALCHEMY_DATABASE_URI,
@@ -39,7 +36,7 @@ def getValues(sql):
 def getLastId(tabeName: str)->int:
     return getValues(f"SELECT IDENT_CURRENT('{tabeName}')")
 
-def getDictResultset(sql):
+def getDictResultSet(sql):
     return {row[0]: row[1] for row in executeSQL(sql)}
 
 # mgd 2024.05.11

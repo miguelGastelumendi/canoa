@@ -21,6 +21,7 @@ from ..helpers.pw_helper import (
     someone_logged,
 )
 from ..helpers.py_helper import is_str_none_or_empty
+from ..helpers.user_helper import file_ticket, user_receipt
 
 
 from ..helpers.py_helper import  crc16
@@ -36,8 +37,6 @@ from ..helpers.route_helper import (
     get_account_form_data,
     get_private_form_data,
     login_route,
-    private_route,
-    public_route,
     redirect_to,
 )
 
@@ -74,20 +73,21 @@ def home():
 
     It displays the main menu.
     """
-    x = crc16("Hello, World!")
-    b= b"Hello, World!"
-    y= crc16(b)
-    z= crc16('')
 
-    print( f"{x} y:{y}  -- {y} ")
-    print( f"{x} y:{y} {y:04x} {x:04x} -- {y} ")
+
+    # x = crc16("Hello, World!")
+    # b= b"Hello, World!"
+    # y= crc16(b)
+
+    # print( f"{x} y:{y} {y:04x} {x:04x}")
+
 
     if nobody_logged():
         return redirect_to(login_route(), None)
 
     template, _, texts = get_private_form_data("home")
 
-    return render_template(template, **texts, private_route=private_route)
+    return render_template(template, **texts)
 
 
 @login_required
@@ -134,9 +134,7 @@ def uploadfile():
     return render_template(
         template,
         form=tmpl_form,
-        **texts,
-        # private_route=private_route,
-        # public_route=public_route,
+        **texts
     )
 
 
@@ -189,7 +187,6 @@ def changepassword():
         template,
         form=tmpl_form,
         **texts,
-        public_route=public_route,
     )
 
 

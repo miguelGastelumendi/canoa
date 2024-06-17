@@ -40,6 +40,7 @@ def unzip(cargo: Cargo) -> Cargo:
                 task_code = 3
                 msg_error = "uploadFileZip_extraction_error"
                 zip_file.extractall(unzip_folder)
+                msg_error = ''
 
     except Exception as e:
         msg_exception= str(e)
