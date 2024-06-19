@@ -31,11 +31,9 @@ from .access_control.password_reset import do_password_reset
 from .access_control.password_recovery import do_password_recovery
 
 # === module variables ====================================
-log = log_helper.Log2Database()  # TODO app
 bp_public = Blueprint(bp_name(base_route_public), base_route_public, url_prefix= '')
 
 # === routes =============================================
-
 @bp_public.route('/')
 def route_default():
     """

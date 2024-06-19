@@ -25,6 +25,10 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-06-19 v β 1.1
+    1. Fixing circular import on server
+
+
 2024-06-17..19 v β 1.0
     1. Check every `db.query` to see if returns records before .first()
     2. Rollback all session.commit() on every Exception
