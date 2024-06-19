@@ -10,7 +10,7 @@ Part of Canoa `File Validation` Processes
 """
 
 from .StorageInfo import StorageInfo
-from ...upload_config import UploadConfig
+from ...config_upload import UploadConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import LoggedUser, now
 
@@ -50,7 +50,7 @@ class Cargo:
         self.started_at = now()
         self.report_ready_at = None
         """ same as upload ticket, a unique key in table UserDataFiles """
-        self.user_data_file_key = ''
+        self.user_data_file__key = ''
 
     def init(self):
         """initialization of the error variables and `next module parameters` (next) at each loop"""

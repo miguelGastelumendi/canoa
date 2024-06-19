@@ -1,13 +1,13 @@
-# Equipe da Canoa -- 2024
-#
-# mgd
-# cSpell:ignore
 """
-Third step:
-  - Unzip the uploaded file to a folder in common with `data_validate` app
+    Third step:
+    - Unzip the uploaded file to a common folder with `data_validate` app
 
-Part of Canoa `File Validation` Processes
+    Part of Canoa `File Validation` Processes
+
+    Equipe da Canoa -- 2024
+    mgd
 """
+# cSpell:ignore
 
 import zipfile
 from .Cargo import Cargo
@@ -50,4 +50,4 @@ def unzip(cargo: Cargo) -> Cargo:
     # goto module submit.py
     return cargo.update(error_code, msg_error, msg_exception)
 
-#eof
+# eof

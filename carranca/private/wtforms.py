@@ -1,10 +1,10 @@
-# Equipe da Canoa -- 2024
-# .\private\forms.py
-#  See .\public\forms.py
-#
-# wtforms for private processes
+"""
+    *wtforms* HTML forms
+    Part of Private Access Control & `File Validation` Processes
 
-# mgd 2024-04-09,27
+    Equipe da Canoa -- 2024
+    mgd 2024-04-09,27
+"""
 # cSpell:ignore: wtforms
 
 from flask_wtf import FlaskForm
@@ -27,5 +27,4 @@ class NewPasswordForm(FlaskForm):
     confirm_password = PasswordField('Confirme a nova senha',
                     validators=[DataRequired(), Length(min=6)])
 
-
-#eof
+# eof

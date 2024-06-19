@@ -1,13 +1,11 @@
-# Equipe da Canoa -- 2024
-# .\public\forms.py
-#  See .\private\forms.py
-#
-# mgd 2024-04-07
-# cSpell:ignore: wtforms
 """
     *wtforms* HTML forms
-    Part of Public Authentication Processes
+    Part of Public Access Control Processes
+
+    Equipe da Canoa -- 2024
+    mgd
 """
+# cSpell:ignore: wtforms
 
 
 from flask_wtf import FlaskForm
@@ -40,4 +38,4 @@ class PasswordRecoveryForm(FlaskForm):
                              validators=[DataRequired(), Email()])
 
 
-#eof
+# eof

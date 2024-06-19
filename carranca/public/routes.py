@@ -1,18 +1,18 @@
-# Equipe da Canoa -- 2024
-# public\routes.py
-#
-# mgd
-# cSpell:ignore werkzeug uploadfile tmpl sqlalchemy lastpasswordchange errorhandler assis passwordrecovery
 """
     *Routes*
-    Part of Public Authentication Processes
+    Part of Public Access Control Processes
     This routes are public, users _must_ not be logged
     (they will be redirect or raise an error, unauthorized_handler)
+
+    Equipe da Canoa -- 2024
+    mgd
 """
+# cSpell:ignore werkzeug uploadfile tmpl sqlalchemy lastpasswordchange errorhandler assis passwordrecovery
+
 from flask import Blueprint, render_template
 from carranca import login_manager
 from ..helpers import log_helper
-from ..helpers.pw_helper import internal_logout, someone_logged
+from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.route_helper import(
      bp_name
     , home_route
@@ -24,11 +24,11 @@ from ..helpers.route_helper import(
     , base_route_public
     , public_route_reset_password
 )
-from .login import do_login
-from .register import do_register
 from .display_html import do_display_html
-from .password_reset import do_password_reset
-from .password_recovery import do_password_recovery
+from .access_control.login import do_login
+from .access_control.register import do_register
+from .access_control.password_reset import do_password_reset
+from .access_control.password_recovery import do_password_recovery
 
 # === module variables ====================================
 log = log_helper.Log2Database()  # TODO app
@@ -45,13 +45,13 @@ def route_default():
             else -> to `index`.
     """
     return redirect_to(
-        home_route() if someone_logged()
+        home_route() if is_someone_logged()
             else
         index_route()
     )
 
 
-@bp_public.route("/index")
+@bp_public.route('/index')
 def index():
     """
     `index` page is the _landing page_
@@ -72,7 +72,7 @@ def register():
     a visitor into a user,
     if he fills in a form correctly.
     """
-    if someone_logged():
+    if is_someone_logged():
         return redirect_to(login_route())
     else:
         return do_register()
@@ -90,7 +90,7 @@ def login():
       [register] and
       the usual documents.
     """
-    if is_method_get() and someone_logged():
+    if is_method_get() and is_someone_logged():
        return redirect_to(home_route())
     else:
        return do_login()
@@ -105,7 +105,7 @@ def resetpassword(token= None):
     and confirm their new password.
     mgd 2024.03.21
     """
-    if someone_logged():
+    if is_someone_logged():
         internal_logout()
         return unauthorized_handler()
     else:
@@ -122,13 +122,13 @@ def passwordrecovery():
     *The user should not be authenticated*
     """
 
-    if someone_logged():
+    if is_someone_logged():
         return redirect_to(private_route('changepassword'))
     else:
         return do_password_recovery()
 
 
-@bp_public.route("/docs/<docName>")
+@bp_public.route('/docs/<docName>')
 def docs(docName: str):
     return do_display_html(docName)
 

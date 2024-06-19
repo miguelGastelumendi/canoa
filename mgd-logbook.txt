@@ -6,20 +6,35 @@ TODO:
 
 
     2024-06-
-        0. Revisar upload/email.py html body, email_sent_at
-        1. Install nginx on server
-        2. Do not validate when there are files in data folder (simultaneous validation)
-        3. do_password_reset task_code
-        4. <form action="{{ url_for('handle_click') }}" method="post/get"><button type="submit">Go to Other Location</button></form> instead of href=
-        5. Log
+        0. About title
+        1. Check upload/email.py html body, email_sent_at
+        2. Install on Linux server with Hunspell
+        4. Require actual/current pw to be able to change pw, changepassword user `timer`
+        5. Wait for process on forms.
+        6. Add exception message to the forms (alert)
+        7. Test error on authentication process: error on start (no Form)
+        7. Avoid user's simultaneous validation
+        8. <form action="{{ url_for('handle_click') }}" method="post/get"><button type="submit">Go to Other Location</button></form> instead of href=
+        9. Events Log
+        A. User's information UI
+        B. Standardize ui messages with db (eg password_*)
+
 
 
 
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-06-17..19 v β 1.0
+    1. Check every `db.query` to see if returns records before .first()
+    2. Rollback all session.commit() on every Exception
+    3. Standardize vars/defs (almost all)
+    4. Send email with html
+    5. do_password_reset task_code,
+
+
 2024-06-14,15 v α51b
-    1. Continuar user_receipt
+    1. Continuar user_receipt e ajustes
 
 
 2024-06-13,14 v α51a
@@ -407,7 +422,4 @@ my_flask_app/
 uploaded_files/
     file1.txt
     file2.jpg
-    ...
-scripts/
-    data_processing.py
-    cleanup_script.py
+

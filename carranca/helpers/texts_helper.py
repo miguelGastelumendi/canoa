@@ -16,10 +16,11 @@ msg_error= 'msgError'
 msg_success= 'msgSuccess'
 user_locale = 'pt-br'   # TODO:  browser || user property
 msg_not_found = "Message '{0}' (not registered §: {1})"
+
 """
- see table ui_sections.name
- this two sections are special (id=1 & id=2):
-  they group all msgError and msgSuccess
+ See table ui_sections.name
+ This two sections are special (id=1 & id=2):
+ as they group all msg error and msgs success
 """
 sec_Error = 'secError'
 sec_Success = 'secSuccess'
@@ -28,7 +29,7 @@ sec_Success = 'secSuccess'
 def __get_select(cols: str, section: str, item: str = None):
     # returns Select query for the current locale, section and, eventually, for only one item
     # use SQL lower(item) better than item.lower (use db locale)
-    item_filter = "" if item is None else f" and (item_lower = lower('{item}'))"
+    item_filter = '' if item is None else f" and (item_lower = lower('{item}'))"
     # ** /!\ ******************************************************************
     #  don't use <schema>.table_name. Must set
     #  ALTER ROLE canoa_connstr IN DATABASE adaptabrasil SET search_path=canoa;
@@ -47,9 +48,9 @@ def _get_result_set(query):
 # returns tuple(text, title) for the item/section pair
 def _get_row(item: str, section: str) -> tuple[str, str]:
     from .dbQuery import getValues
-    select = __get_select("text, title", section, item)
+    select = __get_select('text, title', section, item)
     result = getValues(select)
-    return ("", "") if result == None else result
+    return ('', '') if result == None else result
 
 # returns text for the item/section pair & adds/replace name:(key, value) to the dictionary
 def _add_msg(item: str, section: str, name: str, texts: dict[str, str] = None, *args) -> str:
@@ -64,7 +65,7 @@ def _add_msg(item: str, section: str, name: str, texts: dict[str, str] = None, *
 
     return value
 
-def _texts_init(mnf_item):
+def _texts_init():
     # initialize 'msg_not_found' str
     text, _ = _get_row('messageNotFound', sec_Error)
     mnf =  msg_not_found if is_str_none_or_empty(text) else text
@@ -77,12 +78,12 @@ def get_html(section: str) -> dict[str, str]:
     imgList = get_text('images', section);
     # filter if not is_str_none_or_empty(imgList)
     # select item, text from vw_ui_texts v where v.section_lower = 'html_file' and item not in ('image3.png',  'image4.png')
-    query = __get_select("item, text", section)
+    query = __get_select('item, text', section)
     return _get_result_set(query)
 
 def get_section(section: str) -> dict[str, str]:
     # returns a dict<string, string>
-    query = __get_select("item, text", section)
+    query = __get_select('item, text', section)
     return _get_result_set(query)
 
 def get_text(item: str, section: str, default: str= None) -> str:

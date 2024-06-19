@@ -1,19 +1,20 @@
-# Equipe da Canoa -- 2024
-#
-# mgd
-# cSpell:ignore nobuild
 """
-Fourth step:
-  - Submit to validation
+    Fourth step:
+    - Submit to validation
 
-Part of Canoa `File Validation` Processes
+    Part of Canoa `File Validation` Processes
+
+    Equipe da Canoa -- 2024
+    mgd
 """
+# cSpell:ignore nobuild
+
 import asyncio
 import shutil
 from os import path, stat
 
 from .Cargo import Cargo
-from ...upload_config import DataValidateApp
+from ...config_upload import DataValidateApp
 from ...helpers.py_helper import (
     change_file_ext,
     decode_std_text,
@@ -43,7 +44,7 @@ async def _run_validator(
 
     if debug_validator and not is_str_none_or_empty(app.flag_debug):
         run_command.append(app.flag_debug)
-        print(" ".join(run_command))  # TODO  LOG
+        print(' '.join(run_command))  # TODO  LOG
 
     # Run the script command asynchronously
     stdout = None
@@ -58,7 +59,7 @@ async def _run_validator(
         stdout, stderr = await process.communicate()
 
     except Exception as e:
-        return "", f"{app.app_name}.running: {e}"
+        return '', f"{app.app_name}.running: {e}"
 
     # Decode the output from bytes to string
     stdout_str = decode_std_text(stdout)
@@ -157,7 +158,7 @@ def submit(cargo: Cargo) -> Cargo:
             shutil.rmtree(_path_read)
             shutil.rmtree(_path_write)
         except:
-            print("As pastas de comunicação não foram apagadas.")  # TODO  log
+            print('As pastas de comunicação não foram apagadas.')  # TODO  log
 
     # goto email.py
     error_code = (
@@ -167,9 +168,8 @@ def submit(cargo: Cargo) -> Cargo:
         error_code,
         msg_error,
         msg_exception,
-        {"user_report_full_name": user_report_full_name},
-        {"msg_success": stdout_str},
+        {'user_report_full_name': user_report_full_name},
+        {'msg_success': stdout_str},
     )
-
 
 # eof

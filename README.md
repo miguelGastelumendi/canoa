@@ -31,7 +31,7 @@ variáveis de ambiente (`envvars` [_Environment Variables_](https://en.wikipedia
   Para maiores detalhes e novas configurações ver o módulo `./config.py`.
 - `CANOA_DEBUG` configura o modo da aplicação: `False` ou `True`. Para ativar o modo depuração em Flask, deve usar
     [`FLASK_DEBUG`](https://flask.palletsprojects.com/en/latest/config/#DEBUG);
-- `CANOA_EMAIL_API_KEY` A chave da API para o envio de e-mails (é usado [sendgrid](https://sendgrid.com/));
+- `CANOA_EMAIL_API_KEY` A chave da API para o envio de e-mails (o app usa [sendgrid](https://sendgrid.com/));
 - `CANOA_EMAIL_ORIGINATOR` O endereço de e-mail do remetente, quem envia correios em nome de Canoa e está registrado na API de envio;
 - `CANOA_SERVER_ADDRESS` O endereço do servidor da aplicação (ver ```main.py```);
 - `CANOA_SQLALCHEMY_DATABASE_URI` O URI do banco de dados que deve ser usado para a conexão usando

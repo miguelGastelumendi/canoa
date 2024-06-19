@@ -2,6 +2,8 @@
 #
 # Password Helpers
 #
+
+
 # cSpell:ignore urandom pwdhash hexlify dopwh
 
 
@@ -15,7 +17,7 @@ class Codec:
 
 
 def __dopwh(text: str, salt: str) -> str:
-    pwd_digest = hashlib.pbkdf2_hmac("sha512", text.encode(Codec.utf_8), salt.encode(Codec.ascii), 100000)
+    pwd_digest = hashlib.pbkdf2_hmac('sha512', text.encode(Codec.utf_8), salt.encode(Codec.ascii), 100000)
     pwd_hashed = binascii.hexlify(pwd_digest)
     return pwd_hashed
 
@@ -34,7 +36,7 @@ def hash_pass(user_password: str) -> str:
 #     stored_password = stored_password.decode(Codec.ascii)
 #     salt = stored_password[:64]
 #     stored_password = stored_password[64:]
-#     pwdhash = hashlib.pbkdf2_hmac("sha512", provided_password.encode(Codec.utf_8), salt.encode(Codec.ascii), 100000  )
+#     pwdhash = hashlib.pbkdf2_hmac('sha512', provided_password.encode(Codec.utf_8), salt.encode(Codec.ascii), 100000  )
 #     pwdhash = binascii.hexlify(pwdhash).decode(Codec.ascii)
 #     return pwdhash == stored_password
 
@@ -46,7 +48,7 @@ def verify_pass(provided_password: str, stored_password: str) -> bool:
     return stored_pwd_hashed == provided_pwd_hashed
 
 
-def someone_logged() -> bool:
+def is_someone_logged() -> bool:
     # mgd:
     # in some context, current_user is an 'invalid pointer'
     # see models.py:request_loader
@@ -60,12 +62,12 @@ def someone_logged() -> bool:
     return logged
 
 
-def nobody_logged() -> bool:
-    return not someone_logged()
+def nobody_is_logged() -> bool:
+    return not is_someone_logged()
 
 def internal_logout():
     from flask_login import logout_user
     logout_user()
     return
 
-#eof
+# eof

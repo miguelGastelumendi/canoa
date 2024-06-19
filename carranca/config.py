@@ -5,7 +5,7 @@
  mgd 2024-05-06
  mgd 2024-05-21: Base, Debug, Production
 """
-# cSpell:ignore  SQLALCHEMY,
+# cSpell:ignore SQLALCHEMY
 
 from hashlib import sha384
 from os import path, getenv as os_getenv, environ
@@ -29,11 +29,11 @@ class BaseConfig:
     The Base Configuration Class for the App
 
     For the `data_validate` process's
-      parameters/configuration see: ./private/upload_file/Params.py
+      parameters/configuration see: ./config_upload.py
     """
     app_name = 'Canoa'
     #major.minor.patch,
-    app_version =  'α 0.50' # &beta β;
+    app_version =  'β 1.0' # &beta β;
     envvars_prefix = f"{app_name.upper()}_"
     app_mode = 'None'
 
@@ -44,7 +44,7 @@ class BaseConfig:
         _key = None if is_str_none_or_empty(key) else BaseConfig.envvars_prefix
         return os_getenv(_key, default)
 
-    EMAIL_ORIGINATOR = ''
+    EMAIL_ORIGINATOR = 'assismauro@hotmail.com'
     EMAIL_API_KEY =  ''
 
     ROOT_FOLDER = path.abspath(path.dirname(__file__))
@@ -88,9 +88,6 @@ if is_str_none_or_empty(BaseConfig.SECRET_KEY):
     unique = f"{BaseConfig.app_name} v{BaseConfig.app_version}".encode()
     BaseConfig.SECRET_KEY = sha384(unique).hexdigest()
 
-# === try to get external ip address fro password_recovery
-from carranca.helpers.route_helper import is_external_ip_ready
-is_external_ip_ready(BaseConfig)
 
 # === Available app/config modes, add yours here (extend )
 app_mode_production = 'Production' # capital P
@@ -122,4 +119,4 @@ config_modes = {
     app_mode_debug     : DebugConfig()
 }
 
-#eof
+# eof

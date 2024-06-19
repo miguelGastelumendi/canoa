@@ -92,3 +92,38 @@ There are actually a few different terms used to describe the parameters you men
 
 
 So, there isn't a single special name for parameters like `--input_folder` that require a value. They can be called named arguments or options depending on the context.
+
+
+
+
+
+** check a class *
+
+ if hasattr(e, 'status_code'):
+    status_code = e.status_code
+    print(f"Status code: {status_code}")
+
+
+ getattr(e, 'status_code', None)
+
+  def get_class_docstring(cls):
+  """
+  Returns the docstring (if any) associated with a class.
+  """
+  return cls.__doc__
+
+  def get_class_public_methods(cls):
+  """
+  Returns a list of all public methods (those not starting with underscores)
+  defined in a class.
+  """
+  return [attr for attr in dir(cls) if callable(getattr(cls, attr)) and not attr.startswith('__')]
+
+  class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def __str__(self):
+        return f"Name: {self.name}, Age: {self.age}"
+

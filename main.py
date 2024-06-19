@@ -1,28 +1,42 @@
 """
- Equipe da Canoa -- 2024
+    The main script ;-)
 
- cSpell:ignore SQLALCHEMY, cssless
+    For newbies, remember:
+        project_root/
+        ├── main.py      # <- You are here
+        ├── App/         # Optional folder for application logic
+        │   └── ...      # Other files in the App folder
+        └── other_files.py  # Other Python files in the root directory
+
+    see https://flask.palletsprojects.com/en/latest/tutorial/factory/
+
+
+    Equipe da Canoa -- 2024
+    mgd
 """
-
+ #cSpell:ignore SQLALCHEMY, cssless sendgrid
 
 from sys import exit
 from flask_minify import Minify
 from urllib.parse import urlparse
+
 from carranca import create_app
 from carranca.config import config_modes, BaseConfig, app_mode_production, app_mode_debug
 
+from carranca.helpers.py_helper import is_str_none_or_empty, coalesce
+
 # WARNING: Don't run with debug turned on in production!
-app_mode = BaseConfig.get_os_env("APP_MODE", app_mode_debug)
+app_mode = BaseConfig.get_os_env('APP_MODE', app_mode_debug)
 app_config = None
 
 try:
     app_config = config_modes[app_mode]
 
 except KeyError:
-    exit(f"Error: Invalid <app_mode>. Expected values [{app_mode_debug}, {app_mode_production}].")
+    exit(f"Error: Invalid <app_mode>. sendgrid [{app_mode_debug}, {app_mode_production}].")
 
 
-app = create_app(app_config)   # > carranca\__init__.py 37
+app = create_app(app_config)
 """
     app.config vs app_config
     ------------------------
@@ -34,26 +48,31 @@ app = create_app(app_config)   # > carranca\__init__.py 37
 
     from main import app_config
     ~form main import app~
-
 """
-def _empty(key: str) -> bool:
-    value = getattr(app_config, key)
+
+def __log_and_exit( ups ):
+    app.logger.error(ups)
+    exit(ups)
+
+def __is_empty(key: str) -> bool:
+    value = getattr(app_config, key, '')
     empty = (value is None or value.strip() == '')
     if empty:
-        print(key)
+        app.logger.error(f"Key [{key}] has no value.")
     return empty
 
-if _empty("SQLALCHEMY_DATABASE_URI") or _empty("EMAIL_API_KEY") or _empty("SERVER_ADDRESS") or _empty("SECRET_KEY"):
-    exit("Verifique se as variáveis de ambiente estão definidas.")
+# Check that the mandatory environment variables are set.
+if __is_empty('SQLALCHEMY_DATABASE_URI') or  __is_empty('SERVER_ADDRESS') or __is_empty('SECRET_KEY'):
+    __log_and_exit('Mandatory environment variables were not set.')
 
-
+# Minified html/js if in production
 minified = False
 if not app_config.DEBUG:
     Minify(app=app, html=True, js=True, cssless=False)
     minified = True
 
 # TODO Argument --info
-app.logger.info('-------')
+app.logger.info('--------------------')
 app.logger.info(f"{app_config.app_name} started {app_config.app_mode} in mode :-).")
 if app_config.DEBUG:
     app.logger.info(f"DEBUG            : {app_config.DEBUG}")
@@ -61,18 +80,23 @@ if app_config.DEBUG:
     app.logger.info(f"Database address : {app_config.SQLALCHEMY_DATABASE_URI}")
     app.logger.info(f"ASSETS_ROOT      : {app_config.ASSETS_ROOT}")
     app.logger.info(f"Server address   : {app_config.SERVER_ADDRESS}")
-    app.logger.info(f"External IP      : {app_config.SERVER_EXTERNAL_IP}")
+    app.logger.info(f"External address : {coalesce(app_config.SERVER_EXTERNAL_IP, '<set on demand>')}")
 
+if is_str_none_or_empty(app_config.EMAIL_API_KEY):
+    app.logger.warn(f'Sendgrid API key was not found, the app will not be able to send emails.')
+
+if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
+    app.logger.warn(f'The app email originator is not defined, the app will not be able to send emails.')
 
 try:
     address = urlparse(app_config.SERVER_ADDRESS)
     host = address.hostname
     port = int(address.port)
 except Exception as e:
-    exit(f"Error parsing server address. Expect value is [HostName:Port], found: [{app_config.SERVER_ADDRESS}]. Error {e}")
+    __log_and_exit(f"Error parsing server address. Expect value is [HostName:Port], found: [{app_config.SERVER_ADDRESS}]. Error {e}")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host=host, port=port, debug=app_config.DEBUG)
 
-#eof
+# eof

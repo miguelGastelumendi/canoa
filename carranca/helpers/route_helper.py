@@ -74,6 +74,9 @@ def get_account_form_data(section: str, file: str = None): # -> str, bool, dict[
     file = section if file is None else file
     return get_form_data(section, file, './accounts')
 
+def init_form_vars():  # -> obj, str, bool, dict[str, str]:
+    return None, '', True, {}
+
 def redirect_to(route: str, message: str = None) -> str:
     # TODO: display message 'redirecting to ...
     return redirect(route)
@@ -88,4 +91,4 @@ def is_external_ip_ready(app_config): #: BaseConfig
 
     return not is_str_none_or_empty(app_config.SERVER_EXTERNAL_IP)
 
-#eof
+# eof

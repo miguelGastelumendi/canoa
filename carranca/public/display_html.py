@@ -1,8 +1,3 @@
-# Equipe da Canoa -- 2024
-# public\password_reset.py
-#
-# mgd
-# cSpell:ignore tmpl sqlalchemy passwordrecovery is_method_get passwordrecovery
 """
     *Display HTM File*
     Reformats an HTML from the DB:
@@ -11,7 +6,12 @@
         - images
     using `docName` as a section in
     the db.view vw_ui_texts
+
+    Equipe da Canoa -- 2024
+    mgd
 """
+# cSpell:ignore
+
 import os
 import base64
 
@@ -46,7 +46,7 @@ def __prepare_img_files(html_images: list[str], db_images: list[str], img_path: 
             b64encoded = get_text(file, group)
             if not is_str_none_or_empty(b64encoded):
                 image_data = base64.b64decode(b64encoded)
-                with open(os.path.join(img_path, file), "wb") as file:
+                with open(os.path.join(img_path, file), 'wb') as file:
                     file.write(image_data)
         except Exception as e:
             pass
@@ -64,16 +64,16 @@ def __prepare_img_files(html_images: list[str], db_images: list[str], img_path: 
 
 def do_display_html(docName: str):
     section = docName
-    pageTitle = get_text("pageTitle", section)
-    formTitle = get_text("formTitle", section)
-    body = get_text("body", section, '')
-    style = get_text("style", section, '')
+    pageTitle = get_text('pageTitle', section)
+    formTitle = get_text('formTitle', section)
+    body = get_text('body', section, '')
+    style = get_text('style', section, '')
     # a comma separated list of images.ext names available on the db,
     # see below db_images & _prepare_img_files
-    images = get_text("images", section)
+    images = get_text('images', section)
 
     db_images = (
-        [] if is_str_none_or_empty(images) else [s.strip() for s in images.split(",")]
+        [] if is_str_none_or_empty(images) else [s.strip() for s in images.split(',')]
     )  # list of img names in db
 
     html_images = (
@@ -82,13 +82,13 @@ def do_display_html(docName: str):
 
     # TODO: check if this is the best way to get a path
     # TODO  path_html_docs = path.join(app_config.ROOT_FOLDER, 'html_docs')
-    img_path = os.path.join("\\", "static", "docs", docName, "img")
+    img_path = os.path.join('\\', 'static', 'docs', docName, 'img')
     if is_str_none_or_empty(body):
-        msg = get_msg_error("documentNotFound").format(docName)
+        msg = get_msg_error('documentNotFound').format(docName)
         body = f"<h4>{msg}</h4>"
-        style = ""  # TODO:
-        pageTitle = "Exibir Documento"
-        formTitle = "Documento"
+        style = ''  # TODO:
+        pageTitle = 'Exibir Documento'
+        formTitle = 'Documento'
 
     elif html_images.count == 0:
         pass
@@ -104,12 +104,12 @@ def do_display_html(docName: str):
         body = img_change_src_path(body, img_path)
 
     return render_template(
-        "./home/document.html.j2",
+        './home/document.html.j2',
         **{
-            "pageTitle": pageTitle,
-            "formTitle": formTitle,
-            "documentStyle": style,
-            "documentBody": body,
+            'pageTitle': pageTitle,
+            'formTitle': formTitle,
+            'documentStyle': style,
+            'documentBody': body,
         },
     )
-#eof
+# eof

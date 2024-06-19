@@ -5,7 +5,7 @@
  mgd 2024-04-09--27
 
  """
- # cSpell:ignore latin
+ # cSpell:ignore latin CCITT
 
 import time
 import datetime
@@ -50,37 +50,54 @@ def is_same_file_name(file1: str, file2: str):
 
 
 def is_str_none_or_empty(s: str) -> bool:
-   return (s is None) or ((s + '').strip() == '')
+    """
+    Returns True if the argument is None of an empty (only spaces, \t, \t, etc) string
+    """
+    return (s is None) or ((s + '').strip() == '')
 
 
 def to_str(s: str) -> str:
+    """
+    Returns the argument as a string, striping spaces
+    """
     return '' if is_str_none_or_empty(s) else (s + '').strip()
 
+
+def coalesce(val1, val2):
+    """
+    Returns the first argument if it's truthy (not empty), otherwise returns the second argument.
+    """
+    return val1 if val1 else val2
 
 
 def crc16(data: bytes | str) -> int:
     """
     Calculates CRC16 value for the given data (bytes or string).
+    CRC-16/CCITT-FALSE
 
     https://www.askpython.com/python/examples/crc-16-bit-manual-calculation
     https://crccalc.com/
 
     data = 'Hello, World!'
-    crc16 = crc16(data) -> 0x3D65
+    crc16 = crc16(data) -> 0x67DA
     max: 0xFFFF
+
+
 
     Args:
         data: The data to calculate CRC16 for (either bytes or string).
 
     Returns:
         The calculated CRC16 value (int).
+        print(f"{crc16('Hello, World!'):04X}")
     """
 
     if (data == None):
         return 0
-    elif not isinstance(data, str):
-        # supposing is bytes
+    elif type(data) == bytes:
         pass
+    elif not isinstance(data, str):
+        raise TypeError('Expecting bytes of str parameter.')
     elif is_str_none_or_empty(data):
         return 0
     else: # Convert string to bytes
@@ -101,7 +118,6 @@ def crc16(data: bytes | str) -> int:
     return crc
 
 
-
 def current_milliseconds():
     """
     max -> d86400000 -> x526 5C00 -> (22)ggi.48g
@@ -109,9 +125,9 @@ def current_milliseconds():
     return time.time_ns() // 1_000_000
 
 
-def to_base(number, base):
+def to_base(number: int, base: int) -> str:
     if base < 2 or base > 36:
-        raise ValueError("Base must be between 2 and 36.")
+        raise ValueError('Base must be between 2 and 36.')
 
     result = ''
     if number == 0:

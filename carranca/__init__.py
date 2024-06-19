@@ -53,4 +53,4 @@ def create_app(config):
     register_jinja(app, config)
     return app
 
-#eof
+# eof

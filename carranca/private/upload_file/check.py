@@ -1,14 +1,15 @@
-# Equipe da Canoa -- 2024
-#
-# mgd
-# cSpell:ignore werkzeug ext
 """
-First step:
-  - Simple file validations
-  - Check if exist or create process folders
+    First step:
+    - Simple file validations
+    - Check if exist or create process folders
 
-Part of Canoa `File Validation` Processes
+    Part of Canoa `File Validation` Processes
+
+    Equipe da Canoa -- 2024
+    mgd
 """
+# cSpell:ignore werkzeug ext
+
 from os import path
 from werkzeug.utils import secure_filename
 

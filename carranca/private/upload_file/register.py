@@ -1,23 +1,26 @@
-# Equipe da Canoa -- 2024
-#
-# mgd
-# cSpell:ignore ccitt
 """
-Second step:
-  - Save the file with a unique name in Uploaded_file
-  - Create a record in table user_data_files (UserDataFiles)
+    Second step:
+    - Save the file with a unique name in Uploaded_file
+    - Create a record in table user_data_files (UserDataFiles)
 
-Part of Canoa `File Validation` Processes
+    Part of Canoa `File Validation` Processes
+
+    Equipe da Canoa -- 2024
+    mgd
 """
+# cSpell:ignore ccitt
+
 import os
 from zlib import crc32
 from carranca import db
 
-from ...helpers.user_helper import user_receipt, file_ticket
+from ...helpers.db_helper import persist_record
+from ...helpers.user_helper import get_user_receipt, get_file_ticket
 from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
 
 from .Cargo import Cargo
+
 
 def register(cargo: Cargo, file_obj: object) -> Cargo:
 
@@ -28,11 +31,10 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
     file_saved = False
     file_registered = False
     user_file_full_name =''
-    file_ticket = file_ticket(cargo.user.code)
-
+    file_ticket = get_file_ticket(cargo.user.code)
     try:
         """ This is a unique column in UserDataFiles, used for updates """
-        cargo.user_data_file_key = file_ticket
+        cargo.user_data_file__key = file_ticket
         # make unique file name
         cargo.storage.user_file_name = f"{file_ticket}_{cargo.storage.uploaded_file_name}"
         user_file_full_name = cargo.storage.user_file_full_name()
@@ -57,13 +59,11 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
             , file_crc32 = file_crc32
             , file_name = cargo.storage.uploaded_file_name
             , ticket = file_ticket
-            , user_receipt = user_receipt(file_ticket)
+            , user_receipt = get_user_receipt(file_ticket)
             , upload_start_at = cargo.started_at
         )
         task_code += 1 # +5
-        db.session.add(user_record_to_update)
-        task_code += 1 # +6
-        db.session.commit()
+        persist_record(db, user_record_to_update, task_code)
         file_registered = True
         task_code = 0 # very important!
     except Exception as e:
@@ -77,4 +77,4 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
     error_code = 0 if task_code == 0 else ModuleErrorCode.UPLOAD_FILE_REGISTER + task_code
     return cargo.update(error_code, '', msg_exception, {}, {'file_ticket': file_ticket})
 
-#eof
+# eof

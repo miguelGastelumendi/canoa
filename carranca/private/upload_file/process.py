@@ -1,29 +1,29 @@
-# Equipe da Canoa -- 2024
-#
-# mgd
+"""
+    Performs the complete validation process:
+        1. Check: file name, validates name, create folders
+        2. Register: save process info( user, file, & times) in DB.users_files
+        3. Unzip unzip the uploaded file
+        4. Submit, sends the file to the `data_validate` app
+        5. Email, data_validate output is sent via email
+
+        Cargo
+            is a class to shares: StorageInfo, Params, args, and return values between the 5 modules.
+
+        StorageInfo
+            is a class that keep the files & folders names
+
+        Params
+            is as class that has the values of Configurable parameters of each module
+
+
+    Part of Canoa `File Validation` Processes
+
+    Equipe da Canoa -- 2024
+    mgd
+"""
 # cSpell:ignore ext
-"""
-Performs the complete validation process:
-    1. Check: file name, validates name, create folders
-    2. Register: save process info( user, file, & times) in DB.users_files
-    3. Unzip unzip the uploaded file
-    4. Submit, sends the file to the `data_validate` app
-    5. Email, data_validate output is sent via email
 
-    Cargo
-        is a class to shares: StorageInfo, Params, args, and return values between the 5 modules.
-
-    StorageInfo
-        is a class that keep the files & folders names
-
-    Params
-        is as class that has the values of Configurable parameters of each module
-
-
-Part of Canoa `File Validation` Processes
-"""
-
-from ...upload_config import UploadConfig
+from ...config_upload import UploadConfig
 from ...helpers.py_helper import is_str_none_or_empty, path_remove_last
 from ...helpers.user_helper import LoggedUser
 from ...helpers.error_helper import ModuleErrorCode
@@ -44,7 +44,7 @@ def process(
 ) -> list[int, str, str]:
     from main import app_config
 
-    current_module_name = __name__.split(".")[-1]
+    current_module_name = __name__.split('.')[-1]
 
     def __get_next_params(cargo: Cargo) -> list[object, dict]:
         """
@@ -73,11 +73,11 @@ def process(
         logged_user,
         upload_cfg,
         storage,
-        {"file_obj": file_obj, "valid_ext": valid_ext},  # first module parameters
+        {'file_obj': file_obj, 'valid_ext': valid_ext},  # first module parameters
     )
     error_code = 0
-    msg_error = ""
-    msg_exception = ""
+    msg_error = ''
+    msg_exception = ''
 
     """
         Process Loop
@@ -96,22 +96,22 @@ def process(
                 break
         except Exception as e:
             error_code = (
-                ModuleErrorCode.UPLOAD_FILE_PROCESS
+                ModuleErrorCode.UPLOAD_FILE_PROCESS + cargo.step
                 if error_code == 0
                 else ModuleErrorCode.UPLOAD_FILE_EXCEPTION + error_code
             )
             msg_exception = __get_msg_exception(str(e), msg_exception, error_code)
             break
 
-    current_module_name = "UserDataFiles.update"
-    if is_str_none_or_empty(cargo.user_data_file_key):
+    current_module_name = 'UserDataFiles.update'
+    if is_str_none_or_empty(cargo.user_data_file__key):
         pass  # user_data_file's pk not ready
 
     elif error_code == 0:
-        msg_success = cargo.final.get("msg_success", None)
+        msg_success = cargo.final.get('msg_success', None)
         try:
             UserDataFiles.update(
-                cargo.user_data_file_key,
+                cargo.user_data_file__key,
                 error_code=error_code,
                 success_text=msg_success,
             )
@@ -122,7 +122,7 @@ def process(
     else:
         try:
             UserDataFiles.update(
-                cargo.user_data_file_key,
+                cargo.user_data_file__key,
                 error_code=error_code,
                 error_msg=msg_error,
                 error_text=msg_exception,
