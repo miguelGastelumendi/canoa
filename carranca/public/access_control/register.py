@@ -20,8 +20,7 @@ from ...helpers.route_helper import get_account_form_data, get_input_text, init_
 from ..wtforms import RegisterForm
 from ..models import Users
 
-
-def do_register():
+def register():
     def __exists_user_where(**kwargs: Any) -> bool:
         records = Users.query.filter_by(**kwargs)
         user = None if not records or records.count() == 0 else records.first()

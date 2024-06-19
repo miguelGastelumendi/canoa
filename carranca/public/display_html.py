@@ -18,11 +18,10 @@ import base64
 from flask import render_template
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.html_helper import img_filenames, img_change_src_path
-from ..helpers.texts_helper import get_msg_error, get_text
 
 
 def __prepare_img_files(html_images: list[str], db_images: list[str], img_path: str, group: str) -> bool:
-
+    from ..helpers.texts_helper import get_text
     img_path_ready = os.path.exists(img_path)
     missing_files = html_images.copy()  # missing files from folder, assume all
 
@@ -61,8 +60,8 @@ def __prepare_img_files(html_images: list[str], db_images: list[str], img_path: 
     #    1. Only show Public docs if not logged.
     #    2. check if body exists else error
 
-
-def do_display_html(docName: str):
+def display_html(docName: str):
+    from ..helpers.texts_helper import get_msg_error, get_text
     section = docName
     pageTitle = get_text('pageTitle', section)
     formTitle = get_text('formTitle', section)

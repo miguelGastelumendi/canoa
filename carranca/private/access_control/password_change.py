@@ -34,9 +34,7 @@ def do_password_change():
 
     try:
         task_code += 1  # 1
-        template, is_get, texts = get_account_form_data(
-            'passwordChange', 'password_reset^change'
-        )
+        template, is_get, texts = get_account_form_data('passwordChange', 'password_reset_or_change')
         password = '' if is_get else get_input_text('password')
         task_code += 1  # 2
         confirm_password = '' if is_get else get_input_text('confirm_password')

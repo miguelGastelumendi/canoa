@@ -22,13 +22,9 @@ from ..helpers.route_helper import(
     , is_method_get
     , private_route
     , base_route_public
-    , public_route_reset_password
+    , public_route__password_reset
 )
-from .display_html import do_display_html
-from .access_control.login import do_login
-from .access_control.register import do_register
-from .access_control.password_reset import do_password_reset
-from .access_control.password_recovery import do_password_recovery
+
 
 # === module variables ====================================
 bp_public = Blueprint(bp_name(base_route_public), base_route_public, url_prefix= '')
@@ -73,6 +69,7 @@ def register():
     if is_someone_logged():
         return redirect_to(login_route())
     else:
+        from .access_control.register import register as do_register
         return do_register()
 
 
@@ -91,10 +88,11 @@ def login():
     if is_method_get() and is_someone_logged():
        return redirect_to(home_route())
     else:
-       return do_login()
+        from .access_control.login import login as do_login
+        return do_login()
 
 
-@bp_public.route(f'/{public_route_reset_password}/<token>', methods= ['GET','POST'])
+@bp_public.route(f'/{public_route__password_reset}/<token>', methods= ['GET','POST'])
 def resetpassword(token= None):
     """
     Password Reset Form:
@@ -107,7 +105,8 @@ def resetpassword(token= None):
         internal_logout()
         return unauthorized_handler()
     else:
-        return do_password_reset(token)
+        from .access_control.password_reset import password_reset
+        return password_reset(token)
 
 
 @bp_public.route('/passwordrecovery', methods= ['GET', 'POST'])
@@ -123,13 +122,14 @@ def passwordrecovery():
     if is_someone_logged():
         return redirect_to(private_route('changepassword'))
     else:
-        return do_password_recovery()
+        from .access_control.password_recovery import password_recovery
+        return password_recovery()
 
 
 @bp_public.route('/docs/<docName>')
 def docs(docName: str):
-    return do_display_html(docName)
-
+    from .display_html import display_html
+    return display_html(docName)
 
 # Errors --------------------------------------------------
 # TODO: fix check unauthorized_handler

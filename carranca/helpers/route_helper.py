@@ -4,7 +4,7 @@
 # Python functions to assist routes.py
 #
 # mgd 2024-05-13
-# cSpell:ignore werkzeug uploadfile tmpl
+# cSpell:ignore werkzeug uploadfile tmpl passwordreset
 
 import requests
 from flask import redirect, request, url_for
@@ -12,7 +12,7 @@ from .py_helper import is_str_none_or_empty, to_str
 
 base_route_private = 'private'
 base_route_public = 'public'
-public_route_reset_password = 'resetpassword'
+public_route__password_reset = 'passwordreset'
 
 def _route(base: str, page: str, **params) -> str:
     address = f"{bp_name(base)}.{page}"

@@ -28,7 +28,7 @@ from ..wtforms import LoginForm
 from ..models import get_user_where
 
 
-def do_login():
+def login():
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
     tmpl_form, template, is_get, texts = init_form_vars()
     # TODO test, fake form?

@@ -19,13 +19,13 @@ from ...helpers.route_helper import (
     init_form_vars,
     get_input_text,
     get_account_form_data,
-    public_route_reset_password,
+    public_route__password_reset,
 )
 from ...private.wtforms import NewPasswordForm
 from ..models import  get_user_where
 
 
-def do_password_reset(token):
+def password_reset(token):
     def __is_token_valid(time_stamp, max: int) -> bool:
         """
         True when the number of days since issuance is less than
@@ -40,7 +40,7 @@ def do_password_reset(token):
 
     try:
         task_code += 1  # 1
-        template, is_get, texts = get_account_form_data(public_route_reset_password, 'password_reset^change')
+        template, is_get, texts = get_account_form_data(public_route__password_reset, 'password_reset_or_change')
         token_str = to_str(token)
         password = '' if is_get else get_input_text('password')
         task_code += 1  # 2
