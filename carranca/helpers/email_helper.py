@@ -13,7 +13,6 @@
 
 from os import path
 from base64 import b64encode
-
 import sendgrid
 
 from .texts_helper import get_section
