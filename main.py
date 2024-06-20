@@ -81,6 +81,7 @@ if app_config.DEBUG:
     app.logger.info(f"ASSETS_ROOT      : {app_config.ASSETS_ROOT}")
     app.logger.info(f"Server address   : {app_config.SERVER_ADDRESS}")
     app.logger.info(f"External address : {coalesce(app_config.SERVER_EXTERNAL_IP, '<set on demand>')}")
+    app.logger.info(f"External port    : {coalesce(app_config.SERVER_EXTERNAL_PORT, '<none>')}")
 
 if is_str_none_or_empty(app_config.EMAIL_API_KEY):
     app.logger.warn(f'Sendgrid API key was not found, the app will not be able to send emails.')

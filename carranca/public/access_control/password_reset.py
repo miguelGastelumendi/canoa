@@ -80,6 +80,4 @@ def password_reset(token):
         form=tmpl_form,
         **texts,
     )
-
-
 # eof

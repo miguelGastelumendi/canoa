@@ -24,6 +24,8 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-06-19 v β 1.5
+    1. Fixed circular import on server and other small bugs
 
 2024-06-19 v β 1.4
     1. Fixing circular import on server
