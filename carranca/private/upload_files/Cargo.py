@@ -9,11 +9,11 @@ upload_file validation process loop.
 Part of Canoa `File Validation` Processes
 """
 
-from .StorageInfo import StorageInfo
 from ...config_upload import UploadConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import LoggedUser, now
 
+from .StorageInfo import StorageInfo
 
 class Cargo:
     name = "Cargo"

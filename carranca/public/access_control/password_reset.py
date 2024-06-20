@@ -5,7 +5,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
-# cSpell:ignore tmpl sqlalchemy passwordrecovery is_method_get passwordrecovery wtforms
+# cSpell:ignore tmpl passwordreset wtforms
 
 from flask import render_template, request
 from carranca import db

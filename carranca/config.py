@@ -54,7 +54,11 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     SERVER_ADDRESS = ''
+    # if left empty, an external service will be used
+    # see self.external_ip_service
+    # & ./helpers/route_helper.py[is_external_ip_ready()]
     SERVER_EXTERNAL_IP = ''
+    SERVER_EXTERNAL_PORT = ''
 
     ASSETS_ROOT = '/static/assets'
     DEBUG = False

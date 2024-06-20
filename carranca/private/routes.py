@@ -59,7 +59,7 @@ def uploadfile():
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from upload_file import upload_file
+        from .upload_file import upload_file
         return upload_file()
 
 

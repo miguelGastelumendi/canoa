@@ -7,7 +7,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
-# cSpell:ignore werkzeug uploadfile tmpl sqlalchemy lastpasswordchange errorhandler assis passwordrecovery
+# cSpell:ignore werkzeug uploadfile tmpl sqlalchemy lastpasswordchange errorhandler assis passwordrecovery passwordreset
 
 from flask import Blueprint, render_template
 from carranca import login_manager
@@ -93,7 +93,7 @@ def login():
 
 
 @bp_public.route(f'/{public_route__password_reset}/<token>', methods= ['GET','POST'])
-def resetpassword(token= None):
+def passwordreset(token= None):
     """
     Password Reset Form:
     When a user forgets their password, they will receive an

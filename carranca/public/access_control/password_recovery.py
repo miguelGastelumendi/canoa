@@ -5,7 +5,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
-# cSpell:ignore tmpl sqlalchemy  passwordrecovery wtforms
+# cSpell:ignore tmpl passwordrecovery wtforms
 
 from flask import render_template, request
 from carranca import db
@@ -52,7 +52,7 @@ def password_recovery():
             task_code += 1  # 5
             token = secrets.token_urlsafe()
             task_code += 1  # 6
-            url = f"http://{app_config.SERVER_EXTERNAL_IP}{public_route(public_route__password_reset, token= token)}"
+            url = f"http://{app_config.SERVER_EXTERNAL_IP}{app_config.SERVER_EXTERNAL_PORT}{public_route(public_route__password_reset, token= token)}"
             task_code += 1  # 7
             send_email(send_to, 'passwordRecovery_email', {'url': url})
             task_code += 1  # 8
