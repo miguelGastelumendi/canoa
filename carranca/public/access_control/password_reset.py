@@ -21,11 +21,12 @@ from ...helpers.route_helper import (
     get_account_form_data,
     public_route__password_reset,
 )
-from ...private.wtforms import NewPasswordForm
+from ...private.wtforms import ChangePassword
 from ..models import  get_user_where
 
 
 def password_reset(token):
+    from main import app_config
     def __is_token_valid(time_stamp, max: int) -> bool:
         """
         True when the number of days since issuance is less than
@@ -48,12 +49,12 @@ def password_reset(token):
 
         # If you need the password pwd=  hash_pass(password);
         task_code += 1  # 3
-        tmpl_form = NewPasswordForm(request.form)
+        tmpl_form = ChangePassword(request.form)
         if len(token_str) < 12:
             add_msg_error('invalidToken', texts)
         elif is_get:
             pass
-        elif len(password) < 6:  # TODO: tmpl_form.password.validators[1].min
+        elif not app_config.len_val_for_pw.check(password):
             add_msg_error('invalidPassword', texts)
         elif password != confirm_password:
             add_msg_error('passwordsAreDifferent', texts)

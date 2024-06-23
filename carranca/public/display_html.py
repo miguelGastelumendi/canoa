@@ -61,8 +61,9 @@ def __prepare_img_files(html_images: list[str], db_images: list[str], img_path: 
     #    2. check if body exists else error
 
 def display_html(docName: str):
-    from ..helpers.texts_helper import get_msg_error, get_text
+    from ..helpers.texts_helper import get_msg_error, get_text, get_html
     section = docName
+    ## TODO texts = get_html( section )
     pageTitle = get_text('pageTitle', section)
     formTitle = get_text('formTitle', section)
     body = get_text('body', section, '')

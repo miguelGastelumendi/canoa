@@ -3,28 +3,29 @@
     Part of Private Access Control & `File Validation` Processes
 
     Equipe da Canoa -- 2024
-    mgd 2024-04-09,27
+    mgd 2024-04-09,27; 06-22
 """
 # cSpell:ignore: wtforms
 
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, FileField
-from wtforms.validators import DataRequired, Length, EqualTo
+from wtforms.validators import InputRequired, Length, EqualTo
+from main import app_config
 
+# -------------------------------------------------------------
 # Text here ha no relevance, the ui_text table is actually used.
 
 # Private form
 class UploadFileForm(FlaskForm):
-    filename = FileField('Arquivo',
-                    validators= [DataRequired()])
+    filename = FileField('', validators= [InputRequired()])
 
 # Private & Public form
-class NewPasswordForm(FlaskForm):
-    password = PasswordField('Nova senha',
-                    validators=[DataRequired(), Length(min=6), EqualTo('confirm_password', message="As senhas não são iguais.")])
-                    # TODO EqualTo is not working 2024.03.21
+class ChangePassword(FlaskForm):
+    password = PasswordField('',
+                    validators=[InputRequired(), Length(**app_config.len_val_for_pw.wtf_val())])
+                    #, EqualTo('confirm_password', message="As senhas não são iguais.") é no servidor.
 
-    confirm_password = PasswordField('Confirme a nova senha',
-                    validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('',
+                    validators=[InputRequired(), Length(**app_config.len_val_for_pw.wtf_val())])
 
 # eof

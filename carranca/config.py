@@ -8,8 +8,10 @@
 # cSpell:ignore SQLALCHEMY
 
 from hashlib import sha384
+from typing import Dict
 from os import path, getenv as os_getenv, environ
 from .helpers.py_helper import is_str_none_or_empty
+from .helpers.wtf_helper import LenValidate
 
 
 # from collections import UserDict
@@ -33,9 +35,16 @@ class BaseConfig:
     """
     app_name = 'Canoa'
     #major.minor.patch,
-    app_version =  'β 1.5' # &beta
-    envvars_prefix = f"{app_name.upper()}_"
+    app_version =  'β 1.6' # &beta
+    # see below (enum)
     app_mode = 'None'
+    # all environment variables begin with `Canoa_`
+    envvars_prefix = f"{app_name.upper()}_"
+
+    # min & max text length for pw & user_name
+    len_val_for_pw = LenValidate(6, 22)
+    len_val_for_uname = LenValidate(3, 22)
+
 
     # see route_helper.py[is_external_ip_ready]
     external_ip_service = 'https://checkip.amazonaws.com'
@@ -94,8 +103,8 @@ if is_str_none_or_empty(BaseConfig.SECRET_KEY):
 
 
 # === Available app/config modes, add yours here (extend )
-app_mode_production = 'Production' # capital P
-app_mode_debug = 'Debug' # capital D
+app_mode_production : str = 'Production' # capital P
+app_mode_debug : str = 'Debug' # capital D
 
 
 # === Debug Config
@@ -117,8 +126,7 @@ class ProductionConfig(BaseConfig):
     app_mode = app_mode_production
 
 # Load all possible configurations
-""" List[BaseConfig]  list of configuration modes """
-config_modes = {
+config_modes: Dict[str, BaseConfig] = {
     app_mode_production: ProductionConfig(),
     app_mode_debug     : DebugConfig()
 }

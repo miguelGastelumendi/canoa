@@ -7,9 +7,10 @@
 """
 # cSpell:ignore tmpl sqlalchemy wtforms
 
-from flask import render_template, request
-from typing import Any
 from carranca import db
+from typing import Any
+from main import app_config
+from flask import render_template, request
 
 from ...helpers.db_helper import persist_record
 from ...helpers.pw_helper import internal_logout, is_someone_logged
@@ -35,15 +36,21 @@ def register():
         tmpl_form = RegisterForm(request.form)
         task_code+= 1 # 2
         template, is_get, texts = get_account_form_data('register')
+        user_name = '' if is_get else get_input_text('username')
         task_code+= 1 # 3
+
         if is_get and is_someone_logged():
             internal_logout()
         elif is_get:
             pass
-        elif __exists_user_where(username_lower=get_input_text('username').lower()):
+        elif __exists_user_where(username_lower= user_name.lower()):
             add_msg_error('userAlreadyRegistered', texts)
         elif __exists_user_where(email=get_input_text('email').lower()):
             add_msg_error('emailAlreadyRegistered', texts)
+        elif not app_config.len_val_for_pw.check(get_input_text('password')):
+            add_msg_error('invalidPassword', texts, app_config.len_val_for_pw.min, app_config.len_val_for_pw.max)
+        elif not app_config.len_val_for_uname.check(user_name):
+            add_msg_error('invalidUserName', texts, app_config.len_val_for_uname.min, app_config.len_val_for_uname.max)
         else:
             task_code+= 1 # 4
             user_record_to_insert = Users(**request.form)

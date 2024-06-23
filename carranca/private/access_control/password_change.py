@@ -8,6 +8,7 @@
 # cSpell:ignore tmpl passwordrecovery wtforms
 
 from carranca import db
+from main import app_config
 from flask import render_template, request
 from flask_login import current_user, login_required
 
@@ -22,12 +23,11 @@ from ...helpers.route_helper import (
     get_input_text,
     get_account_form_data,
 )
-from ..wtforms import NewPasswordForm
+from ..wtforms import ChangePassword
 from ...public.models import get_user_where
 
 
 def do_password_change():
-
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_CHANGE.value
     tmpl_form, template, is_get, texts = init_form_vars()
     # TODO test, fake form?
@@ -41,12 +41,12 @@ def do_password_change():
         task_code += 1  # 3
         user =  None if is_get else get_user_where(id=current_user.id)
         task_code += 1  # 4
-        tmpl_form = NewPasswordForm(request.form)
+        tmpl_form = ChangePassword(request.form)
 
         if is_get:
             pass
-        elif len(password) < 6:  # TODO: tmpl_form.password.validators[1].min
-            add_msg_error('invalidPassword', texts)
+        elif not app_config.len_val_for_pw.check(password):
+            add_msg_error('invalidPassword', texts, app_config.len_val_for_pw.min, app_config.len_val_for_pw.max)
         elif password != confirm_password:
             add_msg_error('passwordsAreDifferent', texts)
         elif user == None:

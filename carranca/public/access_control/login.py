@@ -7,7 +7,6 @@
 """
 # cSpell:ignore tmpl sqlalchemy wtforms
 
-
 from flask import render_template, request
 from flask_login import login_user
 
@@ -51,9 +50,9 @@ def login():
             task_code += 1  # 5
             search_for = to_str(username).lower()
             task_code += 1  # 7
-            user = get_user_where(username_lower = search_for)
+            user = get_user_where(username_lower = search_for) # by uname
             task_code += 1  # 8
-            user = get_user_where(email = search_for) if user == None else user
+            user = get_user_where(email = search_for) if user == None else user #or by email
             task_code += 1  # 9
             if not user or not verify_pass(password, user.password):
                 add_msg_error('userOrPwdIsWrong', texts)
@@ -68,7 +67,7 @@ def login():
                 task_code += 1  # 12
                 persist_record(db, user, task_code)
 
-                remember_me = to_str(request.form.get('remember_me'))
+                remember_me = not is_str_none_or_empty(request.form.get('remember_me'))
                 task_code += 1  # 13
                 login_user(user, remember_me)
                 task_code += 1  # 14
@@ -83,6 +82,5 @@ def login():
         form=tmpl_form,
         **texts,
     )
-
 
 # eof

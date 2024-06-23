@@ -10,6 +10,7 @@
 # cSpell:ignore getDictResultset dbquery connstr adaptabrasil
 
 from .py_helper import is_str_none_or_empty
+from .jinja_helper import process_pre_templates
 
 # === local var ===========================================
 msg_error= 'msgError'
@@ -42,7 +43,9 @@ def __get_select(cols: str, section: str, item: str = None):
 
 def _get_result_set(query):
     from .dbQuery import getDictResultSet
-    return getDictResultSet(query)
+    texts = getDictResultSet(query)
+   # TODO texts = process_pre_templates(_texts)
+    return texts
 
 
 # returns tuple(text, title) for the item/section pair
@@ -75,7 +78,7 @@ def _texts_init():
 
 # TODO: returns a dict<string, string> with the HTML info except for.. not ready, still working...
 def get_html(section: str) -> dict[str, str]:
-    imgList = get_text('images', section);
+    imgList = get_text('images', section)
     # filter if not is_str_none_or_empty(imgList)
     # select item, text from vw_ui_texts v where v.section_lower = 'html_file' and item not in ('image3.png',  'image4.png')
     query = __get_select('item, text', section)
@@ -84,7 +87,9 @@ def get_html(section: str) -> dict[str, str]:
 def get_section(section: str) -> dict[str, str]:
     # returns a dict<string, string>
     query = __get_select('item, text', section)
-    return _get_result_set(query)
+    _texts = _get_result_set(query)
+    #texts = process_pre_templates(_texts)
+    return _texts
 
 def get_text(item: str, section: str, default: str= None) -> str:
     """

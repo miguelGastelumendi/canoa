@@ -3,39 +3,53 @@
     Part of Public Access Control Processes
 
     Equipe da Canoa -- 2024
-    mgd
+    mgd 2024-04-09,27; 06-22
 """
+
 # cSpell:ignore: wtforms
 
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
-from wtforms.validators import Email, DataRequired, Length
+from wtforms.validators import Email, InputRequired, Length
+from main import app_config
+
 
 # Public forms
-# Text here have no relevance, the ui_text table is actually used.
+# -------------------------------------------------------------
+# Text here ha no relevance, the ui_text table is actually used.
+
 
 class LoginForm(FlaskForm):
-    username = StringField('Username',
-                     validators=[DataRequired(), Length(min=6)])
-    password = PasswordField('Password',
-                     validators=[DataRequired()])
-    remember_me = BooleanField('Remember_me')
+    username = StringField(
+        "Username",
+        validators=[InputRequired(), Length(**app_config.len_val_for_uname.wtf_val())],
+    )
+    password = PasswordField(
+        "Password",
+        validators=[InputRequired(), Length(**app_config.len_val_for_pw.wtf_val())],
+    )
+    remember_me = BooleanField("Remember_me")
 
 
 class RegisterForm(FlaskForm):
-    username = StringField('Username',
-                     validators=[DataRequired()])
-    email = StringField('Email',
-                     validators=[DataRequired(), Email()])
-    password = PasswordField('Password',
-                     validators=[DataRequired(), Length(min=6)])
-    disabled = BooleanField('Disabled')
+    username = StringField(
+        "Username",
+        validators=[InputRequired(), Length(**app_config.len_val_for_uname.wtf_val())],
+    )
+    email = StringField("Email", validators=[InputRequired(), Email()])
+    password = PasswordField(
+        "Password",
+        validators=[InputRequired(), Length(**app_config.len_val_for_pw.wtf_val())],
+    )
+    disabled = BooleanField("Disabled")
 
 
 class PasswordRecoveryForm(FlaskForm):
-    user_email = StringField('Send link to this email',
-                             validators=[DataRequired(), Email()])
+    user_email = StringField(
+        "Send link to this email",
+        validators=[InputRequired(), Email()]
+    )
 
 
 # eof

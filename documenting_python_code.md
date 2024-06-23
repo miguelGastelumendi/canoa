@@ -1,11 +1,11 @@
 <!--
    /* cSpell:locale en
-   /* cSpell:ignore docstrings pythonic hexdigest hashlib urandom
+   /* cSpell:ignore docstrings pythonic hexdigest hashlib urandom lucuma
 -->
 
 # Documenting Python Code
 >   _Annotated by Miguel Gastelumendi with the help of Gemini_
->   Last update 2024-05-24
+>   Last update 2024-06-22
 
 
 ## Introduction
@@ -21,8 +21,56 @@ This guide provides an overview of effective practices for documenting Python co
 
 There are several ways to document Python code, each with its purpose
 
-* **Docstrings** Built-in comments within functions, classes, and modules that provide concise explanations of their purpose, parameters, and return values.
+
+* **Hints**
+    Type hints provide optional type annotations using the `typing` module. These annotations clarify the expected data types for variables, function arguments, and return values.
+
+    The enhanced static type checking offered by Hints allows tools such as `mypy` or `pyright` to detect possible type-related errors at the time of development.
+
+    > _Hints_ are used along the code: (see below [Data Types](#data-types) for more example)
+    ```python
+    from typing import Dict
+
+    class BaseConfig:
+        """
+        The Base Configuration Class for the App
+        """
+        #etc
+
+    app_mode_production : str = 'Production'
+    app_mode_debug = 'Debug'
+
+    # Load all possible configurations
+    config_modes: Dict[str, BaseConfig] = {
+        app_mode_production: ProductionConfig(),
+        app_mode_debug     : DebugConfig()
+    }
+
+    ```
+
+* **Docstrings**
+    Built-in comments within functions, classes, and modules that provide concise explanations of their purpose, parameters, and return values.
+
     > _Docstrings_ are marked with triple double quotes (`"""`) or three backticks (`` ``` ``) at the beginning and end.
+
+    ```python
+    class MyClass:
+        """
+        This is the docstring for the MyClass class.
+        """
+        #etc
+
+        def my_method(self):
+            """
+            This is the docstring for the my_method function.
+            """
+            #etc
+
+    # Accessing class docstring, with __doc__ or help()
+    class_doc = MyClass.__doc__
+    help(MyClass)
+    method_doc = MyClass().my_method.__doc__
+    ```
 * **Comments** Inline comments within code blocks to clarify specific logic or non-obvious sections.
     > _Comments_ are started with a hash symbol `#` any where in the line.
 * **External Documentation** Separate files (like READMEs or markdown files) to provide more detailed explanations, examples, and usage instructions.
@@ -66,18 +114,61 @@ Python offers various built-in data types for storing and organizing information
 
 **Single**
 
-* **`int`** _(integer)_ Represents whole numbers (e.g., `10`, `-5`).
-* **`float`** _(floating-point)_ Represents numbers with decimals (e.g., `3.14`, `-2.5e2`).
-* **`str`** _(string)_ Represents textual data enclosed in quotes (e.g., `"Pythonic"`, `'world'`).
+* **`int`** _(integer)_ Represents whole numbers
+    ```python
+    age: int= 10
+    temp: int= -5
+    ```
+* **`float`** _(floating-point)_ Represents numbers with decimals
+    ```python
+    pi: float = 3.14159
+    x: float = -2.5e2
+    ```
+
+* **`str`** _(string)_ Represents textual data enclosed in quotes
+    ```python
+    user_name: str = request.form.get(name)
+    target: str = 'Pythonic'
+    ```
 * **`bool`** _(boolean)_ Represents logical values, either `True` or `False`.
+    ```python
+    remember_me: bool = not is_str_none_or_empty(request.form.get('remember_me'))
+    ```
 * **`None`** _( )_  Indicates the absence of a value.
 
 **Collection**
+> If the collection has elements  of more than one type use Union[] or Sequence, avoid using `Any` type (because is a poor description). Below, _ordered_ and _unordered_ refers to the access method to the items, not to the lexical order of the elements.
+* **`list`** Ordered sequence of mutable elements, allowing duplicates (general purpose, dynamic collections)
+    > Offers: append(x), count(x), index(x), insert(i, x), pop(i), remove(x), reverse(), sort()
+    ```python
+    from typing import List, Sequence
 
-* **`list`** Ordered sequence of elements, allowing duplicates (e.g., `[1, 2, 3, "apple"]`).
-* **`tuple`** Immutable ordered sequence of elements (e.g., `(10, "hello", True)`).
-* **`set`** Unordered collection of unique elements (e.g., `{1, 2, 2, "apple"}`).
-* **`dict` (dictionary):** Unordered collection of key-value pairs (e.g., `{"name": "Alice", "age": 30}`).
+    fruits: List[str] = ['apple', 'lucuma', 'banana', 'cherry', 'lucuma']
+    fruits.sort()
+    data: Sequence = ['apple', 3, True]
+    ```
+* **`tuple`** Ordered sequence of immutable unique elements (fixed data, function arguments, dic keys)
+    > Offers: count(x), index(x)
+    ```python
+    from typing import Tuple, Union
+
+    bh_coordinates: Tuple[float, float] = (-19.912998, -43.940933)
+    send: tuple[Union[bool, int, str]] = (10, 'hello', True, 34, 903, 23)
+    ```
+* **`set`** Unordered collection of unique mutable elements
+    > Offers: add(x), difference(set), discard(x), in, intersection(set), pop(), remove(x), union(set)
+
+    ```python
+    from typing import Set
+
+    my_set: Set[int] = {1, 2, 5, 12, 3}
+    u_words: Set[str] = set('A set of non unique words to find unique words'.lower().split())
+    ```
+* **`dict` (dictionary)** Unordered collection of key&lt;immutable+hashable>-value&lt;any> pairs
+    > Offers: get(key, default), items(), keys(), pop(key, default), update(other_dict), values()
+    ```python
+    email_to = {'to': user.email, 'cc': user.chief.email}
+    ```
 
 ## Naming Conventions
 
@@ -120,7 +211,7 @@ In object-oriented programming, managing member visibility is crucial for code o
 
 * **Private Members** *(by Convention, not enforced)* Members with names starting with double underscores (__) are considered private. This is a convention to discourage direct access from outside the class, but not enforced by the language.
 
-  However, technically, these members can still be accessed from outside the class if someone bypasses [encapsulation](encapsulation) principles.
+  However, technically, these members can still be accessed from outside the class if someone bypasses [encapsulation](#encapsulation) principles.
 
 
 ### Encapsulation
