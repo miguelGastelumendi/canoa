@@ -46,6 +46,8 @@ async def _run_validator(
         run_command.append(app.flag_debug)
         print(' '.join(run_command))  # TODO  LOG
 
+    print(' '.join(run_command))  # TODO  LOG
+
     # Run the script command asynchronously
     stdout = None
     stderr = None
@@ -59,7 +61,7 @@ async def _run_validator(
         stdout, stderr = await process.communicate()
 
     except Exception as e:
-        return '', f"{app.app_name}.running: {e}"
+        return '', f"{app.name}.running: {e}"
 
     # Decode the output from bytes to string
     stdout_str = decode_std_text(stdout)
@@ -96,7 +98,7 @@ def submit(cargo: Cargo) -> Cargo:
         _path_write = cargo.storage.path.data_tunnel_user_write
         external_app_path = path.join(_path.apps_parent_path, _cfg.app.name)
         batch_full_name = path.join(external_app_path, _cfg.app.batch)
-
+        print(batch_full_name)
         if not path.exists(batch_full_name):  # TODO send to check module
             task_code += 1  # 2
             raise Exception(

@@ -35,7 +35,7 @@ class BaseConfig:
     """
     app_name = 'Canoa'
     #major.minor.patch,
-    app_version =  'β 1.6' # &beta
+    app_version =  'β 1.7' # &beta
     # see below (enum)
     app_mode = 'None'
     # all environment variables begin with `Canoa_`
@@ -85,9 +85,12 @@ def init_envvar_of_config(cfg):
             pass
         elif hasattr(cfg, attribute_name):
             value = bool(value) if value.capitalize() in [str(True), str(False)] else value
-            setattr(cfg, attribute_name, value)
+            if is_str_none_or_empty(value):
+                print(f"Ignoring empty envvar value for key [{key}], keeping original." )
+            else:
+                setattr(cfg, attribute_name, value)
         elif BaseConfig.DEBUG:
-            print(f"Warning: {attribute_name} is not defined in the class attributes, cannot set envvar value.")
+            print(f"[{attribute_name}] is not an attribute of `Config`, will not set envvar value.")
 
 # === Retrieve values from envvars
 init_envvar_of_config(BaseConfig)
@@ -113,7 +116,7 @@ class DebugConfig(BaseConfig):
     The Debug Configuration Class for the App
     """
 
-    SERVER_ADDRESS = 'http://127.0.0.1:5000' if is_str_none_or_empty(BaseConfig.SERVER_ADDRESS) else BaseConfig.SERVER_ADDRESS
+    SERVER_ADDRESS = 'http://0.0.0.0:5001' if is_str_none_or_empty(BaseConfig.SERVER_ADDRESS) else BaseConfig.SERVER_ADDRESS
     DEBUG = True
     app_mode = app_mode_debug
 

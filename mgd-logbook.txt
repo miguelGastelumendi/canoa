@@ -28,6 +28,8 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-07.01 v β 1.7
+    1. Fixed for Linux, sending to Windows to check
 
 2024-06-22 v β 1.6
     1.  Check all wtForms validators (create app_config.LenFor.name & pw)

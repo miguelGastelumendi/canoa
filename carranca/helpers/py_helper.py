@@ -9,7 +9,13 @@
 
 import time
 import datetime
+import platform
 from os import path, makedirs
+
+OS_NAME_IS = platform.system()
+OS_IS_WINDOWS = (OS_NAME_IS == "Windows")
+OS_IS_LINUX = (OS_NAME_IS == "Linux")
+OS_IS_MAC = (OS_NAME_IS == "Darwin")
 
 
 def now():
@@ -53,7 +59,7 @@ def is_str_none_or_empty(s: str) -> bool:
     """
     Returns True if the argument is None of an empty (only spaces, \t, \t, etc) string
     """
-    return (s is None) or ((s + '').strip() == '')
+    return (s is None) or ((str(s) + '').strip() == '')
 
 
 def to_str(s: str) -> str:
