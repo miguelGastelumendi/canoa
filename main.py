@@ -17,6 +17,7 @@
  #cSpell:ignore SQLALCHEMY, cssless sendgrid
 
 from sys import exit
+from collections import namedtuple
 from flask_minify import Minify
 from urllib.parse import urlparse
 
@@ -66,18 +67,17 @@ if __is_empty('SQLALCHEMY_DATABASE_URI') or  __is_empty('SERVER_ADDRESS') or __i
     __log_and_exit('Mandatory environment variables were not set.')
 
 
-port = 0
-host = 0
-server_address = app_config.SERVER_ADDRESS
-address = None
+Address = namedtuple('Addess', 'host, port' )
+address = Address('', 0)
 try:
     default_scheme = 'http://'
-    address = urlparse(app_config.SERVER_ADDRESS, default_scheme)
-    host = address.hostname
-    port = address.port
-    print(f"{address.scheme}://{host}:{port}")
+    url = urlparse(app_config.SERVER_ADDRESS, default_scheme, False)
+    # there is a bug is Linux (?) url.hostname  & url.port are always None
+    path = ['', ''] if is_str_none_or_empty(url.path) else f"{url.path}:".split(':')
+    address.host = path[0] if is_str_none_or_empty(url.hostname) else url.hostname
+    address.port = path[1] if is_str_none_or_empty(url.port) else url.port
 except Exception as e:
-    app.logger.error(f"`urlparse('{server_address}', '{default_scheme}') -> parsed: {address.hostname}:{address.port}`")
+    app.logger.error(f"`urlparse('{app_config.SERVER_ADDRESS}', '{default_scheme}') -> parsed: {address.host}:{address.port}`")
     __log_and_exit(f"Error parsing server address. Expect value is [HostName:Port], found: [{app_config.SERVER_ADDRESS}]. Error {e}")
 
 # Minified html/js if in production
@@ -94,7 +94,7 @@ if app_config.DEBUG:
     app.logger.info(f"Page Compression : {minified}")
     app.logger.info(f"Database address : {app_config.SQLALCHEMY_DATABASE_URI}")
     app.logger.info(f"ASSETS_ROOT      : {app_config.ASSETS_ROOT}")
-    app.logger.info(f"Server address   : {host}:{port}")
+    app.logger.info(f"Server address   : {address.host}:{address.port}")
     app.logger.info(f"External address : {coalesce(app_config.SERVER_EXTERNAL_IP, '<set on demand>')}")
     app.logger.info(f"External port    : {coalesce(app_config.SERVER_EXTERNAL_PORT, '<none>')}")
 
@@ -103,9 +103,9 @@ if is_str_none_or_empty(app_config.EMAIL_API_KEY):
 
 if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
     app.logger.warn(f'The app email originator is not defined, the app will not be able to send emails.')
-print(port)
+print(address)
 print(host)
-
+exit()
 
 if __name__ == '__main__':
     app.run(host=host, port=port, debug=app_config.DEBUG)
