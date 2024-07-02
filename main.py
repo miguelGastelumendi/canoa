@@ -67,15 +67,17 @@ if __is_empty('SQLALCHEMY_DATABASE_URI') or  __is_empty('SERVER_ADDRESS') or __i
     __log_and_exit('Mandatory environment variables were not set.')
 
 
-Address = namedtuple('Addess', 'host, port' )
+Address = namedtuple('Address', 'host, port' )
 address = Address('', 0)
 try:
     default_scheme = 'http://'
     url = urlparse(app_config.SERVER_ADDRESS, default_scheme, False)
     # there is a bug is Linux (?) url.hostname  & url.port are always None
     path = ['', ''] if is_str_none_or_empty(url.path) else f"{url.path}:".split(':')
-    address.host = path[0] if is_str_none_or_empty(url.hostname) else url.hostname
-    address.port = path[1] if is_str_none_or_empty(url.port) else url.port
+    address = Address(
+        path[0] if is_str_none_or_empty(url.hostname) else url.hostname,
+        path[1] if is_str_none_or_empty(url.port) else url.port
+    )
 except Exception as e:
     app.logger.error(f"`urlparse('{app_config.SERVER_ADDRESS}', '{default_scheme}') -> parsed: {address.host}:{address.port}`")
     __log_and_exit(f"Error parsing server address. Expect value is [HostName:Port], found: [{app_config.SERVER_ADDRESS}]. Error {e}")
@@ -103,11 +105,11 @@ if is_str_none_or_empty(app_config.EMAIL_API_KEY):
 
 if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
     app.logger.warn(f'The app email originator is not defined, the app will not be able to send emails.')
-print(address)
-print(host)
-exit()
+
+if is_str_none_or_empty(address.host) or (address.port == 0):
+    __log_and_exit(f"Invalid hot or port address, found [{app_config.SERVER_ADDRESS}], parsed: {address.host}:{address.port}`")
 
 if __name__ == '__main__':
-    app.run(host=host, port=port, debug=app_config.DEBUG)
+    app.run(host=address.host, port=address.port, debug=app_config.DEBUG)
 
 # eof
