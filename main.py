@@ -65,22 +65,20 @@ def __is_empty(key: str) -> bool:
 if __is_empty('SQLALCHEMY_DATABASE_URI') or  __is_empty('SERVER_ADDRESS') or __is_empty('SECRET_KEY'):
     __log_and_exit('Mandatory environment variables were not set.')
 
-# Check Server address, in windows protocol is not mandatory
-host = ''
+
 port = 0
-server_address = ''
-default_scheme = 'http://'
+host = 0
+server_address = app_config.SERVER_ADDRESS
+address = None
 try:
-    server_address = app_config.SERVER_ADDRESS
-    address = urlparse(server_address, default_scheme)
-    print(address)
+    default_scheme = 'http://'
+    address = urlparse(app_config.SERVER_ADDRESS, default_scheme)
     host = address.hostname
     port = address.port
-    print(address.port)
+    print(f"{address.scheme}://{host}:{port}")
 except Exception as e:
     app.logger.error(f"`urlparse('{server_address}', '{default_scheme}') -> parsed: {address.hostname}:{address.port}`")
-    __log_and_exit(f"Error parsing server address. Expect value is `[scheme|protoco]HostName:Port` , found: [{app_config.SERVER_ADDRESS}]. Error {e}")
-
+    __log_and_exit(f"Error parsing server address. Expect value is [HostName:Port], found: [{app_config.SERVER_ADDRESS}]. Error {e}")
 
 # Minified html/js if in production
 minified = False
@@ -100,20 +98,16 @@ if app_config.DEBUG:
     app.logger.info(f"External address : {coalesce(app_config.SERVER_EXTERNAL_IP, '<set on demand>')}")
     app.logger.info(f"External port    : {coalesce(app_config.SERVER_EXTERNAL_PORT, '<none>')}")
 
-# if is_str_none_or_empty(app_config.EMAIL_API_KEY):
-#     app.logger.warning(f'Sendgrid API key was not found, the app will not be able to send emails.')
+if is_str_none_or_empty(app_config.EMAIL_API_KEY):
+    app.logger.warn(f'Sendgrid API key was not found, the app will not be able to send emails.')
 
-# if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
-#     app.logger.warning(f'The app email originator is not defined, the app will not be able to send emails.')
-
-
+if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
+    app.logger.warn(f'The app email originator is not defined, the app will not be able to send emails.')
 print(port)
-print(host)    
+print(host)
+
 
 if __name__ == '__main__':
-    print(port)
-    print(host)    
     app.run(host=host, port=port, debug=app_config.DEBUG)
-    
 
 # eof
