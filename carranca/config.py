@@ -28,14 +28,26 @@ from .helpers.wtf_helper import LenValidate
 # see https://flask.palletsprojects.com/en/latest/config/ for other attributes
 class BaseConfig:
     """
-    The Base Configuration Class for the App
+        The Base Configuration Class for the App
+        ----------------------------------------
 
-    For the `data_validate` process's
-      parameters/configuration see: ./config_upload.py
+        For the `data_validate` process's
+        parameters/configuration see: ./config_upload.py
     """
+
+    ''' Environment Variables Helper
+        ----------------------------
+    '''
+    def get_os_env(key: str, default = None) -> str:
+        _key = None if is_str_none_or_empty(key) else BaseConfig.envvars_prefix
+        return os_getenv(_key, default)
+
+    ''' Internal attributes
+        ------------------
+    '''
     app_name = 'Canoa'
     #major.minor.patch,
-    app_version =  'β 1.7' # &beta
+    app_version =  'β 1.8' # &beta
     # see below (enum)
     app_mode = 'None'
     # all environment variables begin with `Canoa_`
@@ -46,25 +58,29 @@ class BaseConfig:
     len_val_for_uname = LenValidate(3, 22)
 
 
-    # see route_helper.py[is_external_ip_ready]
-    external_ip_service = 'https://checkip.amazonaws.com'
+    ''' From Environment Variables
+        --------------------------
+    '''
 
-    def get_os_env(key: str, default = None) -> str:
-        _key = None if is_str_none_or_empty(key) else BaseConfig.envvars_prefix
-        return os_getenv(_key, default)
-
-    EMAIL_ORIGINATOR = 'assismauro@hotmail.com'
-    EMAIL_API_KEY =  ''
-
+    # Root folder, see process.py
     ROOT_FOLDER = path.abspath(path.dirname(__file__))
+
+    # see route_helper.py[is_external_ip_ready]
+    EXTERNAL_IP_SERVICE = 'https://checkip.amazonaws.com'
+
+    # Email sender
+    EMAIL_ORIGINATOR = 'assismauro@hotmail.com'
+    # Registered on the email API with key
+    EMAIL_API_KEY =  ''
 
     SECRET_KEY = ''
     SQLALCHEMY_DATABASE_URI = ''
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+
     SERVER_ADDRESS = ''
     # if left empty, an external service will be used
-    # see self.external_ip_service
+    # see self.EXTERNAL_IP_SERVICE
     # & ./helpers/route_helper.py[is_external_ip_ready()]
     SERVER_EXTERNAL_IP = ''
     SERVER_EXTERNAL_PORT = ''
@@ -116,6 +132,7 @@ class DebugConfig(BaseConfig):
     The Debug Configuration Class for the App
     """
 
+    # All IPs at port 5001
     SERVER_ADDRESS = 'http://0.0.0.0:5001' if is_str_none_or_empty(BaseConfig.SERVER_ADDRESS) else BaseConfig.SERVER_ADDRESS
     DEBUG = True
     app_mode = app_mode_debug
@@ -127,6 +144,7 @@ class ProductionConfig(BaseConfig):
     """
     DEBUG = False  #Just to be sure & need some code here
     app_mode = app_mode_production
+
 
 # Load all possible configurations
 config_modes: Dict[str, BaseConfig] = {

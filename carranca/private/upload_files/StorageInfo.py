@@ -31,7 +31,7 @@ class StorageInfo:
         def __init__(self, user_folder: str, common_folder: str):
             # Path to uploaded files canoa/uploaded_files
             uploaded_files = path.join(
-                ('.' if common_folder == None else common_folder),
+                ('.' if common_folder is None else common_folder),
                 StorageInfo._Folder.uploaded_files,
             )
             # Path to all user files are kept

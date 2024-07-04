@@ -52,7 +52,7 @@ def login():
             task_code += 1  # 7
             user = get_user_where(username_lower = search_for) # by uname
             task_code += 1  # 8
-            user = get_user_where(email = search_for) if user == None else user #or by email
+            user = get_user_where(email = search_for) if user is None else user #or by email
             task_code += 1  # 9
             if not user or not verify_pass(password, user.password):
                 add_msg_error('userOrPwdIsWrong', texts)

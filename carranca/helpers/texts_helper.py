@@ -53,7 +53,7 @@ def _get_row(item: str, section: str) -> tuple[str, str]:
     from .dbQuery import getValues
     select = __get_select('text, title', section, item)
     result = getValues(select)
-    return ('', '') if result == None else result
+    return ('', '') if result is None else result
 
 # returns text for the item/section pair & adds/replace name:(key, value) to the dictionary
 def _add_msg(item: str, section: str, name: str, texts: dict[str, str] = None, *args) -> str:
@@ -98,7 +98,7 @@ def get_text(item: str, section: str, default: str= None) -> str:
     text, _ = _get_row(item, section)
     if not is_str_none_or_empty(text):
         pass
-    elif default == None:
+    elif default is None:
         text =  msg_not_found.format(item, section)
     else:
         text = ''

@@ -61,7 +61,7 @@ def password_reset(token):
         else:
             task_code += 1  # 4
             record_to_update = get_user_where(recover_email_token=token_str)
-            if record_to_update == None:
+            if record_to_update is None:
                 add_msg_error('invalidToken', texts)
             elif not __is_token_valid(record_to_update.recover_email_token_at, 5):
                 add_msg_error('expiredToken', texts)

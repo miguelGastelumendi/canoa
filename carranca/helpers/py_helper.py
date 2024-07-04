@@ -98,7 +98,7 @@ def crc16(data: bytes | str) -> int:
         print(f"{crc16('Hello, World!'):04X}")
     """
 
-    if (data == None):
+    if (data is None):
         return 0
     elif type(data) == bytes:
         pass
@@ -162,7 +162,7 @@ def decode_std_text(std_text):
     Returns:
     A string containing the decoded output.
     """
-    if std_text == None or std_text == b'':
+    if std_text is None or std_text == b'':
         return ''
 
     try:

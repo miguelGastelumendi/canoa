@@ -25,9 +25,9 @@ def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
     task_code = 0
 
     try:
-        cargo.storage.uploaded_file_name = None if file_obj == None else secure_filename(file_obj.filename)
+        cargo.storage.uploaded_file_name = None if file_obj is None else secure_filename(file_obj.filename)
 
-        if file_obj == None:
+        if file_obj is None:
             task_code = 1
         elif is_str_none_or_empty(cargo.user.email):
             task_code = 2

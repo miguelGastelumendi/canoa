@@ -49,7 +49,7 @@ def do_password_change():
             add_msg_error('invalidPassword', texts, app_config.len_val_for_pw.min, app_config.len_val_for_pw.max)
         elif password != confirm_password:
             add_msg_error('passwordsAreDifferent', texts)
-        elif user == None:
+        elif user is None:
             internal_logout()
             return redirect_to(login_route())
         else:

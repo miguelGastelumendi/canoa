@@ -27,6 +27,13 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-07-04 vβ 1.8
+    1. Fixing bug, file:upload_file.py
+        [get_user_receipt(file_ticket)] was before [if error_code == 0:]
+        so [file_ticket] can be empty (error_code != 0) that will generate
+        an error in
+         ticket.split.split in file:user_helper.py
+
 2024-07.01 v β 1.7d
     1. Windows -> Linux
 

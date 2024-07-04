@@ -44,7 +44,7 @@ def password_recovery():
 
         if is_get:
             pass
-        elif record_to_update == None:
+        elif record_to_update is None:
             add_msg_error('emailNotRegistered', texts)
         elif not is_external_ip_ready(app_config):
             add_msg_error('noExternalIP', texts)

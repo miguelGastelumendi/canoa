@@ -5,7 +5,6 @@
     Equipe da Canoa -- 2024
     mgd
 """
-
 # cSpell: ignore werkzeug wtforms uploadfile tmpl
 
 from flask import render_template, request
@@ -31,9 +30,9 @@ def upload_file() -> str:
         error_code, msg_error, _, data = process(
             logged_user, file_obj, valid_extensions
         )
-        file_ticket = data.get("file_ticket")
-        user_receipt = get_user_receipt(file_ticket)
         if error_code == 0:
+            file_ticket = data.get("file_ticket")
+            user_receipt = get_user_receipt(file_ticket)
             log_msg = add_msg_success(
                 "uploadFileSuccess", texts, user_receipt, logged_user.email
             )

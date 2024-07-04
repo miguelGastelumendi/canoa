@@ -83,7 +83,7 @@ def redirect_to(route: str, message: str = None) -> str:
 def is_external_ip_ready(app_config): #: BaseConfig
     if is_str_none_or_empty(app_config.SERVER_EXTERNAL_IP):
         try:
-            app_config.SERVER_EXTERNAL_IP = requests.get(app_config.external_ip_service).text.strip()
+            app_config.SERVER_EXTERNAL_IP = requests.get(app_config.EXTERNAL_IP_SERVICE).text.strip()
         except:
             # LOG
             app_config.SERVER_EXTERNAL_IP = ''

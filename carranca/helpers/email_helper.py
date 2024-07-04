@@ -99,7 +99,7 @@ def send_email(
             or not is_str_none_or_empty(file_to_send_type)
             else path.splitext(file_to_send_full_name)[1].lower()
         )
-        if ext == None:
+        if ext is None:
             pass
         elif ext == '.pdf':
             file_to_send_type = 'application/pdf'
