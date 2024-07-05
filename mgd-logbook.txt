@@ -27,6 +27,11 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+
+2024-07-05 vβ 2.3
+    DV flag `--no-spellchecker` when is Windows
+
+--no-spellchecker
 2024-07-05 vβ 2.2
     Fix bug Call func instead of const
 
