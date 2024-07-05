@@ -62,7 +62,7 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
             , ticket = file_ticket
             , user_receipt = get_user_receipt(file_ticket)
             , upload_start_at = cargo.started_at
-            , from_os = 'W' if OS_IS_WINDOWS() else 'L'
+            , from_os = 'W' if OS_IS_WINDOWS else 'L'
         )
         task_code += 1 # +5
         persist_record(db, user_record_to_update, task_code)

@@ -27,6 +27,9 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-07-05 vβ 2.2
+    Fix bug Call func instead of const
+
 2024-07-04 vβ 2.1
     Fix bug when empty ('') argument sent to data_validate
     New user_data_files.from_os char(1) column (W/L)
