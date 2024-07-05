@@ -47,7 +47,7 @@ class BaseConfig:
     '''
     app_name = 'Canoa'
     #major.minor.patch,
-    app_version =  'β 2.3' # &beta
+    app_version =  'β 2.4' # &beta
     # see below (enum)
     app_mode = 'None'
     # all environment variables begin with `Canoa_`

@@ -27,6 +27,8 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-07-05 vβ 2.4
+    Fix typo in last push
 
 2024-07-05 vβ 2.3
     DV flag `--no-spellchecker` when is Windows
@@ -38,15 +40,15 @@ TODO:
 2024-07-04 vβ 2.1
     Fix bug when empty ('') argument sent to data_validate
     New user_data_files.from_os char(1) column (W/L)
-    New background img for windwos `canoa_fundo-w.jpeg`
+    New background img for Windows `canoa_fundo-w.jpeg`
 
 2024-07-04 vβ 2.0
-    Prepared to run all modules (in linux)
+    Prepared to run all modules (in Linux)
 
 2024-07-04 vβ 1.9
     New bash scripts:
-        - rema.sh     starts `rowing` the conoe
-        - test_dv.sh  runs a simultaion of a Canoa call to data_validate
+        - rema.sh     starts `rowing` the Canoe
+        - test_dv.sh  runs a simulation of a Canoa call to data_validate
         - run.sh      script call by data_validate
 
 2024-07-04 vβ 1.8
