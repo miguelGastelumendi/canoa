@@ -15,6 +15,7 @@ from zlib import crc32
 from carranca import db
 
 from ...helpers.db_helper import persist_record
+from ...helpers.py_helper import OS_IS_WINDOWS
 from ...helpers.user_helper import get_user_receipt, get_file_ticket
 from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
@@ -61,6 +62,7 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
             , ticket = file_ticket
             , user_receipt = get_user_receipt(file_ticket)
             , upload_start_at = cargo.started_at
+            , from_os = 'W' if OS_IS_WINDOWS() else 'L'
         )
         task_code += 1 # +5
         persist_record(db, user_record_to_update, task_code)

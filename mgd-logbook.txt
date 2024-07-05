@@ -27,6 +27,11 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-07-04 vβ 2.1
+    Fix bug when empty ('') argument sent to data_validate
+    New user_data_files.from_os char(1) column (W/L)
+    New background img for windwos `canoa_fundo-w.jpeg`
+
 2024-07-04 vβ 2.0
     Prepared to run all modules (in linux)
 

@@ -22,6 +22,7 @@ class UserDataFiles(db.Model):
     file_name = db.Column(db.String(140))
     file_size = db.Column(db.Integer)
     file_crc32 = db.Column(db.Integer)
+    from_os = db.Column(db.String(1))        
     ticket = db.Column(db.String(40))
     user_receipt = db.Column(db.String(14))
     upload_start_at = db.Column(db.DateTime)
@@ -31,6 +32,7 @@ class UserDataFiles(db.Model):
     error_msg = db.Column(db.String(200), nullable=True)
     error_text = db.Column(db.Text, nullable=True)
     success_text = db.Column(db.Text, nullable=True)
+
 
     def update(uTicket, **kwargs):
         result = False
