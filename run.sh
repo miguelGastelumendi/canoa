@@ -1,6 +1,7 @@
+#!/bin/bash
 # Translated by Copilot 2024.06.27 from run.bat (mgd)
 # Equipe da Canoa -- 2024
-#!/bin/bash 
+ 
 
 # Change to the data_validate folder (including other drives)
 pushd "$(dirname "$0")"
