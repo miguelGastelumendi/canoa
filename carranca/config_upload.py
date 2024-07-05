@@ -42,13 +42,13 @@ class UploadConfig:
         self.app = DataValidateApp(
             batch='run.' + ('bat' if OS_IS_WINDOWS else 'sh'), # TODO: OS_IS_LINUX
             name='data_validate',
-            flags='',
-            flag_debug='--debug', # --debug
+            flags='',  # --no-spellchecker',
+            flag_debug='', # --debug
             na_in_folder='--input_folder',  # named argument
             na_out_folder='--output_folder',
         )
         self.email = Email(
-            cc= '', #'pedro.andrade.inpe@gmail.com',
+            cc= 'pedro.andrade.inpe@gmail.com',
             bcc='',
         )
 

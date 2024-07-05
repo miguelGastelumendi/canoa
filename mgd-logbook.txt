@@ -27,9 +27,14 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
-2024-07-04 vβ 1.9
-    1. Fixing bug when empty ('') argument to data_validate
+2024-07-04 vβ 2.0
+    Prepared to run all modules (in linux)
 
+2024-07-04 vβ 1.9
+    New bash scripts:
+        - rema.sh     starts `rowing` the conoe
+        - test_dv.sh  runs a simultaion of a Canoa call to data_validate
+        - run.sh      script call by data_validate
 
 2024-07-04 vβ 1.8
     1. Fixing bug, file:upload_file.py
