@@ -33,14 +33,16 @@ async def _run_validator(
 ):
     #  This function knows quite a lot of how to run [data_validate]
 
-    run_command = [
-        batch_full_name,
-        app.na_in_folder,  # Named Argument
-        input_folder,
-        app.na_out_folder,
-        output_folder,
-        app.flags,
-    ]
+    run_command =  [
+                batch_full_name,
+                app.na_in_folder,  # Named Argument
+                input_folder,
+                app.na_out_folder,
+                output_folder,
+            ]
+
+    if not is_str_none_or_empty(app.flags):
+        run_command.append(app.flags)
 
     if debug_validator and not is_str_none_or_empty(app.flag_debug):
         run_command.append(app.flag_debug)

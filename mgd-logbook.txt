@@ -27,6 +27,10 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-07-04 vβ 1.9
+    1. Fixing bug when empty ('') argument to data_validate
+
+
 2024-07-04 vβ 1.8
     1. Fixing bug, file:upload_file.py
         [get_user_receipt(file_ticket)] was before [if error_code == 0:]

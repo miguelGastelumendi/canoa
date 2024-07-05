@@ -40,9 +40,9 @@ class UploadConfig:
         # app `validate_data` app output file name and extension
         self.output_file = OutputFile(name='data_report', ext='.pdf')
         self.app = DataValidateApp(
-            batch='run.' + ('bat' if OS_IS_WINDOWS else 'sh'), # TODO: OS_IS_LINUX 
+            batch='run.' + ('bat' if OS_IS_WINDOWS else 'sh'), # TODO: OS_IS_LINUX
             name='data_validate',
-            flags='--no-spellchecker',
+            flags='',
             flag_debug='--debug', # --debug
             na_in_folder='--input_folder',  # named argument
             na_out_folder='--output_folder',
