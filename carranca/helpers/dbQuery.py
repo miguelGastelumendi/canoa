@@ -2,7 +2,7 @@
 
 #import pandas as pd
 from sqlalchemy import create_engine, text
-from main import app_config
+from ..shared import app_config
 
 engine = create_engine(
     app_config.SQLALCHEMY_DATABASE_URI,

@@ -66,9 +66,7 @@ def send_email(
         ValueError: if the attachment file (file_to_send) has an extension with unknown type.
         RuntimeError: error within the send_mail API
     """
-
-    # TODO: pass as param
-    from main import app_config
+    from ..shared import app_config, app_log
 
     status_code = 0
     task = ''
@@ -175,7 +173,7 @@ def send_email(
         sc = status_code if status_code != 0 else getattr(e, 'status_code', 0)
         error = f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
         msg = getattr(e, 'body', str(e))
-        # app.logger.error(error)
+        app_log.error(error)
         raise RuntimeError(error)
 
 

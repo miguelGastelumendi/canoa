@@ -12,7 +12,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import Email, InputRequired, Length
-from main import app_config
+from ..shared import app_config
 
 
 # Public forms

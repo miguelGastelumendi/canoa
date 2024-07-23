@@ -11,11 +11,11 @@
 A validação de um arquivo para um esquema é realizado em ```.private.upload_file.process``` e consta
 dos seguintes módulos:
 
-   1. check
-      - Validar existência de variáveis e de arquivos necessários para o processo;
-      - Verificar a existência das pastas do processo ou criar caso não existam;
+   1. *Check*, revisão dos requisitos do processo
+          - Validar existência de variáveis e de arquivos necessários;
+      - Verificar a existência das pastas e criar caso não existam;
       - CBE: 200 (ver: ```.helpers.error_helper.py```): ```UPLOAD_FILE_CHECK = 200```
-   2. register
+   2. _Register_
    2. unzip
    3. submit
    3. email

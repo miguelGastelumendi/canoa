@@ -21,12 +21,22 @@ TODO:
         D. The recipient of the email must be different from CC (and perhaps from BCC as well)
 
     small tasks
-        - Login Remember not working
+        - Login Remember not always working
         - Fix get_Html()
 
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-07-22 vβ 2.6
+    Change text in ui.items[uploadFileSuccess]
+    Add [Especificação] button in navigation.html
+    New shared.py (reorder main.py)
+    Fix a bug on html_helper.py
+    Finalize display_html.py
+
+2024-07-07 vβ 2.5
+    Fix ?
+
 2024-07-05 vβ 2.4
     Fix typo in last push
 

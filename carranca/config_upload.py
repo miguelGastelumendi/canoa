@@ -37,9 +37,9 @@ Email = NamedTuple('Email', cc=str, bcc=str)
 
 class UploadConfig:
     def __init__(self):  #: BaseConfig):
-        # app `validate_data` app output file name and extension
+        # d_v `validate_data` app output file name and extension
         self.output_file = OutputFile(name='data_report', ext='.pdf')
-        self.app = DataValidateApp(
+        self.d_v = DataValidateApp(
             batch='run.' + ('bat' if OS_IS_WINDOWS else 'sh'), # TODO: OS_IS_LINUX
             name='data_validate',
             flags='--no-spellchecker' if OS_IS_WINDOWS else '',

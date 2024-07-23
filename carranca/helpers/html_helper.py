@@ -5,6 +5,7 @@
 
 # cSpell:ignore
 
+from flask import url_for
 from bs4 import BeautifulSoup
 import re
 import os
@@ -16,7 +17,7 @@ def file_full_name_parse(file_full_name: str) -> tuple[str, str, str]:
    return (drive, path, filename)
 
 
-def img_change_src_path(html_content: str, new_img_path: str) -> str:
+def img_change_src_path(html_content: str, new_img_folder: list) -> str:
     # Change img tag `src` path to a new_img_path & return the modified html
     soup = BeautifulSoup(html_content, 'html.parser')
     img_tags = soup.find_all('img')
@@ -24,10 +25,11 @@ def img_change_src_path(html_content: str, new_img_path: str) -> str:
     for img_tag in img_tags:
         src = img_tag.get('src', '')
         if src:
-            # Extract the existing path (excluding the image name)
             _, image_name = re.match(r"(.*/)(.*)", src).groups()
-            new_src = os.path.join(new_img_path, image_name)
-            img_tag['src'] = new_src
+            img_folder = new_img_folder.copy()
+            img_folder.append(image_name)
+            image_path = os.path.join(*img_folder)
+            img_tag['src'] = image_path
 
     return str(soup)
 

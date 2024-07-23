@@ -13,9 +13,10 @@
           height="42px"
         />
       </a> -->
-      <a type="button" href="{{ private_route('changepassword') }}">[Mudar senha]</a>
       <a type="button" href="{{ private_route('uploadfile') }}">[Validar dados]</a>
+      <a type="button" href="docs/sectorSpecifications">[Especifica&ccedil;&atilde;o]</a>
       <a type="button" href="docs/termsofuse">[Pol&iacute;tica de Privacidade]</a>
+      <a type="button" href="{{ private_route('changepassword') }}">[Mudar senha]</a>
       <a type="button" href="docs/aboutApp">[Sobre]</a>
       <!-- <a type="button" onclick= "working('Sobre {{ app_name() }}, versão {{ app_version() }}')">[Sobre]</a> -->
       <a type="button" onclick= "logout()">[Sair:&nbsp;&nbsp;{{ current_user.username }}]</a>

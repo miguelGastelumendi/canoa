@@ -26,7 +26,7 @@ from ...helpers.error_helper import ModuleErrorCode
 
 async def _run_validator(
     batch_full_name: str,
-    app: DataValidateApp,
+    d_v: DataValidateApp,
     input_folder: str,
     output_folder: str,
     debug_validator: bool = False,
@@ -35,17 +35,17 @@ async def _run_validator(
 
     run_command =  [
                 batch_full_name,
-                app.na_in_folder,  # Named Argument
+                d_v.na_in_folder,  # Named Argument
                 input_folder,
-                app.na_out_folder,
+                d_v.na_out_folder,
                 output_folder,
             ]
 
-    if not is_str_none_or_empty(app.flags):
-        run_command.append(app.flags)
+    if not is_str_none_or_empty(d_v.flags):
+        run_command.append(d_v.flags)
 
-    if debug_validator and not is_str_none_or_empty(app.flag_debug):
-        run_command.append(app.flag_debug)
+    if debug_validator and not is_str_none_or_empty(d_v.flag_debug):
+        run_command.append(d_v.flag_debug)
         print(' '.join(run_command))  # TODO  LOG
 
     print(' '.join(run_command))  # TODO  LOG
@@ -63,7 +63,7 @@ async def _run_validator(
         stdout, stderr = await process.communicate()
 
     except Exception as e:
-        return '', f"{app.name}.running: {e}"
+        return '', f"{d_v.name}.running: {e}"
 
     # Decode the output from bytes to string
     stdout_str = decode_std_text(stdout)
@@ -98,13 +98,13 @@ def submit(cargo: Cargo) -> Cargo:
         _path = cargo.storage.path
         _path_read = cargo.storage.path.data_tunnel_user_read
         _path_write = cargo.storage.path.data_tunnel_user_write
-        external_app_path = path.join(_path.apps_parent_path, _cfg.app.name)
-        batch_full_name = path.join(external_app_path, _cfg.app.batch)
+        external_app_path = path.join(_path.apps_parent_path, _cfg.d_v.name)
+        batch_full_name = path.join(external_app_path, _cfg.d_v.batch)
         print(batch_full_name)
         if not path.exists(batch_full_name):  # TODO send to check module
             task_code += 1  # 2
             raise Exception(
-                f"The `{_cfg.app.name}` module caller [{batch_full_name}] was not found."
+                f"The `{_cfg.d_v.name}` module caller [{batch_full_name}] was not found."
             )
 
         result_ext = _cfg.output_file.ext
@@ -116,7 +116,7 @@ def submit(cargo: Cargo) -> Cargo:
             stdout_str, stderr_str = asyncio.run(
                 _run_validator(
                     batch_full_name,
-                    _cfg.app,
+                    _cfg.d_v,
                     _path_write,
                     _path_read,
                     cargo.in_debug_mode,
@@ -126,7 +126,7 @@ def submit(cargo: Cargo) -> Cargo:
             external_error = not is_str_none_or_empty(stderr_str)
             report_ready = path.exists(final_report_full_name)
             if external_error and not report_ready:
-                raise Exception(f"{_cfg.app.name}.stderr: {stderr_str}")
+                raise Exception(f"{_cfg.d_v.name}.stderr: {stderr_str}")
         except Exception as e:
             external_error = True
             msg_exception = str(e)
@@ -158,11 +158,12 @@ def submit(cargo: Cargo) -> Cargo:
         msg_exception = str(e)
         print(msg_exception)  # TODO  log
     finally:
-        try:
-            shutil.rmtree(_path_read)
-            shutil.rmtree(_path_write)
-        except:
-            print('As pastas de comunicação não foram apagadas.')  # TODO  log
+        if False:
+            try:
+                shutil.rmtree(_path_read)
+                shutil.rmtree(_path_write)
+            except:
+                print('As pastas de comunicação não foram apagadas.')  # TODO  log
 
     # goto email.py
     error_code = (

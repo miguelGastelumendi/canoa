@@ -28,7 +28,7 @@ from ..wtforms import PasswordRecoveryForm
 
 
 def password_recovery():
-    from main import app_config
+    from ...shared import app_config
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_RECOVERY.value
     tmpl_form, template, tmpl_form, texts = init_form_vars()

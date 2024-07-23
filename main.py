@@ -4,6 +4,7 @@
     For newbies, remember:
         project_root/
         ├── main.py      # <- You are here
+        ├── shared.py    # shared vars
         ├── App/         # Optional folder for application logic
         │   └── ...      # Other files in the App folder
         └── other_files.py  # Other Python files in the root directory
@@ -21,10 +22,10 @@ from collections import namedtuple
 from flask_minify import Minify
 from urllib.parse import urlparse
 
-from carranca import create_app
+from carranca.shared import create_app_and_share_objects
 from carranca.config import config_modes, BaseConfig, app_mode_production, app_mode_debug
-
 from carranca.helpers.py_helper import is_str_none_or_empty, coalesce
+
 
 # WARNING: Don't run with debug turned on in production!
 app_mode = BaseConfig.get_os_env('APP_MODE', app_mode_debug)
@@ -32,24 +33,12 @@ app_config = None
 
 try:
     app_config = config_modes[app_mode]
-
 except KeyError:
     exit(f"Error: Invalid <app_mode>. sendgrid [{app_mode_debug}, {app_mode_production}].")
 
 
-app = create_app(app_config)
-"""
-    app.config vs app_config
-    ------------------------
-    `app.config` has all the attributes of the `app_config``
-    *plus* those of Flask.
+app = create_app_and_share_objects(app_config)
 
-    So to keep it 'mode secure' and avoid 'circular imports',
-    import just `app_config` instead of `app` to use app.config
-
-    from main import app_config
-    ~form main import app~
-"""
 
 def __log_and_exit( ups ):
     app.logger.error(ups)
@@ -94,8 +83,8 @@ app.logger.info(f"{app_config.app_name} started {app_config.app_mode} in mode :-
 if app_config.DEBUG:
     app.logger.info(f"DEBUG            : {app_config.DEBUG}")
     app.logger.info(f"Page Compression : {minified}")
+    app.logger.info(f"App root folder  : {app_config.ROOT_FOLDER}")
     app.logger.info(f"Database address : {app_config.SQLALCHEMY_DATABASE_URI}")
-    app.logger.info(f"ASSETS_ROOT      : {app_config.ASSETS_ROOT}")
     app.logger.info(f"Server address   : {address.host}:{address.port}")
     app.logger.info(f"External address : {coalesce(app_config.SERVER_EXTERNAL_IP, '<set on demand>')}")
     app.logger.info(f"External port    : {coalesce(app_config.SERVER_EXTERNAL_PORT, '<none>')}")

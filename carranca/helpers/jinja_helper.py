@@ -4,8 +4,7 @@
 
 # cSpell:ignore
 
-from jinja2 import Environment
-from main import app
+from ..shared import app
 
 #mark a string as a jinja text, a text that will be parsed before rendering
 _jinja_pre_template_mark = '^'

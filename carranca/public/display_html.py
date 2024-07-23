@@ -10,49 +10,64 @@
     Equipe da Canoa -- 2024
     mgd
 """
+
 # cSpell:ignore
 
 import os
 import base64
 
-from flask import render_template
-from ..helpers.py_helper import is_str_none_or_empty
+from flask import render_template, url_for
+from ..helpers.py_helper import is_str_none_or_empty, folder_must_exist
 from ..helpers.html_helper import img_filenames, img_change_src_path
+from ..shared import app_log, app_config
 
 
-def __prepare_img_files(html_images: list[str], db_images: list[str], img_path: str, group: str) -> bool:
+def __prepare_img_files(
+    html_images: list[str], db_images: list[str], img_local_path: str, section: str
+) -> bool:
     from ..helpers.texts_helper import get_text
-    img_path_ready = os.path.exists(img_path)
+
+    is_img_local_path_ready = os.path.exists(img_local_path)
     missing_files = html_images.copy()  # missing files from folder, assume all
 
     for file_name in html_images:
-        if img_path_ready and os.path.exists(os.path.join(img_path, file_name)):
+        if is_img_local_path_ready and os.path.exists(os.path.join(img_local_path, file_name)):
             missing_files.remove(file_name)  # this img is not missing.
+
+    if not folder_must_exist(img_local_path):
+        app_log.error(f"Cannot create folder [{img_local_path}] to keep the HTML's images.")
+        return False
 
     # folder for images & a list of missing_files, are ready.
     # available_files are files that are not on the file system,
     #   but can be retrieved from the DB (db_images says so)
     available_files = [file for file in missing_files if file in db_images]
-    if missing_files.count == 0:
+    repairable_files = len(available_files) - len(missing_files)
+    if len(missing_files) == 0:
         return True  # every file is in file system!
 
-    elif available_files.count == 0:
+    elif len(available_files) == 0:
+        q = len(missing_files)
+        qtd = "One" if q == 1 else f"{q}"
+        p = "" if q == 1 else "s"
+        app_log.warn(
+            f"{qtd} image record{p} missing for [sectorSpecifications] in database: {', '.join(missing_files)}."
+        )
         return True  # some files missing, but I can't fix it :-(
-        # TODO: log this # missing files and no db files to fix
 
     for file in available_files:
         try:
-            b64encoded = get_text(file, group)
+            b64encoded = get_text(file, section)
             if not is_str_none_or_empty(b64encoded):
                 image_data = base64.b64decode(b64encoded)
-                with open(os.path.join(img_path, file), 'wb') as file:
+                with open(os.path.join(img_local_path, file), "wb") as file:
                     file.write(image_data)
         except Exception as e:
-            pass
-            # TODO: log
+            app_log.error(
+                f"Error writing image [{file}] in folder {img_local_path}. Message [{str(e)}]"
+            )
 
     return True
-
 
     # ============= Documents ============== #
     # TODO:
@@ -60,56 +75,61 @@ def __prepare_img_files(html_images: list[str], db_images: list[str], img_path: 
     #    1. Only show Public docs if not logged.
     #    2. check if body exists else error
 
+
 def display_html(docName: str):
     from ..helpers.texts_helper import get_msg_error, get_text, get_html
+
     section = docName
     ## TODO texts = get_html( section )
-    pageTitle = get_text('pageTitle', section)
-    formTitle = get_text('formTitle', section)
-    body = get_text('body', section, '')
-    style = get_text('style', section, '')
+    pageTitle = get_text("pageTitle", section)
+    formTitle = get_text("formTitle", section)
+    body = get_text("body", section, "")
+    style = get_text("style", section, "")
     # a comma separated list of images.ext names available on the db,
     # see below db_images & _prepare_img_files
-    images = get_text('images', section)
+    images = get_text("images", section)
 
     db_images = (
-        [] if is_str_none_or_empty(images) else [s.strip() for s in images.split(',')]
+        [] if is_str_none_or_empty(images) else [s.strip() for s in images.split(",")]
     )  # list of img names in db
 
     html_images = (
         [] if is_str_none_or_empty(body) else sorted(img_filenames(body))
     )  # list of img tags in HTML
 
-    # TODO: check if this is the best way to get a path
-    # TODO  path_html_docs = path.join(app_config.ROOT_FOLDER, 'html_docs')
-    img_path = os.path.join('\\', 'static', 'docs', docName, 'img')
+    img_folders = ['static', 'docs', section, 'images']
+    img_local_path = os.path.join(app_config.ROOT_FOLDER, *img_folders)
     if is_str_none_or_empty(body):
-        msg = get_msg_error('documentNotFound').format(docName)
+        msg = get_msg_error("documentNotFound").format(docName)
         body = f"<h4>{msg}</h4>"
-        style = ''  # TODO:
-        pageTitle = 'Exibir Documento'
-        formTitle = 'Documento'
+        style = ""  # TODO:
+        pageTitle = "Exibir Documento"
+        formTitle = "Documento"
 
-    elif html_images.count == 0:
+    elif len(html_images) == 0:
         pass
         # html has no images
 
-    elif db_images.count == 0:
+    elif len(db_images) == 0:
         pass
         # if any images are missing in the folder,
         # I can't help, no images found in db
         # TODO: have a not_found_image.img
 
-    elif __prepare_img_files(html_images, db_images, img_path, section):
-        body = img_change_src_path(body, img_path)
+    elif __prepare_img_files(html_images, db_images, img_local_path, section):
+       img_folders.insert(0, os.sep)
+       body = img_change_src_path(body, img_folders)
+       pass
 
     return render_template(
-        './home/document.html.j2',
+        "./home/document.html.j2",
         **{
-            'pageTitle': pageTitle,
-            'formTitle': formTitle,
-            'documentStyle': style,
-            'documentBody': body,
+            "pageTitle": pageTitle,
+            "formTitle": formTitle,
+            "documentStyle": style,
+            "documentBody": body,
         },
     )
+
+
 # eof

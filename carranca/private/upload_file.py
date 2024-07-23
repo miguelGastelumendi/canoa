@@ -42,3 +42,4 @@ def upload_file() -> str:
             # logger( f"Uploadfile: {log_msg} | File stage '{_file}' |{removed} Code {task_code} | Exception Error '{except_error}'." )
 
     return render_template(template, form=tmpl_form, **texts)
+#eof

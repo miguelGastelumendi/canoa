@@ -3,7 +3,7 @@
         1. Check: file name, validates name, create folders
         2. Register: save process info( user, file, & times) in DB.users_files
         3. Unzip unzip the uploaded file
-        4. Submit, sends the file to the `data_validate` app
+        4. Submit, sends the file to the `data_validate`
         5. Email, data_validate output is sent via email
 
         Cargo
@@ -42,7 +42,7 @@ from .email import email
 def process(
     logged_user: LoggedUser, file_obj: object, valid_ext: list[str]
 ) -> list[int, str, str]:
-    from main import app_config
+    from ...shared import app_config
 
     current_module_name = __name__.split('.')[-1]
 
@@ -104,11 +104,11 @@ def process(
             break
 
     current_module_name = 'UserDataFiles.update'
+    msg_success = cargo.final.get('msg_success', None)
     if is_str_none_or_empty(cargo.user_data_file__key):
         pass  # user_data_file's pk not ready
 
     elif error_code == 0:
-        msg_success = cargo.final.get('msg_success', None)
         try:
             UserDataFiles.update(
                 cargo.user_data_file__key,
@@ -124,7 +124,8 @@ def process(
             UserDataFiles.update(
                 cargo.user_data_file__key,
                 error_code=error_code,
-                error_msg=msg_error,
+                success_text=msg_success, # not really success but standard_output
+                error_msg='<sem mensagem de erro>' if is_str_none_or_empty(msg_error) else msg_error,
                 error_text=msg_exception,
             )
         except Exception as e:

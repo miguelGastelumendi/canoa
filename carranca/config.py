@@ -47,7 +47,7 @@ class BaseConfig:
     '''
     app_name = 'Canoa'
     #major.minor.patch,
-    app_version =  'β 2.4' # &beta
+    app_version =  'β 2.6' # &beta
     # see below (enum)
     app_mode = 'None'
     # all environment variables begin with `Canoa_`
@@ -85,7 +85,7 @@ class BaseConfig:
     SERVER_EXTERNAL_IP = ''
     SERVER_EXTERNAL_PORT = ''
 
-    ASSETS_ROOT = '/static/assets'
+    #ASSETS_ROOT = url_for('/static/assets')
     DEBUG = False
     TESTING = False
 

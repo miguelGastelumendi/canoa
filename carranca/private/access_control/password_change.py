@@ -8,7 +8,6 @@
 # cSpell:ignore tmpl passwordrecovery wtforms
 
 from carranca import db
-from main import app_config
 from flask import render_template, request
 from flask_login import current_user, login_required
 
@@ -23,8 +22,9 @@ from ...helpers.route_helper import (
     get_input_text,
     get_account_form_data,
 )
-from ..wtforms import ChangePassword
 from ...public.models import get_user_where
+from ...shared import app_config
+from ..wtforms import ChangePassword
 
 
 def do_password_change():

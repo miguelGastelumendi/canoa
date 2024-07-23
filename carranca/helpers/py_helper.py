@@ -11,6 +11,7 @@ import time
 import datetime
 import platform
 from os import path, makedirs
+from ..shared import app_log
 
 OS_NAME_IS = platform.system()
 OS_IS_WINDOWS = (OS_NAME_IS == "Windows")
@@ -38,7 +39,7 @@ def change_file_ext(file: str, ext: str):
     return new_file
 
 
-def folder_must_exist(full_path) -> bool:
+def folder_must_exist(full_path: str) -> bool:
     done = path.isdir(full_path)
     try:
         if not done:
@@ -46,7 +47,7 @@ def folder_must_exist(full_path) -> bool:
             done = True
     except Exception as e:
         done = False
-        #app.logger.error(f"Error creating folder {full_path}, {e}")
+        app_log.warn(f"Error creating folder {full_path}, {e}")
 
     return done
 
@@ -152,7 +153,7 @@ def to_base(number: int, base: int) -> str:
 
     return result
 
-def decode_std_text(std_text):
+def decode_std_text(std_text: bytes):
     """
     Decodes standard output/error from a subprocess, handling potential encoding issues.
 
