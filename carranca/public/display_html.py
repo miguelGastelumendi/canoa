@@ -16,7 +16,7 @@
 import os
 import base64
 
-from flask import render_template, url_for
+from flask import render_template
 from ..helpers.py_helper import is_str_none_or_empty, folder_must_exist
 from ..helpers.html_helper import img_filenames, img_change_src_path
 from ..shared import app_log, app_config

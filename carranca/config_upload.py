@@ -48,7 +48,7 @@ class UploadConfig:
             na_out_folder='--output_folder',
         )
         self.email = Email(
-            cc= 'pedro.andrade.inpe@gmail.com',
+            cc= 'pedro.andrade.inpe@gmail.com, Pedro Andrade;cassia.lemos@inpe.br, Cassia Lemos',
             bcc='',
         )
 

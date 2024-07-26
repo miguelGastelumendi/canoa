@@ -13,8 +13,18 @@
           height="42px"
         />
       </a> -->
-      <a type="button" href="{{ private_route('uploadfile') }}">[Validar dados]</a>
-      <a type="button" href="docs/sectorSpecifications">[Especifica&ccedil;&atilde;o]</a>
+      <a type="button"
+         href="{{ private_route('uploadfile') }}"
+         title="Abre o formulário para submeter um arquivo ZIP ao processo de valida&ccedil;&atilde;o"
+        >
+        [Validar dados]
+      </a>
+      <a type="button" href="https://docs.google.com/document/d/1ZYOQricIqeNkZ3XnLoSXp-lKle9V1UTb-acASZtAa4E/edit"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Abre o documento 'Especifica&ccedil;&atilde;o de Requisitos e Formatos&hellip;' em outra aba">
+        [Especifica&ccedil;&atilde;o&hellip;]
+      </a>
       <a type="button" href="docs/termsofuse">[Pol&iacute;tica de Privacidade]</a>
       <a type="button" href="{{ private_route('changepassword') }}">[Mudar senha]</a>
       <a type="button" href="docs/aboutApp">[Sobre]</a>

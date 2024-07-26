@@ -16,7 +16,7 @@
         <div class="form-group mb-3">
         <label class="formLabel" inert for="upload_file">{{ fileLabel }}</label>
         <div class="input-group">
-            {{ form.filename(class="form-control", id="upload_file", accept=fileAccept) }}
+            {{ form.filename() }}
         </div>
         </div>
     {% endif %}

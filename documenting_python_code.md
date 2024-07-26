@@ -170,6 +170,10 @@ Python offers various built-in data types for storing and organizing information
     email_to = {'to': user.email, 'cc': user.chief.email}
     ```
 
+**Functions**
+    Callable
+
+
 ## Naming Conventions
 
 Choosing clear and descriptive names is an essential aspect of writing readable and maintainable code.

@@ -17,7 +17,7 @@ from ..shared import app_config
 
 # Private form
 class UploadFileForm(FlaskForm):
-    filename = FileField('', validators= [InputRequired()])
+    filename = FileField('', validators= [InputRequired()], render_kw={"class": "form-control", "id": "upload_file", "accept": ".zip"})
 
 # Private & Public form
 class ChangePassword(FlaskForm):

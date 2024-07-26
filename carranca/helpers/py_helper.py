@@ -13,6 +13,7 @@ import platform
 from os import path, makedirs
 from ..shared import app_log
 
+
 OS_NAME_IS = platform.system()
 OS_IS_WINDOWS = (OS_NAME_IS == "Windows")
 OS_IS_LINUX = (OS_NAME_IS == "Linux")
@@ -68,6 +69,18 @@ def to_str(s: str) -> str:
     Returns the argument as a string, striping spaces
     """
     return '' if is_str_none_or_empty(s) else (s + '').strip()
+
+
+def strip_and_ignore_empty(s: str, sep = ',', max_split = -1) -> list[str]:
+    """
+    Returns a list of the striped items created by splitting s and ignoring empty items
+    """
+    result = []
+    for item in (i.strip() for i in to_str(s).split(sep, max_split) if i.strip()):
+        if not is_str_none_or_empty(item):
+            result.append(item)
+
+    return result
 
 
 def coalesce(val1, val2):

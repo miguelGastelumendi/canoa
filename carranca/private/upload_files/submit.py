@@ -158,7 +158,7 @@ def submit(cargo: Cargo) -> Cargo:
         msg_exception = str(e)
         print(msg_exception)  # TODO  log
     finally:
-        if False:
+        if True:
             try:
                 shutil.rmtree(_path_read)
                 shutil.rmtree(_path_write)

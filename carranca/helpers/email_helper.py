@@ -6,17 +6,16 @@
     mgd
 """
 
-
-
 # pylint: disable=E1101
 # cSpell:ignore sendgrid Heya
 
-from os import path
-from base64 import b64encode
 import sendgrid
+from os import path
+from typing import Callable
+from base64 import b64encode
 
 from .texts_helper import get_section
-from .py_helper import is_str_none_or_empty
+from .py_helper import is_str_none_or_empty, strip_and_ignore_empty
 
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started
 # curl --request POST \
@@ -69,28 +68,28 @@ def send_email(
     from ..shared import app_config, app_log
 
     status_code = 0
-    task = ''
+    task = ""
     try:
-        task = 'getting recipients'
+        task = "getting recipients"
         recipients = None
         if isinstance(email_to, str):
-            recipients = {'to': email_to}
+            recipients = {"to": email_to}
         elif isinstance(email_to, dict):
             recipients = dict(email_to)
         else:
             error = f"Unknown `email_to` datatype {type(email_to)}, expected is [str|dict]. Cannot send email."
             raise ValueError(error)
 
-        to_address = recipients.get('to', None)
-        cc_address = recipients.get('cc', None)
-        bcc_address = recipients.get('bcc', None)
+        to_address = recipients.get("to", None)
+        cc_address = recipients.get("cc", None)
+        bcc_address = recipients.get("bcc", None)
 
         if is_str_none_or_empty(to_address) and not is_str_none_or_empty(cc_address):
             print(
-                'Warning: Sending email with only BCC recipient might be rejected by some servers.'
+                "Warning: Sending email with only BCC recipient might be rejected by some servers."
             )
 
-        task = 'checking attachment type'
+        task = "checking attachment type"
         ext = (
             None
             if is_str_none_or_empty(file_to_send_full_name)
@@ -99,45 +98,52 @@ def send_email(
         )
         if ext is None:
             pass
-        elif ext == '.pdf':
-            file_to_send_type = 'application/pdf'
-        elif ext == '.json':
-            file_to_send_type = 'application/json'
-        elif ext in ['.xls', '.xlsx']:
-            file_to_send_type = 'Microsoft Excel 2007+'
-        elif ext in ['.htm', '.html']:
-            file_to_send_type = 'text/html'
-        elif ext == '.txt':
-            file_to_send_type = 'text/plain'
-        elif ext == '.csv':
-            file_to_send_type = 'text/csv'
+        elif ext == ".pdf":
+            file_to_send_type = "application/pdf"
+        elif ext == ".json":
+            file_to_send_type = "application/json"
+        elif ext in [".xls", ".xlsx"]:
+            file_to_send_type = "Microsoft Excel 2007+"
+        elif ext in [".htm", ".html"]:
+            file_to_send_type = "text/html"
+        elif ext == ".txt":
+            file_to_send_type = "text/plain"
+        elif ext == ".csv":
+            file_to_send_type = "text/csv"
         else:
-            error = f'Unknown MIME type for extension [{ext}], cannot send email.'
+            error = f"Unknown MIME type for extension [{ext}], cannot send email."
             raise ValueError(error)
 
-        task = 'preparing body'
+        task = "preparing body"
         if not is_str_none_or_empty(ui_texts_section):
             texts = get_section(ui_texts_section)
             for key in texts.keys():
                 for toReplaceKey in email_body_params.keys():
                     texts[key] = texts[key].replace(
-                        '{' + toReplaceKey + '}', email_body_params[toReplaceKey]
+                        "{" + toReplaceKey + "}", email_body_params[toReplaceKey]
                     )
 
-        task = 'creating Mail data'
+        task = "creating Mail data"
         mail = sendgrid.Mail(
             from_email=app_config.EMAIL_ORIGINATOR,
             to_emails=to_address,
-            subject=texts['subject'],
-            html_content=texts['content'],
+            subject=texts["subject"],
+            html_content=texts["content"],
         )
-        if cc_address:
-            mail.add_cc(cc_address)
 
-        if bcc_address:
-            mail.add_bcc(bcc_address)
+        def _addTo(address: str, fAdd: Callable[[str, str], None]) -> int:
+            result = 0
+            for item in strip_and_ignore_empty(address, ";"):
+                info = strip_and_ignore_empty(item, ',', 2)
+                fAdd(info[0] if len(info) == 1 else tuple(info))
+                result += 1
+            return result
 
-        task = 'preparing Api'
+        task = "adding recipients"
+        _addTo(cc_address, mail.add_cc)
+        _addTo(bcc_address, mail.add_bcc)
+
+        task = "preparing Api"
         apiKey = app_config.EMAIL_API_KEY
         sg = sendgrid.SendGridAPIClient(apiKey)
         if is_str_none_or_empty(file_to_send_full_name):
@@ -147,14 +153,14 @@ def send_email(
         else:
             fileName = path.basename(file_to_send_full_name)
             task = f"reading file [{fileName}]"
-            with open(file_to_send_full_name, 'rb') as f:
+            with open(file_to_send_full_name, "rb") as f:
                 data = f.read()
             encoded = b64encode(data).decode()
             attachment = sendgrid.Attachment(
                 file_content=sendgrid.FileContent(encoded),
                 file_type=sendgrid.FileType(file_to_send_type),
                 file_name=sendgrid.FileName(fileName),
-                disposition=sendgrid.Disposition('attachment'),
+                disposition=sendgrid.Disposition("attachment"),
             )
             task = f"attaching file [{fileName}]"
             mail.add_attachment(attachment)
@@ -170,9 +176,11 @@ def send_email(
 
         return sent
     except Exception as e:
-        sc = status_code if status_code != 0 else getattr(e, 'status_code', 0)
-        error = f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
-        msg = getattr(e, 'body', str(e))
+        sc = status_code if status_code != 0 else getattr(e, "status_code", 0)
+        error = (
+            f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
+        )
+        msg = getattr(e, "body", str(e))
         app_log.error(error)
         raise RuntimeError(error)
 
