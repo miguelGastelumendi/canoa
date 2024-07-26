@@ -28,7 +28,7 @@ class StorageInfo:
         uploaded_files = 'uploaded_files'
 
     class _Path:
-        def __init__(self, user_folder: str, common_folder: str):
+        def __init__(self, user_folder: str, common_folder: str, batch_name: str):
             # Path to uploaded files canoa/uploaded_files
             uploaded_files = path.join(
                 ('.' if common_folder is None else common_folder),
@@ -50,10 +50,15 @@ class StorageInfo:
             self.data_tunnel_user_read = path.join(
                 data_tunnel, user_folder, StorageInfo._Folder.validate_output
             )
+            # External batch origin (copy from here if not exists or newer)
+            self.batch_source_name = path.join(common_folder, batch_name)
+            # External batch that calls `data_validate` with arguments (see submit.py)
+            self.batch_full_name = path.join(data_tunnel, batch_name)
 
-    def __init__(self, user_folder: str, common_folder: str):
+
+    def __init__(self, user_folder: str, common_folder: str, batch_name: str):
         self._user_folder = user_folder
-        self.path = self._Path(user_folder, common_folder)
+        self.path = self._Path(user_folder, common_folder, batch_name)
         self.folder = self._Folder()  # not really needed, but conventions.
         # values are given during the process
         self.uploaded_file_name = ''

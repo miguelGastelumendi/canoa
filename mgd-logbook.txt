@@ -5,6 +5,7 @@ TODO:
 
 
     2024-06-
+        a. Erros i check.py generates an internal error.
         0. About title
         1. Check upload/email.py html body, email_sent_at
         2. Install on Linux server with Hunspell
@@ -21,6 +22,7 @@ TODO:
         D. The recipient of the email must be different from CC (and perhaps from BCC as well)
         E. Use a variable for accept .zip
         F. Change cargo.report_ready_at to validate_end_at
+        G. run.bat goes to data_tunnel
 
     small tasks
         - Login Remember not always working
@@ -29,7 +31,11 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
-2024-07-23 vβ 2.6
+
+2024-07-26 vβ 2.8 (to test, use last version July/23)
+    - Several adjustments to call data_validate from common folder
+
+2024-07-25 vβ 2.7
     - Set [Especificação] button to an external link in new tab
     - Set a couple of hint in the navigation buttons for evaluation [<a title='hint']
     - Set correctly the accept attribute on the input tag of Upload file (accept = .zip)

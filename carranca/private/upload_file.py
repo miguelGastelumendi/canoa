@@ -10,7 +10,7 @@
 from flask import render_template, request
 
 from .wtforms import UploadFileForm
-
+from ..shared import app_log
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import LoggedUser, get_user_receipt
 from ..helpers.texts_helper import add_msg_success, add_msg_error
@@ -36,10 +36,11 @@ def upload_file() -> str:
             log_msg = add_msg_success(
                 "uploadFileSuccess", texts, user_receipt, logged_user.email
             )
-            # logger(f"Uploadfile: {log_msg}.")
+            app_log.debug(log_msg)
         else:
             log_msg = add_msg_error(msg_error, texts, error_code)
-            # logger( f"Uploadfile: {log_msg} | File stage '{_file}' |{removed} Code {task_code} | Exception Error '{except_error}'." )
+            app_log.error(log_msg, exc_info=error_code)
+            #logger( f"Uploadfile: {log_msg} | File stage '{_file}' |{removed} Code {task_code} | Exception Error '{except_error}'." )
 
     return render_template(template, form=tmpl_form, **texts)
 #eof

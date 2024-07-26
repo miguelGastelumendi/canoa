@@ -8,6 +8,7 @@
  # cSpell:ignore latin CCITT
 
 import time
+import shutil
 import datetime
 import platform
 from os import path, makedirs
@@ -38,6 +39,17 @@ def change_file_ext(file: str, ext: str):
     root, _ = path.splitext(file)
     new_file= root + ext
     return new_file
+
+# TODO replace_if_newer
+def file_must_exist(file_full_path: str, source_full_path: str, replace_if_newer: bool = False) -> bool:
+    done = path.isfile(file_full_path)
+    if done:
+        pass
+    elif path.isfile(source_full_path):
+        shutil.copyfile(source_full_path, file_full_path)
+        done = path.isfile(file_full_path)
+
+    return done
 
 
 def folder_must_exist(full_path: str) -> bool:

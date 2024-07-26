@@ -14,10 +14,9 @@ from os import path
 from werkzeug.utils import secure_filename
 
 from ...helpers.error_helper import ModuleErrorCode
-from ...helpers.py_helper import (folder_must_exist, is_same_file_name, is_str_none_or_empty)
+from ...helpers.py_helper import (file_must_exist, folder_must_exist, is_same_file_name, is_str_none_or_empty)
 
 from .Cargo import Cargo
-
 def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
 
     error_code = 0
@@ -54,6 +53,10 @@ def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
             task_code = 12
         elif not folder_must_exist(cargo.storage.path.data_tunnel_user_write):
             task_code = 13
+        elif not path.isfile(cargo.storage.path.batch_source_name):
+            task_code = 14
+        elif not file_must_exist(cargo.storage.path.batch_full_name, cargo.storage.path.batch_source_name):
+            task_code = 15
         else:
             task_code = 0
     except Exception as e:

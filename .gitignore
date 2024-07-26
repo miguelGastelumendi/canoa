@@ -32,7 +32,6 @@ carranca/static/assets/.temp
 
 # mgd
 *.hlp
-*.bat
 test.js
 test.html
 .idea/

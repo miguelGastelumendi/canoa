@@ -61,11 +61,11 @@ def process(
     # Parent folder of both apps: canoa & data_validate
     common_folder = path_remove_last(app_config.ROOT_FOLDER)
 
-    # Create the Storage Info
-    storage = StorageInfo(logged_user.code, common_folder)
-
     # Modules configurable parameters
     upload_cfg = UploadConfig()
+
+    # Create the Storage Info
+    storage = StorageInfo(logged_user.code, common_folder, upload_cfg.d_v.batch)
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(

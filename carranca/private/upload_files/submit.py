@@ -22,6 +22,7 @@ from ...helpers.py_helper import (
     now,
 )
 from ...helpers.error_helper import ModuleErrorCode
+from ...shared import app_log
 
 
 async def _run_validator(
@@ -46,9 +47,9 @@ async def _run_validator(
 
     if debug_validator and not is_str_none_or_empty(d_v.flag_debug):
         run_command.append(d_v.flag_debug)
-        print(' '.join(run_command))  # TODO  LOG
-
-    print(' '.join(run_command))  # TODO  LOG
+        app_log.info(' '.join(run_command))
+    else:
+        app_log.debug(' '.join(run_command))
 
     # Run the script command asynchronously
     stdout = None
@@ -63,12 +64,13 @@ async def _run_validator(
         stdout, stderr = await process.communicate()
 
     except Exception as e:
-        return '', f"{d_v.name}.running: {e}"
+        err_msg = f"{d_v.name}.running: {e}";
+        app_log.critical(err_msg)
+        return '', err_msg
 
     # Decode the output from bytes to string
     stdout_str = decode_std_text(stdout)
     stderr_str = decode_std_text(stderr)
-
     return stdout_str, stderr_str
 
 
@@ -87,9 +89,8 @@ def submit(cargo: Cargo) -> Cargo:
     error_code = 0
     msg_exception = ""
     task_code = 0
-    stdout_str = None
-    external_error = False
-    report_ready = False
+    std_out_str = None
+    std_err_str = None
 
     try:
         task_code += 1  # 1
@@ -98,10 +99,8 @@ def submit(cargo: Cargo) -> Cargo:
         _path = cargo.storage.path
         _path_read = cargo.storage.path.data_tunnel_user_read
         _path_write = cargo.storage.path.data_tunnel_user_write
-        external_app_path = path.join(_path.apps_parent_path, _cfg.d_v.name)
-        batch_full_name = path.join(external_app_path, _cfg.d_v.batch)
-        print(batch_full_name)
-        if not path.exists(batch_full_name):  # TODO send to check module
+        batch_full_name = _path.batch_full_name
+        if not path.isfile(batch_full_name):  # TODO send to check module
             task_code += 1  # 2
             raise Exception(
                 f"The `{_cfg.d_v.name}` module caller [{batch_full_name}] was not found."
@@ -113,7 +112,7 @@ def submit(cargo: Cargo) -> Cargo:
 
         try:
             task_code += 2  # 3
-            stdout_str, stderr_str = asyncio.run(
+            std_out_str, std_err_str = asyncio.run(
                 _run_validator(
                     batch_full_name,
                     _cfg.d_v,
@@ -123,12 +122,7 @@ def submit(cargo: Cargo) -> Cargo:
                 )
             )
             task_code += 1  # 4
-            external_error = not is_str_none_or_empty(stderr_str)
-            report_ready = path.exists(final_report_full_name)
-            if external_error and not report_ready:
-                raise Exception(f"{_cfg.d_v.name}.stderr: {stderr_str}")
         except Exception as e:
-            external_error = True
             msg_exception = str(e)
             raise Exception(e)
 
@@ -137,9 +131,9 @@ def submit(cargo: Cargo) -> Cargo:
         cargo.report_ready_at = now()
 
         task_code += 1  # 5
-        if not report_ready:
+        if not path.exists(final_report_full_name):
             task_code += 1  # 6
-            error_code = task_code
+            raise Exception(f"Report not ready! {_cfg.d_v.name}.stderr: {std_err_str}, {_cfg.d_v.name}.stdout: {std_out_str}")
         elif stat(final_report_full_name).st_size < 200:
             task_code += 2  # 7
             error_code = task_code
@@ -156,14 +150,14 @@ def submit(cargo: Cargo) -> Cargo:
     except Exception as e:
         error_code = task_code
         msg_exception = str(e)
-        print(msg_exception)  # TODO  log
+        app_log.error(msg_exception, exc_info=error_code)
     finally:
         if True:
             try:
                 shutil.rmtree(_path_read)
                 shutil.rmtree(_path_write)
             except:
-                print('As pastas de comunicação não foram apagadas.')  # TODO  log
+                app_log.error('As pastas de comunicação não foram apagadas.')
 
     # goto email.py
     error_code = (
@@ -174,7 +168,7 @@ def submit(cargo: Cargo) -> Cargo:
         msg_error,
         msg_exception,
         {'user_report_full_name': user_report_full_name},
-        {'msg_success': stdout_str},
+        {'msg_success': std_out_str},
     )
 
 # eof
