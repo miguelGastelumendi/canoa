@@ -47,7 +47,7 @@ class BaseConfig:
     '''
     app_name = 'Canoa'
     #major.minor.patch,
-    app_version =  'β 2.6' # &beta
+    app_version =  'β 2.9' # &beta
     # see below (enum)
     app_mode = 'None'
     # all environment variables begin with `Canoa_`
@@ -56,6 +56,7 @@ class BaseConfig:
     # min & max text length for pw & user_name
     len_val_for_pw = LenValidate(6, 22)
     len_val_for_uname = LenValidate(3, 22)
+    len_val_for_email = LenValidate(8, 60)
 
 
     ''' From Environment Variables

@@ -1,20 +1,23 @@
 Rem Batch to run data_validate FROM `canoa`
-@Echo Off
+@echo Off
 Rem mgd 2024-05-27 v1
+Rem mgd 2024-07-27 v2 (param1: data_validate folder)
 Rem Example:
-Rem D:\Projects\AdaptaBrasil\data_valdate\run.bat --input_folder D:\Projects\AdaptaBrasil\data_tunnel\00212\data --output_folder D:\Projects\AdaptaBrasil\data_tunnel\00212\report --no-spellchecker
-Rem Save the current directory
-pushd .
-Rem Go to data_validate folder (/d including other drive)
-cd /d "%~dp0"
-Echo Activating data_validate enviromnent...
+Rem D:\Projects\AdaptaBrasil\data_tunnel\run_validate.bat D:\Projects\AdaptaBrasil\data_valdate --input_folder D:\Projects\AdaptaBrasil\data_tunnel\00212\data --output_folder D:\Projects\AdaptaBrasil\data_tunnel\00212\report --no-spellchecker
+Rem
+Rem /!\ Keep synced with run_validate.sh
+Rem --------------------------
+Rem Go to data_validate folder [param1] (/d including the drive)
+cd /d "%~1"
+Rem Remove first param
+shift
+echo Activating data_validate environment...
 call .venv\Scripts\activate.bat
-Rem TODO: check if activated
-Echo Running data_validate...
 Rem Check if .env is active, if not END
-call python main.py %*
-Echo Deactivating data_validate enviromnent...
+echo Running data_validate...
+Rem %* does not "comply" with `shift`: call python main.py %*
+call python main.py %1 %2 %3 %4 %5 %6 %7 %8 %9
+echo Deactivating data_validate environment...
 call .venv\Scripts\deactivate.bat
-popd .
-Echo Returnnig to Canoa
+echo Returnnig to Canoa.
 Rem eof

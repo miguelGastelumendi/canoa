@@ -5,16 +5,11 @@
 
 # cSpell:ignore
 
+import re
 from flask import url_for
 from bs4 import BeautifulSoup
-import re
-import os
 
-def file_full_name_parse(file_full_name: str) -> tuple[str, str, str]:
-   # split full path into 3 components
-   drive, path = os.path.splitdrive(file_full_name)
-   _, filename = os.path.split(path)
-   return (drive, path, filename)
+from file_helper import file_full_name_parse
 
 
 def img_change_src_path(html_content: str, new_img_folder: list) -> str:

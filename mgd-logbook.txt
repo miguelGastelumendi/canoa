@@ -8,7 +8,7 @@ TODO:
         a. Erros i check.py generates an internal error.
         0. About title
         1. Check upload/email.py html body, email_sent_at
-        2. Install on Linux server with Hunspell
+        2. Install on Windows server with Hunspell
         4. Require actual/current pw to be able to change pw, changepassword user `timer`
         5. Wait for process on forms.
         6. Add exception message to the forms (alert)
@@ -22,7 +22,9 @@ TODO:
         D. The recipient of the email must be different from CC (and perhaps from BCC as well)
         E. Use a variable for accept .zip
         F. Change cargo.report_ready_at to validate_end_at
-        G. run.bat goes to data_tunnel
+
+Done:
+        G run.bat goes to data_tunnel 2023.07.30
 
     small tasks
         - Login Remember not always working
@@ -31,23 +33,33 @@ TODO:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-07-26 vβ 2.9
+    - Submit module now sends Validator path to script
+    - Updated and renamed scripts: run_validate.bat|sh (previously run.bat|sh)
+    - From now, run_validate.bat|sh goes to `data_tunnel`
+    - Original run_validate.bat|sh is one level up of `carranca` folder:
+        if data_tunnel copy it's missing or old, the original one
+        is used to copy/update
+    - Start using `app_log` during process
+    - Login name can be Name or Email (adjusted input max len)
+    - The filename can be changed by `secure_filename` (see check.py)
+    -
 
 2024-07-26 vβ 2.8 (to test, use last version July/23)
-    - Several adjustments to call data_validate from common folder
+    - Several adjustments to call data_validate from the common folder
 
 2024-07-25 vβ 2.7
-    - Set [Especificação] button to an external link in new tab
-    - Set a couple of hint in the navigation buttons for evaluation [<a title='hint']
+    - Set the [Especificação] button as an external link in new tab
+    - Set some hints on the navigation buttons for evaluation purposes [<a title='hint']
     - Set correctly the accept attribute on the input tag of Upload file (accept = .zip)
-    - Add the possibility to add several CC on the email
-
+    - Define the possibility of adding several CCs to the e-mail
 
 2024-07-22 vβ 2.6
-    Change text in ui.items[uploadFileSuccess]
-    Add [Especificação] button in navigation.html
-    New shared.py (reorder main.py)
-    Fix a bug on html_helper.py
-    Finalize display_html.py
+    - Change text in ui.items[uploadFileSuccess]
+    - Add [Especificação] button in navigation.html
+    - New shared.py (reorder main.py)
+    - Fix a bug on html_helper.py
+    - Finalize display_html.py
 
 2024-07-07 vβ 2.5
     Fix ?

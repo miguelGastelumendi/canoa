@@ -8,11 +8,8 @@
  # cSpell:ignore latin CCITT
 
 import time
-import shutil
 import datetime
 import platform
-from os import path, makedirs
-from ..shared import app_log
 
 
 OS_NAME_IS = platform.system()
@@ -24,49 +21,6 @@ OS_IS_MAC = (OS_NAME_IS == "Darwin")
 def now():
     # current date time
     return datetime.datetime.now()
-
-
-def path_remove_last(dir: str) -> str:
-    folders = dir.split(path.sep)
-    if len(folders) < 2:
-        return None
-
-    short_dir = path.sep.join(folders[:-1])
-    return short_dir
-
-
-def change_file_ext(file: str, ext: str):
-    root, _ = path.splitext(file)
-    new_file= root + ext
-    return new_file
-
-# TODO replace_if_newer
-def file_must_exist(file_full_path: str, source_full_path: str, replace_if_newer: bool = False) -> bool:
-    done = path.isfile(file_full_path)
-    if done:
-        pass
-    elif path.isfile(source_full_path):
-        shutil.copyfile(source_full_path, file_full_path)
-        done = path.isfile(file_full_path)
-
-    return done
-
-
-def folder_must_exist(full_path: str) -> bool:
-    done = path.isdir(full_path)
-    try:
-        if not done:
-            makedirs(full_path)
-            done = True
-    except Exception as e:
-        done = False
-        app_log.warn(f"Error creating folder {full_path}, {e}")
-
-    return done
-
-
-def is_same_file_name(file1: str, file2: str):
-    return path.normcase(file1) == path.normcase(file2)
 
 
 def is_str_none_or_empty(s: str) -> bool:
@@ -177,6 +131,7 @@ def to_base(number: int, base: int) -> str:
             result = base_digits[remainder] + result
 
     return result
+
 
 def decode_std_text(std_text: bytes):
     """

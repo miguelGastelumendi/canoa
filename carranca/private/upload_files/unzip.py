@@ -11,6 +11,7 @@
 
 import zipfile
 from .Cargo import Cargo
+from ...shared import app_log
 from ...helpers.error_helper import ModuleErrorCode
 
 def unzip(cargo: Cargo) -> Cargo:
@@ -42,10 +43,12 @@ def unzip(cargo: Cargo) -> Cargo:
                 zip_file.extractall(unzip_folder)
                 msg_error = ''
 
+        app_log.debug(f"The zip file [{zip_full_name}] was unpacked correctly in [{unzip_folder}].")
     except Exception as e:
         msg_exception= str(e)
         error_code= task_code + ModuleErrorCode.UPLOAD_FILE_UNZIP
-        # TODO: Log full_name
+        app_log.error(f"Error unzipping file [{zip_full_name}] in [{unzip_folder}]: [{e}].", exc_info=error_code)
+
 
     # goto module submit.py
     return cargo.update(error_code, msg_error, msg_exception)

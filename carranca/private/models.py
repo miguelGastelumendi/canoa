@@ -19,10 +19,11 @@ class UserDataFiles(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     id_users = db.Column(db.Integer)
-    file_name = db.Column(db.String(140))
+    file_name = db.Column(db.String(80))
+    original_name = db.Column(db.String(80), nullable=True, default=None)
     file_size = db.Column(db.Integer)
     file_crc32 = db.Column(db.Integer)
-    from_os = db.Column(db.String(1))        
+    from_os = db.Column(db.String(1))
     ticket = db.Column(db.String(40))
     user_receipt = db.Column(db.String(14))
     upload_start_at = db.Column(db.DateTime)

@@ -17,7 +17,8 @@ import os
 import base64
 
 from flask import render_template
-from ..helpers.py_helper import is_str_none_or_empty, folder_must_exist
+from ..helpers.file_helper import folder_must_exist
+from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.html_helper import img_filenames, img_change_src_path
 from ..shared import app_log, app_config
 
@@ -31,11 +32,15 @@ def __prepare_img_files(
     missing_files = html_images.copy()  # missing files from folder, assume all
 
     for file_name in html_images:
-        if is_img_local_path_ready and os.path.exists(os.path.join(img_local_path, file_name)):
+        if is_img_local_path_ready and os.path.exists(
+            os.path.join(img_local_path, file_name)
+        ):
             missing_files.remove(file_name)  # this img is not missing.
 
     if not folder_must_exist(img_local_path):
-        app_log.error(f"Cannot create folder [{img_local_path}] to keep the HTML's images.")
+        app_log.error(
+            f"Cannot create folder [{img_local_path}] to keep the HTML's images."
+        )
         return False
 
     # folder for images & a list of missing_files, are ready.
@@ -97,7 +102,7 @@ def display_html(docName: str):
         [] if is_str_none_or_empty(body) else sorted(img_filenames(body))
     )  # list of img tags in HTML
 
-    img_folders = ['static', 'docs', section, 'images']
+    img_folders = ["static", "docs", section, "images"]
     img_local_path = os.path.join(app_config.ROOT_FOLDER, *img_folders)
     if is_str_none_or_empty(body):
         msg = get_msg_error("documentNotFound").format(docName)
@@ -117,9 +122,9 @@ def display_html(docName: str):
         # TODO: have a not_found_image.img
 
     elif __prepare_img_files(html_images, db_images, img_local_path, section):
-       img_folders.insert(0, os.sep)
-       body = img_change_src_path(body, img_folders)
-       pass
+        img_folders.insert(0, os.sep)
+        body = img_change_src_path(body, img_folders)
+        pass
 
     return render_template(
         "./home/document.html.j2",

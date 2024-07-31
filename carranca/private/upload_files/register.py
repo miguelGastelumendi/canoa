@@ -59,6 +59,7 @@ def register(cargo: Cargo, file_obj: object) -> Cargo:
             , file_size = file_size
             , file_crc32 = file_crc32
             , file_name = cargo.storage.uploaded_file_name
+            , original_name = cargo.storage.uploaded_original_name
             , ticket = file_ticket
             , user_receipt = get_user_receipt(file_ticket)
             , upload_start_at = cargo.started_at

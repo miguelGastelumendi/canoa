@@ -1,24 +1,65 @@
 <!--
    /* cSpell:locale en pt-br
    /* cSpell:ignore sendgrid sqlalchemy
-   /* mgd 2024-05-03
+   /* mgd 2024-05-03, 07-30
 -->
 # — Canoa _Frontend_ de AdaptaBrasil —
 
 
 ## Processo de Validação
 
-A validação de um arquivo para um esquema é realizado em ```.private.upload_file.process``` e consta
-dos seguintes módulos:
+A validação do arquivo ```zip``` é realizado por um aplicativo externo, o
+    [```Validador```](https://github.com/AdaptaBrasil/data_validate),
+    e gerenciado por ```.private.upload_file.process.py```
+    que consta dos seguintes módulos:
 
-   1. *Check*, revisão dos requisitos do processo
-          - Validar existência de variáveis e de arquivos necessários;
-      - Verificar a existência das pastas e criar caso não existam;
-      - CBE: 200 (ver: ```.helpers.error_helper.py```): ```UPLOAD_FILE_CHECK = 200```
-   2. _Register_
-   2. unzip
-   3. submit
-   3. email
+1. ### _Process_ ###
+    #### Gerencia o processo ####
+    - Chamando os módulos sequencialmente
+    - Cuida dos parâmetros e retornos entre eles
+    - Supervisiona o andamento de cada passo
+    - Em caso de erro:
+        + Se o processo ja foi registrado, grava a mensagens, códigos, exceções e módulo ativo
+        + Abandona a iteração
+        + Informa ao usuário
+    - Em caso de sucesso:
+        + Fecha o registro do processo, anotando as mensagens recebidas
+    - Código Base de Erro (```CBE```) = ```.helpers.error_helper.py``` ```UPLOAD_FILE_PROCESS``` 260
+
+2. ### _Check_ ###
+    #### Revisa os requisitos do processo ####
+    - Corrobora a presencia das configurações:
+        + ```config.py``` configuração geral
+        + ```config_upload.py``` especifica do processo
+    - Revisa as variáveis e o arquivos necessários
+    - Examina a existência das pastas e as criar caso não existam
+    - Valida o nome, tamanho e extensão do arquivo
+    - Verifica a disponibilidade dos _scripts_ de execução do ```Validator``` e se eles estão atualizados
+    - Confirma se os dados do usuário estão completos, incluindo e-mail
+    - CBE = ```UPLOAD_FILE_CHECK``` 200
+
+3. ### _Register_ ###
+    #### Registra o processo  ####
+    - Cria o ticket (chave única) e o número de protocolo do processo
+    - Coleta informações do arquivo como ```crc32``` e tamanho
+    - Insere registro na tabela (```user_data_file```)` com os dados do
+      usuário e do arquivo submetido
+    - CBE = ```UPLOAD_FILE_REGISTER``` 220
+
+4. ### _Unzip_  ###
+    #### Descompacta o arquivo  ####
+    - Valida se é o arquivo está no formato ```zip```
+    - Extrai o conteúdo na pasta do usuário que e compartilhada com
+      o aplicativo validador.
+    - CBE = ```UPLOAD_FILE_UNZIP``` 230
+
+5. ### _Submit_  ###
+    #### Chama ao aplicativo validador  ####
+    - CBE = ```UPLOAD_FILE_SUBMIT``` 240
+
+6. ### _E-Mail_  ###
+    #### Envia o email de resultado  ####
+    > ```CBE``` = ```UPLOAD_FILE_EMAIL``` 250
 
 
 

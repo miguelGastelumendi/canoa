@@ -24,7 +24,8 @@
 # cSpell:ignore ext
 
 from ...config_upload import UploadConfig
-from ...helpers.py_helper import is_str_none_or_empty, path_remove_last
+from ...helpers.py_helper import is_str_none_or_empty
+from ...helpers.file_helper import path_remove_last
 from ...helpers.user_helper import LoggedUser
 from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
@@ -34,15 +35,15 @@ from .StorageInfo import StorageInfo
 
 from .check import check
 from .unzip import unzip
-from .register import register
-from .submit import submit
 from .email import email
+from .submit import submit
+from .register import register
 
 
 def process(
     logged_user: LoggedUser, file_obj: object, valid_ext: list[str]
 ) -> list[int, str, str]:
-    from ...shared import app_config
+    from ...shared import app_config, app_log
 
     current_module_name = __name__.split('.')[-1]
 
@@ -65,7 +66,7 @@ def process(
     upload_cfg = UploadConfig()
 
     # Create the Storage Info
-    storage = StorageInfo(logged_user.code, common_folder, upload_cfg.d_v.batch)
+    storage = StorageInfo(logged_user.code, common_folder, upload_cfg.d_v.folder, upload_cfg.d_v.batch)
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
@@ -105,6 +106,8 @@ def process(
 
     current_module_name = 'UserDataFiles.update'
     msg_success = cargo.final.get('msg_success', None)
+    log_msg = "Updating user data file: [{0}] with error code {1}."
+
     if is_str_none_or_empty(cargo.user_data_file__key):
         pass  # user_data_file's pk not ready
 
@@ -116,8 +119,7 @@ def process(
                 success_text=msg_success,
             )
         except Exception as e:
-            log_msg = str(e)
-            print(log_msg)
+            app_log.error(log_msg, e, 0)
 
     else:
         try:
@@ -131,7 +133,7 @@ def process(
         except Exception as e:
             error_code = ModuleErrorCode.UPLOAD_FILE_PROCESS + 1
             msg_exception = __get_msg_exception(str(e), msg_exception, error_code)
-            print(msg_exception)
+            app_log.error(log_msg, msg_exception, error_code)
 
     return error_code, msg_error, msg_exception, cargo.final
 

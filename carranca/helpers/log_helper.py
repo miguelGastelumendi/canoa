@@ -14,6 +14,7 @@ class Log():
                 logFile.write(msg)
         print(msg)
 
+
 class Log2Database():
     def logActivity2Database(self, idUsuario: str, idProjeto: str, url: str):
         from .dbQuery import executeSQL
