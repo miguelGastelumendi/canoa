@@ -33,7 +33,13 @@ Done:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
-2024-07-26 vβ 2.9
+2024-07-30 vβ 2.10
+    - Bugs introduced on vβ 2.9:
+        from file_helper import file_full_name_parse
+        =>
+        from .file_helper import file_full_name_parse
+
+2024-07-30 vβ 2.9
     - Submit module now sends Validator path to script
     - Updated and renamed scripts: run_validate.bat|sh (previously run.bat|sh)
     - From now, run_validate.bat|sh goes to `data_tunnel`
@@ -43,7 +49,6 @@ Done:
     - Start using `app_log` during process
     - Login name can be Name or Email (adjusted input max len)
     - The filename can be changed by `secure_filename` (see check.py)
-    -
 
 2024-07-26 vβ 2.8 (to test, use last version July/23)
     - Several adjustments to call data_validate from the common folder

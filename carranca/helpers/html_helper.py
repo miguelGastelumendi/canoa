@@ -6,11 +6,8 @@
 # cSpell:ignore
 
 import re
-from flask import url_for
 from bs4 import BeautifulSoup
-
-from file_helper import file_full_name_parse
-
+from .file_helper import file_full_name_parse
 
 def img_change_src_path(html_content: str, new_img_folder: list) -> str:
     # Change img tag `src` path to a new_img_path & return the modified html
