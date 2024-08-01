@@ -5,12 +5,13 @@ TODO:
 
 
     2024-06-
-        a. Erros i check.py generates an internal error.
+        a. Erros in check.py generates an internal error.
         0. About title
         1. Check upload/email.py html body, email_sent_at
-        2. Install on Windows server with Hunspell
+        2. Set User Name in e-mail
+        3. Wait for process on forms.
         4. Require actual/current pw to be able to change pw, changepassword user `timer`
-        5. Wait for process on forms.
+        5. Install on Windows server with Hunspell
         6. Add exception message to the forms (alert)
         7. Test error on authentication process: error on start (no Form)
         7. Avoid user's simultaneous validation
@@ -33,6 +34,9 @@ Done:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-07-30 vβ 2.11
+    - Remove ellipses from  [Especifica&ccedil;&atilde;o]
+
 2024-07-30 vβ 2.10
     - Bugs introduced on vβ 2.9:
         from file_helper import file_full_name_parse
@@ -187,6 +191,8 @@ Done:
     2. Confirm if run.bat exists
     3. New Cargo object ModulesConfig.py
 
+----------- 2024 - May -----------
+----------------------------------
 2024-05-30 v α44
     1. Fix several minor bugs on the authentication process html.j2 files
     2. Disable the submit button after it is pressed.
@@ -195,7 +201,6 @@ Done:
 
 2024-05-28 v α43
     1. Give default value of config only when empty !!
-
 
 2024-05-28 v α42
     1. Remove circular import
@@ -331,7 +336,7 @@ Done:
     2. Nova imagem/ favicon
 
 
------------ 2024 - May -----------
+----------- 2024 - April ---------
 ----------------------------------
 2024-04-29,30 v a23
     # Upload File
@@ -427,7 +432,7 @@ Done:
 2024-04-01
       #Formulários funcionando, configuráveis
 
----------- 2024 - March-----------
+---------- 2024 - March ----------
 ----------------------------------
 2024-03-28
       #Adaptar formulário sem imagem superior, passwordrecovery e resetpassword nao funcionam.
