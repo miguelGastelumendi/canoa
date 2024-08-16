@@ -31,15 +31,10 @@ carranca/static/assets/yarn.lock
 carranca/static/assets/.temp
 
 # mgd
-*.hlp
-test.js
-test.html
 .idea/
 carranca/static/docs/
 uploaded_files/
-mgd-info.txt
-mgd-dicas-py.txt
-mgd-cache.txt
+LocalDrive/
 
 
 ### Flask template
@@ -47,5 +42,6 @@ instance/*
 !instance/.gitignore
 .webassets-cache
 
-#eof
 mount-win.sh
+#eof
+
