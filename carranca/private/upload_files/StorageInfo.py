@@ -10,7 +10,7 @@
 # cSpell:ignore
 
 from os import path
-from ...helpers.file_helper import path_remove_last
+from ...helpers.file_helper import path_remove_last_folder
 
 class StorageInfo:
     """
@@ -37,7 +37,7 @@ class StorageInfo:
             # Path to all user files are kept
             self.user = path.join(uploaded_files, user_folder)
             # Path to the patent folder off both apps: canoa and data_validate
-            self.apps_parent_path = path_remove_last(common_folder)
+            self.apps_parent_path = path_remove_last_folder(common_folder)
 
             # Path to a data_validate app
             data_tunnel = path.join(

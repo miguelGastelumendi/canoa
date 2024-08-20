@@ -19,7 +19,7 @@ def file_full_name_parse(file_full_name: str) -> tuple[str, str, str]:
     return (drive, path, filename)
 
 
-def path_remove_last(dir: str) -> str:
+def path_remove_last_folder(dir: str) -> str:
     folders = dir.split(path.sep)
     if len(folders) < 2:
         return None
@@ -34,7 +34,7 @@ def change_file_ext(file: str, ext: str):
     return new_file
 
 
-def is_first_param_is_newer(newer_full_name: str, older_full_name: str) -> bool | None:
+def is_first_param_newer(newer_full_name: str, older_full_name: str) -> bool | None:
     newer_stat = os.stat(newer_full_name) if path.isfile(newer_full_name) else None
     older_stat = os.stat(older_full_name) if path.isfile(older_full_name) else None
 
@@ -67,7 +67,7 @@ def file_must_exist(
             return False
         elif not done:
             shutil.copyfile(source_full_name, file_full_name)
-        elif is_first_param_is_newer(source_full_name, file_full_name):
+        elif is_first_param_newer(source_full_name, file_full_name):
             os.remove(file_full_name)
             shutil.copyfile(source_full_name, file_full_name)
             shutil.copystat(source_full_name, file_full_name)

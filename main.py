@@ -3,10 +3,10 @@
 
     For newbies, remember:
         project_root/
-        ├── main.py      # <- You are here
-        ├── shared.py    # shared vars
-        ├── App/         # Optional folder for application logic
-        │   └── ...      # Other files in the App folder
+        ├── main.py         # <- You are here
+        ├── App/            # Optional folder for application logic
+        │    ├── shared.py  # shared vars
+        │    └── ...        # Other files in the App folder
         └── other_files.py  # Other Python files in the root directory
 
     see https://flask.palletsprojects.com/en/latest/tutorial/factory/
@@ -15,7 +15,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
- #cSpell:ignore SQLALCHEMY, cssless sendgrid
+#cSpell:ignore SQLALCHEMY, cssless sendgrid
 
 from sys import exit
 from collections import namedtuple

@@ -26,22 +26,23 @@ _templates
 package-lock.json
 .vscode/symbols.json
 
-carranca/static/assets/node_modules
-carranca/static/assets/yarn.lock
-carranca/static/assets/.temp
-
-# mgd
-.idea/
-carranca/static/docs/
-uploaded_files/
-LocalDrive/
-
-
-### Flask template
+# Flask template
 instance/*
 !instance/.gitignore
 .webassets-cache
 
+## Canoa base
+carranca/static/assets/node_modules
+carranca/static/assets/yarn.lock
+carranca/static/assets/.temp
+
+## Canoa per git's user
+carranca/static/docs/
+uploaded_files/
+LocalDrive/
+
+## Canoa linux
 mount-win.sh
+
 #eof
 

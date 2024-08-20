@@ -25,7 +25,7 @@
 
 from ...config_upload import UploadConfig
 from ...helpers.py_helper import is_str_none_or_empty
-from ...helpers.file_helper import path_remove_last
+from ...helpers.file_helper import path_remove_last_folder
 from ...helpers.user_helper import LoggedUser
 from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
@@ -60,7 +60,7 @@ def process(
         return f"Upload Error: process.Exception: [{e_str}]; {current_module_name}.Exception: [{msg_exc}], Code [{code}]."
 
     # Parent folder of both apps: canoa & data_validate
-    common_folder = path_remove_last(app_config.ROOT_FOLDER)
+    common_folder = path_remove_last_folder(app_config.ROOT_FOLDER)
 
     # Modules configurable parameters
     upload_cfg = UploadConfig()
