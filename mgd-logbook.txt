@@ -34,6 +34,23 @@ Done:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-08-19 β 2.14
+    - Fixed branch issue (a 'new branch 'appeared in git,
+        my work was divided into ann lost some code and
+        time to merge it correcly)
+
+
+2024-08-14 β 2.13
+    - Download public files from url
+    - Download load public files (*not* compressed) from Google Drive
+    - Download load public compressed files from Google Drive 80%
+
+2024-07-30 vβ 2.12
+    - New  [About]  x
+    - Google Drive download 1
+    - Google Drive download 2  x
+
+
 2024-07-30 vβ 2.11
     - Remove ellipses from  [Especifica&ccedil;&atilde;o]
 

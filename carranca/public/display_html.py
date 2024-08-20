@@ -134,7 +134,31 @@ def display_html(docName: str):
             "documentStyle": style,
             "documentBody": body,
         },
+
     )
+
+# def register_jinja(config):
+#     from .helpers.route_helper import private_route, public_route
+#     from jinja2 import Environment
+#     def _get_name() -> str:
+#         app_log.debug(config.app_name)
+#         return config.app_name
+#     def _get_version() -> str:
+#         app_log.debug( config.app_version )
+#         return config.app_version
+#     app.jinja_env.globals.update(
+#         private_route= private_route,
+#         public_route= public_route,
+#         app_name = _get_name,
+#         app_version = _get_version
+#     )
+#     env = Environment()
+#     template = env.from_string("{{ public_route('login') }} - {{ app_version }}")
+#     print(template.render())
+#     print(template.render(app_name=_get_name, app_version=_get_version))
+
+
+
 
 
 # eof

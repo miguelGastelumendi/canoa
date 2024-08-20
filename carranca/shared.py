@@ -49,26 +49,33 @@ def configure_database(app):
 def register_jinja():
     from .helpers.route_helper import private_route, public_route
     def _get_name() -> str:
+        app_log.debug(app_config.app_name)
         return app_config.app_name
     def _get_version() -> str:
+        app_log.debug( app_config.app_version )
         return app_config.app_version
     app.jinja_env.globals.update(
         private_route= private_route,
         public_route= public_route,
-        app_name = _get_name,
-        app_version = _get_version,
+        app_version= _get_version,
+        app_name= _get_name,
     )
+    # template = app.jinja_env.from_string("{{ app_name() }} - {{ app_version() }}")
+    # print(template.render())
+    # print(template.render(app_name=_get_name, app_version=_get_version))
+
 
 
 def create_app_and_share_objects(config):
     from flask import Flask
     from carranca import db
     global app, app_config, app_log, app_db
+
+    app_config = config
     app = Flask(__name__)
-    app.config.from_object(config)
+    app.config.from_object(app_config)
 
     app_db = db
-    app_config = config
     app_log = app.logger
 
     register_extensions()

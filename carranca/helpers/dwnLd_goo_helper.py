@@ -16,13 +16,13 @@ from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.discovery import build
 
 
-from carranca.shared import app_config
-from carranca.helpers.file_helper import (
+from ..shared import app_config
+from .file_helper import (
     is_same_file_name,
     change_file_ext,
     path_remove_last_folder,
 )
-from carranca.helpers.py_helper import is_str_none_or_empty, to_str
+from .py_helper import is_str_none_or_empty, to_str
 
 
 def app_log(s):
@@ -118,7 +118,7 @@ def download_public_google_file(
 
         # TODO: Pass as param
         service_account_file = path.join(
-            ".",  # path_remove_last_folder(app_config.ROOT_FOLDER),
+            path_remove_last_folder(app_config.ROOT_FOLDER),
             "LocalDrive",
             "canoa-download-key.json",
         )
