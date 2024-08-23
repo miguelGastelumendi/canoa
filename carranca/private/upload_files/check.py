@@ -30,6 +30,7 @@ def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
     msg_exception = ""
     task_code = 0
 
+
     try:
         cargo.storage.uploaded_file_name = (
             None if file_obj is None else secure_filename(file_obj.filename)
@@ -77,14 +78,13 @@ def check(cargo: Cargo, file_obj: object, valid_ext: list[str]) -> Cargo:
             task_code = 0
 
 
-
         if task_code == 0:
             if not is_same_file_name(file_obj.filename, cargo.storage.uploaded_file_name ):
                 cargo.storage.uploaded_original_name = file_obj.filename
                 app_log.info(f"The uploaded file [{file_obj.filename}] has been renamed to [{cargo.storage.uploaded_file_name}].")
             app_log.debug(f"The uploaded file [{cargo.storage.uploaded_file_name}] successfully passed the `check` module.")
         else:
-            app_log.debug(f"The uploaded file [{cargo.storage.uploaded_file_name}] failed in module `check` with code {task_code}.")
+            app_log.error(f"The uploaded file [{cargo.storage.uploaded_file_name}] failed in module `check` with code {task_code}.")
 
     except Exception as e:
         msg_exception = str(e)

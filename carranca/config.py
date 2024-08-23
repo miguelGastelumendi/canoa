@@ -42,16 +42,21 @@ class BaseConfig:
         _key = None if is_str_none_or_empty(key) else BaseConfig.envvars_prefix
         return os_getenv(_key, default)
 
+    ''' App Identification
+        ----------------------------
+    '''
+    APP_NAME = 'Canoa'
+
+    #major.minor.patch
+    APP_VERSION = '&beta; 2.154' # &beta
+
     ''' Internal attributes
         ------------------
     '''
-    app_name = 'Canoa'
-    #major.minor.patch,
-    app_version =  'β 2.9' # &beta
     # see below (enum)
-    app_mode = 'None'
+    APP_MODE = 'None'
     # all environment variables begin with `Canoa_`
-    envvars_prefix = f"{app_name.upper()}_"
+    envvars_prefix = f"{APP_NAME.upper()}_"
 
     # min & max text length for pw & user_name
     len_val_for_pw = LenValidate(6, 22)
@@ -118,7 +123,7 @@ if is_str_none_or_empty(BaseConfig.SECRET_KEY):
     used for securely signing the session cookie (mgd: change every version)
     https://flask.palletsprojects.com/en/latest/config/#SECRET_KEY
     """
-    unique = f"{BaseConfig.app_name} v{BaseConfig.app_version}".encode()
+    unique = f"{BaseConfig.APP_NAME} v{BaseConfig.APP_VERSION}".encode()
     BaseConfig.SECRET_KEY = sha384(unique).hexdigest()
 
 
@@ -136,7 +141,7 @@ class DebugConfig(BaseConfig):
     # All IPs at port 5001
     SERVER_ADDRESS = 'http://0.0.0.0:5001' if is_str_none_or_empty(BaseConfig.SERVER_ADDRESS) else BaseConfig.SERVER_ADDRESS
     DEBUG = True
-    app_mode = app_mode_debug
+    APP_MODE = app_mode_debug
 
 # Production Config
 class ProductionConfig(BaseConfig):
@@ -144,7 +149,7 @@ class ProductionConfig(BaseConfig):
     The Production Configuration Class for the App
     """
     DEBUG = False  #Just to be sure & need some code here
-    app_mode = app_mode_production
+    APP_MODE = app_mode_production
 
 
 # Load all possible configurations

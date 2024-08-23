@@ -31,8 +31,8 @@ def  test_route():
 
     i= download_public_google_file(
         # "https://drive.google.com/file/d/1iXyDi-NcGIobY0NY-fOQ34Ew-gcS0PzY/view?usp=sharing" #zip com pw
-        # 'https://drive.google.com/file/d/1k4fW92-QGwp9SfMdHEE4WIFkKMJla763/view?usp=sharing'   #ziped
-          "https://drive.google.com/file/d/1H0BfjYJrf0p_ehqDoUH0wXIJzbAXwUKd/view?usp=sharing" # argow.zped
+        # 'https://drive.google.com/file/d/1k4fW92-QGwp9SfMdHEE4WIFkKMJla763/view?usp=sharing'   #zipped
+          "https://drive.google.com/file/d/1H0BfjYJrf0p_ehqDoUH0wXIJzbAXwUKd/view?usp=sharing" # argow.zipped
         ,"./uploaded_files/"
     )
     return str(i)
@@ -90,7 +90,6 @@ def changepassword():
         return redirect_to(login_route())
     else:
         from .access_control.password_change import do_password_change
-
         return do_password_change()
 
 

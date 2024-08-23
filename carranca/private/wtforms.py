@@ -5,11 +5,11 @@
     Equipe da Canoa -- 2024
     mgd 2024-04-09,27; 06-22
 """
-# cSpell:ignore: wtforms
+# cSpell:ignore: wtforms urlname
 
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, FileField
-from wtforms.validators import InputRequired, Length, EqualTo
+from wtforms import PasswordField, FileField, StringField
+from wtforms.validators import InputRequired, Length, URL
 from ..shared import app_config
 
 # -------------------------------------------------------------
@@ -17,7 +17,8 @@ from ..shared import app_config
 
 # Private form
 class UploadFileForm(FlaskForm):
-    filename = FileField('', validators= [InputRequired()], render_kw={"class": "form-control", "id": "upload_file", "accept": ".zip"})
+    filename = FileField('', render_kw={"class": "form-control", "id": "upload_file", "accept": ".zip"})
+    urlname = StringField('', validators=[URL()], render_kw={"class": "form-control", "id": "link_file"})
 
 # Private & Public form
 class ChangePassword(FlaskForm):

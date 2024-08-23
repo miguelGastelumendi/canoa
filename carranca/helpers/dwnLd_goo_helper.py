@@ -9,6 +9,7 @@
 
 import requests
 import puremagic
+import urllib.parse
 from os import path, remove, rename
 
 from google.oauth2.service_account import Credentials
@@ -28,12 +29,38 @@ from .py_helper import is_str_none_or_empty, to_str
 def app_log(s):
     return
 
+def is_url_valid(url: str) -> bool:
+    try:
+        urllib.parse.urlparse(url)
+        return True
+    except:
+        return False
+
+
+def is_gd_url_valid(url: str) -> int:
+    result = 0
+    if is_str_none_or_empty(url) or len(url) < 10:
+        result = 1
+    elif not url.lower().startswith("https://"):
+        result = 2
+    elif not is_url_valid(url):
+        result = 3
+    else:
+        file_id = get_file_id_from_url(url)
+        if file_id == None:
+            result = 4
+        elif not file_id.replace("_", "u").isalnum():
+            result = 5
+    return result
+
 
 def get_file_id_from_url(url: str) -> str:
     """Extracts the file ID from a Google Drive shared link."""
     id = None
     surl = to_str(url)
     parts = surl.split("/")
+    if parts.count < 2:
+        return None
     try:
         id = parts[parts.index("d") + 1]
     except ValueError:

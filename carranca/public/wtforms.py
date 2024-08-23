@@ -20,19 +20,19 @@ from ..shared import app_config
 # -------------------------------------------------------------
 # Text here ha no relevance, the ui_text table is actually used.
 
-max_name= LenValidate(
-    min(app_config.len_val_for_uname.min,  app_config.len_val_for_email.min)
-    , max(app_config.len_val_for_uname.max,  app_config.len_val_for_email.max)
-
+max_name = LenValidate(
+    min(app_config.len_val_for_uname.min, app_config.len_val_for_email.min),
+    max(app_config.len_val_for_uname.max, app_config.len_val_for_email.max),
 )
+
 
 class LoginForm(FlaskForm):
     username = StringField(
-        "Username",
+        "",
         validators=[InputRequired(), Length(**max_name.wtf_val())],
     )
     password = PasswordField(
-        "Password",
+        "",
         validators=[InputRequired(), Length(**app_config.len_val_for_pw.wtf_val())],
     )
     remember_me = BooleanField("Remember_me")
@@ -40,22 +40,26 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField(
-        "Username",
+        "",
         validators=[InputRequired(), Length(**app_config.len_val_for_uname.wtf_val())],
     )
-    email = StringField("Email", validators=[InputRequired(), Email(), Length(**app_config.len_val_for_email.wtf_val())])
+    email = StringField(
+        "",
+        validators=[
+            InputRequired(),
+            Email(),
+            Length(**app_config.len_val_for_email.wtf_val()),
+        ],
+    )
     password = PasswordField(
-        "Password",
+        "",
         validators=[InputRequired(), Length(**app_config.len_val_for_pw.wtf_val())],
     )
     disabled = BooleanField("Disabled")
 
 
 class PasswordRecoveryForm(FlaskForm):
-    user_email = StringField(
-        "Send link to this email",
-        validators=[InputRequired(), Email()]
-    )
+    user_email = StringField("", validators=[InputRequired(), Email()])
 
 
 # eof

@@ -21,6 +21,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
+
 # cSpell:ignore ext
 
 from ...config_upload import UploadConfig
@@ -41,11 +42,11 @@ from .register import register
 
 
 def process(
-    logged_user: LoggedUser, file_obj: object, valid_ext: list[str]
+    logged_user: LoggedUser, file_data: object, valid_ext: list[str]
 ) -> list[int, str, str]:
     from ...shared import app_config, app_log
 
-    current_module_name = __name__.split('.')[-1]
+    current_module_name = __name__.split(".")[-1]
 
     def __get_next_params(cargo: Cargo) -> list[object, dict]:
         """
@@ -66,7 +67,9 @@ def process(
     upload_cfg = UploadConfig()
 
     # Create the Storage Info
-    storage = StorageInfo(logged_user.code, common_folder, upload_cfg.d_v.folder, upload_cfg.d_v.batch)
+    storage = StorageInfo(
+        logged_user.code, common_folder, upload_cfg.d_v.folder, upload_cfg.d_v.batch
+    )
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
@@ -74,11 +77,11 @@ def process(
         logged_user,
         upload_cfg,
         storage,
-        {'file_obj': file_obj, 'valid_ext': valid_ext},  # first module parameters
+        {"file_data": file_data, "valid_ext": valid_ext},  # first module parameters
     )
     error_code = 0
-    msg_error = ''
-    msg_exception = ''
+    msg_error = ""
+    msg_exception = ""
 
     """
         Process Loop
@@ -92,7 +95,9 @@ def process(
         current_module_name = current_module.__name__
         try:
             cargo, next_module_params = __get_next_params(cargo)
-            error_code, msg_error, msg_exception, cargo = current_module(cargo, **next_module_params)
+            error_code, msg_error, msg_exception, cargo = current_module(
+                cargo, **next_module_params
+            )
             if error_code > 0:
                 break
         except Exception as e:
@@ -104,8 +109,8 @@ def process(
             msg_exception = __get_msg_exception(str(e), msg_exception, error_code)
             break
 
-    current_module_name = 'UserDataFiles.update'
-    msg_success = cargo.final.get('msg_success', None)
+    current_module_name = "UserDataFiles.update"
+    msg_success = cargo.final.get("msg_success", None)
     log_msg = "Updating user data file: [{0}] with error code {1}."
 
     if is_str_none_or_empty(cargo.user_data_file__key):
@@ -126,8 +131,12 @@ def process(
             UserDataFiles.update(
                 cargo.user_data_file__key,
                 error_code=error_code,
-                success_text=msg_success, # not really success but standard_output
-                error_msg='<sem mensagem de erro>' if is_str_none_or_empty(msg_error) else msg_error,
+                success_text=msg_success,  # not really success but standard_output
+                error_msg=(
+                    "<sem mensagem de erro>"
+                    if is_str_none_or_empty(msg_error)
+                    else msg_error
+                ),
                 error_text=msg_exception,
             )
         except Exception as e:
@@ -136,5 +145,6 @@ def process(
             app_log.error(log_msg, msg_exception, error_code)
 
     return error_code, msg_error, msg_exception, cargo.final
+
 
 # eof

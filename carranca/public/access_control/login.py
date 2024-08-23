@@ -44,7 +44,7 @@ def login():
             pass
         else:
             task_code += 1  # 4
-            username = get_input_text('username')
+            username = get_input_text('username') #TODO tmpl_form
             task_code += 1  # 5
             password = get_input_text('password')
             task_code += 1  # 5

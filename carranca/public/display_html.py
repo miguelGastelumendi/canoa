@@ -20,7 +20,7 @@ from flask import render_template
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.html_helper import img_filenames, img_change_src_path
-from ..shared import app_log, app_config
+from ..shared import app_log, app_config, app
 
 
 def __prepare_img_files(
@@ -53,8 +53,8 @@ def __prepare_img_files(
 
     elif len(available_files) == 0:
         q = len(missing_files)
-        qtd = "One" if q == 1 else f"{q}"
-        p = "" if q == 1 else "s"
+        qtd = 'One' if q == 1 else f'{q}'
+        p = '' if q == 1 else 's'
         app_log.warn(
             f"{qtd} image record{p} missing for [sectorSpecifications] in database: {', '.join(missing_files)}."
         )
@@ -65,11 +65,11 @@ def __prepare_img_files(
             b64encoded = get_text(file, section)
             if not is_str_none_or_empty(b64encoded):
                 image_data = base64.b64decode(b64encoded)
-                with open(os.path.join(img_local_path, file), "wb") as file:
+                with open(os.path.join(img_local_path, file), 'wb') as file:
                     file.write(image_data)
         except Exception as e:
             app_log.error(
-                f"Error writing image [{file}] in folder {img_local_path}. Message [{str(e)}]"
+                f'Error writing image [{file}] in folder {img_local_path}. Message [{str(e)}]'
             )
 
     return True
@@ -86,30 +86,30 @@ def display_html(docName: str):
 
     section = docName
     ## TODO texts = get_html( section )
-    pageTitle = get_text("pageTitle", section)
-    formTitle = get_text("formTitle", section)
-    body = get_text("body", section, "")
-    style = get_text("style", section, "")
+    pageTitle = get_text('pageTitle', section)
+    formTitle = get_text('formTitle', section)
+    body = get_text('body', section, '')
+    style = get_text('style', section, '')
     # a comma separated list of images.ext names available on the db,
     # see below db_images & _prepare_img_files
-    images = get_text("images", section)
+    images = get_text('images', section)
 
     db_images = (
-        [] if is_str_none_or_empty(images) else [s.strip() for s in images.split(",")]
+        [] if is_str_none_or_empty(images) else [s.strip() for s in images.split(',')]
     )  # list of img names in db
 
     html_images = (
         [] if is_str_none_or_empty(body) else sorted(img_filenames(body))
     )  # list of img tags in HTML
 
-    img_folders = ["static", "docs", section, "images"]
+    img_folders = ['static', 'docs', section, 'images']
     img_local_path = os.path.join(app_config.ROOT_FOLDER, *img_folders)
     if is_str_none_or_empty(body):
-        msg = get_msg_error("documentNotFound").format(docName)
-        body = f"<h4>{msg}</h4>"
-        style = ""  # TODO:
-        pageTitle = "Exibir Documento"
-        formTitle = "Documento"
+        msg = get_msg_error('documentNotFound').format(docName)
+        body = f'<h4>{msg}</h4>'
+        style = ''  # TODO:
+        pageTitle = 'Exibir Documento'
+        formTitle = 'Documento'
 
     elif len(html_images) == 0:
         pass
@@ -126,26 +126,28 @@ def display_html(docName: str):
         body = img_change_src_path(body, img_folders)
         pass
 
-    return render_template(
-        "./home/document.html.j2",
-        **{
-            "pageTitle": pageTitle,
-            "formTitle": formTitle,
-            "documentStyle": style,
-            "documentBody": body,
-        },
+    temp = app.jinja_env.from_string( '{{ app_version() }}  + {{ app_name()}}' )
+    print(temp.render())
 
+    return render_template(
+        './home/document.html.j2',
+        **{
+            'pageTitle': pageTitle,
+            'formTitle': formTitle,
+            'documentStyle': style,
+            'documentBody': body,
+        },
     )
 
 # def register_jinja(config):
 #     from .helpers.route_helper import private_route, public_route
 #     from jinja2 import Environment
 #     def _get_name() -> str:
-#         app_log.debug(config.app_name)
-#         return config.app_name
+#         app_log.debug(config.APP_NAME)
+#         return config.APP_NAME
 #     def _get_version() -> str:
-#         app_log.debug( config.app_version )
-#         return config.app_version
+#         app_log.debug( config,app_version() )
+#         return config.APP_VERSION
 #     app.jinja_env.globals.update(
 #         private_route= private_route,
 #         public_route= public_route,
@@ -156,9 +158,6 @@ def display_html(docName: str):
 #     template = env.from_string("{{ public_route('login') }} - {{ app_version }}")
 #     print(template.render())
 #     print(template.render(app_name=_get_name, app_version=_get_version))
-
-
-
 
 
 # eof
