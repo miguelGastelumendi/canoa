@@ -26,7 +26,7 @@ DataValidateApp = NamedTuple(
     "DataValidateApp",
     batch=str,
     folder=str,
-    ui_name=str, # display to user/log/etc
+    ui_name=str, # the name to display to user/log/etc
     flags=str,
     flag_debug=str,
     # named arguments
@@ -37,8 +37,8 @@ DataValidateApp = NamedTuple(
 Email = NamedTuple("Email", cc=str, bcc=str)
 
 
-class UploadConfig:
-    def __init__(self):  #: BaseConfig):
+class ReceiveFileConfig:
+    def __init__(self, debug = False):  #: BaseConfig):
         # d_v `data_validate` app output file name and extension
         self.output_file = OutputFile(name="data_report", ext=".pdf")
         self.d_v = DataValidateApp(
@@ -55,6 +55,10 @@ class UploadConfig:
             bcc="",
         )
         self.remove_report= False # default is true
+        self.debug_process= None # None -> set by param debug
+
+        if self.debug_process is None:
+            self.debug_process= debug
 
 
 # eof

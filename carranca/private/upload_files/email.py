@@ -30,7 +30,7 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
         receipt =  get_user_receipt(cargo.final['file_ticket'])
         email_body_params = {'user_name': cargo.user.name, 'receipt': receipt, 'when': now_as_text()}
         send_file = user_report_full_name
-        email_to = {'to': cargo.user.email, 'cc': cargo.upload_cfg.email.cc}
+        email_to = {'to': cargo.user.email, 'cc': cargo.receive_file_cfg.email.cc}
 
         task_code += 1  # 2
         send_email(email_to, 'uploadedFile_email', email_body_params, send_file)
@@ -46,7 +46,7 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
         task_code += 5
         msg_exception = str(e)
 
-    error_code = 0 if task_code == 0 else ModuleErrorCode.UPLOAD_FILE_EMAIL + task_code
+    error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_EMAIL + task_code
     return cargo.update(error_code, 'uploadFileEmailFailed', msg_exception)
 
 

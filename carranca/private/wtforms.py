@@ -16,7 +16,7 @@ from ..shared import app_config
 # Text here ha no relevance, the ui_text table is actually used.
 
 # Private form
-class UploadFileForm(FlaskForm):
+class ReceiveFileForm(FlaskForm):
     filename = FileField('', render_kw={"class": "form-control", "id": "upload_file", "accept": ".zip"})
     urlname = StringField('', validators=[URL()], render_kw={"class": "form-control", "id": "link_file"})
 

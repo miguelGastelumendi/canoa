@@ -26,7 +26,7 @@ def unzip(cargo: Cargo) -> Cargo:
     msg_exception = ''
     task_code = 0
 
-    zip_full_name = cargo.storage.user_file_full_name()
+    zip_full_name = cargo.storage.working_file_full_name()
     unzip_folder = cargo.storage.path.data_tunnel_user_write
 
     try:
@@ -46,7 +46,7 @@ def unzip(cargo: Cargo) -> Cargo:
         app_log.debug(f"The zip file [{zip_full_name}] was unpacked correctly in [{unzip_folder}].")
     except Exception as e:
         msg_exception= str(e)
-        error_code= task_code + ModuleErrorCode.UPLOAD_FILE_UNZIP
+        error_code= task_code + ModuleErrorCode.RECEIVE_FILE_UNZIP
         app_log.error(f"Error unzipping file [{zip_full_name}] in [{unzip_folder}]: [{e}].", exc_info=error_code)
 
 

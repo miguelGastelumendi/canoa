@@ -1,11 +1,12 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
-#spell:ignore venv ccedil atilde
+#spell:ignore venv ccedil atilde receivefile
 TODO:
 
 
-    2024-06-
+    2024-09-
         a. Erros in check.py generates an internal error.
+        b. email errors
         0. About title
         1. Check upload/email.py html body, email_sent_at
         2. Set User Name in e-mail
@@ -34,6 +35,14 @@ Done:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-08-22 β 2.16
+    - uploadFile -> receivefile
+    - upload_file -> receive_file
+    - Adjusting `process` to both type of files,
+      download aware:
+        - check.py
+
+
 2024-08-22 β 2.15
     - Download load public compressed files from Google Drive 100%
     - Prepare UploadFile Form to include Google Drive link
@@ -44,18 +53,15 @@ Done:
         my work was divided into ann lost some code and
         time to merge it correctly)
 
-
 2024-08-14 β 2.13
     - Download public files from url
     - Download load public files (*not* compressed) from Google Drive
     - Download load public compressed files from Google Drive 80%
 
-
 2024-07-30 vβ 2.12
     - New  [About]  x
     - Google Drive download 1
     - Google Drive download 2  x
-
 
 2024-07-30 vβ 2.11
     - Remove ellipses from  [Especifica&ccedil;&atilde;o]
@@ -258,7 +264,10 @@ Done:
         <top-folder>
             |- canoa
             |   |— carranca
-            |   |— uploaded_files
+            |   |— user_files
+            |   |  |— uploaded
+            |   |  |— downloaded
+            |   |
             |   :
             |
             |— data_validate

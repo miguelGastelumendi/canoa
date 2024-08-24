@@ -7,7 +7,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
-# cSpell:ignore werkzeug uploadfile tmpl sqlalchemy lastpasswordchange errorhandler assis passwordrecovery passwordreset
+# cSpell:ignore werkzeug receivefile tmpl sqlalchemy lastpasswordchange errorhandler assis passwordrecovery passwordreset
 
 from flask import Blueprint, render_template
 from carranca import login_manager

@@ -15,7 +15,7 @@ import shutil
 from os import path, stat
 
 from .Cargo import Cargo
-from ...config_upload import DataValidateApp
+from ...config_receive_file import DataValidateApp
 from ...helpers.py_helper import (
     is_str_none_or_empty,
     decode_std_text,
@@ -98,7 +98,7 @@ def submit(cargo: Cargo) -> Cargo:
     try:
         task_code += 1  # 1
         # shortcuts
-        _cfg = cargo.upload_cfg
+        _cfg = cargo.receive_file_cfg
         _path = cargo.storage.path
         _path_read = cargo.storage.path.data_tunnel_user_read
         _path_write = cargo.storage.path.data_tunnel_user_write
@@ -148,7 +148,7 @@ def submit(cargo: Cargo) -> Cargo:
             # copy the final_report file to the same folder and
             # with the same name as the uploaded file:
             user_report_full_name = change_file_ext(
-                cargo.storage.user_file_full_name(), result_ext
+                cargo.storage.working_file_full_name(), result_ext
             )
             task_code += 3  # 8
             shutil.move(final_report_full_name, user_report_full_name)
@@ -160,7 +160,7 @@ def submit(cargo: Cargo) -> Cargo:
         app_log.error(msg_exception, exc_info=error_code)
     finally:
         try:
-            if cargo.upload_cfg.remove_report:
+            if cargo.receive_file_cfg.remove_report:
                 shutil.rmtree(_path_read)
                 shutil.rmtree(_path_write)
             else:
@@ -171,7 +171,7 @@ def submit(cargo: Cargo) -> Cargo:
 
     # goto email.py
     error_code = (
-        0 if (error_code == 0) else error_code + ModuleErrorCode.UPLOAD_FILE_SUBMIT
+        0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT
     )
     return cargo.update(
         error_code,

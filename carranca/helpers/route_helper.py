@@ -4,7 +4,7 @@
 # Python functions to assist routes.py
 #
 # mgd 2024-05-13
-# cSpell:ignore werkzeug uploadfile tmpl passwordreset
+# cSpell:ignore werkzeug receivefile tmpl passwordreset
 
 import requests
 from flask import redirect, request, url_for

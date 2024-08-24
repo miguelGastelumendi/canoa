@@ -55,8 +55,19 @@ def _get_row(item: str, section: str) -> tuple[str, str]:
     result = getValues(select)
     return ('', '') if result is None else result
 
-# returns text for the item/section pair & adds/replace name:(key, value) to the dictionary
 def _add_msg(item: str, section: str, name: str, texts: dict[str, str] = None, *args) -> str:
+    """Retrieves text and optionally adds it to a dictionary.
+
+    Args:
+        item: The item identifier.
+        section: The section identifier.
+        name: The key for the dictionary entry.
+        texts: An optional dictionary to store the retrieved text.
+        args: Optional arguments for formatting the retrieved text.
+
+    Returns:
+        The formatted text.
+    """
     s = get_text(item, section)
     try:
         value = '' if s is None else (s.format(*args) if args else s)

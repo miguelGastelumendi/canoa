@@ -24,7 +24,7 @@ A validação do arquivo ```zip``` é realizado por um aplicativo externo, o
         + Informa ao usuário
     - Em caso de sucesso:
         + Fecha o registro do processo, anotando as mensagens recebidas
-    - Código Base de Erro (```CBE```) = ```.helpers.error_helper.py``` ```UPLOAD_FILE_PROCESS``` 260
+    - Código Base de Erro (```CBE```) = ```.helpers.error_helper.py``` ```RECEIVE_FILE_PROCESS``` 260
 
 2. ### _Check_ ###
     #### Revisa os requisitos do processo ####
@@ -36,30 +36,30 @@ A validação do arquivo ```zip``` é realizado por um aplicativo externo, o
     - Valida o nome, tamanho e extensão do arquivo
     - Verifica a disponibilidade dos _scripts_ de execução do ```Validator``` e se eles estão atualizados
     - Confirma se os dados do usuário estão completos, incluindo e-mail
-    - CBE = ```UPLOAD_FILE_CHECK``` 200
+    - CBE = ```RECEIVE_FILE_CHECK``` 200
 
 3. ### _Register_ ###
     #### Registra o processo  ####
     - Cria o ticket (chave única) e o número de protocolo do processo
     - Coleta informações do arquivo como ```crc32``` e tamanho
-    - Insere registro na tabela (```user_data_file```)` com os dados do
+    - Insere registro na tabela (```user_data_file```) com os dados do
       usuário e do arquivo submetido
-    - CBE = ```UPLOAD_FILE_REGISTER``` 220
+    - CBE = ```RECEIVE_FILE_REGISTER``` 220
 
 4. ### _Unzip_  ###
     #### Descompacta o arquivo  ####
     - Valida se é o arquivo está no formato ```zip```
     - Extrai o conteúdo na pasta do usuário que e compartilhada com
       o aplicativo validador.
-    - CBE = ```UPLOAD_FILE_UNZIP``` 230
+    - CBE = ```RECEIVE_FILE_UNZIP``` 230
 
 5. ### _Submit_  ###
     #### Chama ao aplicativo validador  ####
-    - CBE = ```UPLOAD_FILE_SUBMIT``` 240
+    - CBE = ```RECEIVE_FILE_SUBMIT``` 240
 
 6. ### _E-Mail_  ###
     #### Envia o email de resultado  ####
-    > ```CBE``` = ```UPLOAD_FILE_EMAIL``` 250
+    > ```CBE``` = ```RECEIVE_FILE_EMAIL``` 250
 
 
 

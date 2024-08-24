@@ -23,13 +23,12 @@
 """
 
 # cSpell:ignore ext
-
-from ...config_upload import UploadConfig
+from ...config_receive_file import ReceiveFileConfig
 from ...helpers.py_helper import is_str_none_or_empty
-from ...helpers.file_helper import path_remove_last_folder
 from ...helpers.user_helper import LoggedUser
 from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
+
 
 from .Cargo import Cargo
 from .StorageInfo import StorageInfo
@@ -42,13 +41,16 @@ from .register import register
 
 
 def process(
-    logged_user: LoggedUser, file_data: object, valid_ext: list[str]
+    logged_user: LoggedUser,
+    file_data: object | str,
+    storage: StorageInfo,
+    valid_ext: list[str],
 ) -> list[int, str, str]:
-    from ...shared import app_config, app_log
 
+    from ...shared import app_config, app_log
     current_module_name = __name__.split(".")[-1]
 
-    def __get_next_params(cargo: Cargo) -> list[object, dict]:
+    def _get_next_params(cargo: Cargo) -> list[object, dict]:
         """
         Extracts the parameters of the next procedure,
         initialize cargo and returns to the loop
@@ -56,26 +58,15 @@ def process(
         params = dict(cargo.next)
         return cargo.init(), params
 
-    def __get_msg_exception(e_str: str, msg_exc: str, code: int) -> str:
+    def _get_msg_exception(e_str: str, msg_exc: str, code: int) -> str:
         """prepares a complete exception message for the db & log"""
         return f"Upload Error: process.Exception: [{e_str}]; {current_module_name}.Exception: [{msg_exc}], Code [{code}]."
-
-    # Parent folder of both apps: canoa & data_validate
-    common_folder = path_remove_last_folder(app_config.ROOT_FOLDER)
-
-    # Modules configurable parameters
-    upload_cfg = UploadConfig()
-
-    # Create the Storage Info
-    storage = StorageInfo(
-        logged_user.code, common_folder, upload_cfg.d_v.folder, upload_cfg.d_v.batch
-    )
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
         app_config.DEBUG,
         logged_user,
-        upload_cfg,
+        ReceiveFileConfig(app_config.DEBUG),
         storage,
         {"file_data": file_data, "valid_ext": valid_ext},  # first module parameters
     )
@@ -94,7 +85,7 @@ def process(
     for current_module in [check, register, unzip, submit, email]:
         current_module_name = current_module.__name__
         try:
-            cargo, next_module_params = __get_next_params(cargo)
+            cargo, next_module_params = _get_next_params(cargo)
             error_code, msg_error, msg_exception, cargo = current_module(
                 cargo, **next_module_params
             )
@@ -102,20 +93,20 @@ def process(
                 break
         except Exception as e:
             error_code = (
-                ModuleErrorCode.UPLOAD_FILE_PROCESS + cargo.step
+                ModuleErrorCode.RECEIVE_FILE_PROCESS + cargo.step
                 if error_code == 0
-                else ModuleErrorCode.UPLOAD_FILE_EXCEPTION + error_code
+                else ModuleErrorCode.RECEIVE_FILE_EXCEPTION + error_code
             )
-            msg_exception = __get_msg_exception(str(e), msg_exception, error_code)
+            msg_exception = _get_msg_exception(str(e), msg_exception, error_code)
+            msg_error = cargo.default_error if is_str_none_or_empty(msg_error) else msg_error
             break
 
     current_module_name = "UserDataFiles.update"
     msg_success = cargo.final.get("msg_success", None)
-    log_msg = "Updating user data file: [{0}] with error code {1}."
+    log_msg = "Processing received file: [{0}] raised error code {1}."
 
     if is_str_none_or_empty(cargo.user_data_file__key):
         pass  # user_data_file's pk not ready
-
     elif error_code == 0:
         try:
             UserDataFiles.update(
@@ -125,7 +116,6 @@ def process(
             )
         except Exception as e:
             app_log.error(log_msg, e, 0)
-
     else:
         try:
             UserDataFiles.update(
@@ -140,8 +130,8 @@ def process(
                 error_text=msg_exception,
             )
         except Exception as e:
-            error_code = ModuleErrorCode.UPLOAD_FILE_PROCESS + 1
-            msg_exception = __get_msg_exception(str(e), msg_exception, error_code)
+            error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 1
+            msg_exception = _get_msg_exception(str(e), msg_exception, error_code)
             app_log.error(log_msg, msg_exception, error_code)
 
     return error_code, msg_error, msg_exception, cargo.final

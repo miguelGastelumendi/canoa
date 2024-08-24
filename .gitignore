@@ -38,7 +38,9 @@ carranca/static/assets/.temp
 
 ## Canoa per git's user
 carranca/static/docs/
+user_files/
 uploaded_files/
+downloaded_files/
 LocalDrive/
 
 ## Canoa linux

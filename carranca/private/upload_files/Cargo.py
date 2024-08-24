@@ -9,21 +9,22 @@ upload_file validation process loop.
 Part of Canoa `File Validation` Processes
 """
 
-from ...config_upload import UploadConfig
+from ...config_receive_file import ReceiveFileConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import LoggedUser, now
 
 from .StorageInfo import StorageInfo
+from ..receive_file import RECEIVE_FILE_DEFAULT_ERROR
 
 class Cargo:
     name = "Cargo"
-    default_error = "uploadFileError"
+    default_error = RECEIVE_FILE_DEFAULT_ERROR
 
     def __init__(
         self,
         in_debug: bool,
         user: LoggedUser,
-        upload_cfg: UploadConfig,
+        receive_file_cfg: ReceiveFileConfig,
         storage: StorageInfo,
         first: dict,
     ):
@@ -40,7 +41,7 @@ class Cargo:
         self.init()
         self.in_debug_mode = in_debug
         self.user = user
-        self.upload_cfg = upload_cfg
+        self.receive_file_cfg = receive_file_cfg
         self.storage = storage
         self.next = dict(first)
 

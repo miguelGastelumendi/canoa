@@ -48,7 +48,7 @@ class BaseConfig:
     APP_NAME = 'Canoa'
 
     #major.minor.patch
-    APP_VERSION = '&beta; 2.154' # &beta
+    APP_VERSION = '&beta; 2.16' # &beta
 
     ''' Internal attributes
         ------------------
