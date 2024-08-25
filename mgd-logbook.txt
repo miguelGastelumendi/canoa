@@ -25,15 +25,20 @@ TODO:
         E. β 2.17
         F. β 2.17
         G. β 2.11
+        H. Enviar error a mgd
 
 Done:
     small tasks
         - Login Remember not always working
         - Fix get_Html()
 
---------------------------------------------------
+-------------------------------------------------------
   Logbook
---------------------------------------------------
+  Atualizar versão em: config.py e db.ui_items.body[89]
+-------------------------------------------------------
+2024-08-24 β 2.19
+    - Fix msg_error in submit.py
+
 2024-08-24 β 2.18
     - Display app version on startup
 

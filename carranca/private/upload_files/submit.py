@@ -89,7 +89,7 @@ def submit(cargo: Cargo) -> Cargo:
     """
 
     user_report_full_name = "<not produced>"
-    msg_error = "uploadFileProcessError"
+    msg_error = "receiveFileSubmit_error"
     error_code = 0
     msg_exception = ""
     task_code = 0
