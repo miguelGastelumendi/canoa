@@ -1,14 +1,14 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
-#spell:ignore venv ccedil atilde receivefile
+#spell:ignore venv ccedil atilde receivefile datetime
 TODO:
 
 
     2024-09-
-        a. Erros in check.py generates an internal error.
+        a. β 2.17
         b. email errors
         0. About title
-        1. Check upload/email.py html body, email_sent_at
+        1. β 2.17
         2. Set User Name in e-mail
         3. Wait for process on forms.
         4. Require actual/current pw to be able to change pw, changepassword user `timer`
@@ -17,17 +17,16 @@ TODO:
         7. Test error on authentication process: error on start (no Form)
         7. Avoid user's simultaneous validation
         8. <form action="{{ url_for('handle_click') }}" method="post/get"><button type="submit">Go to Other Location</button></form> instead of href=
-        9. Events Log
+        9. β 2.17
         A. User's information UI
         B. Standardize ui messages with db (eg password_*)
         C. password_recovery, align left form text
         D. The recipient of the email must be different from CC (and perhaps from BCC as well)
-        E. Use a variable for accept .zip
-        F. Change cargo.report_ready_at to validate_end_at
+        E. β 2.17
+        F. β 2.17
+        G. β 2.11
 
 Done:
-        G run.bat goes to data_tunnel 2023.07.30
-
     small tasks
         - Login Remember not always working
         - Fix get_Html()
@@ -35,7 +34,19 @@ Done:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
-2024-08-22 β 2.16
+2024-08-24 β 2.17
+    - issues:
+        a. Erros in check.py generates an internal error.
+        1. Check upload/email.py html body, email_sent_at
+        9. Events Log
+        E. Use a variable ~for~ to accept .zip
+        F. Change cargo.report_ready_at to validate_end_at
+    - Now process downloaded and uploaded files
+    - DB table [user_data_files] new columns datetime for each module
+
+
+
+2024-08-23 β 2.16
     - uploadFile -> receivefile
     - upload_file -> receive_file
     - Adjusting `process` to both type of files,
@@ -64,7 +75,10 @@ Done:
     - Google Drive download 2  x
 
 2024-07-30 vβ 2.11
+    - issues:
+        G run.bat goes to data_tunnel
     - Remove ellipses from  [Especifica&ccedil;&atilde;o]
+
 
 2024-07-30 vβ 2.10
     - Bugs introduced on vβ 2.9:
