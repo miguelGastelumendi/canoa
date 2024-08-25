@@ -8,13 +8,15 @@ upload_file validation process loop.
 
 Part of Canoa `File Validation` Processes
 """
+from datetime import datetime
 
 from ...config_receive_file import ReceiveFileConfig
 from ...helpers.py_helper import is_str_none_or_empty
-from ...helpers.user_helper import LoggedUser, now
+from ...helpers.user_helper import LoggedUser, get_user_receipt, now
 
 from .StorageInfo import StorageInfo
 from ..receive_file import RECEIVE_FILE_DEFAULT_ERROR
+
 
 class Cargo:
     name = "Cargo"
@@ -25,7 +27,8 @@ class Cargo:
         in_debug: bool,
         user: LoggedUser,
         receive_file_cfg: ReceiveFileConfig,
-        storage: StorageInfo,
+        storage_info: StorageInfo,
+        received_at: datetime,
         first: dict,
     ):
         """
@@ -35,37 +38,42 @@ class Cargo:
             in_debug (bool):            app is in debug mode?
             user (LoggedUser):          basic user info
             upload_cfg (UploadConfig):  configuration of the file upload process modules
-            storage (StorageInfo):      keeps info of the folder structure and file names
+            storage_info (StorageInfo): keeps info of the folder structure and file names
             first (dict):               parameters for the `first` module
         """
         self.init()
         self.in_debug_mode = in_debug
         self.user = user
         self.receive_file_cfg = receive_file_cfg
-        self.storage = storage
+        self.si = storage_info
         self.next = dict(first)
 
         self.step = 1
         self.final = {}  # the process.py return values
         """ When the process began """
-        self.started_at = now()
+        self.received_at = received_at
+        self.process_started_at = now()
         self.report_ready_at = None
-        """ same as upload ticket, a unique key in table UserDataFiles """
-        self.user_data_file__key = ''
+        self.check_started_at = None
+        self.unzip_started_at = None
+        self.submit_started_at = None
+        """ same as file ticket, a unique key in table UserDataFiles """
+        self.table_udf_key = storage_info.file_ticket
+        self.user_receipt = get_user_receipt(storage_info.file_ticket)
 
     def init(self):
         """initialization of the error variables and `next module parameters` (next) at each loop"""
         self.error_code = 0
-        self.msg_error = ''
-        self.msg_exception = ''
+        self.msg_error = ""
+        self.msg_exception = ""
         self.next = {}
         return self
 
     def update(
         self,
         error_code: int,
-        msg_error: str = '',
-        msg_exception: str = '',
+        msg_error: str = "",
+        msg_exception: str = "",
         next: dict = {},
         final: dict = {},
     ) -> tuple[int, str, str, object]:

@@ -12,13 +12,13 @@
 # cSpell:ignore werkzeug ext
 
 from os import path
-from werkzeug.utils import secure_filename
 
 from ...shared import app_log
-from ...helpers.error_helper import ModuleErrorCode
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.db_helper import get_str_field_length
+from ...helpers.user_helper import  now
 from ...helpers.file_helper import file_must_exist, folder_must_exist, is_same_file_name
+from ...helpers.error_helper import ModuleErrorCode
 
 from ..models import UserDataFiles
 from .Cargo import Cargo
@@ -29,45 +29,42 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
     error_code = 0
     msg_exception = ""
     task_code = 0
-
-    receive_method = "downloaded" if cargo.storage.file_was_downloaded else "uploaded"
+    cs = cargo.si
+    cargo.check_started_at = now()
+    receive_method = "downloaded" if cs.file_was_downloaded else "uploaded"
     try:
-        cargo.storage.received_file_name = secure_filename(
-            cargo.storage.received_original_name
-        )
-
         file_name_max_len = get_str_field_length(UserDataFiles, "file_name")
 
         if file_data is None:
             task_code = 1
         elif is_str_none_or_empty(cargo.user.email):
             task_code = 2
-        elif is_str_none_or_empty(cargo.storage.received_file_name):
+        elif is_str_none_or_empty(cs.received_file_name):
             task_code = 3
         elif is_str_none_or_empty(cargo.receive_file_cfg.output_file.name):
             task_code = 4
         elif is_str_none_or_empty(cargo.receive_file_cfg.output_file.ext):
             task_code = 5
-        elif len(cargo.storage.received_file_name) > file_name_max_len:
+        elif len(cs.received_file_name) > file_name_max_len:
             task_code = 7
         elif not any(
-            cargo.storage.received_file_name.lower().endswith(ext.strip().lower())
+            cs.received_file_name.lower().endswith(ext.strip().lower())
             for ext in valid_ext
         ):
             task_code = 8
         # elif not response.headers.get('Content-Type') == ct in valid_content_types.split(',')): #check if really zip
         # task_code = 10
-        elif not folder_must_exist(cargo.storage.path.working_folder):
+        elif not folder_must_exist(cs.path.working_folder):
             task_code = 11
-        elif not folder_must_exist(cargo.storage.path.data_tunnel_user_read):
+        elif not folder_must_exist(cs.path.data_tunnel_user_read):
             task_code = 12
-        elif not folder_must_exist(cargo.storage.path.data_tunnel_user_write):
+        elif not folder_must_exist(cs.path.data_tunnel_user_write):
             task_code = 13
-        elif not path.isfile(cargo.storage.path.batch_source_name):
+        elif not path.isfile(cs.path.batch_source_name):
             task_code = 14
         elif not file_must_exist(
-            cargo.storage.path.batch_full_name,
-            cargo.storage.path.batch_source_name,
+            cs.path.batch_full_name,
+            cs.path.batch_source_name,
             True,
         ):
             task_code = 15
@@ -75,26 +72,18 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
             task_code = 0
 
         if task_code == 0:
-            if not is_same_file_name(
-                cargo.storage.received_original_name, cargo.storage.received_file_name
-            ):
-                app_log.info(
-                    f"The {receive_method} file [{cargo.storage.received_original_name}] has been renamed to [{cargo.storage.received_file_name}]."
-                )
-            app_log.debug(
-                f"The {receive_method} file [{cargo.storage.received_file_name}] successfully passed the `check` module."
-            )
+            if not is_same_file_name(cs.received_original_name, cs.received_file_name):
+                app_log.info(f"The {receive_method} file [{cs.received_original_name}] has been renamed to [{cs.received_file_name}].")
+            app_log.debug(f"The {receive_method} file [{cs.received_file_name}] successfully passed the `check` module.")
         else:
-            app_log.error(
-                f"The {receive_method} file [{cargo.storage.received_file_name}] failed in module `check` with code {task_code}."
-            )
+            app_log.error("The {receive_method} file [{cs.received_file_name}] failed in module `check` with code {task_code}.")
 
     except Exception as e:
         msg_exception = str(e)
         # is the highest possible (see ModuleErrorCode.RECEIVE_FILE_CHECK + 1)
         task_code = 19
         app_log.error(
-            f"Exception [{e}], code {task_code}, occurred in module `check` while validating the {receive_method} file [{cargo.storage.received_original_name}]."
+            f"Exception [{e}], code {task_code}, occurred in module `check` while validating the {receive_method} file [{cs.received_original_name}]."
         )
 
     # goto module register.py

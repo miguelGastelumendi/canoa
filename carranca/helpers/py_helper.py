@@ -8,8 +8,8 @@
  # cSpell:ignore latin CCITT
 
 import time
-import datetime
 import platform
+from datetime import datetime
 
 
 OS_NAME_IS = platform.system()
@@ -18,9 +18,9 @@ OS_IS_LINUX = (OS_NAME_IS == "Linux")
 OS_IS_MAC = (OS_NAME_IS == "Darwin")
 
 
-def now():
+def now() -> datetime:
     # current date time
-    return datetime.datetime.now()
+    return datetime.now()
 
 
 def is_str_none_or_empty(s: str) -> bool:

@@ -21,6 +21,7 @@ from ...helpers.py_helper import (
     decode_std_text,
     now,
 )
+from ...helpers.user_helper import now
 from ...helpers.file_helper import change_file_ext
 from ...helpers.error_helper import ModuleErrorCode
 from ...shared import app_log
@@ -94,16 +95,17 @@ def submit(cargo: Cargo) -> Cargo:
     task_code = 0
     std_out_str = None
     std_err_str = None
+    cargo.submit_started_at = now()
 
     try:
         task_code += 1  # 1
         # shortcuts
         _cfg = cargo.receive_file_cfg
-        _path = cargo.storage.path
-        _path_read = cargo.storage.path.data_tunnel_user_read
-        _path_write = cargo.storage.path.data_tunnel_user_write
+        _path = cargo.si.path
+        _path_read = cargo.si.path.data_tunnel_user_read
+        _path_write = cargo.si.path.data_tunnel_user_write
         batch_full_name = _path.batch_full_name
-        data_validate_path = cargo.storage.path.data_validate
+        data_validate_path = cargo.si.path.data_validate
         if not path.isfile(batch_full_name):  # TODO send to check module
             task_code += 1  # 2
             raise Exception(
@@ -148,7 +150,7 @@ def submit(cargo: Cargo) -> Cargo:
             # copy the final_report file to the same folder and
             # with the same name as the uploaded file:
             user_report_full_name = change_file_ext(
-                cargo.storage.working_file_full_name(), result_ext
+                cargo.si.working_file_full_name(), result_ext
             )
             task_code += 3  # 8
             shutil.move(final_report_full_name, user_report_full_name)

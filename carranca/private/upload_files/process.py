@@ -23,9 +23,12 @@
 """
 
 # cSpell:ignore ext
-from ...config_receive_file import ReceiveFileConfig
+
+from datetime import datetime
+
 from ...helpers.py_helper import is_str_none_or_empty
-from ...helpers.user_helper import LoggedUser
+from ...config_receive_file import ReceiveFileConfig
+from ...helpers.user_helper import LoggedUser, now
 from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
 
@@ -44,6 +47,7 @@ def process(
     logged_user: LoggedUser,
     file_data: object | str,
     storage: StorageInfo,
+    received_at: datetime,
     valid_ext: list[str],
 ) -> list[int, str, str]:
 
@@ -68,6 +72,7 @@ def process(
         logged_user,
         ReceiveFileConfig(app_config.DEBUG),
         storage,
+        received_at,
         {"file_data": file_data, "valid_ext": valid_ext},  # first module parameters
     )
     error_code = 0
@@ -104,24 +109,27 @@ def process(
     current_module_name = "UserDataFiles.update"
     msg_success = cargo.final.get("msg_success", None)
     log_msg = "Processing received file: [{0}] raised error code {1}."
+    process_ended = now()
 
-    if is_str_none_or_empty(cargo.user_data_file__key):
+    if is_str_none_or_empty(cargo.table_udf_key):
         pass  # user_data_file's pk not ready
     elif error_code == 0:
         try:
             UserDataFiles.update(
-                cargo.user_data_file__key,
+                cargo.table_udf_key,
                 error_code=error_code,
                 success_text=msg_success,
+                z_process_end_at= process_ended
             )
         except Exception as e:
             app_log.error(log_msg, e, 0)
     else:
         try:
             UserDataFiles.update(
-                cargo.user_data_file__key,
+                cargo.table_udf_key,
                 error_code=error_code,
                 success_text=msg_success,  # not really success but standard_output
+                z_process_end_at= process_ended,
                 error_msg=(
                     "<sem mensagem de erro>"
                     if is_str_none_or_empty(msg_error)

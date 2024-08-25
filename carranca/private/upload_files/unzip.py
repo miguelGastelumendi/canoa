@@ -12,6 +12,7 @@
 import zipfile
 from .Cargo import Cargo
 from ...shared import app_log
+from ...helpers.user_helper import  now
 from ...helpers.error_helper import ModuleErrorCode
 
 def unzip(cargo: Cargo) -> Cargo:
@@ -26,8 +27,9 @@ def unzip(cargo: Cargo) -> Cargo:
     msg_exception = ''
     task_code = 0
 
-    zip_full_name = cargo.storage.working_file_full_name()
-    unzip_folder = cargo.storage.path.data_tunnel_user_write
+    cargo.unzip_started_at = now()
+    zip_full_name = cargo.si.working_file_full_name()
+    unzip_folder = cargo.si.path.data_tunnel_user_write
 
     try:
         task_code = 1

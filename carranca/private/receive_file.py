@@ -10,14 +10,14 @@
 
 from flask import render_template, request
 
-
 from .wtforms import ReceiveFileForm
+from werkzeug.utils import secure_filename
 from .upload_files.StorageInfo import StorageInfo
 
 from ..shared import app_log, app_config
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import path_remove_last_folder, folder_must_exist
-from ..helpers.user_helper import LoggedUser, get_user_receipt
+from ..helpers.user_helper import LoggedUser, get_user_receipt, now
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.texts_helper import add_msg_success, add_msg_error
 from ..helpers.route_helper import get_private_form_data, get_input_text
@@ -44,6 +44,7 @@ def receive_file() -> str:
         return error_code
 
     try:
+        received_at = now()
         # Find out what was kind of data was sent: an uploaded file or an URL (download)
         file_obj = request.files[tmpl_form.filename.id] if request.files else None
         url_str = get_input_text(tmpl_form.urlname.name)
@@ -76,6 +77,7 @@ def receive_file() -> str:
             common_folder = path_remove_last_folder(app_config.ROOT_FOLDER)
             si = StorageInfo(
                 logged_user.code,
+                logged_user.folder,
                 common_folder,
                 receive_file_cfg.d_v.folder,
                 receive_file_cfg.d_v.batch,
@@ -84,40 +86,46 @@ def receive_file() -> str:
             return receive_file_cfg.debug_process, si
 
         task_code += 1
-        debug_process, storage = do_storage()
+        debug_process, si = do_storage()
         if has_file:
             task_code += 1
-            storage.received_original_name = file_obj.filename
-        elif not folder_must_exist(storage.path.working_folder):
+            si.received_original_name = file_obj.filename
+            #TODO check file_obj. file_obj.mimetype file_obj.content_length
+        elif not folder_must_exist(si.path.working_folder):
             task_code += 2
             error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code)
             return _result()
         else:
             task_code += 3
-            download_code, filename, _ = download_public_google_file(
-                url_str, storage.path.working_folder, True, debug_process
+            # this is a placeholder for the real name (I yet don't know it)
+            # so si.working_file_name() has the correct format to
+            si.received_file_name = "{0}"
+            download_code, filename, md = download_public_google_file(
+                url_str, si.path.working_folder, si.working_file_name(), True, debug_process
             )
             if download_code == 0:
                 task_code += 1
-                storage.received_original_name = filename
+                si.received_original_name = md["name"]
             else:
                 fn = filename if filename else "<ainda sem nome>"
                 error_code = _log_error("receiveFileAdmit_bad_dl", task_code + 2, fn)
                 return _result()
 
+        si.received_file_name = secure_filename(si.received_original_name)
         task_code += 1
         ve = texts["validExtensions"]
         valid_extensions = ".zip" if is_str_none_or_empty(ve) else ve.lower().split(",")
 
+        task_code += 1
         from .upload_files.process import process
 
+        task_code += 1
         error_code, msg_error, _, data = process(
-            logged_user, file_data, storage, valid_extensions
+            logged_user, file_data, si, received_at, valid_extensions
         )
 
         if error_code == 0:
-            file_ticket = data.get("file_ticket")
-            user_receipt = get_user_receipt(file_ticket)
+            user_receipt = get_user_receipt(si.file_ticket)
             log_msg = add_msg_success(
                 "uploadFileSuccess", texts, user_receipt, logged_user.email
             )

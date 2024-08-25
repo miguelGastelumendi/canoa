@@ -108,6 +108,7 @@ def download_response(
 def download_public_google_file(
     url_or_file_id: str,
     file_folder: str,
+    file_name_format: str = '',
     del_file_if_exists: bool = True,
     debug: bool = False,
 ) -> tuple[int, str]:
@@ -115,6 +116,7 @@ def download_public_google_file(
     Args:
         url_or_file_id: The URL or file ID of the Google file.
         file_folder: The folder where the downloaded file should be saved.
+        file_mame_format: to modify original file name, eg '{0}003' or 'my_file_{0}'
         del_file_if_exists: Whether to delete the file if it already exists in the folder.
 
     Returns:
@@ -179,19 +181,24 @@ def download_public_google_file(
         file_md = get_file_metadata(service, file_id)
 
         task_code += 1
-        file_name = file_md["name"]
-        file_full_path = path.join(file_folder, file_name)
+        original_file_name = file_md["name"]
+
+        name, ext = path.splitext(original_file_name)
+        if is_str_none_or_empty(file_name_format):
+            file_name = original_file_name
+        elif '{0}' in file_name_format:
+            file_name = f"{file_name_format.format(name)}{ext}"
+        elif  '.' in file_name_format:
+            file_name = original_file_name
+        else:
+            file_name = original_file_name + ext
+
+        file_full_path = path.join(file_folder, file_name) if not is_str_none_or_empty(file_folder) else file_name
+
 
         if not path.isfile(file_full_path):
             pass
         elif del_file_if_exists:
-            #############
-            if app_config.DEBUG:
-                app_log.error("Keeping file in debug mode!")
-                return 0, file_name, None
-            #############
-
-
             task_code += 1
             remove(file_full_path)
             if path.isfile(file_full_path):
@@ -215,7 +222,10 @@ def download_public_google_file(
             while done is False:
                 status, done = downloader.next_chunk()
                 # TODO find how: file_crc32 = crc32(status, file_crc32)
-                app_log.debug("Downloaded %d%%." % int(status.progress() * 100))
+                if status:
+                    app_log.debug("Downloaded %d%%." % int(status.progress() * 100))
+
+
 
         task_code = 0
     except Exception as e:
@@ -226,7 +236,7 @@ def download_public_google_file(
 
 
 # if __name__ == "__main__":
-#     url = "https://drive.google.com/file/d/1H0BfjYJrf0p_ehqDoUH0wXIJzbAXwUKd/view?usp=sharing"
+#     url = "https://drive.google.com/file/d/1m9crayVYtWXvkOPcQyzKQ2Eqme4jdkxX/view?usp=sharing"
 #     download_public_google_file(url, "./uploaded_files/")
 
 

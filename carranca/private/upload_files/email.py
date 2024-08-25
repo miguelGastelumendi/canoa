@@ -7,11 +7,12 @@
     Equipe da Canoa -- 2024
     mgd
 """
+
 # cSpell:ignore
 
 from .Cargo import Cargo
 from ..models import UserDataFiles
-from ...helpers.user_helper import now_as_text, get_user_receipt
+from ...helpers.user_helper import now_as_text, get_user_receipt, now
 from ...helpers.email_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode
 
@@ -22,22 +23,29 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
     data_validate report attached.
     """
     error_code = 0
-    msg_exception = ''
+    msg_exception = ""
     task_code = 0
-
     try:
+        email_started_at = now()
         task_code += 1  # 1
-        receipt =  get_user_receipt(cargo.final['file_ticket'])
-        email_body_params = {'user_name': cargo.user.name, 'receipt': receipt, 'when': now_as_text()}
+        receipt = cargo.user_receipt
+        email_body_params = {
+            "user_name": cargo.user.name,
+            "receipt": receipt,
+            "when": now_as_text(),
+        }
         send_file = user_report_full_name
-        email_to = {'to': cargo.user.email, 'cc': cargo.receive_file_cfg.email.cc}
+        email_to = {"to": f"{cargo.user.email},{cargo.user.name}", "cc": cargo.receive_file_cfg.email.cc}
 
         task_code += 1  # 2
-        send_email(email_to, 'uploadedFile_email', email_body_params, send_file)
+        send_email(email_to, "uploadedFile_email", email_body_params, send_file)
 
         task_code += 2  # 3
         UserDataFiles.update(
-            cargo.user_data_file__key,
+            cargo.table_udf_key,
+            e_unzip_started_at=cargo.unzip_started_at,
+            f_submit_started_at=cargo.submit_started_at,
+            g_email_started_at=email_started_at,
             email_sent=True,
             report_ready_at=cargo.report_ready_at,
         )
@@ -47,7 +55,7 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
         msg_exception = str(e)
 
     error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_EMAIL + task_code
-    return cargo.update(error_code, 'uploadFileEmailFailed', msg_exception)
+    return cargo.update(error_code, "uploadFileEmailFailed", msg_exception)
 
 
 # eof

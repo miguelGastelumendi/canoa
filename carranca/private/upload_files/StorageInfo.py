@@ -11,6 +11,8 @@
 # cSpell:ignore
 
 from os import path
+from ...helpers.py_helper import is_str_none_or_empty
+from ...helpers.user_helper import get_file_ticket
 from ...helpers.file_helper import path_remove_last_folder
 
 
@@ -69,9 +71,10 @@ class StorageInfo:
             )
 
             self.working_folder = (
-                self.user.downloaded if parent.file_was_downloaded else self.user.uploaded
+                self.user.downloaded
+                if parent.file_was_downloaded
+                else self.user.uploaded
             )
-
             # Path to the patent folder off both apps: canoa and data_validate
             self.apps_parent_path = path_remove_last_folder(common_folder)
 
@@ -98,12 +101,15 @@ class StorageInfo:
 
     def __init__(
         self,
+        user_code: str,
         user_folder: str,
         common_folder: str,
         data_validate_folder: str,
         batch_name: str,
         file_was_downloaded: bool,
     ):
+        # This is a unique key for the file name and a unique key in the data base
+        self.file_ticket = get_file_ticket(user_code)  # = user_code
         self._user_folder = user_folder
         self.folder = self._Folder()  # not really needed, but conventions.
         self.file_was_downloaded = file_was_downloaded
@@ -111,14 +117,19 @@ class StorageInfo:
         self.path = self._Path(
             self, user_folder, common_folder, data_validate_folder, batch_name
         )
-
-        # values are given during the process
+        # values are given in receive_file.py
         self.received_file_name = ""
         self.received_original_name = None
-        self.working_file_name = ""
+
+    def working_file_name(self):
+        return (
+            None
+            if is_str_none_or_empty(self.received_file_name)
+            else f"{self.file_ticket}_{self.received_file_name}"
+        )
 
     def working_file_full_name(self):
-        return path.join(self.path.working_folder, self.working_file_name)
+        return path.join(self.path.working_folder, self.working_file_name())
 
 
 # eof

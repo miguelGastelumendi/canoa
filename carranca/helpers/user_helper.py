@@ -27,6 +27,8 @@ def get_user_code(id: int) -> str:
     """
     return to_base(_code_shift_id + id, 21).zfill(5)
 
+def get_user_folder(id: int) -> str:
+    return get_user_code(id)
 
 def get_file_ticket(user_code: str) -> str:
     """
@@ -76,11 +78,13 @@ class LoggedUser:
         if self.logged:
             self.name = cuser.username
             self.code = get_user_code(cuser.id)
+            self.folder = get_user_folder(cuser.id)
             self.id = cuser.id
             self.email = cuser.email
         else:
             self.name = ''
             self.code = '0'
+            self.folder = ''
             self.id = -1
             self.email = ''
 

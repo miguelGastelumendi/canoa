@@ -15,7 +15,7 @@ from carranca.helpers.db_helper import persist_record
 
 
 class UserDataFiles(db.Model):
-    __tablename__ = 'user_data_files'
+    __tablename__ = "user_data_files"
 
     id = db.Column(db.Integer, primary_key=True)
     id_users = db.Column(db.Integer)
@@ -26,14 +26,37 @@ class UserDataFiles(db.Model):
     from_os = db.Column(db.String(1))
     ticket = db.Column(db.String(40))
     user_receipt = db.Column(db.String(14))
-    upload_start_at = db.Column(db.DateTime)
-    report_ready_at = db.Column(db.DateTime)
+
+    # Process module
+    ## saved at register.py
+    a_received_at = db.Column(db.DateTime)
+    b_process_started_at = db.Column(db.DateTime)
+    c_check_started_at = db.Column(db.DateTime)
+    d_register_started_at = db.Column(db.DateTime)
+    ## saved at email.py
+    e_unzip_started_at = db.Column(db.DateTime)
+    f_submit_started_at = db.Column(db.DateTime)
+    g_email_started_at = db.Column(db.DateTime)
+
+    z_process_end_at = db.Column(db.DateTime)
+
+    # event
+    ## saved at email.py
     email_sent = db.Column(db.Boolean, default=False)
+    report_ready_at = db.Column(db.DateTime)
+
+    # Set on trigger
+    # registered_at, at insert
+    # email_sent_at, at email_sent = T
+    # error_at, at error_code not 0
+
+    # obsolete
+    # upload_start_at = db.Column(db.DateTime)
+
     error_code = db.Column(db.Integer, nullable=True)
     error_msg = db.Column(db.String(200), nullable=True)
     error_text = db.Column(db.Text, nullable=True)
     success_text = db.Column(db.Text, nullable=True)
-
 
     def update(uTicket, **kwargs):
         result = False
@@ -58,5 +81,6 @@ class UserDataFiles(db.Model):
             )
 
         return result
+
 
 # eof
