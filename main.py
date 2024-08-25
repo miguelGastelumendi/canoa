@@ -98,8 +98,9 @@ if not _app_config.DEBUG:
 
 # TODO Argument --info
 app.logger.info("--------------------")
-app.logger.info(f"{_app_config.APP_NAME} started in {_app_config.APP_MODE} in mode :-).")
+app.logger.info(f"{_app_config.APP_NAME} Version {_app_config.APP_VERSION} started in {_app_config.APP_MODE} in mode :-).")
 if _app_config.DEBUG:
+    app.logger.info(f"Version          : {_app_config.APP_VERSION}")
     app.logger.info(f"DEBUG            : {_app_config.DEBUG}")
     app.logger.info(f"Page Compression : {minified}")
     app.logger.info(f"App root folder  : {_app_config.ROOT_FOLDER}")
