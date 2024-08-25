@@ -34,6 +34,9 @@ Done:
 --------------------------------------------------
   Logbook
 --------------------------------------------------
+2024-08-24 β 2.18
+    - Display app version on startup
+
 2024-08-24 β 2.17
     - issues:
         a. Erros in check.py generates an internal error.
