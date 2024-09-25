@@ -19,5 +19,5 @@ Rem %* does not "comply" with `shift`: call python main.py %*
 call python main.py %1 %2 %3 %4 %5 %6 %7 %8 %9
 echo Deactivating data_validate environment...
 call .venv\Scripts\deactivate.bat
-echo Returnnig to Canoa.
+echo Returning to Canoa.
 Rem eof

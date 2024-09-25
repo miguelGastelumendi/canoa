@@ -6,14 +6,16 @@
     Equipe da Canoa -- 2024
 """
 
-# cSpell:ignore
+# cSpell:ignore psycopg2
+
+from psycopg2 import DatabaseError
 
 
-def persist_record(db, record: any, task_code: int = 1):
+def persist_record(db, record: any, task_code: int = 1) -> None:
     """
     Args:
       db:  SQLAlchemy()
-      record: query
+      record: query result
       task_code: int
     """
     try:
@@ -23,7 +25,7 @@ def persist_record(db, record: any, task_code: int = 1):
     except Exception as e:
         db.session.rollback()
         e.task_code = task_code
-        raise RuntimeError(e)
+        raise DatabaseError(e)
 
 
 def get_str_field_length(table_model: object, field_name: str) -> str:

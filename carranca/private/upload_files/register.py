@@ -15,9 +15,9 @@ import os
 from zlib import crc32
 from carranca import db
 
-from ...helpers.db_helper import persist_record
+from ...shared import app_log
 from ...helpers.py_helper import OS_IS_WINDOWS
-from ...helpers.user_helper import get_user_receipt, get_file_ticket, now
+from ...helpers.user_helper import now
 from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
 
@@ -60,26 +60,28 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         else:
             file_size, file_crc32 = _crc_from_downloaded_file(work_fname)
 
-        # insert a record for this operation
         task_code += 1  # +4
-        user_record_to_update = UserDataFiles(
+        user_dataFiles_unique = cargo.si.file_ticket
+        UserDataFiles.insert( user_dataFiles_unique,
             id_users=cargo.user.id,
             file_size=file_size,
             file_crc32=file_crc32,
             file_name=cargo.si.received_file_name,
             original_name=cargo.si.received_original_name,
-            ticket=cargo.si.file_ticket,
-            user_receipt=get_user_receipt(cargo.si.file_ticket),
+            ticket=user_dataFiles_unique,
+            user_receipt= cargo.si.user_receipt,
             a_received_at=cargo.received_at,
             b_process_started_at=cargo.process_started_at,
             c_check_started_at=cargo.check_started_at,
             d_register_started_at=register_started_at,
             from_os="W" if OS_IS_WINDOWS else "L",
+            file_origin= "L" if cargo.si.file_was_uploaded else "C", # Local | Cloud
         )
         task_code += 1  # +5
-        persist_record(db, user_record_to_update, task_code)
+        cargo.registered(user_dataFiles_unique)
         file_registered = True
         task_code = 0  # very important!
+        app_log.debug(f"The file was successfully registered in the database.")
     except Exception as e:
         task_code += 10
         msg_exception = str(e)

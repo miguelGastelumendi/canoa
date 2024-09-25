@@ -12,7 +12,7 @@ from datetime import datetime
 
 from ...config_receive_file import ReceiveFileConfig
 from ...helpers.py_helper import is_str_none_or_empty
-from ...helpers.user_helper import LoggedUser, get_user_receipt, now
+from ...helpers.user_helper import LoggedUser, now
 
 from .StorageInfo import StorageInfo
 from ..receive_file import RECEIVE_FILE_DEFAULT_ERROR
@@ -53,13 +53,15 @@ class Cargo:
         """ When the process began """
         self.received_at = received_at
         self.process_started_at = now()
-        self.report_ready_at = None
         self.check_started_at = None
         self.unzip_started_at = None
+        self.report_ready_at = None
         self.submit_started_at = None
         """ same as file ticket, a unique key in table UserDataFiles """
-        self.table_udf_key = storage_info.file_ticket
-        self.user_receipt = get_user_receipt(storage_info.file_ticket)
+        self.table_udf_key = None
+
+    def registered(self, unique_key):
+        self.table_udf_key = unique_key
 
     def init(self):
         """initialization of the error variables and `next module parameters` (next) at each loop"""

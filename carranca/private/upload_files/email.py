@@ -12,7 +12,8 @@
 
 from .Cargo import Cargo
 from ..models import UserDataFiles
-from ...helpers.user_helper import now_as_text, get_user_receipt, now
+from ...shared import app_log
+from ...helpers.user_helper import now_as_text, now
 from ...helpers.email_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode
 
@@ -28,7 +29,7 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
     try:
         email_started_at = now()
         task_code += 1  # 1
-        receipt = cargo.user_receipt
+        receipt = cargo.si.user_receipt
         email_body_params = {
             "user_name": cargo.user.name,
             "receipt": receipt,
@@ -50,12 +51,13 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
             report_ready_at=cargo.report_ready_at,
         )
         task_code = 0  # !important
+        app_log.debug(f"An email was sent to the user with the validation result.")
     except Exception as e:
         task_code += 5
         msg_exception = str(e)
 
     error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_EMAIL + task_code
-    return cargo.update(error_code, "uploadFileEmailFailed", msg_exception)
+    return cargo.update(error_code, "uploadFileEmail_failed", msg_exception)
 
 
 # eof

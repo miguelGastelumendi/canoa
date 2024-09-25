@@ -39,11 +39,11 @@ async def _run_validator(
 
     run_command = [
         batch_full_name,
-        data_validate_path,  # param 1: path do the data_validate main.py
-        d_v.na_in_folder,  # Named Argument
-        input_folder,  # param 2
-        d_v.na_out_folder,  # Named Argument
-        output_folder,  # param 3
+        data_validate_path,   # param 1: path do the data_validate main.py
+        d_v.na_in_folder,     # Named Argument
+        input_folder,         # param 2
+        d_v.na_out_folder,    # Named Argument
+        output_folder,        # param 3
     ]
 
     if not is_str_none_or_empty(d_v.flags):
@@ -156,6 +156,8 @@ def submit(cargo: Cargo) -> Cargo:
             shutil.move(final_report_full_name, user_report_full_name)
             task_code += 1  # 9
             error_code = 0 if path.exists(user_report_full_name) else task_code
+            if error_code == 0:
+                app_log.debug(f"The files were correctly submitted to '{_cfg.d_v.ui_name}' and a report was generated.")
     except Exception as e:
         error_code = task_code
         msg_exception = str(e)
@@ -169,7 +171,7 @@ def submit(cargo: Cargo) -> Cargo:
                 pass  # rename and move?
 
         except:
-            app_log.error("As pastas de comunicação não foram apagadas.")
+            app_log.error("The communication folders between apps were *not* deleted.")
 
     # goto email.py
     error_code = (

@@ -117,7 +117,7 @@ def process(
         try:
             UserDataFiles.update(
                 cargo.table_udf_key,
-                error_code=error_code,
+                error_code=0,
                 success_text=msg_success,
                 z_process_end_at= process_ended
             )

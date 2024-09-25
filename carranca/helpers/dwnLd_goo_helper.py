@@ -32,19 +32,18 @@ def is_url_valid(url: str) -> bool:
 
 
 def is_gd_url_valid(url: str) -> int:
-    result = 0
+    result = 10
     if is_str_none_or_empty(url) or len(url) < 10:
         result = 1
     elif not url.lower().startswith("https://"):
         result = 2
     elif not is_url_valid(url):
         result = 3
+    elif get_file_id_from_url(url) == None:
+        result = 4
     else:
-        file_id = get_file_id_from_url(url)
-        if file_id == None:
-            result = 4
-        elif not file_id.replace("_", "u").isalnum():
-            result = 5
+        result = 0
+
     return result
 
 
@@ -129,12 +128,15 @@ def download_public_google_file(
         file_md = service.files().get(fileId=file_id).execute()
         return file_md
 
+    # local vars
     task_code = 1
-    file_name = None
-    file_md = None
+    # Google Drive
+    gdService = None
+    gdFile_name = None
+    gdFile_md = None  # google file metadata
     try:
         # Get file_id
-        file_id = None
+        gdFile_id = None
         if is_str_none_or_empty(url_or_file_id) or len(url_or_file_id) < 10:
             task_code = 2
             raise ValueError(
@@ -142,16 +144,17 @@ def download_public_google_file(
             )
         elif url_or_file_id.lower().startswith("https://"):
             task_code = 3
-            file_id = get_file_id_from_url(url_or_file_id)
+            gdFile_id = get_file_id_from_url(url_or_file_id)
         else:
-            file_id = url_or_file_id
+            gdFile_id = url_or_file_id
 
-        if not file_id.replace("_", "u").isalnum():
+        # file_id ready
+        if not gdFile_id.replace("_", "u").replace("-", "m").isalnum():
             task_code = 4
-            raise ValueError(f"Invalid value for file_id [{file_id}].")
+            raise ValueError(f"Invalid value for file_id [{gdFile_id}].")
         elif not path.isdir(file_folder):
             task_code = 5
-            raise ValueError(f"Invalid value for file_id [{file_id}].")
+            raise ValueError(f"Invalid value for file_id [{gdFile_id}].")
         else:
             task_code = 6
 
@@ -165,57 +168,57 @@ def download_public_google_file(
             "canoa-download-key.json",
         )
 
-        task_code += 1
+        task_code += 1 #7
         if not path.isfile(service_account_file):
             raise FileNotFoundError(service_account_file)
 
-        task_code += 1
+        task_code += 1 #8
         credentials = Credentials.from_service_account_file(
             service_account_file, scopes=scope
         )
 
-        task_code += 1
-        service = build("drive", "v3", credentials=credentials)
+        task_code += 1 #9
+        gdService = build("drive", "v3", credentials=credentials)
 
-        task_code += 1
-        file_md = get_file_metadata(service, file_id)
+        task_code += 1 #10
+        gdFile_md = get_file_metadata(gdService, gdFile_id)
 
-        task_code += 1
-        original_file_name = file_md["name"]
+        task_code += 1 #11
+        original_file_name = gdFile_md["name"]
 
         name, ext = path.splitext(original_file_name)
         if is_str_none_or_empty(file_name_format):
-            file_name = original_file_name
+            gdFile_name = original_file_name
         elif '{0}' in file_name_format:
-            file_name = f"{file_name_format.format(name)}{ext}"
+            gdFile_name = f"{file_name_format.format(name)}{ext}"
         elif  '.' in file_name_format:
-            file_name = original_file_name
+            gdFile_name = original_file_name
         else:
-            file_name = original_file_name + ext
+            gdFile_name = original_file_name + ext
 
-        file_full_path = path.join(file_folder, file_name) if not is_str_none_or_empty(file_folder) else file_name
+        file_full_path = path.join(file_folder, gdFile_name) if not is_str_none_or_empty(file_folder) else gdFile_name
 
 
         if not path.isfile(file_full_path):
             pass
         elif del_file_if_exists:
-            task_code += 1
+            task_code += 1  #12
             remove(file_full_path)
             if path.isfile(file_full_path):
                 PermissionError(file_full_path)
         else:
-            task_code += 2
+            task_code += 2  #13
             FileExistsError(file_full_path)
 
-        task_code += 3
-        request = service.files().get_media(fileId=file_id)
+        task_code += 3  #14
+        request = gdService.files().get_media(fileId=gdFile_id)
 
-        task_code += 1
+        task_code += 1 #15
         with open(file_full_path, "wb") as f:
-            task_code += 1
+            task_code += 1 #16
             cs = int(0 if not debug else 2 * 1024 * 1024)  # 2MB
             downloader = MediaIoBaseDownload(f, request, chunksize=cs)
-            task_code += 1
+            task_code += 1 #17
             done = False
             app_log.debug(f"Download of file {file_full_path} started.")
             # file_crc32 = crc32(b'')  # Initialize CRC32 checksum
@@ -226,13 +229,12 @@ def download_public_google_file(
                     app_log.debug("Downloaded %d%%." % int(status.progress() * 100))
 
 
-
         task_code = 0
     except Exception as e:
         msg_error = f"An error ocurred while downloading the file. Task code {task_code}, message '{e}'.)"
         app_log.error(msg_error, exc_info=task_code)
 
-    return task_code, file_name, file_md
+    return task_code, gdFile_name, gdFile_md
 
 
 # if __name__ == "__main__":

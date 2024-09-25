@@ -1,14 +1,23 @@
 
+# cSpell:ignore sqlalchemy keepalives
 
-#import pandas as pd
 from sqlalchemy import create_engine, text
 from ..shared import app_config
 
 engine = create_engine(
     app_config.SQLALCHEMY_DATABASE_URI,
-    isolation_level = "READ UNCOMMITTED",
-    connect_args={'connect_timeout': 600}
+    isolation_level= 'AUTOCOMMIT', # "READ UNCOMMITTED", # mgd em Canoa, acho desnecessário
+    pool_pre_ping= True,
+    connect_args={
+        # (https://www.postgresql.org/docs/current/libpq-connect.html)
+        # Maximum time to wait while connecting, in seconds  was 600.
+        # instead mhd is using `pool_pre_ping` and set connect_timeout to 10
+        'connect_timeout': 10
+        ,'application_name': app_config.APP_NAME
+        ,'keepalives': 1
+    }
 )
+
 
 def executeSQL(sql):
     global engine
@@ -39,31 +48,4 @@ def getLastId(tabeName: str)->int:
 def getDictResultSet(sql):
     return {row[0]: row[1] for row in executeSQL(sql)}
 
-# mgd 2024.05.11
-# def getListDictResultset(sql):
-#     df = getDataframeResultset(sql)
-#     ret = []
-#     for _, row in df.iterrows():
-#         dic = {}
-#         for i in range(len(row)):
-#             dic[df.columns[i]] = row[i]
-#         ret.append(dic)
-#     return ret
-
-# def getDictFieldNamesValuesResultset(sql):
-#     df = getDataframeResultset(sql)
-#     row = df.iloc[0]
-#     dic = {}
-#     for i in range(len(row)):
-#         dic[df.columns[i]] = row[i]
-#     return dic
-
-# def getJSONStrResultset(sql):
-#     return json.dumps(getListDictResultset(sql)[0])
-
-# def getDataframeResultset(sql):
-#     return pd.read_sql(sql, connectDB())
-
-# def getListResultset(sql):
-#     return [row[0] for row in executeSQL(sql)]
-
+#eof

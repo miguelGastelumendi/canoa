@@ -12,7 +12,7 @@
 
 from os import path
 from ...helpers.py_helper import is_str_none_or_empty
-from ...helpers.user_helper import get_file_ticket
+from ...helpers.user_helper import get_file_ticket, get_user_receipt
 from ...helpers.file_helper import path_remove_last_folder
 
 
@@ -49,7 +49,7 @@ class StorageInfo:
     class _Path:
         def __init__(
             self,
-            parent,
+            si,
             user_folder: str,
             common_folder: str,
             data_validate_folder: str,
@@ -72,7 +72,7 @@ class StorageInfo:
 
             self.working_folder = (
                 self.user.downloaded
-                if parent.file_was_downloaded
+                if si.file_was_downloaded
                 else self.user.uploaded
             )
             # Path to the patent folder off both apps: canoa and data_validate
@@ -108,9 +108,11 @@ class StorageInfo:
         batch_name: str,
         file_was_downloaded: bool,
     ):
+        self._user_folder = user_folder
         # This is a unique key for the file name and a unique key in the data base
         self.file_ticket = get_file_ticket(user_code)  # = user_code
-        self._user_folder = user_folder
+        # This is an (expected) unique code used as a 'receipt' number for the user (eg see email)
+        self.user_receipt = get_user_receipt(self.file_ticket)
         self.folder = self._Folder()  # not really needed, but conventions.
         self.file_was_downloaded = file_was_downloaded
         self.file_was_uploaded = not file_was_downloaded

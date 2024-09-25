@@ -6,7 +6,7 @@ TODO:
 
     2024-09-
         a. β 2.17
-        b. email errors
+        b. sent email with errors
         0. About title
         1. β 2.17
         2. Set User Name in e-mail
@@ -25,17 +25,34 @@ TODO:
         E. β 2.17
         F. β 2.17
         G. β 2.11
-        H. Enviar error a mgd
 
-Done:
+
     small tasks
         - Login Remember not always working
         - Fix get_Html()
+        - ren receiveFFle.html.j2 receive_file.html.j2 (Linux as well)
+        - file_origin
 
 -------------------------------------------------------
   Logbook
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
+2024-mm-dd β 2.xx
+
+
+2024-09-25 β 2.21
+    - check file_origin field
+    - Problem when Inserting a row in UserDataFiles after a connection
+      timeout, crate UserDataFiles.insert()
+    - Add pool_pre_ping=True tu connection
+
+
+2024-09-24 β 2.20
+    - Fix typo in run_validate.bat
+    - Some comments & fixes in dwnLd_goo_helper.py
+      for GoogleDrive download (My gd credential vanished)
+
+
 2024-08-24 β 2.19
     - Fix msg_error in submit.py
 
@@ -51,8 +68,6 @@ Done:
         F. Change cargo.report_ready_at to validate_end_at
     - Now process downloaded and uploaded files
     - DB table [user_data_files] new columns datetime for each module
-
-
 
 2024-08-23 β 2.16
     - uploadFile -> receivefile
