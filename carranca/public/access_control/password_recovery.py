@@ -8,7 +8,6 @@
 # cSpell:ignore tmpl passwordrecovery wtforms
 
 from flask import render_template, request
-from carranca import db
 import secrets
 
 from ...helpers.db_helper import persist_record
@@ -28,7 +27,7 @@ from ..wtforms import PasswordRecoveryForm
 
 
 def password_recovery():
-    from ...shared import app_config
+    from ...shared import app_config, db
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_RECOVERY.value
     tmpl_form, template, tmpl_form, texts = init_form_vars()

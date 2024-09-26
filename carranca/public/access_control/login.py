@@ -28,6 +28,7 @@ from ..models import get_user_where
 
 
 def login():
+    from ...shared import db
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
     tmpl_form, template, is_get, texts = init_form_vars()
     # TODO test, fake form?
@@ -60,7 +61,6 @@ def login():
                 add_msg_error('userIsDisabled', texts)
             else:
                 task_code += 1  # 10
-                from carranca import db
                 task_code += 1  # 11
                 user.recover_email_token = None
                 user.last_login_at = now()

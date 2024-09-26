@@ -22,7 +22,7 @@ from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.texts_helper import add_msg_success, add_msg_error
 from ..helpers.route_helper import get_private_form_data, get_input_text
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
-from ..config_receive_file import ReceiveFileConfig
+from ..config_validate_process import ValidateProcessConfig
 
 RECEIVE_FILE_DEFAULT_ERROR = "uploadFileError"
 
@@ -75,7 +75,7 @@ def receive_file() -> str:
         logged_user = LoggedUser()
 
         def doProcessData() -> tuple[bool, ProcessData]:
-            receive_file_cfg = ReceiveFileConfig(app_config.DEBUG)
+            receive_file_cfg = ValidateProcessConfig(app_config.DEBUG)
             common_folder = path_remove_last_folder(app_config.ROOT_FOLDER)
             pd = ProcessData(
                 logged_user.code,

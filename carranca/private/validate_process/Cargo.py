@@ -11,7 +11,7 @@ Part of Canoa `File Validation` Processes
 from datetime import datetime
 
 from ...shared import app_config
-from ...config_receive_file import ReceiveFileConfig
+from ...config_validate_process import ValidateProcessConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import LoggedUser, now
 
@@ -28,7 +28,7 @@ class Cargo:
         process_version: str,
         in_debug: bool,
         user: LoggedUser,
-        receive_file_cfg: ReceiveFileConfig,
+        receive_file_cfg: ValidateProcessConfig,
         process_data: ProcessData,
         received_at: datetime,
         first: dict,

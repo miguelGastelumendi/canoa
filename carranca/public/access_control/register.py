@@ -7,11 +7,10 @@
 """
 # cSpell:ignore tmpl sqlalchemy wtforms
 
-from carranca import db
 from typing import Any
 from flask import render_template, request
 
-from ...shared import app_config
+from ...shared import app_config, db
 from ...helpers.db_helper import persist_record
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...helpers.error_helper import ModuleErrorCode

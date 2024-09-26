@@ -15,7 +15,7 @@ import shutil
 from os import path, stat
 
 from .Cargo import Cargo
-from ...config_receive_file import DataValidateApp
+from ...config_validate_process import DataValidateApp
 from ...helpers.py_helper import (
     is_str_none_or_empty,
     decode_std_text,

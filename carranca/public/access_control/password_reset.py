@@ -8,7 +8,7 @@
 # cSpell:ignore tmpl passwordreset wtforms
 
 from flask import render_template, request
-from carranca import db
+from shared import db
 
 from ...helpers.pw_helper import hash_pass
 from ...helpers.py_helper import now, to_str

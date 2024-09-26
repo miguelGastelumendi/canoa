@@ -39,6 +39,13 @@ TODO:
   Logbook
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
+2024-09-26 β 2.24
+    - Ready for db-refactoring
+
+2024-09-26 β 2.23
+    - move __init__.py [db] to shared.py
+      config_receive_file.py -> config_validate_process.py
+
 2024-09-26 β 2.22
     - pre db-refactoring
 

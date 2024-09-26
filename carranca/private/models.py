@@ -12,8 +12,7 @@
 
 from psycopg2 import DatabaseError
 
-from carranca import db Trocar com app_db de shared
-from carranca.shared import app_log
+from carranca.shared import app_log, db
 from carranca.helpers.db_helper import persist_record, check_connection
 
 

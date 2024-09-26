@@ -9,9 +9,9 @@
 
 from typing import Any
 from flask_login import UserMixin
-from carranca import db, login_manager
 from sqlalchemy import Computed
 
+from ..shared import db, login_manager
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
 

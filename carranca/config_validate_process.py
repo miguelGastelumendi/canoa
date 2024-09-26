@@ -1,20 +1,18 @@
 """
-    upload_config.py
+    config_validate_process.py
 
-    UploadConfig
-    Configuration of the file upload process modules
+    ValidateProcessConfig
+    Configuration of the file for validate process
+    (./private/validate_process)
     Stores the configurable parameters required at each step
-    of the Upload Process
 
     see README.md
-
     Part of Canoa `File Validation` Processes
 
     Equipe da Canoa -- 2024
     mgd
 
 """
-
 # cSpell:ignore
 
 from typing import NamedTuple
@@ -37,7 +35,7 @@ DataValidateApp = NamedTuple(
 Email = NamedTuple("Email", cc=str, bcc=str)
 
 
-class ReceiveFileConfig:
+class ValidateProcessConfig:
     def __init__(self, debug = False):  #: BaseConfig):
         # d_v `data_validate` app output file name and extension
         self.output_file = OutputFile(name="data_report", ext=".pdf")

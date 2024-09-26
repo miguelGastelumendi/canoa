@@ -13,7 +13,6 @@
 
 import os
 from zlib import crc32
-from carranca import db
 
 from ...shared import app_log
 from ...helpers.py_helper import OS_IS_WINDOWS

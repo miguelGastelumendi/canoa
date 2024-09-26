@@ -10,7 +10,7 @@
 # cSpell:ignore werkzeug receivefile tmpl sqlalchemy lastpasswordchange errorhandler assis passwordrecovery passwordreset
 
 from flask import Blueprint, render_template
-from carranca import login_manager
+from carranca.shared import login_manager
 from ..helpers import log_helper
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.route_helper import(

@@ -10,29 +10,29 @@
     So to keep it 'mode secure' and avoid 'circular imports',
     import just `app_config` instead of `app` to use app.config
 
-    same with
-        - app_log => app.Logger
-        - app_db => db
+    app_log == app.Logger
+    ---------------------
 
 
-    from shared import app_config
-    ~form main import app~
 """
+# cSpell:ignore sqlalchemy
 
+""" usually this part is in __init__.py
+    as `db` is very shared so I brought it here.
+    (with ChatGPT 4.o consent ;-)
+"""
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+
+# -----------------------------------
 # Shared objects
-app = None
+db = SQLAlchemy()
+login_manager = LoginManager()
+app = None       # see __int__.py & main.py
+# see update_shared_objects() below
 app_config = None
 app_log = None
-db = None
-#-----------------
 
-
-
-
-def register_extensions():
-    from carranca import login_manager
-    app_db.init_app(app)
-    login_manager.init_app(app)
 
 
 def register_blueprints():
@@ -45,7 +45,7 @@ def register_blueprints():
 def configure_database(app):
     @app.teardown_request  # Flask decorator
     def shutdown_session(exception=None):
-        app_db.session.remove()
+        db.session.remove()
 
 
 def register_jinja():
@@ -68,22 +68,18 @@ def register_jinja():
 
 
 
-def create_app_and_shared_objects(config):
-    from flask import Flask
-    from carranca import db
-    global app, app_config, app_db, app_log
+def update_shared_objects(app_flask, config) -> None: # :BaseConfig
+    global app, app_config, app_log
 
-    app = Flask(__name__)
+    app = app_flask
     app.config.from_object(config)
 
     app_config = config
-    app_db = db
     app_log = app.logger
 
-    register_extensions()
     register_blueprints()
     configure_database(app)
     register_jinja()
-    return app
+    return
 
 #eof

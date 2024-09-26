@@ -27,7 +27,7 @@
 from datetime import datetime
 
 from ...helpers.py_helper import is_str_none_or_empty
-from ...config_receive_file import ReceiveFileConfig
+from ...config_validate_process import ValidateProcessConfig
 from ...helpers.user_helper import LoggedUser, now
 from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
@@ -71,7 +71,7 @@ def process(
         "2024.09.25_d",
         app_config.DEBUG,
         logged_user,
-        ReceiveFileConfig(app_config.DEBUG),
+        ValidateProcessConfig(app_config.DEBUG),
         proc_data,
         received_at,
         {"file_data": file_data, "valid_ext": valid_ext},  # first module parameters
