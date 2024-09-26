@@ -7,9 +7,9 @@
         5. Email, data_validate output is sent via email
 
         Cargo
-            is a class to shares: StorageInfo, Params, args, and return values between the 5 modules.
+            is a class to shares: ProcessData, Params, args, and return values between the 5 modules.
 
-        StorageInfo
+        ProcessData
             is a class that keep the files & folders names
 
         Params
@@ -34,7 +34,7 @@ from ..models import UserDataFiles
 
 
 from .Cargo import Cargo
-from .StorageInfo import StorageInfo
+from .ProcessData import ProcessData
 
 from .check import check
 from .unzip import unzip
@@ -46,7 +46,7 @@ from .register import register
 def process(
     logged_user: LoggedUser,
     file_data: object | str,
-    storage: StorageInfo,
+    proc_data: ProcessData,
     received_at: datetime,
     valid_ext: list[str],
 ) -> list[int, str, str]:
@@ -68,10 +68,11 @@ def process(
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
+        "2024.09.25_d",
         app_config.DEBUG,
         logged_user,
         ReceiveFileConfig(app_config.DEBUG),
-        storage,
+        proc_data,
         received_at,
         {"file_data": file_data, "valid_ext": valid_ext},  # first module parameters
     )
@@ -122,13 +123,18 @@ def process(
                 z_process_end_at= process_ended
             )
         except Exception as e:
-            app_log.error(log_msg, e, 0)
+            app_log.fatal(log_msg, e, 0)
     else:
         try:
             UserDataFiles.update(
                 cargo.table_udf_key,
                 error_code=error_code,
                 success_text=msg_success,  # not really success but standard_output
+                # without error, this fields are saved in email.py
+                report_ready_at=cargo.report_ready_at,
+                e_unzip_started_at=cargo.unzip_started_at,
+                f_submit_started_at=cargo.submit_started_at,
+                g_email_started_at=cargo.email_started_at,
                 z_process_end_at= process_ended,
                 error_msg=(
                     "<sem mensagem de erro>"
@@ -137,10 +143,11 @@ def process(
                 ),
                 error_text=msg_exception,
             )
+
         except Exception as e:
             error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 1
             msg_exception = _get_msg_exception(str(e), msg_exception, error_code)
-            app_log.error(log_msg, msg_exception, error_code)
+            app_log.fatal(log_msg, msg_exception, error_code, exc_info=error_code)
 
     return error_code, msg_error, msg_exception, cargo.final
 

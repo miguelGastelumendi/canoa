@@ -29,7 +29,7 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
     error_code = 0
     msg_exception = ""
     task_code = 0
-    cs = cargo.si
+    cs = cargo.pd
     cargo.check_started_at = now()
     receive_method = "downloaded" if cs.file_was_downloaded else "uploaded"
     try:
@@ -76,14 +76,15 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
                 app_log.info(f"The {receive_method} file [{cs.received_original_name}] has been renamed to [{cs.received_file_name}].")
             app_log.debug(f"The {receive_method} file [{cs.received_file_name}] successfully passed the `check` module.")
         else:
-            app_log.error("The {receive_method} file [{cs.received_file_name}] failed in module `check` with code {task_code}.")
+            app_log.error(f"The {receive_method} file [{cs.received_file_name}] failed in module `check` with code {task_code}.")
 
     except Exception as e:
         msg_exception = str(e)
         # is the highest possible (see ModuleErrorCode.RECEIVE_FILE_CHECK + 1)
         task_code = 19
-        app_log.error(
+        app_log.fatal(
             f"Exception [{e}], code {task_code}, occurred in module `check` while validating the {receive_method} file [{cs.received_original_name}]."
+            , exc_info=task_code
         )
 
     # goto module register.py

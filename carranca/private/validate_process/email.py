@@ -27,9 +27,9 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
     msg_exception = ""
     task_code = 0
     try:
-        email_started_at = now()
+        cargo.email_started_at = now()
         task_code += 1  # 1
-        receipt = cargo.si.user_receipt
+        receipt = cargo.pd.user_receipt
         email_body_params = {
             "user_name": cargo.user.name,
             "receipt": receipt,
@@ -44,17 +44,18 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
         task_code += 2  # 3
         UserDataFiles.update(
             cargo.table_udf_key,
+            report_ready_at=cargo.report_ready_at,
             e_unzip_started_at=cargo.unzip_started_at,
             f_submit_started_at=cargo.submit_started_at,
-            g_email_started_at=email_started_at,
+            g_email_started_at=cargo.email_started_at,
             email_sent=True,
-            report_ready_at=cargo.report_ready_at,
         )
         task_code = 0  # !important
         app_log.debug(f"An email was sent to the user with the validation result.")
     except Exception as e:
         task_code += 5
         msg_exception = str(e)
+        app_log.fatal(f"There was a problem sending the results email: {msg_exception}.", exc_info=task_code)
 
     error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_EMAIL + task_code
     return cargo.update(error_code, "uploadFileEmail_failed", msg_exception)

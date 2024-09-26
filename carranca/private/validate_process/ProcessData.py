@@ -1,5 +1,5 @@
 """
-    Upload Storage (File, Path structure) Information
+    Process (File, Path structure, user) Data
 
     see README.md
     Part of Canoa `File Validation` Processes
@@ -16,7 +16,7 @@ from ...helpers.user_helper import get_file_ticket, get_user_receipt
 from ...helpers.file_helper import path_remove_last_folder
 
 
-class StorageInfo:
+class ProcessData:
     """
     Received (upload | download) File Path Configurations, Folders and
     file name see README.md
@@ -59,14 +59,14 @@ class StorageInfo:
             def _common_user_folder(folder: str):
                 return path.join(
                     ("." if common_folder is None else common_folder),
-                    StorageInfo._Folder.user_files,
+                    ProcessData._Folder.user_files,
                     folder,
                 )
 
             # Path to all user's files are kept
-            self.user = StorageInfo._User(
-                _common_user_folder(StorageInfo._Folder.downloaded_files),
-                _common_user_folder(StorageInfo._Folder.uploaded_files),
+            self.user = ProcessData._User(
+                _common_user_folder(ProcessData._Folder.downloaded_files),
+                _common_user_folder(ProcessData._Folder.uploaded_files),
                 user_folder,
             )
 
@@ -80,15 +80,15 @@ class StorageInfo:
 
             # Path to a common folder to be used by both apps canoa & data_validate
             data_tunnel = path.join(
-                self.apps_parent_path, StorageInfo._Folder.data_tunnel
+                self.apps_parent_path, ProcessData._Folder.data_tunnel
             )
             # Path where the user's zip file is extracted
             self.data_tunnel_user_write = path.join(
-                data_tunnel, user_folder, StorageInfo._Folder.validate_input
+                data_tunnel, user_folder, ProcessData._Folder.validate_input
             )
             # Path where the data_validate write the report
             self.data_tunnel_user_read = path.join(
-                data_tunnel, user_folder, StorageInfo._Folder.validate_output
+                data_tunnel, user_folder, ProcessData._Folder.validate_output
             )
             # External batch origin (copy from here if not exists or is newer)
             self.batch_source_name = path.join(common_folder, batch_name)

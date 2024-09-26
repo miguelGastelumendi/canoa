@@ -30,14 +30,21 @@ TODO:
     small tasks
         - Login Remember not always working
         - Fix get_Html()
-        - ren receiveFFle.html.j2 receive_file.html.j2 (Linux as well)
+        - ren receiveFile.html.j2 receive_file.html.j2 (Linux as well)
         - file_origin
+        - register_jinja
+        - static cache
 
 -------------------------------------------------------
   Logbook
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
-2024-mm-dd β 2.xx
+2024-09-26 β 2.22
+    - pre db-refactoring
+
+2024-09-25 β 2.22
+    - Rename StorageInfo to ProcessData (si -> pd)
+    - Rename folder carranca\private\upload_files to validate_process
 
 
 2024-09-25 β 2.21

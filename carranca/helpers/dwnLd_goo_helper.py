@@ -39,7 +39,7 @@ def is_gd_url_valid(url: str) -> int:
         result = 2
     elif not is_url_valid(url):
         result = 3
-    elif get_file_id_from_url(url) == None:
+    elif get_file_id_from_url(url) is None:
         result = 4
     else:
         result = 0

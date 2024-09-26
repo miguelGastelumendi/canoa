@@ -23,8 +23,10 @@
 app = None
 app_config = None
 app_log = None
-app_db = None
+db = None
 #-----------------
+
+
 
 
 def register_extensions():
@@ -41,7 +43,7 @@ def register_blueprints():
 
 
 def configure_database(app):
-    @app.teardown_request
+    @app.teardown_request  # Flask decorator
     def shutdown_session(exception=None):
         app_db.session.remove()
 
@@ -69,12 +71,12 @@ def register_jinja():
 def create_app_and_shared_objects(config):
     from flask import Flask
     from carranca import db
-    global app, app_config, app_log, app_db
+    global app, app_config, app_db, app_log
+
+    app = Flask(__name__)
+    app.config.from_object(config)
 
     app_config = config
-    app = Flask(__name__)
-    app.config.from_object(app_config)
-
     app_db = db
     app_log = app.logger
 

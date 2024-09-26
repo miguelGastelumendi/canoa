@@ -10,11 +10,12 @@ Part of Canoa `File Validation` Processes
 """
 from datetime import datetime
 
+from ...shared import app_config
 from ...config_receive_file import ReceiveFileConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import LoggedUser, now
 
-from .StorageInfo import StorageInfo
+from .ProcessData import ProcessData
 from ..receive_file import RECEIVE_FILE_DEFAULT_ERROR
 
 
@@ -24,10 +25,11 @@ class Cargo:
 
     def __init__(
         self,
+        process_version: str,
         in_debug: bool,
         user: LoggedUser,
         receive_file_cfg: ReceiveFileConfig,
-        storage_info: StorageInfo,
+        process_data: ProcessData,
         received_at: datetime,
         first: dict,
     ):
@@ -38,30 +40,34 @@ class Cargo:
             in_debug (bool):            app is in debug mode?
             user (LoggedUser):          basic user info
             upload_cfg (UploadConfig):  configuration of the file upload process modules
-            storage_info (StorageInfo): keeps info of the folder structure and file names
+            process_data (ProcessData): keeps info of the folder structure, file names, user info...
             first (dict):               parameters for the `first` module
         """
         self.init()
         self.in_debug_mode = in_debug
         self.user = user
         self.receive_file_cfg = receive_file_cfg
-        self.si = storage_info
+        self.pd = process_data
         self.next = dict(first)
 
         self.step = 1
         self.final = {}  # the process.py return values
         """ When the process began """
+        self.app_version = app_config.APP_VERSION
+        self.process_version = process_version
         self.received_at = received_at
         self.process_started_at = now()
         self.check_started_at = None
         self.unzip_started_at = None
         self.report_ready_at = None
         self.submit_started_at = None
+        self.email_started_at = None
         """ same as file ticket, a unique key in table UserDataFiles """
         self.table_udf_key = None
 
-    def registered(self, unique_key):
+    def file_registered(self, unique_key) -> bool:
         self.table_udf_key = unique_key
+        return True
 
     def init(self):
         """initialization of the error variables and `next module parameters` (next) at each loop"""

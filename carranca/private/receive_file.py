@@ -12,7 +12,7 @@ from flask import render_template, request
 
 from .wtforms import ReceiveFileForm
 from werkzeug.utils import secure_filename
-from .upload_files.StorageInfo import StorageInfo
+from .validate_process.ProcessData import ProcessData
 
 from ..shared import app_log, app_config
 from ..helpers.py_helper import is_str_none_or_empty
@@ -50,7 +50,7 @@ def receive_file() -> str:
         # Find out what was kind of data was sent: an uploaded file or an URL (download)
         file_obj = request.files[tmpl_form.filename.id] if request.files else None
         url_str = get_input_text(tmpl_form.urlname.name)
-        has_file = (file_obj != None) and not is_str_none_or_empty(file_obj.filename)
+        has_file = (file_obj is not None) and not is_str_none_or_empty(file_obj.filename)
         has_url = not is_str_none_or_empty(url_str)
 
         # file_data holds a 'str' or an 'obj'
@@ -70,14 +70,14 @@ def receive_file() -> str:
             error_code = _log_error("receiveFileAdmit_bad_url", task_code + 3)
             return _result()
 
-        # Instantiate storage helper for the process StorageInfo
+        # Instantiate Process Data helper
         task_code = 5
         logged_user = LoggedUser()
 
-        def do_storage() -> tuple[bool, StorageInfo]:
+        def doProcessData() -> tuple[bool, ProcessData]:
             receive_file_cfg = ReceiveFileConfig(app_config.DEBUG)
             common_folder = path_remove_last_folder(app_config.ROOT_FOLDER)
-            si = StorageInfo(
+            pd = ProcessData(
                 logged_user.code,
                 logged_user.folder,
                 common_folder,
@@ -85,15 +85,15 @@ def receive_file() -> str:
                 receive_file_cfg.d_v.batch,
                 has_url,
             )
-            return receive_file_cfg.debug_process, si
+            return receive_file_cfg.debug_process, pd
 
         task_code += 1  # 6
-        debug_process, si = do_storage()
+        debug_process, pd = doProcessData()
         if has_file:
             task_code += 1  # 7
-            si.received_original_name = file_obj.filename
+            pd.received_original_name = file_obj.filename
             # TODO check file_obj. file_obj.mimetype file_obj.content_length
-        elif not folder_must_exist(si.path.working_folder):
+        elif not folder_must_exist(pd.path.working_folder):
             task_code += 2  # 8
             error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code)
             return _result()
@@ -101,17 +101,17 @@ def receive_file() -> str:
             task_code += 3  # 9
             # this is a placeholder for the real name (I yet don't know it)
             # so si.working_file_name() has the correct format to
-            si.received_file_name = "{0}"
+            pd.received_file_name = "{0}"
             download_code, filename, md = download_public_google_file(
                 url_str,
-                si.path.working_folder,
-                si.working_file_name(),
+                pd.path.working_folder,
+                pd.working_file_name(),
                 True,
                 debug_process,
             )
             if download_code == 0:
                 task_code += 1  # 10
-                si.received_original_name = md["name"]
+                pd.received_original_name = md["name"]
             else:
                 app_log.error(
                     f"Download error code {download_code}.", exc_info=download_code
@@ -121,22 +121,22 @@ def receive_file() -> str:
                 error_code = _log_error("receiveFileAdmit_bad_dl", task_code, fn)
                 return _result()
 
-        si.received_file_name = secure_filename(si.received_original_name)
+        pd.received_file_name = secure_filename(pd.received_original_name)
         task_code += 1
         ve = texts["validExtensions"]
         valid_extensions = ".zip" if is_str_none_or_empty(ve) else ve.lower().split(",")
 
         task_code += 1
-        from .upload_files.process import process
+        from .validate_process.process import process
 
         task_code += 1
         error_code, msg_error, _, data = process(
-            logged_user, file_data, si, received_at, valid_extensions
+            logged_user, file_data, pd, received_at, valid_extensions
         )
 
         if error_code == 0:
             log_msg = add_msg_success(
-                "uploadFileSuccess", texts, si.user_receipt, logged_user.email
+                "uploadFileSuccess", texts, pd.user_receipt, logged_user.email
             )
             app_log.debug(log_msg)
         else:
@@ -145,9 +145,8 @@ def receive_file() -> str:
 
     except Exception as e:
         error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code)
-        app_log.error(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
+        app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
 
     return _result()
-
 
 # eof

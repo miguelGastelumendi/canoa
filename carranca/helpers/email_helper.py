@@ -181,8 +181,9 @@ def send_email(
             f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
         )
         msg = getattr(e, "body", str(e))
-        app_log.error(error)
-        raise RuntimeError(error)
+        msg_error = f"{error} SendGrid: [{msg}]."
+        app_log.error(msg_error)
+        raise RuntimeError(msg_error)
 
 
 # eof

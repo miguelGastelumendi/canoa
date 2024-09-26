@@ -101,11 +101,11 @@ def submit(cargo: Cargo) -> Cargo:
         task_code += 1  # 1
         # shortcuts
         _cfg = cargo.receive_file_cfg
-        _path = cargo.si.path
-        _path_read = cargo.si.path.data_tunnel_user_read
-        _path_write = cargo.si.path.data_tunnel_user_write
+        _path = cargo.pd.path
+        _path_read = cargo.pd.path.data_tunnel_user_read
+        _path_write = cargo.pd.path.data_tunnel_user_write
         batch_full_name = _path.batch_full_name
-        data_validate_path = cargo.si.path.data_validate
+        data_validate_path = cargo.pd.path.data_validate
         if not path.isfile(batch_full_name):  # TODO send to check module
             task_code += 1  # 2
             raise Exception(
@@ -150,18 +150,16 @@ def submit(cargo: Cargo) -> Cargo:
             # copy the final_report file to the same folder and
             # with the same name as the uploaded file:
             user_report_full_name = change_file_ext(
-                cargo.si.working_file_full_name(), result_ext
+                cargo.pd.working_file_full_name(), result_ext
             )
             task_code += 3  # 8
             shutil.move(final_report_full_name, user_report_full_name)
             task_code += 1  # 9
             error_code = 0 if path.exists(user_report_full_name) else task_code
-            if error_code == 0:
-                app_log.debug(f"The files were correctly submitted to '{_cfg.d_v.ui_name}' and a report was generated.")
     except Exception as e:
         error_code = task_code
         msg_exception = str(e)
-        app_log.error(msg_exception, exc_info=error_code)
+        app_log.fatal(msg_exception, exc_info=error_code)
     finally:
         try:
             if cargo.receive_file_cfg.remove_report:
@@ -171,12 +169,17 @@ def submit(cargo: Cargo) -> Cargo:
                 pass  # rename and move?
 
         except:
-            app_log.error("The communication folders between apps were *not* deleted.")
+            app_log.warn("The communication folders between apps were *not* deleted.")
 
     # goto email.py
     error_code = (
         0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT
     )
+    if error_code == 0:
+        app_log.debug(f"The unzipped files were correctly submitted to '{_cfg.d_v.ui_name}' and a report was generated.")
+    else:
+        app_log.error(f"There was a problem submitting the files to '{_cfg.d_v.ui_name}. Error code [{error_code}].")
+
     return cargo.update(
         error_code,
         msg_error,

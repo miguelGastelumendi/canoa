@@ -8,7 +8,20 @@
 
 # cSpell:ignore psycopg2
 
-from psycopg2 import DatabaseError
+from ..shared import app_log
+from psycopg2 import DatabaseError, OperationalError
+from ..helpers.dbQuery import engine
+
+def check_connection() -> bool:
+    value = 0
+    try:
+        with engine.connect() as conn:
+            value= conn.scalar("Select 1")
+    except Exception as ex:
+        value = -1
+        app_log.error(f"Connection Error: [{ex}].")
+
+    return (value == 1)
 
 
 def persist_record(db, record: any, task_code: int = 1) -> None:

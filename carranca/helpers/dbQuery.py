@@ -18,7 +18,6 @@ engine = create_engine(
     }
 )
 
-
 def executeSQL(sql):
     global engine
     with engine.connect() as conn:
