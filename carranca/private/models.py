@@ -68,8 +68,6 @@ class UserDataFiles(db.Model):
 
     def _get_record(uTicket):
         ''' gets the record with unique Key uTicket '''
-        # this query also opens a connection, so persist_record works nice
-        check_connection()
         records = db.session.query(UserDataFiles).filter_by(ticket=uTicket)
         if (records is None) or (records.count() == 0):
             record = None

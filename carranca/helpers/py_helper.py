@@ -11,7 +11,6 @@ import time
 import platform
 from datetime import datetime
 
-
 OS_NAME_IS = platform.system()
 OS_IS_WINDOWS = (OS_NAME_IS == "Windows")
 OS_IS_LINUX = (OS_NAME_IS == "Linux")

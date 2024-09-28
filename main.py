@@ -2,7 +2,8 @@
     The main script ;-)
 
     For newbies, remember:
-        project_root/
+       Canoa/
+        ├── __init__.py     # Crucial empty file (tells Python that tis folder is a package (Canoa)
         ├── main.py         # <- You are here
         ├── App/            # Optional folder for application logic
         │    ├── shared.py  # shared vars
@@ -18,20 +19,43 @@
     mgd
 """
 
-# cSpell:ignore SQLALCHEMY, cssless sendgrid
+# cSpell:ignore sqlalchemy, cssless sendgrid, ENDC
+
+import re
+import time
+
+started = time.perf_counter()
 
 from sys import exit
 from collections import namedtuple
 from flask_minify import Minify
 from urllib.parse import urlparse
 
+from carranca.helpers.Display import Display as display
+from carranca.helpers.py_helper import is_str_none_or_empty
 from carranca.config import (
     config_modes,
     BaseConfig,
     app_mode_production,
     app_mode_debug,
 )
-from carranca.helpers.py_helper import is_str_none_or_empty, coalesce
+
+
+# ---------------------------------------------------------------------------- #
+# Helpers
+def _display(msg):
+    display.error(msg, f"{BaseConfig.APP_NAME}: ")
+
+def __log_and_exit(ups: str):
+    _display(ups)
+    exit(ups)
+
+def __is_empty(key: str) -> bool:
+    value = getattr(_app_config, key, "")
+    empty = value is None or value.strip() == ""
+    if empty:
+        _display(f"Key [{key}] has no value.")
+    return empty
 
 
 # ---------------------------------------------------------------------------- #
@@ -44,39 +68,23 @@ try:
     _app_mode = BaseConfig.get_os_env("APP_MODE", app_mode_debug)
     _app_config = config_modes[_app_mode]
 except KeyError:
-    exit(
+    __log_and_exit(
         f"Error: Invalid <app_mode>: '{_app_mode}'. Expected values are [{app_mode_debug}, {app_mode_production}]."
     )
 
 # ---------------------------------------------------------------------------- #
-# Create th Flask's app and update the very common shared objects in shared.py
-from carranca import create_app
-from carranca.shared import update_shared_objects
-app = create_app()
-update_shared_objects(app, _app_config)
-
-
-# ---------------------------------------------------------------------------- #
-# Helpers
-def __log_and_exit(ups: str):
-    app.logger.error(ups)
-    exit(ups)
-
-def __is_empty(key: str) -> bool:
-    value = getattr(_app_config, key, "")
-    empty = value is None or value.strip() == ""
-    if empty:
-        app.logger.error(f"Key [{key}] has no value.")
-    return empty
+# Hi password from Connection String
+_db_uri_key = "SQLALCHEMY_DATABASE_URI"
+_db_uri_safe = re.sub(
+    _app_config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
+    ":******@",
+    getattr(_app_config, _db_uri_key),
+)
 
 # ---------------------------------------------------------------------------- #
 # Check if the mandatory environment variables are set.
-if (
-    __is_empty("SQLALCHEMY_DATABASE_URI")
-    or __is_empty("SERVER_ADDRESS")
-    or __is_empty("SECRET_KEY")
-):
-    __log_and_exit("Mandatory environment variables were not set.")
+if __is_empty(_db_uri_key) or __is_empty("SERVER_ADDRESS") or __is_empty("SECRET_KEY"):
+    __log_and_exit("One or more mandatory environment variables were not set.")
 
 # ---------------------------------------------------------------------------- #
 # Confirm we have a well formed http address
@@ -92,39 +100,40 @@ try:
         path[1] if is_str_none_or_empty(url.port) else url.port,
     )
 except Exception as e:
-    app.logger.error(
-        f"`urlparse('{_app_config.SERVER_ADDRESS}', '{default_scheme}') -> parsed: {address.host}:{address.port}`"
+    _display(
+        f"`urlparse('{_app_config.SERVER_ADDRESS}', '{default_scheme}') -> parsed: {address.host}:{address.port}`",
     )
     __log_and_exit(
         f"Error parsing server address. Expect value is [HostName:Port], found: [{_app_config.SERVER_ADDRESS}]. Error {e}"
     )
 
 # ---------------------------------------------------------------------------- #
-# Minified html/js if in production
-minified = False
-if not _app_config.DEBUG:
-    Minify(app=app, html=True, js=True, cssless=False)
-    minified = True
+# Ready to create App
+# ---------------------------------------------------------------------------- #
+# Create th Flask's app and update the very common shared objects in shared.py
+from carranca import create_app
 
+app = create_app(_app_config)
+setattr(_app_config, _db_uri_key, _db_uri_safe)
+
+# ---------------------------------------------------------------------------- #
+# Minified html/js when requested or not in Debug
+_app_config.APP_MINIFIED = (
+    _app_config.APP_MINIFIED if _app_config.APP_MINIFIED else not _app_config.DEBUG
+)
+if _app_config.APP_MINIFIED:
+    Minify(app=app, html=True, js=True, cssless=False)
 
 # ---------------------------------------------------------------------------- #
 # Log initial configuration
 # TODO Argument --info
-app.logger.info("--------------------")
-app.logger.info(f"{_app_config.APP_NAME} Version {_app_config.APP_VERSION} started in {_app_config.APP_MODE} in mode :-).")
-if _app_config.DEBUG:
-    app.logger.info(f"Version          : {_app_config.APP_VERSION}")
-    app.logger.info(f"DEBUG            : {_app_config.DEBUG}")
-    app.logger.info(f"Page Compression : {minified}")
-    app.logger.info(f"App root folder  : {_app_config.ROOT_FOLDER}")
-    app.logger.info(f"Database address : {_app_config.SQLALCHEMY_DATABASE_URI}")
-    app.logger.info(f"Server address   : {address.host}:{address.port}")
-    app.logger.info(
-        f"External address : {coalesce(_app_config.SERVER_EXTERNAL_IP, '<set on demand>')}"
-    )
-    app.logger.info(
-        f"External port    : {coalesce(_app_config.SERVER_EXTERNAL_PORT, '<none>')}"
-    )
+display.info(
+    f"{_app_config.APP_NAME} Version {_app_config.APP_VERSION} started in {_app_config.APP_MODE} in mode :-)."
+)
+if _app_config.DEBUG: # or to_str(args[1]):
+    from carranca.public.debug_info import get_debug_info
+    get_debug_info(True)
+
 # ---------------------------------------------------------------------------- #
 # Give warnings of import configuration that may be missing
 if is_str_none_or_empty(_app_config.EMAIL_API_KEY):
@@ -145,6 +154,11 @@ if is_str_none_or_empty(address.host) or (address.port == 0):
 # ---------------------------------------------------------------------------- #
 # Ready to go, lunch!
 if __name__ == "__main__":
+    elapsed = (time.perf_counter() - started) * 1000
+    display.info(f"{__name__} ready in {elapsed:,.0f}ms")
+    display.info(f"Launching {_app_config.APP_NAME} v {_app_config.APP_VERSION}")
     app.run(host=address.host, port=address.port, debug=_app_config.DEBUG)
+else:
+    __log_and_exit(f"Expected '__main__' as __name__, but got '{__name__}' instead. Exiting...")
 
 # eof

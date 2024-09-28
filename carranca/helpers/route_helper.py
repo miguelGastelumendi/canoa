@@ -59,7 +59,7 @@ def get_input_text(name: str) -> str:
     return to_str(text)
 
 def get_form_data(section: str, file: str, folder: str): # -> str, bool, dict[str, str]:
-    from .texts_helper import get_section
+    from .ui_texts_helper import get_section
     template = f'{folder}/{file}.html.j2'
     is_get= is_method_get()
     texts = get_section(section)

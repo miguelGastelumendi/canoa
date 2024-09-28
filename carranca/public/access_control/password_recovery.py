@@ -13,7 +13,7 @@ import secrets
 from ...helpers.db_helper import persist_record
 from ...helpers.email_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode
-from ...helpers.texts_helper import add_msg_error, add_msg_success
+from ...helpers.ui_texts_helper import add_msg_error, add_msg_success
 from ...helpers.route_helper import (
     public_route,
     init_form_vars,

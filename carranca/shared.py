@@ -15,25 +15,22 @@
 
 
 """
-# cSpell:ignore sqlalchemy
+# cSpell:ignore sqlalchemy keepalives
 
 """ usually this part is in __init__.py
     as `db` is very shared so I brought it here.
     (with ChatGPT 4.o consent ;-)
 """
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 
 # -----------------------------------
 # Shared objects
-db = SQLAlchemy()
-login_manager = LoginManager()
-app = None       # see __int__.py & main.py
-# see update_shared_objects() below
+# see do_db_and_share_objects(a, c)
+db = None
+db_engine = None
+login_manager = None
+app = None   # see __int__.py & main.py
 app_config = None
 app_log = None
-
-
 
 def register_blueprints():
     from .private.routes import bp_private # carranca\private\routes.py
@@ -41,11 +38,6 @@ def register_blueprints():
     from .public.routes import bp_public   # carranca\public\routes.py
     app.register_blueprint(bp_public)
 
-
-def configure_database(app):
-    @app.teardown_request  # Flask decorator
-    def shutdown_session(exception=None):
-        db.session.remove()
 
 
 def register_jinja():
@@ -68,18 +60,48 @@ def register_jinja():
 
 
 
-def update_shared_objects(app_flask, config) -> None: # :BaseConfig
-    global app, app_config, app_log
+def do_db_and_shared_objects(app_flask, config) -> None: # :BaseConfig
+    from flask_sqlalchemy import SQLAlchemy
+    from flask_login import LoginManager
+    from sqlalchemy import create_engine
+
+    global app, app_config, app_log, db, db_engine, login_manager
 
     app = app_flask
-    app.config.from_object(config)
-
     app_config = config
     app_log = app.logger
 
+    db = SQLAlchemy()
+    login_manager = LoginManager()
+
+    db_engine = create_engine(
+        app_config.SQLALCHEMY_DATABASE_URI,
+        isolation_level= 'AUTOCOMMIT', # "READ UNCOMMITTED", # mgd em Canoa, acho desnecessário
+        pool_pre_ping= True,
+        connect_args={
+            # (https://www.postgresql.org/docs/current/libpq-connect.html)
+            # Maximum time to wait while connecting, in seconds  was 600.
+            # instead mhd is using `pool_pre_ping` and set connect_timeout to 10
+            'connect_timeout': 10
+            ,'application_name': app_config.APP_NAME
+            ,'keepalives': 1
+        }
+
+    )
+    app_config.SQLALCHEMY_DATABASE_URI = None
     register_blueprints()
-    configure_database(app)
     register_jinja()
+    """ ChatGPT
+    During each request:
+        Flask receives the request.
+        Your view logic runs, interacting with the database through app_db.
+        Once the response is ready, the shutdown_session() is called,
+        which removes the session to prevent any lingering database connections or transactions.
+    """
+    @app.teardown_request  # Flask decorator, remove session after
+    def shutdown_session(exception=None):
+        db.session.remove()
+
     return
 
 #eof

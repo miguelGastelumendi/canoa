@@ -14,7 +14,7 @@ from os import path
 from typing import Callable
 from base64 import b64encode
 
-from .texts_helper import get_section
+from .ui_texts_helper import get_section
 from .py_helper import is_str_none_or_empty, strip_and_ignore_empty
 
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started

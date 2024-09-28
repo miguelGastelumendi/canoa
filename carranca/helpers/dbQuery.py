@@ -1,27 +1,8 @@
 
 # cSpell:ignore sqlalchemy keepalives
 
-from sqlalchemy import create_engine, text
-from ..shared import app_config
+from db_helper import executeSQL
 
-engine = create_engine(
-    app_config.SQLALCHEMY_DATABASE_URI,
-    isolation_level= 'AUTOCOMMIT', # "READ UNCOMMITTED", # mgd em Canoa, acho desnecessário
-    pool_pre_ping= True,
-    connect_args={
-        # (https://www.postgresql.org/docs/current/libpq-connect.html)
-        # Maximum time to wait while connecting, in seconds  was 600.
-        # instead mhd is using `pool_pre_ping` and set connect_timeout to 10
-        'connect_timeout': 10
-        ,'application_name': app_config.APP_NAME
-        ,'keepalives': 1
-    }
-)
-
-def executeSQL(sql):
-    global engine
-    with engine.connect() as conn:
-        return conn.execute(text(sql))
 
 def getValues(sql):
     rows = executeSQL(sql)

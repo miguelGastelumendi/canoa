@@ -26,7 +26,7 @@ from ..shared import app_log, app_config, app
 def __prepare_img_files(
     html_images: list[str], db_images: list[str], img_local_path: str, section: str
 ) -> bool:
-    from ..helpers.texts_helper import get_text
+    from ..helpers.ui_texts_helper import get_text
 
     is_img_local_path_ready = os.path.exists(img_local_path)
     missing_files = html_images.copy()  # missing files from folder, assume all
@@ -82,7 +82,7 @@ def __prepare_img_files(
 
 
 def display_html(docName: str):
-    from ..helpers.texts_helper import get_msg_error, get_text, get_html
+    from ..helpers.ui_texts_helper import get_msg_error, get_text, get_html
 
     section = docName
     ## TODO texts = get_html( section )
@@ -138,26 +138,5 @@ def display_html(docName: str):
             'documentBody': body,
         },
     )
-
-# def register_jinja(config):
-#     from .helpers.route_helper import private_route, public_route
-#     from jinja2 import Environment
-#     def _get_name() -> str:
-#         app_log.debug(config.APP_NAME)
-#         return config.APP_NAME
-#     def _get_version() -> str:
-#         app_log.debug( config,app_version() )
-#         return config.APP_VERSION
-#     app.jinja_env.globals.update(
-#         private_route= private_route,
-#         public_route= public_route,
-#         app_name = _get_name,
-#         app_version = _get_version
-#     )
-#     env = Environment()
-#     template = env.from_string("{{ public_route('login') }} - {{ app_version }}")
-#     print(template.render())
-#     print(template.render(app_name=_get_name, app_version=_get_version))
-
 
 # eof

@@ -14,7 +14,7 @@ from ...helpers.pw_helper import hash_pass
 from ...helpers.py_helper import now, to_str
 from ...helpers.db_helper import persist_record
 from ...helpers.error_helper import ModuleErrorCode
-from ...helpers.texts_helper import add_msg_error, add_msg_success
+from ...helpers.ui_texts_helper import add_msg_error, add_msg_success
 from ...helpers.route_helper import (
     init_form_vars,
     get_input_text,

@@ -14,7 +14,7 @@ from carranca.helpers.db_helper import persist_record
 
 from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
-from ...helpers.texts_helper import add_msg_error
+from ...helpers.ui_texts_helper import add_msg_error
 from ...helpers.error_helper import ModuleErrorCode
 from ...helpers.route_helper import (
     home_route,

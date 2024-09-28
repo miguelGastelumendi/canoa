@@ -12,7 +12,7 @@ from typing import Dict
 from os import path, getenv as os_getenv, environ
 from .helpers.py_helper import is_str_none_or_empty
 from .helpers.wtf_helper import LenValidate
-
+from .helpers.Display import Display as display
 
 # from collections import UserDict
 # class MyCustomDict(UserDict):
@@ -53,8 +53,6 @@ class BaseConfig:
     ''' Internal attributes
         ------------------
     '''
-    # see below (enum)
-    APP_MODE = 'None'
     # all environment variables begin with `Canoa_`
     envvars_prefix = f"{APP_NAME.upper()}_"
 
@@ -64,10 +62,19 @@ class BaseConfig:
     len_val_for_email = LenValidate(8, 60)
 
 
+    ''' Debugging And Info
+        --------------------------
+    '''
+    # see below (enum)
+    APP_MODE = 'None'
+    APP_MINIFIED = None # None = True if DEBUG else False
+    DEBUG = False
+    TESTING = False
+
+
     ''' From Environment Variables
         --------------------------
     '''
-
     # Root folder, see process.py
     ROOT_FOLDER = path.abspath(path.dirname(__file__))
 
@@ -79,22 +86,23 @@ class BaseConfig:
     # Registered on the email API with key
     EMAIL_API_KEY =  ''
 
+    # Alchemy
     SECRET_KEY = ''
     SQLALCHEMY_DATABASE_URI = ''
+    SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX = r':[^@]+@'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    #Flask, trying to fix background shakes (CharGPT)
+    SEND_FILE_MAX_AGE_DEFAULT = 31536000
 
+    #
     SERVER_ADDRESS = ''
     # if left empty, an external service will be used
     # see self.EXTERNAL_IP_SERVICE
     # & ./helpers/route_helper.py[is_external_ip_ready()]
     SERVER_EXTERNAL_IP = ''
     SERVER_EXTERNAL_PORT = ''
-
-    #ASSETS_ROOT = url_for('/static/assets')
-    DEBUG = False
-    TESTING = False
-
+# End Config
 
 def init_envvar_of_config(cfg):
     """
@@ -108,11 +116,11 @@ def init_envvar_of_config(cfg):
         elif hasattr(cfg, attribute_name):
             value = bool(value) if value.capitalize() in [str(True), str(False)] else value
             if is_str_none_or_empty(value):
-                print(f"Ignoring empty envvar value for key [{key}], keeping original." )
+                display.warn(f"Ignoring empty envvar value for key [{key}], keeping original." )
             else:
                 setattr(cfg, attribute_name, value)
         elif BaseConfig.DEBUG:
-            print(f"[{attribute_name}] is not an attribute of `Config`, will not set envvar value.")
+            display.warn(f"[{attribute_name}] is not an attribute of `Config`, will not set envvar value.")
 
 # === Retrieve values from envvars
 init_envvar_of_config(BaseConfig)
@@ -143,6 +151,7 @@ class DebugConfig(BaseConfig):
     DEBUG = True
     APP_MODE = app_mode_debug
 
+
 # Production Config
 class ProductionConfig(BaseConfig):
     """
@@ -152,10 +161,14 @@ class ProductionConfig(BaseConfig):
     APP_MODE = app_mode_production
 
 
+
 # Load all possible configurations
 config_modes: Dict[str, BaseConfig] = {
     app_mode_production: ProductionConfig(),
     app_mode_debug     : DebugConfig()
 }
+
+# Testing
+# config_modes[app_mode_debug].SQLALCHEMY_DATABASE_URI = ''
 
 # eof

@@ -1,4 +1,5 @@
-# __init__.pt
+# carranca/__init__.py
+# This file, is execute by the Python interpreter on startup once
 """
   A slight modification to the standard __init__.py
   db (SQLAlchemy) & login_manager are created in
@@ -8,14 +9,14 @@
 Equipe Canoa -- 2024
 """
 
-
-def create_app():
+def create_app(config):
     from flask import Flask
-    from .shared import db, login_manager
-
     app = Flask(__name__)
-    db.init_app(app)
-    login_manager.init_app(app)
+    app.config.from_object(config)
+
+    from .shared import do_db_and_shared_objects
+    do_db_and_shared_objects(app, config)
+
     return app
 
 # eof

@@ -19,7 +19,7 @@ from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import path_remove_last_folder, folder_must_exist
 from ..helpers.user_helper import LoggedUser, now
 from ..helpers.error_helper import ModuleErrorCode
-from ..helpers.texts_helper import add_msg_success, add_msg_error
+from ..helpers.ui_texts_helper import add_msg_success, add_msg_error
 from ..helpers.route_helper import get_private_form_data, get_input_text
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 from ..config_validate_process import ValidateProcessConfig

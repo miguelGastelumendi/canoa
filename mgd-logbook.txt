@@ -39,6 +39,12 @@ TODO:
   Logbook
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
+
+2024-09-26 β 2.25
+    - Before moving main.py to carranca folder
+      The project stop running. __name__ inside main.py is 'main'.
+
+
 2024-09-26 β 2.24
     - Ready for db-refactoring
 

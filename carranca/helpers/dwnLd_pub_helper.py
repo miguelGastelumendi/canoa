@@ -15,12 +15,9 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.discovery import build
 
-
 from ..shared import app_log, app_config
-from .file_helper import is_same_file_name, change_file_ext, remove_last_folder
-from .html_helper import get_tags
 from .py_helper import is_str_none_or_empty, to_str
-
+from .file_helper import is_same_file_name, change_file_ext, remove_last_folder
 from .html_helper import CONTENT_TYPE_HTML
 
 

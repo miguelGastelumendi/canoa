@@ -14,7 +14,7 @@ from ...shared import app_config, db
 from ...helpers.db_helper import persist_record
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...helpers.error_helper import ModuleErrorCode
-from ...helpers.texts_helper import add_msg_success, add_msg_error
+from ...helpers.ui_texts_helper import add_msg_success, add_msg_error
 from ...helpers.route_helper import get_account_form_data, get_input_text, init_form_vars
 
 from ..wtforms import RegisterForm

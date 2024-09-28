@@ -13,7 +13,7 @@ from flask_login import current_user
 from ...helpers.pw_helper import internal_logout, hash_pass
 from ...helpers.db_helper import persist_record
 from ...helpers.error_helper import ModuleErrorCode
-from ...helpers.texts_helper import add_msg_error, add_msg_success
+from ...helpers.ui_texts_helper import add_msg_error, add_msg_success
 from ...helpers.route_helper import (
     redirect_to,
     login_route,
