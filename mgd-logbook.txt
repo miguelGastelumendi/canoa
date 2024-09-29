@@ -40,6 +40,11 @@ TODO:
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
 
+2024-09-29 β 2.26
+    - main.py in carranca folder
+    - main.py correctly executed
+    - Flask stops with: `No module named main`
+
 2024-09-26 β 2.25
     - Before moving main.py to carranca folder
       The project stop running. __name__ inside main.py is 'main'.

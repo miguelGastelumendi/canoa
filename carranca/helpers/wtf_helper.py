@@ -1,5 +1,11 @@
-# mgd 2024-06-22
+"""
+ Equipe da Canoa -- 2024
 
+ WTForms utilities
+
+ mgd 2024-06-22
+
+ """
 # cSpell:ignore wtforms
 
 
@@ -68,3 +74,5 @@ class LenValidate:
 
 # class MyForm(Form):
 #     password = StringField('Password', validators=[Length( **len_validate.wtf_val() ) ])
+
+#eof

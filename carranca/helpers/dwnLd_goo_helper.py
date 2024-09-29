@@ -18,7 +18,7 @@ from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 
 
-from ..shared import app_config, app_log
+from ..shared import shared as g
 from .py_helper import is_str_none_or_empty, to_str
 from .file_helper import is_same_file_name, change_file_ext, path_remove_last_folder
 
@@ -100,7 +100,7 @@ def download_response(
 
         return 0
     except Exception as e:
-        #   app_log.error(f"Could save file  [{filename}], error [{e}].")
+        #   g.app_log.error(f"Could save file  [{filename}], error [{e}].")
         return task_code
 
 
@@ -163,7 +163,7 @@ def download_public_google_file(
 
         # TODO: Pass as param
         service_account_file = path.join(
-            path_remove_last_folder(app_config.ROOT_FOLDER),
+            path_remove_last_folder(g.app_config.ROOT_FOLDER),
             "LocalDrive",
             "canoa-download-key.json",
         )
@@ -220,19 +220,19 @@ def download_public_google_file(
             downloader = MediaIoBaseDownload(f, request, chunksize=cs)
             task_code += 1 #17
             done = False
-            app_log.debug(f"Download of file {file_full_path} started.")
+            g.app_log.debug(f"Download of file {file_full_path} started.")
             # file_crc32 = crc32(b'')  # Initialize CRC32 checksum
             while done is False:
                 status, done = downloader.next_chunk()
                 # TODO find how: file_crc32 = crc32(status, file_crc32)
                 if status:
-                    app_log.debug("Downloaded %d%%." % int(status.progress() * 100))
+                    g.app_log.debug("Downloaded %d%%." % int(status.progress() * 100))
 
 
         task_code = 0
     except Exception as e:
         msg_error = f"An error ocurred while downloading the file. Task code {task_code}, message '{e}'.)"
-        app_log.error(msg_error, exc_info=task_code)
+        g.app_log.error(msg_error, exc_info=task_code)
 
     return task_code, gdFile_name, gdFile_md
 

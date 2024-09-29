@@ -10,9 +10,10 @@
 from hashlib import sha384
 from typing import Dict
 from os import path, getenv as os_getenv, environ
-from .helpers.py_helper import is_str_none_or_empty
-from .helpers.wtf_helper import LenValidate
-from .helpers.Display import Display as display
+
+from helpers.py_helper import is_str_none_or_empty
+from helpers.wtf_helper import LenValidate
+from helpers.Display import Display as display
 
 # from collections import UserDict
 # class MyCustomDict(UserDict):
@@ -68,8 +69,12 @@ class BaseConfig:
     # see below (enum)
     APP_MODE = 'None'
     APP_MINIFIED = None # None = True if DEBUG else False
+    # Flask https://flask.palletsprojects.com/en/latest/config/
     DEBUG = False
     TESTING = False
+    SECRET_KEY = ''
+    #Flask, trying to fix background shakes (CharGPT)
+    SEND_FILE_MAX_AGE_DEFAULT = 31536000
 
 
     ''' From Environment Variables
@@ -87,13 +92,10 @@ class BaseConfig:
     EMAIL_API_KEY =  ''
 
     # Alchemy
-    SECRET_KEY = ''
     SQLALCHEMY_DATABASE_URI = ''
     SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX = r':[^@]+@'
+    SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR = ":******@"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    #Flask, trying to fix background shakes (CharGPT)
-    SEND_FILE_MAX_AGE_DEFAULT = 31536000
 
     #
     SERVER_ADDRESS = ''
@@ -145,7 +147,6 @@ class DebugConfig(BaseConfig):
     """
     The Debug Configuration Class for the App
     """
-
     # All IPs at port 5001
     SERVER_ADDRESS = 'http://0.0.0.0:5001' if is_str_none_or_empty(BaseConfig.SERVER_ADDRESS) else BaseConfig.SERVER_ADDRESS
     DEBUG = True
@@ -158,8 +159,8 @@ class ProductionConfig(BaseConfig):
     The Production Configuration Class for the App
     """
     DEBUG = False  #Just to be sure & need some code here
+    TESTING = False
     APP_MODE = app_mode_production
-
 
 
 # Load all possible configurations

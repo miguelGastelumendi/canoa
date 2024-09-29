@@ -20,7 +20,7 @@ from flask import render_template
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.html_helper import img_filenames, img_change_src_path
-from ..shared import app_log, app_config, app
+from ..shared import shared as g
 
 
 def __prepare_img_files(
@@ -38,7 +38,7 @@ def __prepare_img_files(
             missing_files.remove(file_name)  # this img is not missing.
 
     if not folder_must_exist(img_local_path):
-        app_log.error(
+        g.app_log.error(
             f"Cannot create folder [{img_local_path}] to keep the HTML's images."
         )
         return False
@@ -55,7 +55,7 @@ def __prepare_img_files(
         q = len(missing_files)
         qtd = 'One' if q == 1 else f'{q}'
         p = '' if q == 1 else 's'
-        app_log.warn(
+        g.app_log.warn(
             f"{qtd} image record{p} missing for [sectorSpecifications] in database: {', '.join(missing_files)}."
         )
         return True  # some files missing, but I can't fix it :-(
@@ -68,7 +68,7 @@ def __prepare_img_files(
                 with open(os.path.join(img_local_path, file), 'wb') as file:
                     file.write(image_data)
         except Exception as e:
-            app_log.error(
+            g.app_log.error(
                 f'Error writing image [{file}] in folder {img_local_path}. Message [{str(e)}]'
             )
 
@@ -103,7 +103,7 @@ def display_html(docName: str):
     )  # list of img tags in HTML
 
     img_folders = ['static', 'docs', section, 'images']
-    img_local_path = os.path.join(app_config.ROOT_FOLDER, *img_folders)
+    img_local_path = os.path.join(g.app_config.ROOT_FOLDER, *img_folders)
     if is_str_none_or_empty(body):
         msg = get_msg_error('documentNotFound').format(docName)
         body = f'<h4>{msg}</h4>'
@@ -126,7 +126,8 @@ def display_html(docName: str):
         body = img_change_src_path(body, img_folders)
         pass
 
-    temp = app.jinja_env.from_string( '{{ app_version() }}  + {{ app_name()}}' )
+    # DEBUG
+    temp = g.app.jinja_env.from_string( '{{ app_version() }}  + {{ app_name()}}' )
     print(temp.render())
 
     return render_template(

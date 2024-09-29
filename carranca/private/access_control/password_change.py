@@ -22,7 +22,7 @@ from ...helpers.route_helper import (
     get_account_form_data,
 )
 from ...public.models import get_user_where
-from ...shared import app_config, db
+from ...shared import shared as g
 from ..wtforms import ChangePassword
 
 
@@ -44,8 +44,8 @@ def do_password_change():
 
         if is_get:
             pass
-        elif not app_config.len_val_for_pw.check(password):
-            add_msg_error('invalidPassword', texts, app_config.len_val_for_pw.min, app_config.len_val_for_pw.max)
+        elif not g.app_config.len_val_for_pw.check(password):
+            add_msg_error('invalidPassword', texts, g.app_config.len_val_for_pw.min, g.app_config.len_val_for_pw.max)
         elif password != confirm_password:
             add_msg_error('passwordsAreDifferent', texts)
         elif user is None:
@@ -55,7 +55,7 @@ def do_password_change():
             task_code += 1  # 5
             user.password = hash_pass(password)
             task_code += 1  # 6
-            persist_record(db, user, task_code)
+            persist_record(user, task_code)
             task_code += 1  # 7
             add_msg_success('chgPwSuccess', texts)
             task_code += 1  # 8

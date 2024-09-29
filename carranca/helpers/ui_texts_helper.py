@@ -7,9 +7,10 @@
    mgd 2024-04-03
 
 """
-# cSpell:ignore getDictResultset dbquery connstr adaptabrasil
+# cSpell:ignore getDictResultset connstr adaptabrasil
 
 from .py_helper import is_str_none_or_empty
+from .db_helper import retrieve_data
 from .jinja_helper import process_pre_templates
 
 # === local var ===========================================
@@ -27,7 +28,7 @@ sec_Error = 'secError'
 sec_Success = 'secSuccess'
 
 # === local def ===========================================
-def __get_select(cols: str, section: str, item: str = None):
+def __get_query(cols: str, section: str, item: str = None):
     # returns Select query for the current locale, section and, eventually, for only one item
     # use SQL lower(item) better than item.lower (use db locale)
     item_filter = '' if item is None else f" and (item_lower = lower('{item}'))"
@@ -42,17 +43,16 @@ def __get_select(cols: str, section: str, item: str = None):
     return query
 
 def _get_result_set(query):
-    from .dbQuery import getDictResultSet
-    texts = getDictResultSet(query)
+    from .db_helper import retrieve_dict
+    dict = retrieve_dict(query)
    # TODO texts = process_pre_templates(_texts)
-    return texts
+    return dict
 
 
-# returns tuple(text, title) for the item/section pair
 def _get_row(item: str, section: str) -> tuple[str, str]:
-    from .dbQuery import getValues
-    select = __get_select('text, title', section, item)
-    result = getValues(select)
+    """returns tuple(text, title) for the item/section pair"""
+    query = __get_query('text, title', section, item)
+    result = retrieve_data(query)
     return ('', '') if result is None else result
 
 def _add_msg(item: str, section: str, name: str, texts: dict[str, str] = None, *args) -> str:
@@ -92,12 +92,12 @@ def get_html(section: str) -> dict[str, str]:
     imgList = get_text('images', section)
     # filter if not is_str_none_or_empty(imgList)
     # select item, text from vw_ui_texts v where v.section_lower = 'html_file' and item not in ('image3.png',  'image4.png')
-    query = __get_select('item, text', section)
+    query = __get_query('item, text', section)
     return _get_result_set(query)
 
 def get_section(section: str) -> dict[str, str]:
-    # returns a dict<string, string>
-    query = __get_select('item, text', section)
+    """returns a dict<string, string> of the 'section'"""
+    query = __get_query('item, text', section)
     _texts = _get_result_set(query)
     #texts = process_pre_templates(_texts)
     return _texts

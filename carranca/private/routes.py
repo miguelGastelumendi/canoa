@@ -11,8 +11,8 @@
 from flask import Blueprint, render_template
 from flask_login import login_required
 
-from ..helpers.pw_helper import internal_logout, nobody_is_logged
-from ..helpers.route_helper import (
+from helpers.pw_helper import internal_logout, nobody_is_logged
+from helpers.route_helper import (
     bp_name,
     base_route_private,
     get_private_form_data,

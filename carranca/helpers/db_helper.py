@@ -1,6 +1,5 @@
 """
-    Database operations helper
-    old `dbQuery.py` file
+    Database data retrieve operations helper
 
     mgd
     Equipe da Canoa -- 2024
@@ -8,38 +7,97 @@
 
 # cSpell:ignore psycopg2 sqlalchemy
 
-from ..shared import app_log, db_engine
+from typing import Tuple
 from psycopg2 import DatabaseError
 from sqlalchemy import text
 
-# from ..helpers.dbQuery import engine
+from ..shared import shared as g
 from helpers.py_helper import is_str_none_or_empty
 
 
-def executeSQL(sql: str):
-    """ Runs an SQL Text and returns the result """
+def is_connected() -> bool:
+    """
+    Checks the database connection status.
+
+    Returns:
+        True if the connection is successful, False otherwise.
+    """
+
+    try:
+        g.db_engine.connect()
+        return True
+    except Exception as e:
+        g.app_log.error(f"Connection Error: [{e}].")
+        return False
+
+
+def execute_sql(query: str):
+    """ Runs an SQL query and returns the result """
     result = None
-    if not is_str_none_or_empty(sql):
-        with db_engine.connect() as connection:
-            _text = text(sql)
+    if not is_str_none_or_empty(query):
+        with g.db_engine.connect() as connection:
+            _text = text(query)
             result = connection.execute(_text)
 
     return result
 
 
-def check_connection() -> bool:
-    value = 0
+def retrieve_data(query: str) -> any | Tuple:
+  """
+  Executes the given SQL query and returns the result in 3 modes:
+    1.  N rows 1 column
+    2.  1 row N columns
+    3.  1 row 1 column
+
+  Args:
+    sql: The SQL query to execute.
+
+  Returns:
+    - A tuple of values if the query returns multiple rows with a single column each.
+    - A tuple of values if the query returns a single row with multiple columns.
+    - A single value if the query returns a single row with a single column.
+    - None if an error occurs or the query returns no results.
+  """
+
+  try:
+    data_rows = execute_sql(query)
+    data = data_rows.fetchall()
+
+    if not data:
+        return None
+    elif len(data) > 1:
+        # Multiple rows with a single column each
+        return tuple(line[0] for line in data)
+    elif len(data[0]) > 1:
+        # Single row with multiple columns
+        return tuple(data[0])
+    else:
+        # Single row with a single column
+        return data[0][0]
+  except Exception as e:
+    g.app_log.error(f"An error occurred retrieving db data [{query}]: {e}")
+    return None
+
+
+def retrieve_dict(query: str):
+    data = retrieve_data(query)
+
+    result = {}
     try:
-        with engine.connect() as conn:
-            value = conn.scalar("Select 1")
-    except Exception as ex:
-        value = -1
-        app_log.error(f"Connection Error: [{ex}].")
+        if data and isinstance(data, tuple):
+            result = {row[0]: row[1] for row in data}
+    except Exception as e:
+        g.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
 
-    return value == 1
+    # # Check if the result is a tuple of tuples (multiple rows)
+    # if isinstance(data, tuple) and all(isinstance(row, tuple) and len(row) >= 2 for row in data):
+    #     # We expect at least two columns (key, value) for dictionary creation
+    #     return {row[0]: row[1] for row in data}
+
+    return result
 
 
-def persist_record(db, record: any, task_code: int = 1) -> None:
+def persist_record(record: any, task_code: int = 1) -> None:
     """
     Args:
       db:  SQLAlchemy()
@@ -47,11 +105,11 @@ def persist_record(db, record: any, task_code: int = 1) -> None:
       task_code: int
     """
     try:
-        db.session.add(record)
+        g.db.session.add(record)
         task_code += 1
-        db.session.commit()
+        g.db.session.commit()
     except Exception as e:
-        db.session.rollback()
+        g.db.session.rollback()
         e.task_code = task_code
         raise DatabaseError(e)
 

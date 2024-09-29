@@ -8,7 +8,6 @@
 # cSpell:ignore tmpl passwordreset wtforms
 
 from flask import render_template, request
-from shared import db
 
 from ...helpers.pw_helper import hash_pass
 from ...helpers.py_helper import now, to_str
@@ -26,7 +25,7 @@ from ..models import  get_user_where
 
 
 def password_reset(token):
-    from ...shared import app_config
+    from ...shared import shared as g
     def __is_token_valid(time_stamp, max: int) -> bool:
         """
         True when the number of days since issuance is less than
@@ -54,7 +53,7 @@ def password_reset(token):
             add_msg_error('invalidToken', texts)
         elif is_get:
             pass
-        elif not app_config.len_val_for_pw.check(password):
+        elif not g.app_config.len_val_for_pw.check(password):
             add_msg_error('invalidPassword', texts)
         elif password != confirm_password:
             add_msg_error('passwordsAreDifferent', texts)
@@ -70,7 +69,7 @@ def password_reset(token):
                 record_to_update.password = hash_pass(password)
                 record_to_update.recover_email_token = None
                 task_code += 1  # 6
-                persist_record(db, record_to_update, task_code)
+                persist_record(record_to_update, task_code)
                 add_msg_success('resetPwSuccess', texts)
     except Exception as e:
         msg = add_msg_error('errorPasswordReset', texts, task_code)

@@ -12,45 +12,46 @@
 
 from psycopg2 import DatabaseError
 
-from carranca.shared import app_log, db
-from carranca.helpers.db_helper import persist_record, check_connection
+from shared import shared as g
+from helpers.db_helper import persist_record
 
 
-class UserDataFiles(db.Model):
+class UserDataFiles(g.db.Model):
     __tablename__ = "user_data_files"
+    db = g.db
+    col= g.db.Column
+    id = col(db.Integer, primary_key=True)
+    ticket = col(db.String(40), unique=True)
+    id_users = col(db.Integer)   # fk
 
-    id = db.Column(db.Integer, primary_key=True)
-    ticket = db.Column(db.String(40), unique=True)
-    id_users = db.Column(db.Integer)   # fk
+    app_version = col(db.String(12))
+    process_version = col(db.String(12))
 
-    app_version = db.Column(db.String(12))
-    process_version = db.Column(db.String(12))
-
-    file_name = db.Column(db.String(80))
-    original_name = db.Column(db.String(80), nullable=True, default=None)
-    file_size = db.Column(db.Integer)
-    file_crc32 = db.Column(db.Integer)
-    from_os = db.Column(db.String(1))
-    file_origin = db.Column(db.String(1))
-    user_receipt = db.Column(db.String(14))
+    file_name = col(db.String(80))
+    original_name = col(db.String(80), nullable=True, default=None)
+    file_size = col(db.Integer)
+    file_crc32 = col(db.Integer)
+    from_os = col(db.String(1))
+    file_origin = col(db.String(1))
+    user_receipt = col(db.String(14))
 
     # Process module
     ## saved at register.py
-    a_received_at = db.Column(db.DateTime)
-    b_process_started_at = db.Column(db.DateTime)
-    c_check_started_at = db.Column(db.DateTime)
-    d_register_started_at = db.Column(db.DateTime)
+    a_received_at = col(db.DateTime)
+    b_process_started_at = col(db.DateTime)
+    c_check_started_at = col(db.DateTime)
+    d_register_started_at = col(db.DateTime)
     ## saved at email.py
-    e_unzip_started_at = db.Column(db.DateTime)
-    f_submit_started_at = db.Column(db.DateTime)
-    g_email_started_at = db.Column(db.DateTime)
+    e_unzip_started_at = col(db.DateTime)
+    f_submit_started_at = col(db.DateTime)
+    g_email_started_at = col(db.DateTime)
 
-    z_process_end_at = db.Column(db.DateTime)
+    z_process_end_at = col(db.DateTime)
 
     # event
     ## saved at email.py
-    email_sent = db.Column(db.Boolean, default=False)
-    report_ready_at = db.Column(db.DateTime)
+    email_sent = col(db.Boolean, default=False)
+    report_ready_at = col(db.DateTime)
 
     # Set on trigger
     # registered_at, at insert
@@ -58,17 +59,16 @@ class UserDataFiles(db.Model):
     # error_at, at error_code not 0
 
     # obsolete
-    # upload_start_at = db.Column(db.DateTime)
+    # upload_start_at = col(db.DateTime)
 
-    error_code = db.Column(db.Integer, nullable=True)
-    error_msg = db.Column(db.String(200), nullable=True)
-    error_text = db.Column(db.Text, nullable=True)
-    success_text = db.Column(db.Text, nullable=True)
-
+    error_code = col(db.Integer, nullable=True)
+    error_msg = col(db.String(200), nullable=True)
+    error_text = col(db.Text, nullable=True)
+    success_text = col(db.Text, nullable=True)
 
     def _get_record(uTicket):
         ''' gets the record with unique Key uTicket '''
-        records = db.session.query(UserDataFiles).filter_by(ticket=uTicket)
+        records = g.db.session.query(UserDataFiles).filter_by(ticket=uTicket)
         if (records is None) or (records.count() == 0):
             record = None
         elif records.count() == 1:
@@ -83,7 +83,7 @@ class UserDataFiles(db.Model):
             if value is not None:
                 setattr(record, attr, value)
 
-        persist_record(db, record)
+        persist_record(record)
         return
 
     def _ins_or_upd(isInsert: bool, uTicket: str, **kwargs) -> None:
@@ -102,7 +102,7 @@ class UserDataFiles(db.Model):
         except Exception as e:
             operation = 'update' if isUpdate else 'insert to'
             msg_error = f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
-            app_log.error(msg_error)
+            g.app_log.error(msg_error)
             raise DatabaseError(msg_error)
 
     def insert(uTicket: str, **kwargs) -> None:

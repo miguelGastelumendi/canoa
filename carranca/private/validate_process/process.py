@@ -51,7 +51,7 @@ def process(
     valid_ext: list[str],
 ) -> list[int, str, str]:
 
-    from ...shared import app_config, app_log
+    from ...shared import shared as g
     current_module_name = __name__.split(".")[-1]
 
     def _get_next_params(cargo: Cargo) -> list[object, dict]:
@@ -69,9 +69,9 @@ def process(
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
         "2024.09.25_d",
-        app_config.DEBUG,
+        g.app_config.DEBUG,
         logged_user,
-        ValidateProcessConfig(app_config.DEBUG),
+        ValidateProcessConfig(g.app_config.DEBUG),
         proc_data,
         received_at,
         {"file_data": file_data, "valid_ext": valid_ext},  # first module parameters
@@ -123,7 +123,7 @@ def process(
                 z_process_end_at= process_ended
             )
         except Exception as e:
-            app_log.fatal(log_msg, e, 0)
+            g.app_log.fatal(log_msg, e, 0)
     else:
         try:
             UserDataFiles.update(
@@ -147,7 +147,7 @@ def process(
         except Exception as e:
             error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 1
             msg_exception = _get_msg_exception(str(e), msg_exception, error_code)
-            app_log.fatal(log_msg, msg_exception, error_code, exc_info=error_code)
+            g.app_log.fatal(log_msg, msg_exception, error_code, exc_info=error_code)
 
     return error_code, msg_error, msg_exception, cargo.final
 

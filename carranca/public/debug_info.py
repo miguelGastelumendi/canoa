@@ -12,16 +12,16 @@ import sqlalchemy
 import platform
 import flask
 import importlib.metadata
-from ..shared import app_config
-from ..helpers.Display import Display
-from ..helpers.py_helper import coalesce
-
+from helpers.py_helper import coalesce
+from helpers.Display import Display
+from shared import shared as g
 
 def get_debug_info(bPrint: bool = False) -> dict:
     """App & and main packages version"""
     result = {}
     kl = 0
     vl = 0
+    app_config = g.app_config
 
     def _add(key, value):
         nonlocal kl, vl # int, float, bool, str, tuples... are immutables

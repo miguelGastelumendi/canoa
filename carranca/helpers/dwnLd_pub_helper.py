@@ -15,7 +15,7 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.discovery import build
 
-from ..shared import app_log, app_config
+from ..shared import g
 from .py_helper import is_str_none_or_empty, to_str
 from .file_helper import is_same_file_name, change_file_ext, remove_last_folder
 from .html_helper import CONTENT_TYPE_HTML
@@ -59,7 +59,7 @@ def download_public_file(url, filename, guess_extension_if_not_provided=True) ->
         status = f"Status: {response.status_code}, "
         response.raise_for_status()  # Raise an exception for error HTTP statuses
     except requests.exceptions.RequestException as e:
-        app_log.error(
+        g.app_log.error(
             f"Could not get file from link [{url}]: {status}code {task_code}, error [{e}]."
         )
         return task_code
@@ -85,13 +85,13 @@ def download_public_file(url, filename, guess_extension_if_not_provided=True) ->
         task_code = 0 if code == 0 else code + code_offset
         if task_code > 0:
             raise RuntimeError(f"Fault from '{content_type}'.")
-        app_log.display(
+        g.app_log.display(
             f"The file from the link {url} of type '{content_type}' was successfully retrieved and saved to [{new_filename}]."
         )
 
         return 0
     except Exception as e:
-        app_log.error(
+        g.app_log.error(
             f"Could not get file from link [{url}]: {status}code {task_code}, error [{e}]."
         )
         return task_code
@@ -148,7 +148,7 @@ def download_response(
 
         return 0
     except Exception as e:
-        app_log.error(f"Could save file  [{filename}], error [{e}].")
+        g.app_log.error(f"Could save file  [{filename}], error [{e}].")
         return task_code
 
 
@@ -162,7 +162,7 @@ def download_public_google_file(file_id, file_folder):
     SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
     SERVICE_ACCOUNT_FILE = path.join(
-        remove_last_folder(app_config.ROOT_FOLDER),
+        remove_last_folder(g.app_config.ROOT_FOLDER),
         "LocalDrive",
         "canoa-download-key.json",
     )

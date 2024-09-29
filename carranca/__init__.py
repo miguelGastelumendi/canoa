@@ -1,4 +1,4 @@
-# carranca/__init__.py
+# Package/__init__.py
 # This file, is execute by the Python interpreter on startup once
 """
   A slight modification to the standard __init__.py
@@ -11,12 +11,13 @@ Equipe Canoa -- 2024
 
 def create_app(config):
     from flask import Flask
-    app = Flask(__name__)
+    # https://flask.palletsprojects.com/en/latest/tutorial/factory/
+    app = Flask(__name__, instance_path= 'D:/Projects/AdaptaBrasil/canoa')
     app.config.from_object(config)
 
-    from .shared import do_db_and_shared_objects
-    do_db_and_shared_objects(app, config)
+    from shared import shared
+    shared._initialize(app, config)
+    shared._bind()
 
     return app
-
 # eof

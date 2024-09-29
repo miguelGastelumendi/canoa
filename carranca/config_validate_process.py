@@ -16,7 +16,7 @@
 # cSpell:ignore
 
 from typing import NamedTuple
-from carranca.helpers.py_helper import OS_IS_LINUX, OS_IS_WINDOWS
+from helpers.py_helper import OS_IS_LINUX, OS_IS_WINDOWS
 
 OutputFile = NamedTuple("OutputFile", name=str, ext=str)
 

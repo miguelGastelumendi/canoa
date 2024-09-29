@@ -1,7 +1,7 @@
 """
  Equipe da Canoa -- 2024
 
- Simple display class
+ Simple colored print to screen
 
  mgd 2024-04-09--27
 
@@ -11,7 +11,6 @@
 
 from enum import Enum
 
-
 class Display:
     class Color(Enum):
         NONE = 0
@@ -19,7 +18,6 @@ class Display:
         WARN = 2
         ERROR = 3
 
-    # @staticmethod
     def code(color: str):
         return "\033[" + ("" if color is None else f"{color}m")
 
@@ -27,7 +25,6 @@ class Display:
     end_color = code(0)
     ESC = code(None)
 
-    # @staticmethod
     def print(dColor: Color, msg: str, start_with: str = "") -> None:
         endColor = "" if dColor == Display.Color.NONE else Display.end_color
         print(f"{start_with}{Display.colors[dColor.value]}{msg}{endColor}")
@@ -50,4 +47,6 @@ class Display:
 #    Display.print(Display.Color.INFO, 'info')
 #    Display.print(Display.Color.WARN, 'warning')
 #    Display.print(Display.Color.ERROR, 'Error')
-#    Display().info('informação')
+#    Display.info('informação')
+
+#eof
