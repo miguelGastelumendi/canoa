@@ -11,19 +11,9 @@ from hashlib import sha384
 from typing import Dict
 from os import path, getenv as os_getenv, environ
 
-from helpers.py_helper import is_str_none_or_empty
-from helpers.wtf_helper import LenValidate
-from helpers.Display import Display as display
-
-# from collections import UserDict
-# class MyCustomDict(UserDict):
-#     def __getattr__(self, attr):
-#         if attr in self.data:
-#             return self.data[attr]
-#         else:
-#             raise AttributeError(f"'MyCustomDict' object has no attribute '{attr}'")
-
-
+from .helpers.py_helper import is_str_none_or_empty
+from .helpers.wtf_helper import LenValidate
+from .helpers.Display import Display as display
 
 # Base Class for App Config
 # see https://flask.palletsprojects.com/en/latest/config/ for other attributes
@@ -73,6 +63,7 @@ class BaseConfig:
     DEBUG = False
     TESTING = False
     SECRET_KEY = ''
+    DEBUG_MSG= None # None = True if DEBUG else False
     #Flask, trying to fix background shakes (CharGPT)
     SEND_FILE_MAX_AGE_DEFAULT = 31536000
 
@@ -104,7 +95,19 @@ class BaseConfig:
     # & ./helpers/route_helper.py[is_external_ip_ready()]
     SERVER_EXTERNAL_IP = ''
     SERVER_EXTERNAL_PORT = ''
+
+    # initialize special attributes
+    def init(self):
+        def _if_debug(attrib):
+            return bool(self.DEBUG if attrib is None else attrib)
+        self.APP_MINIFIED = _if_debug(self.APP_MINIFIED)
+        self.DEBUG_MSG = _if_debug(self.DEBUG_MSG)
+
+
+
 # End Config
+
+display.info('Preparing App Configs')
 
 def init_envvar_of_config(cfg):
     """
@@ -112,8 +115,8 @@ def init_envvar_of_config(cfg):
     from environment variables
     """
     for key, value in environ.items():
-        attribute_name = key[len(BaseConfig.envvars_prefix):]
-        if not key.startswith(BaseConfig.envvars_prefix):
+        attribute_name = key[len(cfg.envvars_prefix):]
+        if not key.startswith(cfg.envvars_prefix):
             pass
         elif hasattr(cfg, attribute_name):
             value = bool(value) if value.capitalize() in [str(True), str(False)] else value
@@ -121,7 +124,7 @@ def init_envvar_of_config(cfg):
                 display.warn(f"Ignoring empty envvar value for key [{key}], keeping original." )
             else:
                 setattr(cfg, attribute_name, value)
-        elif BaseConfig.DEBUG:
+        elif cfg.DEBUG:
             display.warn(f"[{attribute_name}] is not an attribute of `Config`, will not set envvar value.")
 
 # === Retrieve values from envvars
@@ -168,8 +171,5 @@ config_modes: Dict[str, BaseConfig] = {
     app_mode_production: ProductionConfig(),
     app_mode_debug     : DebugConfig()
 }
-
-# Testing
-# config_modes[app_mode_debug].SQLALCHEMY_DATABASE_URI = ''
 
 # eof

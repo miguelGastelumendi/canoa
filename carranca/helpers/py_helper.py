@@ -9,6 +9,7 @@
 
 import time
 import platform
+from enum import Enum
 from datetime import datetime
 
 OS_NAME_IS = platform.system()
@@ -20,6 +21,12 @@ OS_IS_MAC = (OS_NAME_IS == "Darwin")
 def now() -> datetime:
     # current date time
     return datetime.now()
+
+def is_enum_of_type(e: Enum, e_type: type) -> bool:
+    """Checks if a value is an enum of a specific type. """
+
+    return e is not None and isinstance(e, e_type)
+
 
 
 def is_str_none_or_empty(s: str) -> bool:

@@ -20,6 +20,7 @@
 # cSpell:ignore sqlalchemy keepalives
 
 from datetime import datetime
+from copy import copy as copy_str
 
 class Shared:
     def __init__(self):
@@ -34,7 +35,7 @@ class Shared:
     def _create_engine(self) -> any:
         from sqlalchemy import create_engine
         result = create_engine(
-            self.app_config.SQLALCHEMY_DATABASE_URI,
+            copy_str(self.app_config.SQLALCHEMY_DATABASE_URI),
             isolation_level= 'AUTOCOMMIT', # "READ UNCOMMITTED", # mgd em Canoa, acho desnecessário
             pool_pre_ping= True,
             connect_args={
@@ -51,13 +52,13 @@ class Shared:
         return result
 
     def _register_blueprints(self):
-        from private.routes import bp_private
-        from public.routes import bp_public
+        from .private.routes import bp_private
+        from .public.routes import bp_public
         self.app.register_blueprint(bp_private)
         self.app.register_blueprint(bp_public)
 
     def _register_jinja(self):
-        from helpers.route_helper import private_route, public_route
+        from .helpers.route_helper import private_route, public_route
         def __get_name() -> str:
             self.app_log.debug(self.app_config.APP_NAME)
             return self.app_config.APP_NAME
@@ -71,14 +72,15 @@ class Shared:
             public_route= public_route,
         )
 
-    def _bind(self):
+    def bind(self):
         self._register_blueprints()
         self._register_jinja()
 
-    def _initialize(self, app_flask, config):
+    def initialize(self, app_flask, config):
         # this is Packaged __init__.py
         from flask_sqlalchemy import SQLAlchemy
         from flask_login import LoginManager
+        from .helpers.Display import Display
 
         self.app = app_flask
         self.app_config = config
@@ -87,6 +89,7 @@ class Shared:
         self.db = SQLAlchemy()
         self.db_engine = self._create_engine()
         self.login_manager = LoginManager()
+        self.display = Display(f"{config.APP_NAME}: ", config.DEBUG_MSG)
 
         """ ChatGPT
         During each request:

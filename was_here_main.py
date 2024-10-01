@@ -111,7 +111,7 @@ except Exception as e:
 # Ready to create App
 # ---------------------------------------------------------------------------- #
 # Create th Flask's app and update the very common shared objects in shared.py
-from carranca import create_app
+from __init__1 import create_app
 
 app = create_app(_app_config)
 setattr(_app_config, _db_uri_key, _db_uri_safe)
