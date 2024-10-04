@@ -43,7 +43,7 @@ TODO:
     - app not running :–(
     - __init__.py now 'ignites' the starting class
     - Args new Class
-    - the igniter.py is almost ready.
+    - the igniter.py is almost ready (all main.py)
 
 
 2024-09-30 β 2.27
