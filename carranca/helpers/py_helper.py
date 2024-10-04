@@ -10,6 +10,7 @@
 import time
 import platform
 from enum import Enum
+from sys import argv
 from datetime import datetime
 
 OS_NAME_IS = platform.system()
@@ -21,12 +22,6 @@ OS_IS_MAC = (OS_NAME_IS == "Darwin")
 def now() -> datetime:
     # current date time
     return datetime.now()
-
-def is_enum_of_type(e: Enum, e_type: type) -> bool:
-    """Checks if a value is an enum of a specific type. """
-
-    return e is not None and isinstance(e, e_type)
-
 
 
 def is_str_none_or_empty(s: str) -> bool:
@@ -167,7 +162,21 @@ def decode_std_text(std_text: bytes):
     return str(std_text)
 
 
+def set_flags_from_argv(obj):
+    """
+    Sets instances attributes based on command-line arguments.
 
+    Iterates over the obj attributes and checks if their corresponding flags
+    are present in `sys.argv`. If a flag is found, the attribute is set to `True`.
+    """
+    for attr in dir(obj):
+        flag = f"--{attr}"
+        if attr.startswith("_"):
+            pass  # Skip private attributes
+        elif any(f.lower() == flag.lower() for f in argv) if OS_IS_WINDOWS else (flag in argv):
+            setattr(obj, attr, True)
+
+        return obj
 
 # class MyCustomDict(dict):
 #     def __getattr__(self, attr):

@@ -27,7 +27,6 @@ from ..models import get_user_where
 
 
 def login():
-    from ...shared import db
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
     tmpl_form, template, is_get, texts = init_form_vars()
     # TODO test, fake form?

@@ -12,8 +12,8 @@
 
 from psycopg2 import DatabaseError
 
-from shared import shared as g
-from helpers.db_helper import persist_record
+from ..Shared import shared as g
+from ..helpers.db_helper import persist_record
 
 
 class UserDataFiles(g.db.Model):

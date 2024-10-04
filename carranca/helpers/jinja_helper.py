@@ -4,16 +4,15 @@
 
 # cSpell:ignore
 
-from ..shared import app
-
 #mark a string as a jinja text, a text that will be parsed before rendering
 _jinja_pre_template_mark = '^'
 
 def _jinja_pre_template(val: str) -> str:
+    from ..Shared import shared
     text = val
     try:
         # Create a template from the value
-        template = app.jinja_env.from_string(val)
+        template = shared.app.jinja_env.from_string(val)
         text= template.render()
 
         return text

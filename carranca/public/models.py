@@ -11,12 +11,13 @@ from typing import Any
 from flask_login import UserMixin
 from sqlalchemy import Computed
 
-from ..shared import db, login_manager
+from ..Shared import shared
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
 
-
+db= shared.db
 class Users(db.Model, UserMixin):
+
     __tablename__ = 'users'
 
     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
@@ -82,13 +83,13 @@ def get_user_where(**kwargs: Any) -> Any:
     return user
 
 
-@login_manager.user_loader
+@shared.login_manager.user_loader
 def user_loader(id):
     return get_user_where(id=id)
     # mgd return Users.query.filter_by(id=id).first()
 
 
-@login_manager.request_loader
+@shared.login_manager.request_loader
 def request_loader(request):
     username = '' if len(request.form) == 0 else request.form.get('username')
     user = (

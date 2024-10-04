@@ -9,7 +9,7 @@ import os
 import shutil
 from os import path, makedirs
 
-from ..shared import app_log
+from ..Shared import app_log
 
 
 def file_full_name_parse(file_full_name: str) -> tuple[str, str, str]:

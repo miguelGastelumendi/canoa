@@ -11,8 +11,8 @@ from typing import Tuple
 from psycopg2 import DatabaseError
 from sqlalchemy import text
 
-from ..shared import shared as g
-from helpers.py_helper import is_str_none_or_empty
+from ..Shared import shared as g
+from .py_helper import is_str_none_or_empty
 
 
 def is_connected() -> bool:

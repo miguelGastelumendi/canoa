@@ -20,7 +20,7 @@ from flask import render_template
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.html_helper import img_filenames, img_change_src_path
-from ..shared import shared as g
+from ..Shared import shared as g
 
 
 def __prepare_img_files(

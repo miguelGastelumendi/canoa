@@ -10,7 +10,7 @@ Part of Canoa `File Validation` Processes
 """
 from datetime import datetime
 
-from ...shared import shared as g
+from ...Shared import shared as g
 from ...config_validate_process import ValidateProcessConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import LoggedUser, now

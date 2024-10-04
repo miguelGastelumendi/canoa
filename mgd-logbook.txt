@@ -39,6 +39,13 @@ TODO:
   Logbook
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
+2024-10-01--04 β 2.28
+    - app not running :–(
+    - __init__.py now 'ignites' the starting class
+    - Args new Class
+    - the igniter.py is almost ready.
+
+
 2024-09-30 β 2.27
     - __init__.py is now create_app.py
     - main.py in now __init__.py (perhaps it will be divided in smaller pieces)

@@ -18,7 +18,7 @@ from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 
 
-from ..shared import shared as g
+from ..Shared import shared as g
 from .py_helper import is_str_none_or_empty, to_str
 from .file_helper import is_same_file_name, change_file_ext, path_remove_last_folder
 

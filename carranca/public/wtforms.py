@@ -14,7 +14,7 @@ from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import Email, InputRequired, Length
 
 from ..helpers.wtf_helper import LenValidate
-from ..shared import shared as g
+from ..Shared import shared as g
 
 # Public forms
 # -------------------------------------------------------------

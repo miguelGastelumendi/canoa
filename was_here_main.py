@@ -31,7 +31,7 @@ from collections import namedtuple
 from flask_minify import Minify
 from urllib.parse import urlparse
 
-from carranca.helpers.Display import Display as display
+from carranca.helpers.Display import Display as Display
 from carranca.helpers.py_helper import is_str_none_or_empty
 from carranca.config import (
     config_modes,
@@ -44,7 +44,7 @@ from carranca.config import (
 # ---------------------------------------------------------------------------- #
 # Helpers
 def _display(msg):
-    display.error(msg, f"{BaseConfig.APP_NAME}: ")
+    Display.error(msg, f"{BaseConfig.APP_NAME}: ")
 
 def __log_and_exit(ups: str):
     _display(ups)
@@ -127,7 +127,7 @@ if _app_config.APP_MINIFIED:
 # ---------------------------------------------------------------------------- #
 # Log initial configuration
 # TODO Argument --info
-display.info(
+Display.info(
     f"{_app_config.APP_NAME} Version {_app_config.APP_VERSION} started in {_app_config.APP_MODE} in mode :-)."
 )
 if _app_config.DEBUG: # or to_str(args[1]):
@@ -155,8 +155,8 @@ if is_str_none_or_empty(address.host) or (address.port == 0):
 # Ready to go, lunch!
 if __name__ == "__main__":
     elapsed = (time.perf_counter() - started) * 1000
-    display.info(f"{__name__} ready in {elapsed:,.0f}ms")
-    display.info(f"Launching {_app_config.APP_NAME} v {_app_config.APP_VERSION}")
+    Display.info(f"{__name__} ready in {elapsed:,.0f}ms")
+    Display.info(f"Launching {_app_config.APP_NAME} v {_app_config.APP_VERSION}")
     app.run(host=address.host, port=address.port, debug=_app_config.DEBUG)
 else:
     __log_and_exit(f"Expected '__main__' as __name__, but got '{__name__}' instead. Exiting...")

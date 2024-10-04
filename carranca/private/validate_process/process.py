@@ -51,7 +51,7 @@ def process(
     valid_ext: list[str],
 ) -> list[int, str, str]:
 
-    from ...shared import shared as g
+    from ...Shared import shared as g
     current_module_name = __name__.split(".")[-1]
 
     def _get_next_params(cargo: Cargo) -> list[object, dict]:

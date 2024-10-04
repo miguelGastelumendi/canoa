@@ -53,151 +53,91 @@
 # cSpell:ignore mandatories sqlalchemy, cssless sendgrid, ENDC
 
 # ---------------------------------------------------------------------------- #
-# Imports
+# Performance
 import time
+
 started = time.perf_counter()
-
-import re
-from sys import exit
-from collections import namedtuple
-from flask_minify import Minify
-from urllib.parse import urlparse
-
-from .helpers.py_helper import is_str_none_or_empty
-
-# ---------------------------------------------------------------------------- #
-# Import the 'Class Display'
-# As a Class, it does not correctly displays
-from .helpers.Display import Display
-Display.info(f"\nStarting {__name__}")
-
-from .config import (
-    app_mode_production,
-    app_mode_debug,
-    config_modes,
-    BaseConfig,
-)
+fuse = None
 
 
 # ---------------------------------------------------------------------------- #
 # Helpers
 def _error(msg):
-    Display.error(msg, f"{BaseConfig.APP_NAME}: ")
+    if fuse:
+        fuse.display.error(msg)
+
 
 def __log_and_exit(ups: str):
     _error(ups)
     exit(ups)
 
-def __is_empty(key: str) -> bool:
-    value = getattr(app_config, key, "")
-    empty = value is None or value.strip() == ""
-    if empty:
-        _error(f"Key [{key}] has no value.")
-    return empty
 
+# - Ignite --------------------------------------------------------------------- #
+# Fuse
+from .igniter import do_fuse
 
-# ---------------------------------------------------------------------------- #
-# Select the app_config, based in the app_mode (production or debug)
-# WARNING: Don't run with debug turned on in production!
-app_config = None  # this app_config will later be 'globally shared' by shared
+fuse, error = do_fuse("Canoa")
+if error: __log_and_exit(error)
+fuse.display.debug(f"Starting {fuse.app_name}")
 
-_app_mode = ""
-try:
-    _app_mode = BaseConfig.get_os_env("APP_MODE", app_mode_debug)
-    app_config = config_modes[_app_mode]
-    app_config.init()
-except KeyError:
-    __log_and_exit(
-        f"Error: Invalid <app_mode>: '{_app_mode}'. Expected values are [{app_mode_debug}, {app_mode_production}]."
-    )
+# Config
+from .igniter import ignite_config
 
-# ---------------------------------------------------------------------------- #
-# Obfuscate the string connection
+app_config, error = ignite_config(fuse)
+if error: __log_and_exit(error)
+fuse.display.debug("Config is ready")
 
-_db_uri_key = "SQLALCHEMY_DATABASE_URI"
-_db_uri_safe = re.sub(
-    app_config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
-    app_config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
-    getattr(app_config, _db_uri_key),
-)
+# Mandatory Configuration keys
+from .igniter import check_mandatory_keys
 
-# ---------------------------------------------------------------------------- #
-# Check if the mandatories environment variables are set.
-if __is_empty(_db_uri_key) or __is_empty("SERVER_ADDRESS") or __is_empty("SECRET_KEY"):
-    __log_and_exit("One or more mandatory environment variables were not set.")
+dummy, error = check_mandatory_keys(fuse, app_config)
+if error: __log_and_exit(error)
+fuse.display.debug("Mandatory configuration keys were informed.")
 
-# ---------------------------------------------------------------------------- #
-# Confirm we have a well formed http address
-Address = namedtuple("Address", "host, port")
-address = Address("", 0)
-try:
-    default_scheme = "http://"
-    url = urlparse(app_config.SERVER_ADDRESS, default_scheme, False)
-    # there is a bug is Linux (?) url.hostname  & url.port are always None
-    path = ["", ""] if is_str_none_or_empty(url.path) else f"{url.path}:".split(":")
-    address = Address(
-        path[0] if is_str_none_or_empty(url.hostname) else url.hostname,
-        path[1] if is_str_none_or_empty(url.port) else url.port,
-    )
-except Exception as e:
-    _error(
-        f"`urlparse('{app_config.SERVER_ADDRESS}', '{default_scheme}') -> parsed: {address.host}:{address.port}`",
-    )
-    __log_and_exit(
-        f"Error parsing server address. Expect value is [HostName:Port], found: [{app_config.SERVER_ADDRESS}]. Error {e}"
-    )
+# Server Address
+from .igniter import ignite_server_address
 
-# ---------------------------------------------------------------------------- #
-# Ready to create App
-# ---------------------------------------------------------------------------- #
-# Create th Flask's app and update the very common shared objects in shared.py
-from .create_app import create_app
-app = create_app(app_config)
-setattr(app_config, _db_uri_key, _db_uri_safe) # remove string connection
+address, error = ignite_server_address(fuse, app_config)
+if error: __log_and_exit(error)
+fuse.display.debug("Server Address is ready")
 
-# ---------------------------------------------------------------------------- #
-# Minified html/js when requested or not in Debug
-if app_config.APP_MINIFIED:
-    Minify(app=app, html=True, js=True, cssless=False)
+# app
+from .igniter import do_app
 
-# ---------------------------------------------------------------------------- #
-# Log initial configuration
-# TODO Argument --info
-Display.info(
+shared, error = do_app(fuse, app_config)
+if error: __log_and_exit(error)
+fuse.display.debug(
     f"{app_config.APP_NAME} Version {app_config.APP_VERSION} started in {app_config.APP_MODE} in mode :-)"
 )
-if app_config.DEBUG_MSG: # or to_str(args[1]):
-    from .public.debug_info import get_debug_info
-    get_debug_info(True)
+# if shared. :  # or to_str(args[1]):
+#     from .public.debug_info import get_debug_info
 
-# ---------------------------------------------------------------------------- #
-# Give warnings of import configuration that may be missing
-if is_str_none_or_empty(app_config.EMAIL_API_KEY):
-    app.logger.warning(
-        f"Sendgrid API key was not found, the app will not be able to send emails."
-    )
+#     get_debug_info(True)
 
-if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
-    app.logger.warning(
-        f"The app email originator is not defined, the app will not be able to send emails."
-    )
+# # ---------------------------------------------------------------------------- #
+# # Give warnings of import configuration that may be missing
+# if is_str_none_or_empty(app_config.EMAIL_API_KEY):
+#     app.logger.warning(f"Sendgrid API key was not found, the app will not be able to send emails.")
 
-if is_str_none_or_empty(address.host) or (address.port == 0):
-    __log_and_exit(
-        f"Invalid hot or port address, found [{app_config.SERVER_ADDRESS}], parsed: {address.host}:{address.port}`"
-    )
+# if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
+#     app.logger.warning(f"The app email originator is not defined, the app will not be able to send emails.")
 
-# ---------------------------------------------------------------------------- #
-# Ready to go, lunch!
-#msg= f"Expected '__main__' as __name__, but got '{__name__}' instead."
-#if __name__ == "__main__":
-elapsed = (time.perf_counter() - started) * 1000
-Display.info(f"{__name__} ready in {elapsed:,.0f}ms", '')  # BUG prompt do instance
-Display.info(f"Launching {app_config.APP_NAME} v {app_config.APP_VERSION}", '')
-# app.run(host=address.host, port=address.port, debug=False)
-# elif app_config.DEBUG:
-#     Display.error(f"{msg} Cannot {app_config.APP_NAME}.")
-# else:
-#     __log_and_exit(f"{msg} Exiting...")
+# if is_str_none_or_empty(address.host) or (address.port == 0):
+#     __log_and_exit(
+#         f"Invalid hot or port address, found [{app_config.SERVER_ADDRESS}], parsed: {address.host}:{address.port}`"
+#     )
 
-# eof
+# # ---------------------------------------------------------------------------- #
+# # Ready to go, lunch!
+# # msg= f"Expected '__main__' as __name__, but got '{__name__}' instead."
+# # if __name__ == "__main__":
+# elapsed = (time.perf_counter() - started) * 1000
+# fuse.display.info(f"{__name__} ready in {elapsed:,.0f}ms", "")  # BUG prompt do instance
+# fuse.display.info(f"Launching {app_config.APP_NAME} v {app_config.APP_VERSION}", "")
+# # app.run(host=address.host, port=address.port, debug=False)
+# # elif app_config.DEBUG:
+# #     start.display.error(f"{msg} Cannot {app_config.APP_NAME}.")
+# # else:
+# #     __log_and_exit(f"{msg} Exiting...")
+
+# # eof
