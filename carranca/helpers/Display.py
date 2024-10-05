@@ -9,8 +9,10 @@
 
 # cSpell:ignore
 
+import time
 from enum import Enum
 from typing import List
+from datetime import datetime
 from .py_helper import is_str_none_or_empty
 
 
@@ -43,7 +45,9 @@ class Display:
     # https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
     def code(color_code: int):
         #       reset                 return ESC only        valid Set foreground color code
-        if not ((color_code == 0) or (color_code is None) or (color_code in range(30, 37))):
+        if not (
+            (color_code == 0) or (color_code is None) or (color_code in range(30, 37))
+        ):
             ValueError("Invalid color code, valid values are in [30, 37].")
 
         return "\033[" + ("" if color_code is None else f"{color_code}m")
@@ -90,6 +94,7 @@ class Display:
         mute_all: bool = False,
         debug_output: bool = None,
         icon_output: bool = None,
+        elapsed_from: float = None,
         colors: List[str] = None,
         icons: List[str] = None,
     ):
@@ -98,6 +103,8 @@ class Display:
         self.prompt = _d.prompt if prompt is None else prompt
         self.debug_output = _d.debug_output if debug_output is None else debug_output
         self.icon_output = _d.icon_output if icon_output is None else icon_output
+        self.elapsed_output = elapsed_from is not None
+        self.elapsed_from = elapsed_from if self.elapsed_output else time.perf_counter()
         self.colors = _d.colors if colors is None else colors
         self.icons = _d.icons if icons is None else icons
         k_error = "Parameter '{0}' must be a list of Display.Kind items."
@@ -122,14 +129,20 @@ class Display:
             return
         elif not (is_kind or (kind_or_color is None) or isinstance(kind_or_color, str)):
             return
-        elif is_kind and (kind_or_color == Display.Kind.DEBUG) and not self.debug_output:
+        elif (
+            is_kind and (kind_or_color == Display.Kind.DEBUG) and not self.debug_output
+        ):
             return
         elif kind_or_color is None:
             start_color = Display.no_color
         elif is_kind:
             start_color = self.color(kind)
         else:
-            start_color = Display.no_color if is_str_none_or_empty(kind_or_color) else kind_or_color
+            start_color = (
+                Display.no_color
+                if is_str_none_or_empty(kind_or_color)
+                else kind_or_color
+            )
 
         _prompt = self.prompt if prompt is None else prompt
         start_text = (
@@ -138,7 +151,9 @@ class Display:
             else f"{self.color(Display.Kind.PROMPT)}{_prompt}{Display.reset_color}"
         )
         icon = self.icons[kind.value] if self.icon_output else ""
-        end_color = Display.no_color if start_color == Display.no_color else Display.reset_color
+        end_color = (
+            Display.no_color if start_color == Display.no_color else Display.reset_color
+        )
         print(f"{start_text}{start_color}{icon}{msg}{end_color}")
 
     def simple(self, msg: str, prompt: str = None) -> None:
@@ -161,10 +176,20 @@ class Display:
         self.prompt = "" if is_str_none_or_empty(value) else str(value)
         return p
 
-    def set_icon_output(self, value: bool) ->bool:
-        i  = self.icon_output
+    def set_icon_output(self, value: bool) -> bool:
+        b = self.icon_output
         self.icon_output = bool(value)
-        return i
+        return b
+
+    def set_elapsed_output(self, value: bool, elapsed_from: float = None) -> bool:
+        b = self.elapsed_output
+        self.elapsed_output = bool(value)
+        if elapsed_from is not None:
+            self.elapsed_from = elapsed_from
+        elif self.elapsed_output and elapsed_from is None:
+            self.elapsed_from =time.perf_counter()
+
+        return b
 
 
 # if __name__ == "__main__":

@@ -50,92 +50,28 @@
     mgd
 """
 
-# cSpell:ignore mandatories sqlalchemy, cssless sendgrid, ENDC
-
-# ---------------------------------------------------------------------------- #
-# Performance
 import time
 
 started = time.perf_counter()
-fuse = None
-
-
-# ---------------------------------------------------------------------------- #
-# Escape Door
-def __log_and_exit(ups: str):
-    if fuse:
-        fuse.display.error(ups)
-    else:
-        print(ups)
-    exit(ups)
-
-# - Ignite --------------------------------------------------------------------- #
-# Fuse
-from .igniter import do_fuse
-
-fuse, error = do_fuse("Canoa")
-if error: __log_and_exit(error)
-fuse.display.debug(f"Starting {fuse.app_name}")
-
-# Config
-from .igniter import ignite_config
-
-app_config, error = ignite_config(fuse)
-if error: __log_and_exit(error)
-fuse.display.debug("Config is ready")
-
-# Mandatory Configuration keys
-from .igniter import check_mandatory_keys
-
-error = check_mandatory_keys(fuse, app_config)
-if error: __log_and_exit(error)
-fuse.display.debug("Mandatory configuration keys were informed.")
-
-# Server Address
-from .igniter import ignite_server_address
-
-address, error = ignite_server_address(fuse, app_config)
-if error: __log_and_exit(error)
-fuse.display.debug("Server Address is ready")
-
-# app
-from .igniter import ignite_global
-
-error = ignite_global(fuse, app_config)
-if error: __log_and_exit(error)
-fuse.display.debug(
-    f"{app_config.APP_NAME} Version {app_config.APP_VERSION} started in {app_config.APP_MODE} in mode :-)"
-)
+app_name = "Canoa"
 
 # ---------------------------------------------------------------------------- #
-# Give warnings of import configuration that may be missing
-from .helpers.py_helper import is_str_none_or_empty
-if is_str_none_or_empty(app_config.EMAIL_API_KEY):
-    fuse.display.warning(f"Sendgrid API key was not found, the app will not be able to send emails.")
-
-if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
-    fuse.display.warning(f"The app email originator is not defined, the app will not be able to send emails.")
-
-
-# ---------------------------------------------------------------------------- #
-# Ready to go, lunch!
-elapsed = (time.perf_counter() - started) * 1000
-fuse.display.info(f"{__name__} ready in {elapsed:,.0f}ms")
-
 def create_app():
-    import time
-    started = time.perf_counter()
+    from .igniter import create_shared
 
-    from .igniter import ignite_shared
+    shared = create_shared(app_name, started)
 
-    shared = ignite_shared(started)
-
-    # https://flask.palletsprojects.com/en/latest/tutorial/factory/
     from flask import Flask
 
-    app = Flask(shared.app_name)
-    app.config.from_object(shared.config)
+    app = Flask(app_name)
+    shared.app_log = app.logger
+
     app.shared = shared
+    app.config.from_object(shared.app_config)
+
+    elapsed = (time.perf_counter() - started) * 1000
+    shared.display.info(f"The app was created in {elapsed:,.0f}ms")
     return app
+
 
 # eof

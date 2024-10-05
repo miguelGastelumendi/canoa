@@ -12,7 +12,7 @@
             "module": "flask",
             //"program": "${workspaceFolder}/carranca/main.py",
             "env": {
-                "FLASK_APP": "main:app",
+                "FLASK_APP": "main",
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "1",
             },

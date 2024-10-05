@@ -13,7 +13,7 @@ from flask_login import current_user
 _code_shift_id = 903
 _ticket_receipt_sep = '_'
 
-def now_as_text():
+def now_as_text() -> str:
     # current date time for user
     ##- TODO: get app_config <- from ui_texts
     return now().strftime('%d/%m/%Y às %H:%M')

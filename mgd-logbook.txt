@@ -39,9 +39,15 @@ TODO:
   Logbook
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
+2024-10-04 β 2.30
+    - app is still not fully running :–(
+        app is running, but seems that has no routes.
+    - main.py is Application Factory Pattern
+        but never is __main__
+
 2024-10-04 β 2.29
     - app is still not running :–(
-    - __init__.py is only create_app
+    - create_app is defines in __init__.py is only
     - create_app calls 'igniter'
 
 2024-10-01--04 β 2.28

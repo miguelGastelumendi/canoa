@@ -1,20 +1,22 @@
 """
- Equipe da Canoa -- 2024
+#igniter.py
+   Common classes initializer and
+   basic configuration validator module
 
- Classes Initializer
+   Equipe da Canoa -- 2024
+   mgd 2024-10-01
+"""
 
- mgd 2024-10-03
-
- """
-
-# cSpell:ignore sqlalchemy mandatories cssless
+# cSpell:ignore sqlalchemy mandatories cssless sendgrid, ENDC
 
 from typing import Tuple
 
 _error_ = "[{0}]: An error ocurred while {1}. Message `{2}`."
+fuse = None
+
 
 # ---------------------------------------------------------------------------- #
-def do_fuse(app_name):  # -> Tuple[any, str]:
+def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
     """
     Create the 'fuse' that will ignite all the initializations classes
     """
@@ -35,6 +37,7 @@ def do_fuse(app_name):  # -> Tuple[any, str]:
                     self.args.display_mute,
                     self.args.display_debug,
                     self.args.display_icons,
+                    started_from,
                 )
 
         fuse = Fuse()
@@ -46,7 +49,7 @@ def do_fuse(app_name):  # -> Tuple[any, str]:
 
 
 # ---------------------------------------------------------------------------- #
-def ignite_config(fuse: any) -> Tuple[any, str]:
+def _ignite_config() -> Tuple[any, str]:
     """
     Select the app_config, based in the app_mode (production or debug)
     WARNING: Don't run with debug turned on in production!
@@ -82,7 +85,7 @@ def ignite_config(fuse: any) -> Tuple[any, str]:
 
 
 # ---------------------------------------------------------------------------- #
-def check_mandatory_keys(fuse, app_config) -> str:
+def _check_mandatory_keys(app_config) -> str:
     """Check if the mandatories environment variables are set."""
 
     msg_error = None
@@ -93,7 +96,9 @@ def check_mandatory_keys(fuse, app_config) -> str:
             value = getattr(app_config, key, "")
             empty = value is None or value.strip() == ""
             if empty:
-                fuse.display.error(f"[{__name__}]: Config[{app_config.APP_MODE}].{key} has no value.")
+                fuse.display.error(
+                    f"[{__name__}]: Config[{app_config.APP_MODE}].{key} has no value."
+                )
             return empty
 
         has_empty = False
@@ -104,17 +109,23 @@ def check_mandatory_keys(fuse, app_config) -> str:
         msg_error = (
             ""
             if not has_empty
-            else _error_.format(__name__, "confirming the existence of the mandatory configuration keys", "")
+            else _error_.format(
+                __name__,
+                "confirming the existence of the mandatory configuration keys",
+                "",
+            )
         )
 
     except Exception as e:
-        msg_error = _error_.format(__name__, f"checking mandatory keys of `{app_config.__name__}`", e)
+        msg_error = _error_.format(
+            __name__, f"checking mandatory keys of `{app_config.__name__}`", e
+        )
 
     return msg_error
 
 
 # ---------------------------------------------------------------------------- #
-def ignite_server_address(fuse, app_config) -> Tuple[any, str]:
+def _ignite_server_address(app_config) -> Tuple[any, str]:
     """Confirm validity of the server address"""
     address = None  # this app_config will later be 'globally shared' by shared
     msg_error = None
@@ -154,47 +165,114 @@ def ignite_server_address(fuse, app_config) -> Tuple[any, str]:
 
 
 # ---------------------------------------------------------------------------- #
-def ignite_global(fuse, app_config) -> Tuple[any, str]:
+def _ignite_shared(app_config) -> str:
 
-    shared = None
     msg_error = None
+    shared = None
     obj_name = "obfuscation"
     try:
         import re
         from .config import SQLALCHEMY_DB_URI
-        db_uri_key = getattr(app_config, SQLALCHEMY_DB_URI)
 
+        db_uri_key = getattr(app_config, SQLALCHEMY_DB_URI)
+        # Obfuscate the password of SQLALCHEMY_DATABASE_URI value
         db_uri_safe = re.sub(
             app_config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
             app_config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
             db_uri_key,
         )
 
-
         obj_name = "shared"
         from .Shared import Shared
 
         shared = Shared()
-        shared.initialize(app, app_config, fuse.display)
-        shared.bind()
+        shared.initialize(app_config, fuse.display)
+        # shared.bind()
         fuse.display.info("The global var 'shared' was ignited.")
 
         # shared.bind() turns None app_config.SQLALCHEMY_DATABASE_URI
         # lets just obfuscate the pw
         setattr(app_config, db_uri_key, db_uri_safe)
 
-        if app_config.APP_MINIFIED:
-            from flask_minify import Minify
+        # if app_config.APP_MINIFIED:
+        #     from flask_minify import Minify
 
-            Minify(app=app, html=True, js=True, cssless=False)
-            fuse.display.info("The app's html, js, css were successfully minified.")
+        #     Minify(app=app, html=True, js=True, cssless=False)
+        #     fuse.display.info("The app's html, js, css were successfully minified.")
 
-        fuse.display.debug("The global 'shared' var (with 'app', 'db', 'display', etc) has been instantiate.")
+        fuse.display.debug(
+            "The global 'shared' var (with 'app', 'db', 'display', etc) has been instantiate."
+        )
     except Exception as e:
         msg_error = _error_.format(__name__, f"instantiating {obj_name}", e)
 
-    return msg_error
+    return shared, msg_error
 
+
+# ---------------------------------------------------------------------------- #
+# ---------------------------------------------------------------------------- #
+# Escape Door
+def _log_and_exit(ups: str):
+    if fuse:
+        fuse.display.error(ups)
+    exit(ups)
+
+
+# - ---------------------------------------------------------------------------- #
+# - Ignite --------------------------------------------------------------------- #
+# - ---------------------------------------------------------------------------- #
+def create_shared(app_name, start_at):
+    global fuse
+
+    fuse, error = _start_fuse(app_name, start_at)
+    if error:
+        _log_and_exit(error)
+    fuse.display.debug(f"Starting {fuse.app_name}")
+
+    # Config
+    app_config, error = _ignite_config()
+    if error:
+        _log_and_exit(error)
+    fuse.display.debug("Config was ignited")
+
+    # Mandatory Configuration keys
+    error = _check_mandatory_keys(app_config)
+    if error:
+        _log_and_exit(error)
+    fuse.display.debug("All mandatory configuration keys were informed.")
+
+    # Server Address
+    address, error = _ignite_server_address(app_config)
+    if error:
+        _log_and_exit(error)
+
+    # alternative configuration
+    setattr(app_config, "SERVER_HOST",  address.host)
+    setattr(app_config, "SERVER_PORT", address.port)
+    fuse.display.debug("Server Address is ready and 'app_config' configured.")
+
+    # app
+    shared, error = _ignite_shared(app_config)
+    if error:
+        _log_and_exit(error)
+
+    shared.address = address
+
+    # ---------------------------------------------------------------------------- #
+    # Give warnings of import configuration that may be missing
+    from .helpers.py_helper import is_str_none_or_empty
+
+    if is_str_none_or_empty(app_config.EMAIL_API_KEY):
+        fuse.display.warning(
+            f"Sendgrid API key was not found, the app will not be able to send emails."
+        )
+
+    if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
+        fuse.display.warning(
+            f"The app email originator is not defined, the app will not be able to send emails."
+        )
+
+    return shared
 
 
 # eof

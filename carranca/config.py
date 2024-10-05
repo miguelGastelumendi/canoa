@@ -13,7 +13,8 @@ from typing import Dict
 from hashlib import sha384
 from os import path, getenv as os_getenv, environ
 
-from carranca import fuse
+from carranca import app_name
+from .igniter import fuse
 from .helpers.wtf_helper import LenValidate
 from .helpers.py_helper import is_str_none_or_empty
 
@@ -43,7 +44,7 @@ class BaseConfig:
     """ App Identification
         ----------------------------
     """
-    APP_NAME = fuse.app_name
+    APP_NAME = app_name
 
     # major.minor.patch
     APP_VERSION = "β 2.28"  # &beta;

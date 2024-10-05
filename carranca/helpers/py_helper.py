@@ -9,8 +9,8 @@
 
 import time
 import platform
-from enum import Enum
 from sys import argv
+from enum import Enum
 from datetime import datetime
 
 OS_NAME_IS = platform.system()
