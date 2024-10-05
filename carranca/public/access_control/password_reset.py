@@ -25,7 +25,7 @@ from ..models import  get_user_where
 
 
 def password_reset(token):
-    from ...Shared import shared as g
+    from ...Shared import shared as shared
     def __is_token_valid(time_stamp, max: int) -> bool:
         """
         True when the number of days since issuance is less than
@@ -53,7 +53,7 @@ def password_reset(token):
             add_msg_error('invalidToken', texts)
         elif is_get:
             pass
-        elif not g.app_config.len_val_for_pw.check(password):
+        elif not shared.app_config.len_val_for_pw.check(password):
             add_msg_error('invalidPassword', texts)
         elif password != confirm_password:
             add_msg_error('passwordsAreDifferent', texts)

@@ -11,7 +11,7 @@ from typing import Tuple
 from psycopg2 import DatabaseError
 from sqlalchemy import text
 
-from ..Shared import shared as g
+from ..Shared import shared as shared
 from .py_helper import is_str_none_or_empty
 
 
@@ -24,10 +24,10 @@ def is_connected() -> bool:
     """
 
     try:
-        g.db_engine.connect()
+        shared.db_engine.connect()
         return True
     except Exception as e:
-        g.app_log.error(f"Connection Error: [{e}].")
+        shared.app_log.error(f"Connection Error: [{e}].")
         return False
 
 
@@ -35,7 +35,7 @@ def execute_sql(query: str):
     """ Runs an SQL query and returns the result """
     result = None
     if not is_str_none_or_empty(query):
-        with g.db_engine.connect() as connection:
+        with shared.db_engine.connect() as connection:
             _text = text(query)
             result = connection.execute(_text)
 
@@ -75,7 +75,7 @@ def retrieve_data(query: str) -> any | Tuple:
         # Single row with a single column
         return data[0][0]
   except Exception as e:
-    g.app_log.error(f"An error occurred retrieving db data [{query}]: {e}")
+    shared.app_log.error(f"An error occurred retrieving db data [{query}]: {e}")
     return None
 
 
@@ -87,7 +87,7 @@ def retrieve_dict(query: str):
         if data and isinstance(data, tuple):
             result = {row[0]: row[1] for row in data}
     except Exception as e:
-        g.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
+        shared.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
 
     # # Check if the result is a tuple of tuples (multiple rows)
     # if isinstance(data, tuple) and all(isinstance(row, tuple) and len(row) >= 2 for row in data):
@@ -105,11 +105,11 @@ def persist_record(record: any, task_code: int = 1) -> None:
       task_code: int
     """
     try:
-        g.db.session.add(record)
+        shared.db.session.add(record)
         task_code += 1
-        g.db.session.commit()
+        shared.db.session.commit()
     except Exception as e:
-        g.db.session.rollback()
+        shared.db.session.rollback()
         e.task_code = task_code
         raise DatabaseError(e)
 

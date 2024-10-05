@@ -10,7 +10,7 @@
 from typing import Any
 from flask import render_template, request
 
-from ...Shared import shared as g
+from ...Shared import shared as shared
 from ...helpers.db_helper import persist_record
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...helpers.error_helper import ModuleErrorCode
@@ -46,10 +46,10 @@ def register():
             add_msg_error('userAlreadyRegistered', texts)
         elif __exists_user_where(email=get_input_text('email').lower()):
             add_msg_error('emailAlreadyRegistered', texts)
-        elif not g.app_config.len_val_for_pw.check(get_input_text('password')):
-            add_msg_error('invalidPassword', texts, g.app_config.len_val_for_pw.min, g.app_config.len_val_for_pw.max)
-        elif not g.app_config.len_val_for_uname.check(user_name):
-            add_msg_error('invalidUserName', texts, g.app_config.len_val_for_uname.min, g.app_config.len_val_for_uname.max)
+        elif not shared.app_config.len_val_for_pw.check(get_input_text('password')):
+            add_msg_error('invalidPassword', texts, shared.app_config.len_val_for_pw.min, shared.app_config.len_val_for_pw.max)
+        elif not shared.app_config.len_val_for_uname.check(user_name):
+            add_msg_error('invalidUserName', texts, shared.app_config.len_val_for_uname.min, shared.app_config.len_val_for_uname.max)
         else:
             task_code+= 1 # 4
             user_record_to_insert = Users(**request.form)

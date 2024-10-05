@@ -10,7 +10,7 @@ Part of Canoa `File Validation` Processes
 """
 from datetime import datetime
 
-from ...Shared import shared as g
+from ...Shared import shared as shared
 from ...config_validate_process import ValidateProcessConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import LoggedUser, now
@@ -53,7 +53,7 @@ class Cargo:
         self.step = 1
         self.final = {}  # the process.py return values
         """ When the process began """
-        self.app_version = g.app_config.APP_VERSION
+        self.app_version = shared.app_config.APP_VERSION
         self.process_version = process_version
         self.received_at = received_at
         self.process_started_at = now()

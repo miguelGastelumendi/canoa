@@ -15,7 +15,7 @@ import importlib.metadata
 
 from typing import List, Tuple
 from ..helpers.py_helper import coalesce
-from ..Shared import shared as g
+from ..Shared import shared
 
 
 def get_debug_info(bPrint: bool = False) -> List[Tuple[str, str]]:
@@ -23,7 +23,7 @@ def get_debug_info(bPrint: bool = False) -> List[Tuple[str, str]]:
     result = []
     ml = 0
     vl = 0
-    cfg = g.app_config
+    cfg = shared.app_config
 
     def _add(name, value):
         nonlocal ml, vl  # int, float, bool, str, tuples... are immutables
@@ -51,21 +51,23 @@ def get_debug_info(bPrint: bool = False) -> List[Tuple[str, str]]:
     _add("Jinja2", importlib.metadata.version("jinja2"))
 
     _add("Flask", "")
-    _add("Name", g.app.name)
-    _add("Root Path", g.app.root_path)
-    _add("Template Folder", g.app.template_folder)
-    _add("Static Folder", g.app.static_folder)
+    _add("Name", shared.app.name)
+    _add("Root Path", shared.app.root_path)
+    _add("Template Folder", shared.app.template_folder)
+    _add("Static Folder", shared.app.static_folder)
 
     _add("OS Path", os.getcwd())
 
     if bPrint:
+        b = shared.display.set_icon_output(False)
         for name, value in result:
             kind, v = (
-                (g.display.Kind.SIMPLE, ": " + value)
+                (shared.display.Kind.SIMPLE, ": " + value)
                 if value
-                else (g.display.Kind.INFO, "_" * vl)
+                else (shared.display.Kind.INFO, "_" * vl)
             )
-            g.display.print(kind, f"{name.rjust(ml)}{v}", "")
+            shared.display.print(kind, f"{name.rjust(ml)}{v}", "")
+        shared.display.set_icon_output(b)
 
     return result
 

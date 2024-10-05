@@ -61,16 +61,13 @@ fuse = None
 
 
 # ---------------------------------------------------------------------------- #
-# Helpers
-def _error(msg):
-    if fuse:
-        fuse.display.error(msg)
-
-
+# Escape Door
 def __log_and_exit(ups: str):
-    _error(ups)
+    if fuse:
+        fuse.display.error(ups)
+    else:
+        print(ups)
     exit(ups)
-
 
 # - Ignite --------------------------------------------------------------------- #
 # Fuse
@@ -90,7 +87,7 @@ fuse.display.debug("Config is ready")
 # Mandatory Configuration keys
 from .igniter import check_mandatory_keys
 
-dummy, error = check_mandatory_keys(fuse, app_config)
+error = check_mandatory_keys(fuse, app_config)
 if error: __log_and_exit(error)
 fuse.display.debug("Mandatory configuration keys were informed.")
 
@@ -102,42 +99,43 @@ if error: __log_and_exit(error)
 fuse.display.debug("Server Address is ready")
 
 # app
-from .igniter import do_app
+from .igniter import ignite_global
 
-shared, error = do_app(fuse, app_config)
+error = ignite_global(fuse, app_config)
 if error: __log_and_exit(error)
 fuse.display.debug(
     f"{app_config.APP_NAME} Version {app_config.APP_VERSION} started in {app_config.APP_MODE} in mode :-)"
 )
-# if shared. :  # or to_str(args[1]):
-#     from .public.debug_info import get_debug_info
 
-#     get_debug_info(True)
+# ---------------------------------------------------------------------------- #
+# Give warnings of import configuration that may be missing
+from .helpers.py_helper import is_str_none_or_empty
+if is_str_none_or_empty(app_config.EMAIL_API_KEY):
+    fuse.display.warning(f"Sendgrid API key was not found, the app will not be able to send emails.")
 
-# # ---------------------------------------------------------------------------- #
-# # Give warnings of import configuration that may be missing
-# if is_str_none_or_empty(app_config.EMAIL_API_KEY):
-#     app.logger.warning(f"Sendgrid API key was not found, the app will not be able to send emails.")
+if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
+    fuse.display.warning(f"The app email originator is not defined, the app will not be able to send emails.")
 
-# if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
-#     app.logger.warning(f"The app email originator is not defined, the app will not be able to send emails.")
 
-# if is_str_none_or_empty(address.host) or (address.port == 0):
-#     __log_and_exit(
-#         f"Invalid hot or port address, found [{app_config.SERVER_ADDRESS}], parsed: {address.host}:{address.port}`"
-#     )
+# ---------------------------------------------------------------------------- #
+# Ready to go, lunch!
+elapsed = (time.perf_counter() - started) * 1000
+fuse.display.info(f"{__name__} ready in {elapsed:,.0f}ms")
 
-# # ---------------------------------------------------------------------------- #
-# # Ready to go, lunch!
-# # msg= f"Expected '__main__' as __name__, but got '{__name__}' instead."
-# # if __name__ == "__main__":
-# elapsed = (time.perf_counter() - started) * 1000
-# fuse.display.info(f"{__name__} ready in {elapsed:,.0f}ms", "")  # BUG prompt do instance
-# fuse.display.info(f"Launching {app_config.APP_NAME} v {app_config.APP_VERSION}", "")
-# # app.run(host=address.host, port=address.port, debug=False)
-# # elif app_config.DEBUG:
-# #     start.display.error(f"{msg} Cannot {app_config.APP_NAME}.")
-# # else:
-# #     __log_and_exit(f"{msg} Exiting...")
+def create_app():
+    import time
+    started = time.perf_counter()
 
-# # eof
+    from .igniter import ignite_shared
+
+    shared = ignite_shared(started)
+
+    # https://flask.palletsprojects.com/en/latest/tutorial/factory/
+    from flask import Flask
+
+    app = Flask(shared.app_name)
+    app.config.from_object(shared.config)
+    app.shared = shared
+    return app
+
+# eof

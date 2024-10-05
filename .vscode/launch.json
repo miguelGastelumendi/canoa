@@ -12,17 +12,18 @@
             "module": "flask",
             //"program": "${workspaceFolder}/carranca/main.py",
             "env": {
-                "FLASK_APP": "carranca",
+                "FLASK_APP": "main:app",
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "1",
             },
             "args": [
                 "run"
                 , "--no-reload"
+                , "--no-debugger"
               ],
             "jinja": true,
             "justMyCode": true,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/carranca",
         }
     ]
 }

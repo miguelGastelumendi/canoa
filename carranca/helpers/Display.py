@@ -156,8 +156,15 @@ class Display:
     def debug(self, msg: str, prompt: str = None) -> None:
         self.print(Display.Kind.DEBUG, msg, prompt)
 
-    def set_prompt(self, value: str) -> None:
+    def set_prompt(self, value: str) -> str:
+        p = self.prompt
         self.prompt = "" if is_str_none_or_empty(value) else str(value)
+        return p
+
+    def set_icon_output(self, value: bool) ->bool:
+        i  = self.icon_output
+        self.icon_output = bool(value)
+        return i
 
 
 # if __name__ == "__main__":

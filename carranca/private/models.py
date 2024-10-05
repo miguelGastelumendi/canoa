@@ -12,14 +12,14 @@
 
 from psycopg2 import DatabaseError
 
-from ..Shared import shared as g
+from ..Shared import shared as shared
 from ..helpers.db_helper import persist_record
 
 
-class UserDataFiles(g.db.Model):
+class UserDataFiles(shared.db.Model):
     __tablename__ = "user_data_files"
-    db = g.db
-    col= g.db.Column
+    db = shared.db
+    col= shared.db.Column
     id = col(db.Integer, primary_key=True)
     ticket = col(db.String(40), unique=True)
     id_users = col(db.Integer)   # fk
@@ -68,7 +68,7 @@ class UserDataFiles(g.db.Model):
 
     def _get_record(uTicket):
         ''' gets the record with unique Key uTicket '''
-        records = g.db.session.query(UserDataFiles).filter_by(ticket=uTicket)
+        records = shared.db.session.query(UserDataFiles).filter_by(ticket=uTicket)
         if (records is None) or (records.count() == 0):
             record = None
         elif records.count() == 1:
@@ -102,7 +102,7 @@ class UserDataFiles(g.db.Model):
         except Exception as e:
             operation = 'update' if isUpdate else 'insert to'
             msg_error = f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
-            g.app_log.error(msg_error)
+            shared.app_log.error(msg_error)
             raise DatabaseError(msg_error)
 
     def insert(uTicket: str, **kwargs) -> None:

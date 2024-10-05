@@ -14,7 +14,7 @@ from .wtforms import ReceiveFileForm
 from werkzeug.utils import secure_filename
 from .validate_process.ProcessData import ProcessData
 
-from ..Shared import shared as g
+from ..Shared import shared as shared
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import path_remove_last_folder, folder_must_exist
 from ..helpers.user_helper import LoggedUser, now
@@ -42,7 +42,7 @@ def receive_file() -> str:
     def _log_error(msg_id: str, code: int, msg: str = "") -> int:
         error_code = ModuleErrorCode.RECEIVE_FILE_ADMIT + code
         log_error = add_msg_error(msg_id, texts, error_code, msg)
-        g.app_log.error(log_error, exc_info=error_code)
+        shared.app_log.error(log_error, exc_info=error_code)
         return error_code
 
     try:
@@ -75,8 +75,8 @@ def receive_file() -> str:
         logged_user = LoggedUser()
 
         def doProcessData() -> tuple[bool, ProcessData]:
-            receive_file_cfg = ValidateProcessConfig(g.app_config.DEBUG)
-            common_folder = path_remove_last_folder(g.app_config.ROOT_FOLDER)
+            receive_file_cfg = ValidateProcessConfig(shared.app_config.DEBUG)
+            common_folder = path_remove_last_folder(shared.app_config.ROOT_FOLDER)
             pd = ProcessData(
                 logged_user.code,
                 logged_user.folder,
@@ -113,7 +113,7 @@ def receive_file() -> str:
                 task_code += 1  # 10
                 pd.received_original_name = md["name"]
             else:
-                g.app_log.error(
+                shared.app_log.error(
                     f"Download error code {download_code}.", exc_info=download_code
                 )
                 fn = filename if filename else "<ainda sem nome>"
@@ -138,14 +138,14 @@ def receive_file() -> str:
             log_msg = add_msg_success(
                 "uploadFileSuccess", texts, pd.user_receipt, logged_user.email
             )
-            g.app_log.debug(log_msg)
+            shared.app_log.debug(log_msg)
         else:
             _log_error(msg_error, error_code)
             ##g.app_log.debug(f"{log_msg} | File stage '{_file}' |{removed} Code {error_code} | Exception Error '{msg_error}'.")
 
     except Exception as e:
         error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code)
-        g.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
+        shared.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
 
     return _result()
 

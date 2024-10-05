@@ -13,7 +13,6 @@ from typing import Tuple
 
 _error_ = "[{0}]: An error ocurred while {1}. Message `{2}`."
 
-
 # ---------------------------------------------------------------------------- #
 def do_fuse(app_name):  # -> Tuple[any, str]:
     """
@@ -69,7 +68,7 @@ def ignite_config(fuse: any) -> Tuple[any, str]:
         # 3. load & init
         app_config = config_modes[_app_mode]
         app_config.init()
-        fuse.display.info(f"The app config, in `{_app_mode}` mode, was initialized successfully.")
+        fuse.display.info(f"The app config, in `{_app_mode}` mode, was ignited.")
     except KeyError:
         msg_error = _error_.format(
             __name__,
@@ -83,10 +82,9 @@ def ignite_config(fuse: any) -> Tuple[any, str]:
 
 
 # ---------------------------------------------------------------------------- #
-def check_mandatory_keys(fuse, app_config) -> Tuple[any, str]:
+def check_mandatory_keys(fuse, app_config) -> str:
     """Check if the mandatories environment variables are set."""
 
-    dummy = None  # this app_config will later be 'globally shared' by shared
     msg_error = None
     try:
         from .config import MANDATORY_KEYS
@@ -112,7 +110,7 @@ def check_mandatory_keys(fuse, app_config) -> Tuple[any, str]:
     except Exception as e:
         msg_error = _error_.format(__name__, f"checking mandatory keys of `{app_config.__name__}`", e)
 
-    return dummy, msg_error
+    return msg_error
 
 
 # ---------------------------------------------------------------------------- #
@@ -156,46 +154,47 @@ def ignite_server_address(fuse, app_config) -> Tuple[any, str]:
 
 
 # ---------------------------------------------------------------------------- #
-def do_app(fuse, app_config) -> Tuple[any, str]:
+def ignite_global(fuse, app_config) -> Tuple[any, str]:
 
-    shared = None  # this is the 'globally shared' obj
+    shared = None
     msg_error = None
-    obj_name = "app"
+    obj_name = "obfuscation"
     try:
-
-        # https://flask.palletsprojects.com/en/latest/tutorial/factory/
-        from flask import Flask
-
-        app = Flask(fuse.app_name)
-        app.config.from_object(app_config)
-
-        obj_name = "shared"
-        from .Shared import shared
-
-        shared.initialize(app, app_config)
-        shared.bind()
-
-        # Obfuscate the string connection, we should not need it any more
         import re
         from .config import SQLALCHEMY_DB_URI
+        db_uri_key = getattr(app_config, SQLALCHEMY_DB_URI)
 
-        db_uri_key = SQLALCHEMY_DB_URI
         db_uri_safe = re.sub(
             app_config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
             app_config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
-            getattr(app_config, db_uri_key),
+            db_uri_key,
         )
+
+
+        obj_name = "shared"
+        from .Shared import Shared
+
+        shared = Shared()
+        shared.initialize(app, app_config, fuse.display)
+        shared.bind()
+        fuse.display.info("The global var 'shared' was ignited.")
+
+        # shared.bind() turns None app_config.SQLALCHEMY_DATABASE_URI
+        # lets just obfuscate the pw
         setattr(app_config, db_uri_key, db_uri_safe)
 
         if app_config.APP_MINIFIED:
             from flask_minify import Minify
 
             Minify(app=app, html=True, js=True, cssless=False)
+            fuse.display.info("The app's html, js, css were successfully minified.")
 
+        fuse.display.debug("The global 'shared' var (with 'app', 'db', 'display', etc) has been instantiate.")
     except Exception as e:
-        msg_error = _error_.format(__name__, f"creating {obj_name}", e)
+        msg_error = _error_.format(__name__, f"instantiating {obj_name}", e)
 
-    return shared, msg_error
+    return msg_error
+
 
 
 # eof

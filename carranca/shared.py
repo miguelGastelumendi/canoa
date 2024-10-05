@@ -31,6 +31,7 @@ class Shared:
         self.db_engine = None
         self.login_manager = None
         self.started_at = datetime.now()
+        self.app_started_at =None
 
     def _create_engine(self) -> any:
         from sqlalchemy import create_engine
@@ -76,20 +77,19 @@ class Shared:
         self._register_blueprints()
         self._register_jinja()
 
-    def initialize(self, app_flask, config):
-        # this is Packaged __init__.py
+    def initialize(self, app_config, display):
+        # this is called from  __init__.py
+        self.app = flask_app
+        self.app_log = flask_app.logger
+        self.app_config = app_config
+        self.display = display
+
         from flask_sqlalchemy import SQLAlchemy
-        from flask_login import LoginManager
-        from .helpers.Display import Display
-
-        self.app = app_flask
-        self.app_config = config
-        self.app_log = app_flask.logger
-
         self.db = SQLAlchemy()
         self.db_engine = self._create_engine()
+
+        from flask_login import LoginManager
         self.login_manager = LoginManager()
-        self.display = Display(f"{config.APP_NAME}: ", config.DEBUG_MSG)
 
         """ ChatGPT
         During each request:
@@ -101,8 +101,5 @@ class Shared:
         @self.app.teardown_request
         def shutdown_session(exception=None):
             self.db.session.remove()
-
-# Create the shard instance (by mgd)
-shared = Shared()
 
 #eof
