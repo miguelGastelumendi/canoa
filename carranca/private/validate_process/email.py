@@ -12,7 +12,7 @@
 
 from .Cargo import Cargo
 from ..models import UserDataFiles
-from ...Shared import app_log
+from ...main import shared
 from ...helpers.user_helper import now_as_text, now
 from ...helpers.email_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode
@@ -51,11 +51,11 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
             email_sent=True,
         )
         task_code = 0  # !important
-        app_log.debug(f"An email was sent to the user with the validation result.")
+        shared.app_log.debug(f"An email was sent to the user with the validation result.")
     except Exception as e:
         task_code += 5
         msg_exception = str(e)
-        app_log.fatal(f"There was a problem sending the results email: {msg_exception}.", exc_info=task_code)
+        shared.app_log.fatal(f"There was a problem sending the results email: {msg_exception}.", exc_info=task_code)
 
     error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_EMAIL + task_code
     return cargo.update(error_code, "uploadFileEmail_failed", msg_exception)

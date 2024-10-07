@@ -11,7 +11,7 @@ from typing import Tuple
 from psycopg2 import DatabaseError
 from sqlalchemy import text
 
-from ..Shared import shared as shared
+from ..main import shared
 from .py_helper import is_str_none_or_empty
 
 

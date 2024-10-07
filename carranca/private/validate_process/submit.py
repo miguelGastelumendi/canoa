@@ -24,7 +24,7 @@ from ...helpers.py_helper import (
 from ...helpers.user_helper import now
 from ...helpers.file_helper import change_file_ext
 from ...helpers.error_helper import ModuleErrorCode
-from ...Shared import app_log
+from ...main import shared
 
 
 async def _run_validator(
@@ -51,9 +51,9 @@ async def _run_validator(
 
     if debug_validator and not is_str_none_or_empty(d_v.flag_debug):
         run_command.append(d_v.flag_debug)
-        app_log.info(" ".join(run_command))
+        shared.app_log.info(" ".join(run_command))
     else:
-        app_log.debug(" ".join(run_command))
+        shared.app_log.debug(" ".join(run_command))
 
     # Run the script command asynchronously
     stdout = None
@@ -69,7 +69,7 @@ async def _run_validator(
 
     except Exception as e:
         err_msg = f"{d_v.ui_name}.running: {e}"
-        app_log.critical(err_msg)
+        shared.app_log.critical(err_msg)
         return "", err_msg
 
     # Decode the output from bytes to string
@@ -159,7 +159,7 @@ def submit(cargo: Cargo) -> Cargo:
     except Exception as e:
         error_code = task_code
         msg_exception = str(e)
-        app_log.fatal(msg_exception, exc_info=error_code)
+        shared.app_log.fatal(msg_exception, exc_info=error_code)
     finally:
         try:
             if cargo.receive_file_cfg.remove_report:
@@ -169,16 +169,16 @@ def submit(cargo: Cargo) -> Cargo:
                 pass  # rename and move?
 
         except:
-            app_log.warn("The communication folders between apps were *not* deleted.")
+            shared.app_log.warn("The communication folders between apps were *not* deleted.")
 
     # goto email.py
     error_code = (
         0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT
     )
     if error_code == 0:
-        app_log.debug(f"The unzipped files were correctly submitted to '{_cfg.d_v.ui_name}' and a report was generated.")
+        shared.app_log.debug(f"The unzipped files were correctly submitted to '{_cfg.d_v.ui_name}' and a report was generated.")
     else:
-        app_log.error(f"There was a problem submitting the files to '{_cfg.d_v.ui_name}. Error code [{error_code}].")
+        shared.app_log.error(f"There was a problem submitting the files to '{_cfg.d_v.ui_name}. Error code [{error_code}].")
 
     return cargo.update(
         error_code,

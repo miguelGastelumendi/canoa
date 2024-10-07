@@ -25,7 +25,7 @@ from ..models import  get_user_where
 
 
 def password_reset(token):
-    from ...Shared import shared as shared
+    from ...main import shared
     def __is_token_valid(time_stamp, max: int) -> bool:
         """
         True when the number of days since issuance is less than

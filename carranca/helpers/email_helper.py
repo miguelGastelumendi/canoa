@@ -65,7 +65,7 @@ def send_email(
         ValueError: if the attachment file (file_to_send) has an extension with unknown type.
         RuntimeError: error within the send_mail API
     """
-    from ..Shared import shared as shared
+    from ..main import shared
 
     status_code = 0
     task = ""

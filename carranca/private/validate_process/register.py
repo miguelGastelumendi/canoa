@@ -14,7 +14,7 @@
 import os
 from zlib import crc32
 
-from ...Shared import app_log
+from ...main import shared
 from ...helpers.py_helper import OS_IS_WINDOWS
 from ...helpers.user_helper import now
 from ...helpers.error_helper import ModuleErrorCode
@@ -80,7 +80,7 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         task_code += 1  # +5
         file_registered= cargo.file_registered(user_dataFiles_key)
         task_code = 0  # very important!
-        app_log.debug(f"The file was successfully registered in the database.")
+        shared.app_log.debug(f"The file was successfully registered in the database.")
     except Exception as e:
         task_code += 10
         msg_exception = str(e)
@@ -89,7 +89,7 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         if file_saved and not file_registered:
             os.remove(work_fname)
             msg_deleted = " (so it was locally deleted)"
-        app_log.fatal(f"{msg_fatal}{msg_deleted}. Error: [{msg_exception}].")
+        shared.app_log.fatal(f"{msg_fatal}{msg_deleted}. Error: [{msg_exception}].")
 
     # goto module unzip
     error_code = (

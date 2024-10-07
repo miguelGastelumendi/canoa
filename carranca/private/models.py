@@ -12,7 +12,7 @@
 
 from psycopg2 import DatabaseError
 
-from ..Shared import shared as shared
+from ..main import shared
 from ..helpers.db_helper import persist_record
 
 

@@ -41,7 +41,8 @@ def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
                 )
 
         fuse = Fuse()
-        fuse.display.info("The `fuse` was started successfully.")
+        fuse.display.info("The 'fuse' was started. Now we have how to print nicely.")
+        fuse.display.info(f"Current args: [{fuse.args}].")
     except Exception as e:
         msg_error = _error_.format(__name__, "starting the fuse", e)
 
@@ -90,7 +91,7 @@ def _check_mandatory_keys(app_config) -> str:
 
     msg_error = None
     try:
-        from .config import MANDATORY_KEYS
+        from .config import CONFIG_MANDATORY_KEYS
 
         def __is_empty(key: str) -> bool:
             value = getattr(app_config, key, "")
@@ -102,7 +103,7 @@ def _check_mandatory_keys(app_config) -> str:
             return empty
 
         has_empty = False
-        for key in MANDATORY_KEYS:
+        for key in CONFIG_MANDATORY_KEYS:
             if __is_empty(key):
                 has_empty = True
 
@@ -150,6 +151,9 @@ def _ignite_server_address(app_config) -> Tuple[any, str]:
 
         if is_str_none_or_empty(address.host) or (address.port == 0):
             msg_error = f"Invalid host or port address found in [{app_config.SERVER_ADDRESS}], parsed: {address.host}:{address.port}`."
+        else:
+           fuse.display.info(f"The address will be '{address.host}:{address.port}'.")
+
 
     except Exception as e:
         fuse.display.error(
@@ -172,14 +176,11 @@ def _ignite_shared(app_config) -> str:
     obj_name = "obfuscation"
     try:
         import re
-        from .config import SQLALCHEMY_DB_URI
-
-        db_uri_key = getattr(app_config, SQLALCHEMY_DB_URI)
         # Obfuscate the password of SQLALCHEMY_DATABASE_URI value
         db_uri_safe = re.sub(
             app_config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
             app_config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
-            db_uri_key,
+            app_config.SQLALCHEMY_DATABASE_URI,
         )
 
         obj_name = "shared"
@@ -187,22 +188,12 @@ def _ignite_shared(app_config) -> str:
 
         shared = Shared()
         shared.initialize(app_config, fuse.display)
-        # shared.bind()
-        fuse.display.info("The global var 'shared' was ignited.")
 
-        # shared.bind() turns None app_config.SQLALCHEMY_DATABASE_URI
+        # shared.initialize() turns None app_config.SQLALCHEMY_DATABASE_URI
         # lets just obfuscate the pw
-        setattr(app_config, db_uri_key, db_uri_safe)
+        app_config.SQLALCHEMY_DATABASE_URI= db_uri_safe
 
-        # if app_config.APP_MINIFIED:
-        #     from flask_minify import Minify
-
-        #     Minify(app=app, html=True, js=True, cssless=False)
-        #     fuse.display.info("The app's html, js, css were successfully minified.")
-
-        fuse.display.debug(
-            "The global 'shared' var (with 'app', 'db', 'display', etc) has been instantiate."
-        )
+        fuse.display.info("The global var 'shared' was ignited.")
     except Exception as e:
         msg_error = _error_.format(__name__, f"instantiating {obj_name}", e)
 
@@ -227,13 +218,13 @@ def create_shared(app_name, start_at):
     fuse, error = _start_fuse(app_name, start_at)
     if error:
         _log_and_exit(error)
-    fuse.display.debug(f"Starting {fuse.app_name}")
+    fuse.display.debug("The fuse was created.")
 
     # Config
     app_config, error = _ignite_config()
     if error:
         _log_and_exit(error)
-    fuse.display.debug("Config was ignited")
+    fuse.display.debug("Config was ignited.")
 
     # Mandatory Configuration keys
     error = _check_mandatory_keys(app_config)
@@ -245,8 +236,7 @@ def create_shared(app_name, start_at):
     address, error = _ignite_server_address(app_config)
     if error:
         _log_and_exit(error)
-
-    # alternative configuration
+    # alternative configuration to Flask
     setattr(app_config, "SERVER_HOST",  address.host)
     setattr(app_config, "SERVER_PORT", address.port)
     fuse.display.debug("Server Address is ready and 'app_config' configured.")
@@ -261,18 +251,23 @@ def create_shared(app_name, start_at):
     # ---------------------------------------------------------------------------- #
     # Give warnings of import configuration that may be missing
     from .helpers.py_helper import is_str_none_or_empty
-
+    warns = 0
     if is_str_none_or_empty(app_config.EMAIL_API_KEY):
+        warns += 1
         fuse.display.warning(
             f"Sendgrid API key was not found, the app will not be able to send emails."
         )
 
     if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
+        warns += 1
         fuse.display.warning(
             f"The app email originator is not defined, the app will not be able to send emails."
         )
 
-    return shared
+    fuse.display.info(
+        f"{__name__} completed with 0 errors and {warns} warnings."
+    )
 
+    return shared
 
 # eof

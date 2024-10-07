@@ -14,7 +14,7 @@ from .wtforms import ReceiveFileForm
 from werkzeug.utils import secure_filename
 from .validate_process.ProcessData import ProcessData
 
-from ..Shared import shared as shared
+from ..main import shared
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import path_remove_last_folder, folder_must_exist
 from ..helpers.user_helper import LoggedUser, now

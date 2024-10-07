@@ -54,35 +54,6 @@ class Shared:
         self.app_config.SQLALCHEMY_DATABASE_URI = None
         return result
 
-    def _register_blueprints(self):
-        from .private.routes import bp_private
-        from .public.routes import bp_public
-
-        self.app.register_blueprint(bp_private)
-        self.app.register_blueprint(bp_public)
-
-    def _register_jinja(self):
-        from .helpers.route_helper import private_route, public_route
-
-        def __get_name() -> str:
-            self.app_log.debug(self.app_config.APP_NAME)
-            return self.app_config.APP_NAME
-
-        def __get_version() -> str:
-            self.app_log.debug(self.app_config.APP_VERSION)
-            return self.app_config.APP_VERSION
-
-        self.app.jinja_env.globals.update(
-            app_version=__get_version,
-            app_name=__get_name,
-            private_route=private_route,
-            public_route=public_route,
-        )
-
-    def bind(self):
-        self._register_blueprints()
-        self._register_jinja()
-
     def initialize(self, app_config, display):
         self.app_config = app_config
         self.display = display
@@ -95,17 +66,6 @@ class Shared:
         from flask_login import LoginManager
 
         self.login_manager = LoginManager()
-
-        """ ChatGPT
-        During each request:
-            Flask receives the request.
-            Your view logic runs, interacting with the database through app_db.
-            Once the response is ready, the shutdown_session() is called,
-            which removes the session to prevent any lingering database connections or transactions.
-        """
-        # @self.app.teardown_request
-        # def shutdown_session(exception=None):
-        #     self.db.session.remove()
 
 
 # eof

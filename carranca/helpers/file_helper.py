@@ -9,7 +9,7 @@ import os
 import shutil
 from os import path, makedirs
 
-from ..Shared import app_log
+from ..main import shared
 
 
 def file_full_name_parse(file_full_name: str) -> tuple[str, str, str]:
@@ -74,7 +74,7 @@ def file_must_exist(
             shutil.copystat(source_full_name, file_full_name)
 
     except OSError as e:
-        app_log.error(
+        shared.app_log.error(
             f"Error {('replacing' if done else 'copying file')} [{source_full_name}] to [{file_full_name}]: {e}')"
         )
     finally:
@@ -90,7 +90,7 @@ def folder_must_exist(full_path: str) -> bool:
             done = True
     except Exception as e:
         done = False
-        app_log.warn(f"Error creating folder {full_path}, {e}")
+        shared.app_log.warn(f"Error creating folder {full_path}, {e}")
 
     return done
 

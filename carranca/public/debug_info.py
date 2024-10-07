@@ -15,7 +15,7 @@ import importlib.metadata
 
 from typing import List, Tuple
 from ..helpers.py_helper import coalesce
-from ..Shared import shared
+from ..main import shared
 
 
 def get_debug_info(bPrint: bool = False) -> List[Tuple[str, str]]:

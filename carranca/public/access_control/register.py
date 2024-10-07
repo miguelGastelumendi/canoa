@@ -10,7 +10,7 @@
 from typing import Any
 from flask import render_template, request
 
-from ...Shared import shared as shared
+from ...main import shared
 from ...helpers.db_helper import persist_record
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...helpers.error_helper import ModuleErrorCode

@@ -11,7 +11,7 @@
 # cSpell:ignore werkzeug receivefile tmpl sqlalchemy lastpasswordchange errorhandler assis passwordrecovery passwordreset
 
 from flask import Blueprint, render_template
-from ..Shared import shared as shared
+from ..main import shared
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.route_helper import (
     bp_name,

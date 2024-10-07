@@ -11,7 +11,7 @@ from typing import Any
 from flask_login import UserMixin
 from sqlalchemy import Computed
 
-from ..Shared import shared
+from ..main import shared
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
 

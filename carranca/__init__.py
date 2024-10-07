@@ -53,24 +53,25 @@
 import time
 
 started = time.perf_counter()
-app_name = "Canoa"
+
 
 # ---------------------------------------------------------------------------- #
-def create_app():
-    from .igniter import create_shared
-
-    shared = create_shared(app_name, started)
-
+def create_app(app_name):
     from flask import Flask
 
     app = Flask(app_name)
-    shared.app_log = app.logger
 
-    app.shared = shared
-    app.config.from_object(shared.app_config)
+    """ ChatGPT
+    During each request:
+        Flask receives the request.
+        Your view logic runs, interacting with the database through app_db.
+        Once the response is ready, the shutdown_session() is called,
+        which removes the session to prevent any lingering database connections or transactions.
+    """
+    @app.teardown_request
+    def shutdown_session(exception=None):
+        app.shared.db.session.remove()
 
-    elapsed = (time.perf_counter() - started) * 1000
-    shared.display.info(f"The app was created in {elapsed:,.0f}ms")
     return app
 
 

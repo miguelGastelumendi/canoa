@@ -15,5 +15,6 @@ class Args:
         self.display_all = as_debug
         self.display_debug = as_debug
         self.display_icons = True
+        self.display_mute_after_init = not as_debug
 
 # eof
