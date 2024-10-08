@@ -4,7 +4,7 @@
    basic configuration validator module
 
    Equipe da Canoa -- 2024
-   mgd 2024-10-01
+   mgd 2024-10-01--07
 """
 
 # cSpell:ignore sqlalchemy mandatories cssless sendgrid, ENDC
@@ -14,7 +14,6 @@ from typing import Tuple
 _error_ = "[{0}]: An error ocurred while {1}. Message `{2}`."
 fuse = None
 
-
 # ---------------------------------------------------------------------------- #
 def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
     """
@@ -23,6 +22,7 @@ def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
     msg_error = None
     fuse = None
     try:
+        import json
         from .Args import Args
         from .helpers.Display import Display
         from .helpers.py_helper import set_flags_from_argv
@@ -41,8 +41,8 @@ def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
                 )
 
         fuse = Fuse()
-        fuse.display.info("The 'fuse' was started. Now we have how to print nicely.")
-        fuse.display.info(f"Current args: [{fuse.args}].")
+        fuse.display.info("The 'fuse' was started. Now we have how to print pretty.")
+        fuse.display.info(f"Current args: {fuse.args}.")
     except Exception as e:
         msg_error = _error_.format(__name__, "starting the fuse", e)
 
@@ -152,7 +152,9 @@ def _ignite_server_address(app_config) -> Tuple[any, str]:
         if is_str_none_or_empty(address.host) or (address.port == 0):
             msg_error = f"Invalid host or port address found in [{app_config.SERVER_ADDRESS}], parsed: {address.host}:{address.port}`."
         else:
-           fuse.display.info(f"The address will be '{address.host}:{address.port}'.")
+            fuse.display.info(f"The Flask Server Address address will be '{address.host}:{address.port}'.")
+            setattr(app_config, "SERVER_HOST",  address.host)
+            setattr(app_config, "SERVER_PORT", address.port)
 
 
     except Exception as e:
@@ -166,38 +168,6 @@ def _ignite_server_address(app_config) -> Tuple[any, str]:
         )
 
     return address, msg_error
-
-
-# ---------------------------------------------------------------------------- #
-def _ignite_shared(app_config) -> str:
-
-    msg_error = None
-    shared = None
-    obj_name = "obfuscation"
-    try:
-        import re
-        # Obfuscate the password of SQLALCHEMY_DATABASE_URI value
-        db_uri_safe = re.sub(
-            app_config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
-            app_config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
-            app_config.SQLALCHEMY_DATABASE_URI,
-        )
-
-        obj_name = "shared"
-        from .Shared import Shared
-
-        shared = Shared()
-        shared.initialize(app_config, fuse.display)
-
-        # shared.initialize() turns None app_config.SQLALCHEMY_DATABASE_URI
-        # lets just obfuscate the pw
-        app_config.SQLALCHEMY_DATABASE_URI= db_uri_safe
-
-        fuse.display.info("The global var 'shared' was ignited.")
-    except Exception as e:
-        msg_error = _error_.format(__name__, f"instantiating {obj_name}", e)
-
-    return shared, msg_error
 
 
 # ---------------------------------------------------------------------------- #
@@ -236,17 +206,12 @@ def create_shared(app_name, start_at):
     address, error = _ignite_server_address(app_config)
     if error:
         _log_and_exit(error)
-    # alternative configuration to Flask
-    setattr(app_config, "SERVER_HOST",  address.host)
-    setattr(app_config, "SERVER_PORT", address.port)
-    fuse.display.debug("Server Address is ready and 'app_config' configured.")
+    fuse.display.debug("Flask Server Address is ready and 'app_config' configured.")
 
-    # app
-    shared, error = _ignite_shared(app_config)
-    if error:
-        _log_and_exit(error)
-
-    shared.address = address
+    # shared obj
+    from .Shared import Shared
+    shared = Shared(app_config, fuse.display, address)
+    fuse.display.info("The global var 'shared' was ignited.")
 
     # ---------------------------------------------------------------------------- #
     # Give warnings of import configuration that may be missing

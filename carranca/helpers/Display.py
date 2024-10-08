@@ -45,9 +45,7 @@ class Display:
     # https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
     def code(color_code: int):
         #       reset                 return ESC only        valid Set foreground color code
-        if not (
-            (color_code == 0) or (color_code is None) or (color_code in range(30, 37))
-        ):
+        if not ((color_code == 0) or (color_code is None) or (color_code in range(30, 37))):
             ValueError("Invalid color code, valid values are in [30, 37].")
 
         return "\033[" + ("" if color_code is None else f"{color_code}m")
@@ -117,7 +115,9 @@ class Display:
     def color(self, kind: Kind) -> str:
         return self.colors[kind.value]
 
-    def print(self, kind_or_color: Kind | str, msg: str, prompt: str = None) -> None:
+    def print(
+        self, kind_or_color: Kind | str, msg: str, prompt: str = None, icon_output: bool = None
+    ) -> None:
         if self.mute:
             return
 
@@ -129,47 +129,41 @@ class Display:
             return
         elif not (is_kind or (kind_or_color is None) or isinstance(kind_or_color, str)):
             return
-        elif (
-            is_kind and (kind_or_color == Display.Kind.DEBUG) and not self.debug_output
-        ):
+        elif is_kind and (kind_or_color == Display.Kind.DEBUG) and not self.debug_output:
             return
         elif kind_or_color is None:
             start_color = Display.no_color
         elif is_kind:
             start_color = self.color(kind)
         else:
-            start_color = (
-                Display.no_color
-                if is_str_none_or_empty(kind_or_color)
-                else kind_or_color
-            )
+            start_color = Display.no_color if is_str_none_or_empty(kind_or_color) else kind_or_color
 
-        _prompt = self.prompt if prompt is None else prompt
+        _prompt = self.prompt if prompt is None else str(prompt)
         start_text = (
             ""
             if is_str_none_or_empty(_prompt)
             else f"{self.color(Display.Kind.PROMPT)}{_prompt}{Display.reset_color}"
         )
-        icon = self.icons[kind.value] if self.icon_output else ""
-        end_color = (
-            Display.no_color if start_color == Display.no_color else Display.reset_color
-        )
+        _icon_output = self.icon_output if icon_output is None else bool(icon_output)
+
+        icon = self.icons[kind.value] if _icon_output else ""
+        end_color = Display.no_color if start_color == Display.no_color else Display.reset_color
         print(f"{start_text}{start_color}{icon}{msg}{end_color}")
 
-    def simple(self, msg: str, prompt: str = None) -> None:
-        self.print(Display.Kind.SIMPLE, msg, prompt)
+    def simple(self, msg: str, prompt: str = None, icon_output: bool = None) -> None:
+        self.print(Display.Kind.SIMPLE, msg, prompt, icon_output)
 
-    def info(self, msg: str, prompt: str = None) -> None:
-        self.print(Display.Kind.INFO, msg, prompt)
+    def info(self, msg: str, prompt: str = None, icon_output: bool = None) -> None:
+        self.print(Display.Kind.INFO, msg, prompt, icon_output)
 
-    def warn(self, msg: str, prompt: str = None) -> None:
-        self.print(Display.Kind.WARN, msg, prompt)
+    def warn(self, msg: str, prompt: str = None, icon_output: bool = None) -> None:
+        self.print(Display.Kind.WARN, msg, prompt, icon_output)
 
-    def error(self, msg: str, prompt: str = None) -> None:
-        self.print(Display.Kind.ERROR, msg, prompt)
+    def error(self, msg: str, prompt: str = None, icon_output: bool = None) -> None:
+        self.print(Display.Kind.ERROR, msg, prompt, icon_output)
 
-    def debug(self, msg: str, prompt: str = None) -> None:
-        self.print(Display.Kind.DEBUG, msg, prompt)
+    def debug(self, msg: str, prompt: str = None, icon_output: bool = None) -> None:
+        self.print(Display.Kind.DEBUG, msg, prompt, icon_output)
 
     def set_prompt(self, value: str) -> str:
         p = self.prompt
@@ -187,7 +181,7 @@ class Display:
         if elapsed_from is not None:
             self.elapsed_from = elapsed_from
         elif self.elapsed_output and elapsed_from is None:
-            self.elapsed_from =time.perf_counter()
+            self.elapsed_from = time.perf_counter()
 
         return b
 

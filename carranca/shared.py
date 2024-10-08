@@ -1,9 +1,19 @@
 """
- #Shared
-    Shared is class to easily share frequently
-    used app's properties & other useful objects
+  Shared
+    Shared is class to keep easily accessible frequently
+    shared objects
 
     This object is initialized in package/__init__.py
+
+        Shared shared objects:
+        ├── app_config     config.Config + app_config (see Shared.py header for more info)
+        ├── sa             SqlAlchemy
+        ├── sa_engine      SqlAlchemy engine
+        ├── login_manager  Flask's login manager
+        ├── app_log        Flask's app logger
+        └── display        mgd's simple text display to console
+
+
 
     app.config vs app_config
     ------------------------
@@ -16,56 +26,57 @@
     app_log == app.Logger
     ---------------------
 
-    mgd 2024-07-22
+    mgd 2024-07-22,10-07
 """
 
-# cSpell:ignore sqlalchemy keepalives
+# cSpell:ignore sqlalchemy mgd
 
+import json
 from datetime import datetime
-from copy import copy as copy_str
 
 
 class Shared:
-    def __init__(self):
-        self.app_config = None
+    def __init__(self, app_config, display, server_address):
+        self.app_config = app_config
         self.app_log = None
-        self.db = None
-        self.db_engine = None
+        self.display = display
         self.login_manager = None
+        self.sa = None
+        self.sa_engine = None
+        self.server_address = server_address
         self.started_at = datetime.now()
 
-    def _create_engine(self) -> any:
-        from sqlalchemy import create_engine
+    def keep(self, app, sa, login_manager):
+        import re
 
-        result = create_engine(
-            copy_str(self.app_config.SQLALCHEMY_DATABASE_URI),
-            isolation_level="AUTOCOMMIT",  # "READ UNCOMMITTED", # mgd em Canoa, acho desnecessário
-            pool_pre_ping=True,
-            connect_args={
-                # (https://www.postgresql.org/docs/current/libpq-connect.html)
-                # Maximum time to wait while connecting, in seconds  was 600.
-                # instead mhd is using `pool_pre_ping` and set connect_timeout to 10
-                "connect_timeout": 10,
-                "application_name": self.app_config.APP_NAME,
-                "keepalives": 1,
-            },
+        db_uri_safe = re.sub(
+            self.app_config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
+            self.app_config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
+            self.app_config.SQLALCHEMY_DATABASE_URI,
         )
-        # not need any more.
-        self.app_config.SQLALCHEMY_DATABASE_URI = None
-        return result
 
-    def initialize(self, app_config, display):
-        self.app_config = app_config
-        self.display = display
+        self.app_log = app.logger
+        self.sa = sa
+        self.sa_engine = sa.get_engine(app)
 
-        from flask_sqlalchemy import SQLAlchemy
+        ## TODO login_manager.login_view = 'auth.login'
+        login_manager.init_app(app)
+        self.login_manager = login_manager
+        self.app_config.SQLALCHEMY_DATABASE_URI = db_uri_safe
 
-        self.db = SQLAlchemy()
-        self.db_engine = self._create_engine()
+        return self
 
-        from flask_login import LoginManager
+    info = {
+        "app_config": "config.Config + app_config",
+        "app_log": "Flask's app logger",
+        "display": "mgd's simple text display to console",
+        "login_manager": "Flask's login manager",
+        "sa": "SqlAlchemy",
+        "sa_engine": "SqlAlchemy engine",
+    }
 
-        self.login_manager = LoginManager()
+    def __repr__(self):
+        return json.dumps(self.info, indent=4, sort_keys=True)
 
 
 # eof

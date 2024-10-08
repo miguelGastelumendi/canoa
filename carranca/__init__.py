@@ -56,10 +56,12 @@ started = time.perf_counter()
 
 
 # ---------------------------------------------------------------------------- #
-def create_app(app_name):
+def create_app(app_name, app_config):
     from flask import Flask
 
+    # alternative configuration to Flask
     app = Flask(app_name)
+    app.config.from_object(app_config)
 
     """ ChatGPT
     During each request:
@@ -70,7 +72,7 @@ def create_app(app_name):
     """
     @app.teardown_request
     def shutdown_session(exception=None):
-        app.shared.db.session.remove()
+        app.shared.sa.session.remove()
 
     return app
 

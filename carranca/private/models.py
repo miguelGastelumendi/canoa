@@ -16,42 +16,41 @@ from ..main import shared
 from ..helpers.db_helper import persist_record
 
 
-class UserDataFiles(shared.db.Model):
+class UserDataFiles(shared.sa.Model):
     __tablename__ = "user_data_files"
-    db = shared.db
-    col= shared.db.Column
-    id = col(db.Integer, primary_key=True)
-    ticket = col(db.String(40), unique=True)
-    id_users = col(db.Integer)   # fk
+    col= shared.sa.Column
+    id = col(shared.sa.Integer, primary_key=True)
+    ticket = col(shared.sa.String(40), unique=True)
+    id_users = col(shared.sa.Integer)   # fk
 
-    app_version = col(db.String(12))
-    process_version = col(db.String(12))
+    app_version = col(shared.sa.String(12))
+    process_version = col(shared.sa.String(12))
 
-    file_name = col(db.String(80))
-    original_name = col(db.String(80), nullable=True, default=None)
-    file_size = col(db.Integer)
-    file_crc32 = col(db.Integer)
-    from_os = col(db.String(1))
-    file_origin = col(db.String(1))
-    user_receipt = col(db.String(14))
+    file_name = col(shared.sa.String(80))
+    original_name = col(shared.sa.String(80), nullable=True, default=None)
+    file_size = col(shared.sa.Integer)
+    file_crc32 = col(shared.sa.Integer)
+    from_os = col(shared.sa.String(1))
+    file_origin = col(shared.sa.String(1))
+    user_receipt = col(shared.sa.String(14))
 
     # Process module
     ## saved at register.py
-    a_received_at = col(db.DateTime)
-    b_process_started_at = col(db.DateTime)
-    c_check_started_at = col(db.DateTime)
-    d_register_started_at = col(db.DateTime)
+    a_received_at = col(shared.sa.DateTime)
+    b_process_started_at = col(shared.sa.DateTime)
+    c_check_started_at = col(shared.sa.DateTime)
+    d_register_started_at = col(shared.sa.DateTime)
     ## saved at email.py
-    e_unzip_started_at = col(db.DateTime)
-    f_submit_started_at = col(db.DateTime)
-    g_email_started_at = col(db.DateTime)
+    e_unzip_started_at = col(shared.sa.DateTime)
+    f_submit_started_at = col(shared.sa.DateTime)
+    g_email_started_at = col(shared.sa.DateTime)
 
-    z_process_end_at = col(db.DateTime)
+    z_process_end_at = col(shared.sa.DateTime)
 
     # event
     ## saved at email.py
-    email_sent = col(db.Boolean, default=False)
-    report_ready_at = col(db.DateTime)
+    email_sent = col(shared.sa.Boolean, default=False)
+    report_ready_at = col(shared.sa.DateTime)
 
     # Set on trigger
     # registered_at, at insert
@@ -59,16 +58,16 @@ class UserDataFiles(shared.db.Model):
     # error_at, at error_code not 0
 
     # obsolete
-    # upload_start_at = col(db.DateTime)
+    # upload_start_at = col(shared.sa.DateTime)
 
-    error_code = col(db.Integer, nullable=True)
-    error_msg = col(db.String(200), nullable=True)
-    error_text = col(db.Text, nullable=True)
-    success_text = col(db.Text, nullable=True)
+    error_code = col(shared.sa.Integer, nullable=True)
+    error_msg = col(shared.sa.String(200), nullable=True)
+    error_text = col(shared.sa.Text, nullable=True)
+    success_text = col(shared.sa.Text, nullable=True)
 
     def _get_record(uTicket):
         ''' gets the record with unique Key uTicket '''
-        records = shared.db.session.query(UserDataFiles).filter_by(ticket=uTicket)
+        records = shared.sa.session.query(UserDataFiles).filter_by(ticket=uTicket)
         if (records is None) or (records.count() == 0):
             record = None
         elif records.count() == 1:

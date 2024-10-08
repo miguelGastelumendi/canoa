@@ -15,21 +15,20 @@ from ..main import shared
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
 
-db= shared.db
-class Users(db.Model, UserMixin):
+class Users(shared.sa.Model, UserMixin):
 
     __tablename__ = 'users'
 
     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True)
-    username_lower = db.Column(db.String(100), Computed(''))  # TODO deferred
-    email = db.Column(db.String(64), unique=True)
-    password = db.Column(db.LargeBinary)
-    last_login_at = db.Column(db.DateTime, nullable=True)
-    recover_email_token = db.Column(db.String(100), nullable=True)
-    recover_email_token_at = db.Column(db.DateTime, Computed(''))
-    disabled = db.Column(db.Boolean, default=False)
+    id = shared.sa.Column(shared.sa.Integer, primary_key=True)
+    username = shared.sa.Column(shared.sa.String(100), unique=True)
+    username_lower = shared.sa.Column(shared.sa.String(100), Computed(''))  # TODO deferred
+    email = shared.sa.Column(shared.sa.String(64), unique=True)
+    password = shared.sa.Column(shared.sa.LargeBinary)
+    last_login_at = shared.sa.Column(shared.sa.DateTime, nullable=True)
+    recover_email_token = shared.sa.Column(shared.sa.String(100), nullable=True)
+    recover_email_token_at = shared.sa.Column(shared.sa.DateTime, Computed(''))
+    disabled = shared.sa.Column(shared.sa.Boolean, default=False)
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():

@@ -93,6 +93,7 @@ class BaseConfig:
 
     # Flask Server Address
     SERVER_ADDRESS = ""
+
     # if left empty, an external service will be used
     # see self.EXTERNAL_IP_SERVICE
     # & ./helpers/route_helper.py[is_external_ip_ready()]

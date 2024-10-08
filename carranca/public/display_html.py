@@ -20,7 +20,7 @@ from flask import render_template
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.html_helper import img_filenames, img_change_src_path
-from ..main import shared
+from ..main import shared, app #DEBUG
 
 
 def __prepare_img_files(
@@ -127,8 +127,8 @@ def display_html(docName: str):
         pass
 
     # DEBUG
-    temp = shared.app.jinja_env.from_string( '{{ app_version() }}  + {{ app_name()}}' )
-    print(temp.render())
+  #  temp = app.jinja_env.from_string( '{{ app_version() }}  + {{ app_name()}}' )
+  #  print(temp.render())
 
     return render_template(
         './home/document.html.j2',

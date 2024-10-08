@@ -15,7 +15,7 @@ import importlib.metadata
 
 from typing import List, Tuple
 from ..helpers.py_helper import coalesce
-from ..main import shared
+from ..main import shared, app
 
 
 def get_debug_info(bPrint: bool = False) -> List[Tuple[str, str]]:
@@ -51,10 +51,10 @@ def get_debug_info(bPrint: bool = False) -> List[Tuple[str, str]]:
     _add("Jinja2", importlib.metadata.version("jinja2"))
 
     _add("Flask", "")
-    _add("Name", shared.app.name)
-    _add("Root Path", shared.app.root_path)
-    _add("Template Folder", shared.app.template_folder)
-    _add("Static Folder", shared.app.static_folder)
+    _add("Name", app.name)
+    _add("Root Path", app.root_path)
+    _add("Template Folder", app.template_folder)
+    _add("Static Folder", app.static_folder)
 
     _add("OS Path", os.getcwd())
 

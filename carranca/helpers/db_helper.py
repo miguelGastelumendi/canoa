@@ -7,7 +7,7 @@
 
 # cSpell:ignore psycopg2 sqlalchemy
 
-from typing import Tuple
+from typing import Any, Union, Tuple, Optional
 from psycopg2 import DatabaseError
 from sqlalchemy import text
 
@@ -24,7 +24,7 @@ def is_connected() -> bool:
     """
 
     try:
-        shared.db_engine.connect()
+        shared.sa_engine.connect()
         return True
     except Exception as e:
         shared.app_log.error(f"Connection Error: [{e}].")
@@ -35,16 +35,17 @@ def execute_sql(query: str):
     """ Runs an SQL query and returns the result """
     result = None
     if not is_str_none_or_empty(query):
-        with shared.db_engine.connect() as connection:
+        with shared.sa_engine.connect() as connection:
             _text = text(query)
             result = connection.execute(_text)
 
     return result
 
 
-def retrieve_data(query: str) -> any | Tuple:
+def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
   """
   Executes the given SQL query and returns the result in 3 modes:
+    1.  N rows c column
     1.  N rows 1 column
     2.  1 row N columns
     3.  1 row 1 column
@@ -61,31 +62,50 @@ def retrieve_data(query: str) -> any | Tuple:
 
   try:
     data_rows = execute_sql(query)
-    data = data_rows.fetchall()
+    rows = data_rows.fetchall()
 
-    if not data:
+    if not rows:
         return None
-    elif len(data) > 1:
-        # Multiple rows with a single column each
-        return tuple(line[0] for line in data)
-    elif len(data[0]) > 1:
+    elif len(rows) > 1 and len(rows[0]) > 1:
+        # Multiple rows with multiple columns
+        return tuple(tuple(row) for row in rows)
+    elif len(rows) > 1:
+        # Multiple rows with one column each
+        return tuple(line[0] for line in rows)
+    elif len(rows[0]) > 1:
         # Single row with multiple columns
-        return tuple(data[0])
+        return tuple(rows[0])
     else:
         # Single row with a single column
-        return data[0][0]
+        return rows[0][0]
   except Exception as e:
     shared.app_log.error(f"An error occurred retrieving db data [{query}]: {e}")
     return None
 
 
 def retrieve_dict(query: str):
+    """
+    Executes the query and attempts to return the result as a dictionary,
+    assuming the result consists of two columns (key, value) per row.
+
+    Args:
+      query: The SQL query to execute.
+
+    Returns:
+      - A dictionary where the first column is the key and the second column is the value.
+      - An empty dictionary if the query returns no data or an error occurs.
+    """
     data = retrieve_data(query)
 
     result = {}
     try:
         if data and isinstance(data, tuple):
-            result = {row[0]: row[1] for row in data}
+            # Check if data contains multiple rows of at least two columns
+            if all(isinstance(row, tuple) and len(row) >= 2 for row in data):
+                result = {row[0]: row[1] for row in data}
+            # Handle single row with multiple columns (if returned by retrieve_data)
+            elif isinstance(data[0], tuple) and len(data) == 2:
+                result = {data[0]: data[1]}
     except Exception as e:
         shared.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
 
@@ -100,16 +120,15 @@ def retrieve_dict(query: str):
 def persist_record(record: any, task_code: int = 1) -> None:
     """
     Args:
-      db:  SQLAlchemy()
       record: query result
       task_code: int
     """
     try:
-        shared.db.session.add(record)
+        shared.sa.session.add(record)
         task_code += 1
-        shared.db.session.commit()
+        shared.sa.session.commit()
     except Exception as e:
-        shared.db.session.rollback()
+        shared.sa.session.rollback()
         e.task_code = task_code
         raise DatabaseError(e)
 

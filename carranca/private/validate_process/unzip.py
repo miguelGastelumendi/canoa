@@ -11,7 +11,7 @@
 
 import zipfile
 from .Cargo import Cargo
-from ...Shared import app_log
+from ...main import shared
 from ...helpers.user_helper import  now
 from ...helpers.error_helper import ModuleErrorCode
 
@@ -45,11 +45,11 @@ def unzip(cargo: Cargo) -> Cargo:
                 zip_file.extractall(unzip_folder)
                 msg_error = ''
 
-        app_log.debug(f"The zip file [{zip_full_name}] was unpacked correctly in [{unzip_folder}].")
+        shared.app_log.debug(f"The zip file [{zip_full_name}] was unpacked correctly in [{unzip_folder}].")
     except Exception as e:
         msg_exception= str(e)
         error_code= task_code + ModuleErrorCode.RECEIVE_FILE_UNZIP
-        app_log.fatal(f"Error unzipping file [{zip_full_name}] in [{unzip_folder}]: [{e}].", exc_info=error_code)
+        shared.app_log.fatal(f"Error unzipping file [{zip_full_name}] in [{unzip_folder}]: [{e}].", exc_info=error_code)
 
 
     # goto module submit.py
