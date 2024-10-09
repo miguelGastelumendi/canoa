@@ -5,7 +5,8 @@
    Equipe da Canoa -- 2024
    mgd 2024-10-03
 """
-# cSpell:ignore sqlalchemy keepalives
+
+# cSpell:ignore sqlalchemy keepalives psycopg2
 
 import time
 
@@ -34,21 +35,6 @@ def _register_jinja(app):
         public_route=public_route,
     )
 
-def _create_sql_alchemy(app, app_config):
-    from flask_sqlalchemy import SQLAlchemy
-    sa = SQLAlchemy(app)
-
-    # Obfuscate the password of SQLALCHEMY_DATABASE_URI value
-    import re
-    db_uri_safe = re.sub(
-        app_config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
-        app_config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
-        app_config.SQLALCHEMY_DATABASE_URI,
-    )
-
-    # not need any more.
-    app_config.SQLALCHEMY_DATABASE_URI= db_uri_safe
-    return sa
 
 # -------------------------------------------------------
 # Main --------------------------------------------------
@@ -56,43 +42,60 @@ def _create_sql_alchemy(app, app_config):
 
 # Here and only here: the app_name
 app_name = "Canoa"
+
 # This should be the first message of this package
 the_aperture_msg = f"{app_name} is starting in {__name__}."
-print('-' * len(the_aperture_msg))
-print(f"{app_name} is starting is {__name__}.")
+print(f"{'-' * len(the_aperture_msg)}\n{the_aperture_msg}")
 
-# Global var, to simplify sharing objects
-from .igniter import create_shared
+# check mandatory information and create
+#  Global var, to simplify sharing objects
+from .igniter import ignite_shared
 from carranca import started
-shared = create_shared(app_name, started)
+
+shared = ignite_shared(app_name, started)
 
 # Flask app
 from carranca import create_app  # see __init__.py
+
 app = create_app(app_name, shared.app_config)
 shared.display.info("The Flask app was quickly created and configured.")
 
 # Database
-sa = _create_sql_alchemy(app, shared.app_config)
-shared.display.info("SQLalchemy was instantiated")
+from .igniter import ignite_sql_alchemy
+
+sa = ignite_sql_alchemy(app, shared)
+shared.display.info("SQLAlchemy was instantiated and the db connection was successfully tested.")
 
 # login Manger
 from flask_login import LoginManager
-login_manager = LoginManager()
+
+login_manager = LoginManager(app)
 shared.display.info("Flask login manager was instantiated.")
+
 # Keep shared alive within app
-app.shared = shared.keep(app, sa, LoginManager())
+app.shared = shared.keep(app, sa, login_manager)
 shared.display.info("The global var 'shared' is now ready:")
-shared.display.simple(repr(shared), '', False)
+if shared.app_config.APP_DISPLAY_DEBUG_MSG:
+    shared.display.simple(repr(shared), "", False)
 
+# Keep shared alive within app
+if shared.app_config.APP_DISPLAY_DEBUG_MSG and True:
+    from .public.debug_info import get_debug_info
+    di = get_debug_info(app, shared.app_config)
 
+# Blue Prints
 _register_blueprints(app)
-shared.display.info("The blueprints were quickly registered within the app.")
+shared.display.info("The blueprints were collected and registered within the app.")
 
 _register_jinja(app)
-shared.display.info("The Jinja functions were registered.")
+shared.display.info("This app's functions were registered into Jinja.")
 
 # Tell everybody how quick we are
 elapsed = (time.perf_counter() - started) * 1000
-shared.display.info(f"{app_name} is ready (in {elapsed:,.0f}ms).")
+shared.display.info(f"{app_name} is now ready for the trip. It took {elapsed:,.0f}ms to create it.")
 
-#eof
+
+if __name__ == "__main__":
+    app.run()
+
+# eof

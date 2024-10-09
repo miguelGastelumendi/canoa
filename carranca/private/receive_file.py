@@ -75,7 +75,7 @@ def receive_file() -> str:
         logged_user = LoggedUser()
 
         def doProcessData() -> tuple[bool, ProcessData]:
-            receive_file_cfg = ValidateProcessConfig(shared.app_config.DEBUG)
+            receive_file_cfg = ValidateProcessConfig(shared.app_config.APP_DEBUG)
             common_folder = path_remove_last_folder(shared.app_config.ROOT_FOLDER)
             pd = ProcessData(
                 logged_user.code,

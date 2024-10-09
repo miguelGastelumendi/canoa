@@ -28,6 +28,7 @@ TODO:
 
 
     small tasks
+        - persist_record to private.models
         - Login Remember not always working
         - Fix get_Html()
         - ren receiveFile.html.j2 receive_file.html.j2 (Linux as well)
@@ -40,10 +41,12 @@ TODO:
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
 
+2024-10-07 β 2.33
+    - new Session per model
+
 2024-10-07 β 2.32
     - app is running, all menu items are working
      local file is validated.
-
 
 2024-10-05 β 2.31
     - app is running

@@ -14,16 +14,15 @@ import sqlalchemy
 import importlib.metadata
 
 from typing import List, Tuple
-from ..helpers.py_helper import coalesce
-from ..main import shared, app
 
 
-def get_debug_info(bPrint: bool = False) -> List[Tuple[str, str]]:
+def get_debug_info(app, app_config) -> List[Tuple[str, str]]:
+    from ..helpers.py_helper import coalesce, is_str_none_or_empty
+
     """App & and main packages version"""
     result = []
     ml = 0
     vl = 0
-    cfg = shared.app_config
 
     def _add(name, value):
         nonlocal ml, vl  # int, float, bool, str, tuples... are immutables
@@ -32,17 +31,18 @@ def get_debug_info(bPrint: bool = False) -> List[Tuple[str, str]]:
         vl = len(v) if vl < len(v) else vl
         result.append((name, v))
 
-    _add(f"{cfg.APP_NAME} Basic Configuration", "")
-    _add("Version", cfg.APP_VERSION)
-    _add("Mode", cfg.APP_MODE)
-    _add("DEBUG", cfg.DEBUG)
-    _add("TESTING", cfg.TESTING)
-    _add("Page Compression", cfg.APP_MINIFIED)
-    _add("App root folder", cfg.ROOT_FOLDER)
-    _add("Database address", cfg.SQLALCHEMY_DATABASE_URI)
-    _add("Server address", cfg.SERVER_ADDRESS)
-    _add("External address ", coalesce(cfg.SERVER_EXTERNAL_IP, "<set on demand>"))
-    _add("External port", coalesce(cfg.SERVER_EXTERNAL_PORT, "<none>"))
+    _add(f"{app_config.APP_NAME} Configuration", "")
+    _add("Version", app_config.APP_VERSION)
+    _add("Mode", app_config.APP_MODE)
+    _add("Debug", app_config.APP_DEBUG)
+    _add("Debug Messages", app_config.APP_DEBUG)
+
+    _add("Page Compression", app_config.APP_MINIFIED)
+    _add("App root folder", app_config.ROOT_FOLDER)
+    _add("Database address", app_config.SQLALCHEMY_DATABASE_URI)
+    _add("Server address", app_config.SERVER_ADDRESS)
+    _add("External address ", coalesce(app_config.SERVER_EXTERNAL_IP, "<set on demand>"))
+    _add("External port", coalesce(app_config.SERVER_EXTERNAL_PORT, "<none>"))
 
     _add("Versions of the main packages", "")
     _add("Python", platform.python_version())
@@ -52,22 +52,27 @@ def get_debug_info(bPrint: bool = False) -> List[Tuple[str, str]]:
 
     _add("Flask", "")
     _add("Name", app.name)
+    _add("DEBUG", app.debug)
+    _add("TESTING", app.testing)
+    _add("SECRET_KEY", ("" if is_str_none_or_empty(app.secret_key) else "*******"))
     _add("Root Path", app.root_path)
     _add("Template Folder", app.template_folder)
     _add("Static Folder", app.static_folder)
 
     _add("OS Path", os.getcwd())
 
-    if bPrint:
-        b = shared.display.set_icon_output(False)
-        for name, value in result:
-            kind, v = (
-                (shared.display.Kind.SIMPLE, ": " + value)
-                if value
-                else (shared.display.Kind.INFO, "_" * vl)
-            )
-            shared.display.print(kind, f"{name.rjust(ml)}{v}", "")
-        shared.display.set_icon_output(b)
+    # if bPrint:
+    #     for name, value in result:
+    #         kind, v = (
+    #             (shared.display.Kind.SIMPLE, ": " + value)
+    #             if value
+    #             else (shared.display.Kind.INFO, "_" * vl)
+    #         )
+    #         shared.display.print(kind, f"{name.rjust(ml)}{v}", "", False)
+
+
+    # max_len_first = max(len(first) for first, _ in tuples)
+    # max_len_second = max(len(second) for _, second in tuples)
 
     return result
 

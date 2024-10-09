@@ -7,12 +7,20 @@
    mgd 2024-10-01--07
 """
 
-# cSpell:ignore sqlalchemy mandatories cssless sendgrid, ENDC
+# cSpell:ignore sqlalchemy mandatories cssless sendgrid ENDC psycopg2
 
 from typing import Tuple
 
 _error_ = "[{0}]: An error ocurred while {1}. Message `{2}`."
 fuse = None
+
+# ---------------------------------------------------------------------------- #
+# Escape Door
+def _log_and_exit(ups: str):
+    if fuse and fuse.display:
+        fuse.display.error(ups)
+    exit(ups)
+
 
 # ---------------------------------------------------------------------------- #
 def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
@@ -170,19 +178,10 @@ def _ignite_server_address(app_config) -> Tuple[any, str]:
     return address, msg_error
 
 
-# ---------------------------------------------------------------------------- #
-# ---------------------------------------------------------------------------- #
-# Escape Door
-def _log_and_exit(ups: str):
-    if fuse:
-        fuse.display.error(ups)
-    exit(ups)
-
-
 # - ---------------------------------------------------------------------------- #
-# - Ignite --------------------------------------------------------------------- #
+# - Public --------------------------------------------------------------------- #
 # - ---------------------------------------------------------------------------- #
-def create_shared(app_name, start_at):
+def ignite_shared(app_name, start_at):
     global fuse
 
     fuse, error = _start_fuse(app_name, start_at)
@@ -234,5 +233,38 @@ def create_shared(app_name, start_at):
     )
 
     return shared
+
+# - ---------------------------------------------------------------------------- #
+def ignite_sql_alchemy( app, shared):
+
+    from psycopg2 import OperationalError
+    from flask_sqlalchemy import SQLAlchemy
+
+    sa = SQLAlchemy(app)
+    try:
+        from sqlalchemy import create_engine, text
+
+        engine = create_engine(shared.app_config.SQLALCHEMY_DATABASE_URI)
+        with engine.connect() as connection:
+            query = text("SELECT 1")
+            result = connection.execute(query).fetchone()
+            if result == None or len(result) != 1 or result[0] != 1:
+                raise OperationalError(f"Unexpected value received from the Database: [{result}].")
+    except Exception as e:
+        _log_and_exit(f"Unable to connect to the database. Error details: [{e}].")
+
+
+    # Obfuscate the password of SQLALCHEMY_DATABASE_URI value
+    import re
+    db_uri_safe = re.sub(
+        shared.app_config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
+        shared.app_config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
+        shared.app_config.SQLALCHEMY_DATABASE_URI,
+    )
+
+    # not need any more, just for info
+    shared.app_config.SQLALCHEMY_DATABASE_URI = db_uri_safe
+
+    return sa
 
 # eof

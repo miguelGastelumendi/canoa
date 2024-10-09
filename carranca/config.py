@@ -47,7 +47,7 @@ class BaseConfig:
     APP_NAME = app_name
 
     # major.minor.patch
-    APP_VERSION = "β 2.28"  # &beta;
+    APP_VERSION = "β 2.33"  # &beta;
 
     """ Internal attributes
         ------------------
@@ -60,16 +60,25 @@ class BaseConfig:
     len_val_for_uname = LenValidate(3, 22)
     len_val_for_email = LenValidate(8, 60)
 
-    # see below (enum)
-    APP_MODE = "None"
+    """ Canoa Configurations
+        --------------------------
+    """
+    APP_MODE = "None" # see below (enum)
+    APP_DEBUG = False
     APP_MINIFIED = None  # None = True if DEBUG else False
+    APP_DISPLAY_DEBUG_MSG = None   # None = True if DEBUG else False
+
+    """ Flask Configuration
+        --------------------------
+    """
     # Flask https://flask.palletsprojects.com/en/latest/config/
     DEBUG = False
     TESTING = False
     SECRET_KEY = ""
-    DEBUG_MSG = None  # None = True if DEBUG else False
-    # Flask, trying to fix background shakes (CharGPT)
-    SEND_FILE_MAX_AGE_DEFAULT = 31536000
+    APP_DISPLAY_DEBUG_MSG = None  # None = True if DEBUG else False
+    SESSION_COOKIE_NAME = f"{APP_NAME.lower()}"
+    # APPLICATION_ROOT
+    # SEND_FILE_MAX_AGE_DEFAULT = 31536000 # Flask, trying to fix background shakes (CharGPT)
 
     """ From Environment Variables
         --------------------------
@@ -93,6 +102,7 @@ class BaseConfig:
 
     # Flask Server Address
     SERVER_ADDRESS = ""
+    DEBUG_FLASK = None
 
     # if left empty, an external service will be used
     # see self.EXTERNAL_IP_SERVICE
@@ -107,7 +117,8 @@ class BaseConfig:
             return bool(self.DEBUG if attrib is None else attrib)
 
         self.APP_MINIFIED = _if_debug(self.APP_MINIFIED)
-        self.DEBUG_MSG = _if_debug(self.DEBUG_MSG)
+        self.APP_DISPLAY_DEBUG_MSG = _if_debug(self.APP_DISPLAY_DEBUG_MSG)
+        self.APP_DEBUG = _if_debug(self.APP_DEBUG)
 
 
 # End Config
@@ -129,7 +140,7 @@ def init_envvar_of_config(cfg):
                 fuse.display.warn(f"Ignoring empty envvar value for key [{key}], keeping original.")
             else:
                 setattr(cfg, attribute_name, value)
-        elif cfg.DEBUG:
+        elif cfg.APP_DEBUG:
             fuse.display.warn(
                 f"[{attribute_name}] is not an attribute of `Config`, will not set envvar value."
             )
@@ -159,14 +170,17 @@ class DebugConfig(BaseConfig):
     """
 
     # All IPs at port 5001
+    APP_DEBUG = True
+    APP_MODE = app_mode_debug
+
+    # == Flask ==
+    DEBUG = True
+    TESTING = True
     SERVER_ADDRESS = (
         "http://0.0.0.0:5001"
         if is_str_none_or_empty(BaseConfig.SERVER_ADDRESS)
         else BaseConfig.SERVER_ADDRESS
     )
-    DEBUG = True
-    TESTING = True
-    APP_MODE = app_mode_debug
 
 
 # Production Config
@@ -174,10 +188,11 @@ class ProductionConfig(BaseConfig):
     """
     The Production Configuration Class for the App
     """
-
+    APP_DEBUG = False
+    APP_MODE = app_mode_production
+    # == Flask ==
     DEBUG = False  # Just to be sure & need some code here
     TESTING = False
-    APP_MODE = app_mode_production
 
 
 # Load all possible configurations

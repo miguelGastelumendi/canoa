@@ -29,11 +29,10 @@
     mgd 2024-07-22,10-07
 """
 
-# cSpell:ignore sqlalchemy mgd
+# cSpell:ignore sqlalchemy mgd sessionmaker
 
 import json
 from datetime import datetime
-
 
 class Shared:
     def __init__(self, app_config, display, server_address):
@@ -65,6 +64,12 @@ class Shared:
         self.app_config.SQLALCHEMY_DATABASE_URI = db_uri_safe
 
         return self
+
+    def doSession(self):
+        from sqlalchemy.orm import sessionmaker
+        Session = sessionmaker(bind=self.sa_engine)
+        session = Session()
+        return session
 
     info = {
         "app_config": "config.Config + app_config",
