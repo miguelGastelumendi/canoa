@@ -162,7 +162,7 @@ def download_public_google_file(file_id, file_folder):
     SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
     SERVICE_ACCOUNT_FILE = path.join(
-        remove_last_folder(shared.app_config.ROOT_FOLDER),
+        remove_last_folder(shared.config.ROOT_FOLDER),
         "LocalDrive",
         "canoa-download-key.json",
     )

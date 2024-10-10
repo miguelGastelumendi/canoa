@@ -23,10 +23,10 @@ def _register_jinja(app):
     from .helpers.route_helper import private_route, public_route
 
     def __get_name() -> str:
-        return app.shared.app_config.APP_NAME
+        return app.shared.config.APP_NAME
 
     def __get_version() -> str:
-        return app.shared.app_config.APP_VERSION
+        return app.shared.config.APP_VERSION
 
     app.jinja_env.globals.update(
         app_version=__get_version,
@@ -57,7 +57,7 @@ shared = ignite_shared(app_name, started)
 # Flask app
 from carranca import create_app  # see __init__.py
 
-app = create_app(app_name, shared.app_config)
+app = create_app(app_name, shared.config)
 shared.display.info("The Flask app was quickly created and configured.")
 
 # Database
@@ -75,13 +75,13 @@ shared.display.info("Flask login manager was instantiated.")
 # Keep shared alive within app
 app.shared = shared.keep(app, sa, login_manager)
 shared.display.info("The global var 'shared' is now ready:")
-if shared.app_config.APP_DISPLAY_DEBUG_MSG:
+if shared.config.APP_DISPLAY_DEBUG_MSG:
     shared.display.simple(repr(shared), "", False)
 
 # Keep shared alive within app
-if shared.app_config.APP_DISPLAY_DEBUG_MSG and True:
+if shared.config.APP_DISPLAY_DEBUG_MSG and True:
     from .public.debug_info import get_debug_info
-    di = get_debug_info(app, shared.app_config)
+    di = get_debug_info(app, shared.config)
 
 # Blue Prints
 _register_blueprints(app)

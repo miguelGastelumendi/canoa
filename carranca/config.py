@@ -7,7 +7,7 @@
  mgd 2024-05-21: Base, Debug, Production
 """
 
-# cSpell:ignore SQLALCHEMY
+# cSpell:ignore SQLALCHEMY searchpath
 
 from typing import Dict
 from hashlib import sha384
@@ -85,6 +85,7 @@ class BaseConfig:
     """
     # Root folder, see process.py
     ROOT_FOLDER = path.abspath(path.dirname(__file__))
+    TEMPLATES_FOLDER = None
 
     # see route_helper.py[is_external_ip_ready]
     EXTERNAL_IP_SERVICE = "https://checkip.amazonaws.com"
@@ -125,7 +126,16 @@ class BaseConfig:
 fuse.display.info("Instantiating App Configs")
 
 
-def init_envvar_of_config(cfg):
+def _get_template_folder():
+    from jinja2 import Environment, FileSystemLoader
+
+    # Create a Jinja2 environment using a specific template folder
+    env = Environment(loader=FileSystemLoader('templates'))
+    # Access the template folder path
+    template_folder = env.loader.searchpath[0]
+    return template_folder
+
+def _init_envvar_of_config(cfg):
     """
     Initialize BaseConfig
     from environment variables
@@ -147,7 +157,10 @@ def init_envvar_of_config(cfg):
 
 
 # === Retrieve values from envvars
-init_envvar_of_config(BaseConfig)
+_init_envvar_of_config(BaseConfig)
+BaseConfig.TEMPLATES_FOLDER = _get_template_folder()
+
+
 
 if is_str_none_or_empty(BaseConfig.SECRET_KEY):
     """

@@ -70,6 +70,8 @@ class UserDataFiles(shared.sa.Model):
     # Helpers
     def _get_record(session, uTicket):
         ''' gets the record with unique Key uTicket '''
+        # TODO: Where
+        # https://docs.sqlalchemy.org/en/20/orm/queryguide/query.html#sqlalchemy.orm.Query.filter
         records = session.query(UserDataFiles).filter_by(ticket=uTicket)
         if (records is None) or (records.count() == 0):
             record = None

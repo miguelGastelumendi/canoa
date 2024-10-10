@@ -16,7 +16,7 @@ import importlib.metadata
 from typing import List, Tuple
 
 
-def get_debug_info(app, app_config) -> List[Tuple[str, str]]:
+def get_debug_info(app, config) -> List[Tuple[str, str]]:
     from ..helpers.py_helper import coalesce, is_str_none_or_empty
 
     """App & and main packages version"""
@@ -31,18 +31,18 @@ def get_debug_info(app, app_config) -> List[Tuple[str, str]]:
         vl = len(v) if vl < len(v) else vl
         result.append((name, v))
 
-    _add(f"{app_config.APP_NAME} Configuration", "")
-    _add("Version", app_config.APP_VERSION)
-    _add("Mode", app_config.APP_MODE)
-    _add("Debug", app_config.APP_DEBUG)
-    _add("Debug Messages", app_config.APP_DEBUG)
+    _add(f"{config.APP_NAME} Configuration", "")
+    _add("Version", config.APP_VERSION)
+    _add("Mode", config.APP_MODE)
+    _add("Debug", config.APP_DEBUG)
+    _add("Debug Messages", config.APP_DEBUG)
 
-    _add("Page Compression", app_config.APP_MINIFIED)
-    _add("App root folder", app_config.ROOT_FOLDER)
-    _add("Database address", app_config.SQLALCHEMY_DATABASE_URI)
-    _add("Server address", app_config.SERVER_ADDRESS)
-    _add("External address ", coalesce(app_config.SERVER_EXTERNAL_IP, "<set on demand>"))
-    _add("External port", coalesce(app_config.SERVER_EXTERNAL_PORT, "<none>"))
+    _add("Page Compression", config.APP_MINIFIED)
+    _add("App root folder", config.ROOT_FOLDER)
+    _add("Database address", config.SQLALCHEMY_DATABASE_URI)
+    _add("Server address", config.SERVER_ADDRESS)
+    _add("External address ", coalesce(config.SERVER_EXTERNAL_IP, "<set on demand>"))
+    _add("External port", coalesce(config.SERVER_EXTERNAL_PORT, "<none>"))
 
     _add("Versions of the main packages", "")
     _add("Python", platform.python_version())

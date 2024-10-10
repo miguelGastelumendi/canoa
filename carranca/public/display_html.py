@@ -103,7 +103,7 @@ def display_html(docName: str):
     )  # list of img tags in HTML
 
     img_folders = ['static', 'docs', section, 'images']
-    img_local_path = os.path.join(shared.app_config.ROOT_FOLDER, *img_folders)
+    img_local_path = os.path.join(shared.config.ROOT_FOLDER, *img_folders)
     if is_str_none_or_empty(body):
         msg = get_msg_error('documentNotFound').format(docName)
         body = f'<h4>{msg}</h4>'

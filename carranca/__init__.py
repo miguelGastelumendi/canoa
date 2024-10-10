@@ -11,7 +11,7 @@
         ├── carranca/          # main application package
         |    ├── __init__.py   # crucial (tells Python that tis folder is a package (carranca). Creates the app
         │    ├── main.py       # <- You are here
-        │    ├── shared.py     # shared var with most used object (app, app_config, db, etc)
+        │    ├── shared.py     # shared var with most used object (app, config, sa, etc)
         │    ├── config.py     # configuration file
         │    ├── config_..     # config_validate_process.py specific configurations for the validate process
         │    ├── helpers
@@ -25,7 +25,7 @@
         │    ├── public
         |    |    ├──:          # models, routes, forms, etc py files
         |    |    └── access_control
-        |    |         └──:     # password_reset, login, reset, password_recovery
+        |    |         └──:     # login, password_recovery, password_reset, register
         │    ├── static         # assets, css, docs, img, js
         │    └── templates      # jinja templates
         |         ├── accounts
@@ -56,12 +56,12 @@ started = time.perf_counter()
 
 
 # ---------------------------------------------------------------------------- #
-def create_app(app_name, app_config):
+def create_app(app_name, config):
     from flask import Flask
 
     # alternative configuration to Flask
     app = Flask(app_name)
-    app.config.from_object(app_config)
+    app.config.from_object(config)
 
     """ ChatGPT
     During each request:

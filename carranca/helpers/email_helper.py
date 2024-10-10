@@ -125,7 +125,7 @@ def send_email(
 
         task = "creating Mail data"
         mail = sendgrid.Mail(
-            from_email=shared.app_config.EMAIL_ORIGINATOR,
+            from_email=shared.config.EMAIL_ORIGINATOR,
             to_emails=to_address,
             subject=texts["subject"],
             html_content=texts["content"],
@@ -144,7 +144,7 @@ def send_email(
         _addTo(bcc_address, mail.add_bcc)
 
         task = "preparing Api"
-        apiKey = shared.app_config.EMAIL_API_KEY
+        apiKey = shared.config.EMAIL_API_KEY
         sg = sendgrid.SendGridAPIClient(apiKey)
         if is_str_none_or_empty(file_to_send_full_name):
             pass

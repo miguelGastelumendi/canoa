@@ -15,7 +15,7 @@ _ticket_receipt_sep = '_'
 
 def now_as_text() -> str:
     # current date time for user
-    ##- TODO: get app_config <- from ui_texts
+    ##- TODO: get config <- from ui_texts
     return now().strftime('%d/%m/%Y às %H:%M')
 
 

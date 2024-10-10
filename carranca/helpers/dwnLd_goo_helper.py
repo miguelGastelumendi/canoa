@@ -163,7 +163,7 @@ def download_public_google_file(
 
         # TODO: Pass as param
         service_account_file = path.join(
-            path_remove_last_folder(shared.app_config.ROOT_FOLDER),
+            path_remove_last_folder(shared.config.ROOT_FOLDER),
             "LocalDrive",
             "canoa-download-key.json",
         )

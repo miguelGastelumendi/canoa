@@ -5,7 +5,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
-# cSpell:ignore tmpl passwordrecovery wtforms
+# cSpell:ignore tmpl wtforms
 
 from flask import render_template, request
 import secrets
@@ -35,7 +35,7 @@ def password_recovery():
         task_code += 1  # 1
         tmpl_form = PasswordRecoveryForm(request.form)
         task_code += 1  # 2
-        template, is_get, texts = get_account_form_data('passwordrecovery')
+        template, is_get, texts = get_account_form_data('passwordRecovery')
         task_code += 1  # 3
         send_to = '' if is_get else get_input_text('user_email').lower()
         task_code += 1  # 4
@@ -45,13 +45,13 @@ def password_recovery():
             pass
         elif record_to_update is None:
             add_msg_error('emailNotRegistered', texts)
-        elif not is_external_ip_ready(shared.app_config):
+        elif not is_external_ip_ready(shared.config):
             add_msg_error('noExternalIP', texts)
         else:
             task_code += 1  # 5
             token = secrets.token_urlsafe()
             task_code += 1  # 6
-            url = f"http://{shared.app_config.SERVER_EXTERNAL_IP}{shared.app_config.SERVER_EXTERNAL_PORT}{public_route(public_route__password_reset, token= token)}"
+            url = f"http://{shared.config.SERVER_EXTERNAL_IP}{shared.config.SERVER_EXTERNAL_PORT}{public_route(public_route__password_reset, token= token)}"
             task_code += 1  # 7
             send_email(send_to, 'passwordRecovery_email', {'url': url})
             task_code += 1  # 8

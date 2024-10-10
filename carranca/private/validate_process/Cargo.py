@@ -53,7 +53,7 @@ class Cargo:
         self.step = 1
         self.final = {}  # the process.py return values
         """ When the process began """
-        self.app_version = shared.app_config.APP_VERSION
+        self.app_version = shared.config.APP_VERSION
         self.process_version = process_version
         self.received_at = received_at
         self.process_started_at = now()

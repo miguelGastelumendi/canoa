@@ -6,7 +6,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
-# cSpell: ignore werkzeug wtforms receivefile tmpl
+# cSpell: ignore werkzeug wtforms tmpl
 
 from flask import Blueprint, render_template
 from flask_login import login_required
@@ -55,10 +55,24 @@ def home():
 
 
 @login_required
-@bp_private.route("/receivefile", methods=["GET", "POST"])
-def receivefile():
+@bp_private.route("/profile_management", methods=["GET", "POST"])
+def profile_management():
     """
-    Through this route, the user sends a zip file or a URL for validation.
+    Through this route, the admin user can manage the profile os
+    users
+    """
+    if nobody_is_logged():
+        return redirect_to(login_route())
+    else:
+        from .profile_mgmt import do_profile_management
+        return do_profile_management()
+
+
+@login_required
+@bp_private.route("/receive_file", methods=["GET", "POST"])
+def receive_file():
+    """
+    Through this route, the user sends a zip file or a URL link for validation.
 
     If it passes the simple validations confronted in receive_file.py,
     it is unzipped and sent to data_validate
@@ -76,10 +90,10 @@ def receivefile():
 
 
 @login_required
-@bp_private.route("/changepassword", methods=["GET", "POST"])
-def changepassword():
+@bp_private.route("/change_password", methods=["GET", "POST"])
+def change_password():
     """
-    `changepassword` page, as it's name
+    'change_password page, as it's name
     implies, allows the user to change
     is password, for what ever reason
     at all or none.

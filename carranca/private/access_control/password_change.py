@@ -5,7 +5,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
-# cSpell:ignore tmpl passwordrecovery wtforms
+# cSpell:ignore tmpl wtforms
 
 from flask import render_template, request
 from flask_login import current_user
@@ -44,8 +44,8 @@ def do_password_change():
 
         if is_get:
             pass
-        elif not shared.app_config.len_val_for_pw.check(password):
-            add_msg_error('invalidPassword', texts, shared.app_config.len_val_for_pw.min, shared.app_config.len_val_for_pw.max)
+        elif not shared.config.len_val_for_pw.check(password):
+            add_msg_error('invalidPassword', texts, shared.config.len_val_for_pw.min, shared.config.len_val_for_pw.max)
         elif password != confirm_password:
             add_msg_error('passwordsAreDifferent', texts)
         elif user is None:

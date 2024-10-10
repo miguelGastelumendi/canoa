@@ -23,10 +23,10 @@ class ReceiveFileForm(FlaskForm):
 # Private & Public form
 class ChangePassword(FlaskForm):
     password = PasswordField('',
-                    validators=[InputRequired(), Length(**shared.app_config.len_val_for_pw.wtf_val())])
+                    validators=[InputRequired(), Length(**shared.config.len_val_for_pw.wtf_val())])
                     #, EqualTo('confirm_password', message="As senhas não são iguais.") é no servidor.
 
     confirm_password = PasswordField('',
-                    validators=[InputRequired(), Length(**shared.app_config.len_val_for_pw.wtf_val())])
+                    validators=[InputRequired(), Length(**shared.config.len_val_for_pw.wtf_val())])
 
 # eof

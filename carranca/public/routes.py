@@ -8,7 +8,7 @@
     mgd
 """
 
-# cSpell:ignore werkzeug receivefile tmpl sqlalchemy lastpasswordchange errorhandler assis passwordrecovery passwordreset
+# cSpell:ignore werkzeug tmpl sqlalchemy lastpasswordchange errorhandler assis
 
 from flask import Blueprint, render_template
 from ..main import shared
@@ -92,7 +92,7 @@ def login():
 
 
 @bp_public.route(f"/{public_route__password_reset}/<token>", methods=["GET", "POST"])
-def passwordreset(token=None):
+def password_reset(token=None):
     """
     Password Reset Form:
     When a user forgets their password, they will receive an
@@ -109,8 +109,8 @@ def passwordreset(token=None):
         return password_reset(token)
 
 
-@bp_public.route("/passwordrecovery", methods=["GET", "POST"])
-def passwordrecovery():
+@bp_public.route("/password_recovery", methods=["GET", "POST"])
+def password_recovery():
     """ "
     *Password Recovery Form*
     This form asks the user for his registered e-mail address
@@ -120,7 +120,7 @@ def passwordrecovery():
     """
 
     if is_someone_logged():
-        return redirect_to(private_route("changepassword"))
+        return redirect_to(private_route("change_password"))
     else:
         from .access_control.password_recovery import password_recovery
 

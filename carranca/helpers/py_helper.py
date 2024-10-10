@@ -48,6 +48,22 @@ def strip_and_ignore_empty(s: str, sep = ',', max_split = -1) -> list[str]:
 
     return result
 
+def camel_to_snake(string: str) -> str :
+  """Converts a camel case string to snake case.
+
+  Args:
+    string: The camel case string to convert.
+
+  Returns:
+    The converted snake case string.
+  """
+  snake_case = ""
+  for char in string:
+    snake_case += ('_' if char.isupper() else '' ) + char.lower()
+
+  return snake_case.strip("_")  # Remove leading underscores
+
+
 
 def coalesce(val1, val2):
     """

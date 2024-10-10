@@ -7,6 +7,8 @@ TODO:
     2024-09-
         a. β 2.17
         b. sent email with errors
+        c. replace db_helper.persist_record with Users.update
+        d. if template not ready use Error Template
         0. About title
         1. β 2.17
         2. Set User Name in e-mail
@@ -29,19 +31,19 @@ TODO:
 
     small tasks
         - persist_record to private.models
-        - Login Remember not always working
+        - share jinja_cache templates + texts (see route_helper templates_found)
+        - redo is_connected
         - Fix get_Html()
-        - ren receiveFile.html.j2 receive_file.html.j2 (Linux as well)
-        - file_origin
-        - register_jinja
-        - static cache
+        - Login Remember not always working
 
 -------------------------------------------------------
   Logbook
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
+2024-10-09 β 2.34
+    - new profile_management route
 
-2024-10-07 β 2.33
+2024-10-08 β 2.33
     - new Session per model
 
 2024-10-07 β 2.32

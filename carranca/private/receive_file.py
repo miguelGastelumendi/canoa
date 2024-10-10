@@ -6,7 +6,7 @@
     mgd
 """
 
-# cSpell: ignore werkzeug wtforms tmpl urlname receivefile
+# cSpell: ignore werkzeug wtforms tmpl urlname
 
 from flask import render_template, request
 
@@ -28,9 +28,8 @@ RECEIVE_FILE_DEFAULT_ERROR = "uploadFileError"
 
 # link em gd de test em mgd account https://drive.google.com/file/d/1yn1fAkCQ4Eg1dv0jeV73U6-KETUKVI58/view?usp=sharing
 
-
 def receive_file() -> str:
-    template, is_get, texts = get_private_form_data("receiveFile")
+    template, is_get, texts = get_private_form_data("receiveFile") # TODO find by algo the file name
     tmpl_form = ReceiveFileForm(request.form)
 
     def _result():
@@ -75,8 +74,8 @@ def receive_file() -> str:
         logged_user = LoggedUser()
 
         def doProcessData() -> tuple[bool, ProcessData]:
-            receive_file_cfg = ValidateProcessConfig(shared.app_config.APP_DEBUG)
-            common_folder = path_remove_last_folder(shared.app_config.ROOT_FOLDER)
+            receive_file_cfg = ValidateProcessConfig(shared.config.APP_DEBUG)
+            common_folder = path_remove_last_folder(shared.config.ROOT_FOLDER)
             pd = ProcessData(
                 logged_user.code,
                 logged_user.folder,

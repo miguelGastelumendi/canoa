@@ -30,6 +30,7 @@ class Users(shared.sa.Model, UserMixin):
     last_login_at = Column(DateTime, nullable=True)
     recover_email_token = Column(String(100), nullable=True)
     recover_email_token_at = Column(DateTime, Computed(""))
+    id_role = Column(Integer)
     disabled = Column(Boolean, default=False)
 
     def __init__(self, **kwargs):

@@ -76,6 +76,7 @@ def login():
         msg = add_msg_error('errorLogin', texts, task_code)
         shared.app_log.error(e)
         shared.app_log.debug(msg)
+        #TODO if template not ready use Error Template
     return render_template(
         template,
         form=tmpl_form,

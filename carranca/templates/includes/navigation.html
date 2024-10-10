@@ -14,11 +14,18 @@
         />
       </a> -->
       <a type="button"
-         href="{{ private_route('receivefile') }}"
-         title="Abre o formulário para submeter um arquivo ZIP ao processo de valida&ccedil;&atilde;o"
+         href="{{ private_route('receive_file') }}"
+         title="Abre o formulário para submeter um arquivo ZIP o do Google Drive ao processo de valida&ccedil;&atilde;o"
         >
         [Validar dados]
       </a>
+      <a type="button"
+         href="{{ private_route('profile_management') }}"
+         title="Abre o grid de Gestão de Perfis"
+        >
+        [Gestão de Perfis]
+      </a>
+
       <a type="button" href="https://docs.google.com/document/d/1ZYOQricIqeNkZ3XnLoSXp-lKle9V1UTb-acASZtAa4E/edit"
         target="_blank"
         rel="noopener noreferrer"
@@ -26,7 +33,7 @@
         [Especifica&ccedil;&atilde;o]
       </a>
       <a type="button" href="docs/termsofuse">[Pol&iacute;tica de Privacidade]</a>
-      <a type="button" href="{{ private_route('changepassword') }}">[Mudar senha]</a>
+      <a type="button" href="{{ private_route('change_password') }}">[Mudar senha]</a>
       <a type="button" href="docs/aboutApp">[Sobre]</a>
       <!-- <a type="button" onclick= "working('Sobre {{ app_name() }}, versão {{ app_version() }}')">[Sobre]</a> -->
       <a type="button" href="{{ private_route('test_route') }}">[testar arquivo]</a>

@@ -5,7 +5,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
-# cSpell:ignore tmpl passwordreset wtforms
+# cSpell:ignore tmpl wtforms
 
 from flask import render_template, request
 
@@ -53,7 +53,7 @@ def password_reset(token):
             add_msg_error('invalidToken', texts)
         elif is_get:
             pass
-        elif not shared.app_config.len_val_for_pw.check(password):
+        elif not shared.config.len_val_for_pw.check(password):
             add_msg_error('invalidPassword', texts)
         elif password != confirm_password:
             add_msg_error('passwordsAreDifferent', texts)

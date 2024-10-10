@@ -14,6 +14,7 @@ from typing import Tuple
 _error_ = "[{0}]: An error ocurred while {1}. Message `{2}`."
 fuse = None
 
+
 # ---------------------------------------------------------------------------- #
 # Escape Door
 def _log_and_exit(ups: str):
@@ -60,10 +61,10 @@ def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
 # ---------------------------------------------------------------------------- #
 def _ignite_config() -> Tuple[any, str]:
     """
-    Select the app_config, based in the app_mode (production or debug)
+    Select the config, based in the app_mode (production or debug)
     WARNING: Don't run with debug turned on in production!
     """
-    app_config = None  # this app_config will later be 'globally shared' by shared
+    config = None  # this config will later be 'globally shared' by shared
     msg_error = None
     try:
         from .config import (
@@ -78,8 +79,8 @@ def _ignite_config() -> Tuple[any, str]:
         # 2. environment
         _app_mode = BaseConfig.get_os_env("APP_MODE", app_mode_debug)
         # 3. load & init
-        app_config = config_modes[_app_mode]
-        app_config.init()
+        config = config_modes[_app_mode]
+        config.init()
         fuse.display.info(f"The app config, in `{_app_mode}` mode, was ignited.")
     except KeyError:
         msg_error = _error_.format(
@@ -90,11 +91,11 @@ def _ignite_config() -> Tuple[any, str]:
     except Exception as e:
         msg_error = _error_.format(__name__, "initializing the app config", e)
 
-    return app_config, msg_error
+    return config, msg_error
 
 
 # ---------------------------------------------------------------------------- #
-def _check_mandatory_keys(app_config) -> str:
+def _check_mandatory_keys(config) -> str:
     """Check if the mandatories environment variables are set."""
 
     msg_error = None
@@ -102,12 +103,10 @@ def _check_mandatory_keys(app_config) -> str:
         from .config import CONFIG_MANDATORY_KEYS
 
         def __is_empty(key: str) -> bool:
-            value = getattr(app_config, key, "")
+            value = getattr(config, key, "")
             empty = value is None or value.strip() == ""
             if empty:
-                fuse.display.error(
-                    f"[{__name__}]: Config[{app_config.APP_MODE}].{key} has no value."
-                )
+                fuse.display.error(f"[{__name__}]: Config[{config.APP_MODE}].{key} has no value.")
             return empty
 
         has_empty = False
@@ -126,17 +125,15 @@ def _check_mandatory_keys(app_config) -> str:
         )
 
     except Exception as e:
-        msg_error = _error_.format(
-            __name__, f"checking mandatory keys of `{app_config.__name__}`", e
-        )
+        msg_error = _error_.format(__name__, f"checking mandatory keys of `{config.__name__}`", e)
 
     return msg_error
 
 
 # ---------------------------------------------------------------------------- #
-def _ignite_server_address(app_config) -> Tuple[any, str]:
+def _ignite_server_address(config) -> Tuple[any, str]:
     """Confirm validity of the server address"""
-    address = None  # this app_config will later be 'globally shared' by shared
+    address = None  # this address will later be 'globally shared' by shared
     msg_error = None
     try:
         from collections import namedtuple
@@ -148,7 +145,7 @@ def _ignite_server_address(app_config) -> Tuple[any, str]:
         address = Address("", 0)
 
         default_scheme = "http://"
-        url = urlparse(app_config.SERVER_ADDRESS, default_scheme, False)
+        url = urlparse(config.SERVER_ADDRESS, default_scheme, False)
 
         # There is a bug is Linux (?) url.hostname  & url.port are always None
         path = ["", ""] if is_str_none_or_empty(url.path) else f"{url.path}:".split(":")
@@ -158,20 +155,19 @@ def _ignite_server_address(app_config) -> Tuple[any, str]:
         )
 
         if is_str_none_or_empty(address.host) or (address.port == 0):
-            msg_error = f"Invalid host or port address found in [{app_config.SERVER_ADDRESS}], parsed: {address.host}:{address.port}`."
+            msg_error = f"Invalid host or port address found in [{config.SERVER_ADDRESS}], parsed: {address.host}:{address.port}`."
         else:
             fuse.display.info(f"The Flask Server Address address will be '{address.host}:{address.port}'.")
-            setattr(app_config, "SERVER_HOST",  address.host)
-            setattr(app_config, "SERVER_PORT", address.port)
-
+            setattr(config, "SERVER_HOST", address.host)
+            setattr(config, "SERVER_PORT", address.port)
 
     except Exception as e:
         fuse.display.error(
-            f"`urlparse('{app_config.SERVER_ADDRESS}', '{default_scheme}') -> parsed: {address.host}:{address.port}`"
+            f"`urlparse('{config.SERVER_ADDRESS}', '{default_scheme}') -> parsed: {address.host}:{address.port}`"
         )
         msg_error = _error_.format(
             __name__,
-            f"parsing server address. Expect value is [HostName:Port], found: [{app_config.SERVER_ADDRESS}]",
+            f"parsing server address. Expect value is [HostName:Port], found: [{config.SERVER_ADDRESS}]",
             e,
         )
 
@@ -190,81 +186,79 @@ def ignite_shared(app_name, start_at):
     fuse.display.debug("The fuse was created.")
 
     # Config
-    app_config, error = _ignite_config()
+    config, error = _ignite_config()
     if error:
         _log_and_exit(error)
     fuse.display.debug("Config was ignited.")
 
     # Mandatory Configuration keys
-    error = _check_mandatory_keys(app_config)
+    error = _check_mandatory_keys(config)
     if error:
         _log_and_exit(error)
     fuse.display.debug("All mandatory configuration keys were informed.")
 
     # Server Address
-    address, error = _ignite_server_address(app_config)
+    address, error = _ignite_server_address(config)
     if error:
         _log_and_exit(error)
-    fuse.display.debug("Flask Server Address is ready and 'app_config' configured.")
+    fuse.display.debug("Flask Server Address is ready and 'config' configured.")
 
     # shared obj
     from .Shared import Shared
-    shared = Shared(app_config, fuse.display, address)
+
+    shared = Shared(config, fuse.display, address)
     fuse.display.info("The global var 'shared' was ignited.")
 
     # ---------------------------------------------------------------------------- #
     # Give warnings of import configuration that may be missing
     from .helpers.py_helper import is_str_none_or_empty
-    warns = 0
-    if is_str_none_or_empty(app_config.EMAIL_API_KEY):
-        warns += 1
-        fuse.display.warning(
-            f"Sendgrid API key was not found, the app will not be able to send emails."
-        )
 
-    if is_str_none_or_empty(app_config.EMAIL_ORIGINATOR):
+    warns = 0
+    if is_str_none_or_empty(config.EMAIL_API_KEY):
+        warns += 1
+        fuse.display.warning(f"Sendgrid API key was not found, the app will not be able to send emails.")
+
+    if is_str_none_or_empty(config.EMAIL_ORIGINATOR):
         warns += 1
         fuse.display.warning(
             f"The app email originator is not defined, the app will not be able to send emails."
         )
 
-    fuse.display.info(
-        f"{__name__} completed with 0 errors and {warns} warnings."
-    )
+    fuse.display.info(f"{__name__} completed with 0 errors and {warns} warnings.")
 
     return shared
 
-# - ---------------------------------------------------------------------------- #
-def ignite_sql_alchemy( app, shared):
 
-    from psycopg2 import OperationalError
+# - ---------------------------------------------------------------------------- #
+def ignite_sql_alchemy(app, shared):
+
     from flask_sqlalchemy import SQLAlchemy
+    from sqlalchemy import create_engine, select
 
     sa = SQLAlchemy(app)
     try:
-        from sqlalchemy import create_engine, text
-
-        engine = create_engine(shared.app_config.SQLALCHEMY_DATABASE_URI)
+        engine = create_engine(shared.config.SQLALCHEMY_DATABASE_URI)
         with engine.connect() as connection:
-            query = text("SELECT 1")
-            result = connection.execute(query).fetchone()
-            if result == None or len(result) != 1 or result[0] != 1:
-                raise OperationalError(f"Unexpected value received from the Database: [{result}].")
+            connection.scalar(select(1))
+            shared.display.debug("The database connection is active.")
+
     except Exception as e:
         _log_and_exit(f"Unable to connect to the database. Error details: [{e}].")
 
-
     # Obfuscate the password of SQLALCHEMY_DATABASE_URI value
     import re
+
     db_uri_safe = re.sub(
-        shared.app_config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
-        shared.app_config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
-        shared.app_config.SQLALCHEMY_DATABASE_URI,
+        shared.config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
+        shared.config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
+        shared.config.SQLALCHEMY_DATABASE_URI,
     )
 
-    # not need any more, just for info
-    shared.app_config.SQLALCHEMY_DATABASE_URI = db_uri_safe
+    # it (seems) that SQLAlchemy obfuscate the strConn, so I do as well
+    # as it should not be needed any more (just for info)
+    shared.config.SQLALCHEMY_DATABASE_URI = db_uri_safe
 
     return sa
+
 
 # eof

@@ -69,9 +69,9 @@ def process(
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
         "2024.09.25_d",
-        shared.app_config.APP_DEBUG,
+        shared.config.APP_DEBUG,
         logged_user,
-        ValidateProcessConfig(shared.app_config.APP_DEBUG),
+        ValidateProcessConfig(shared.config.APP_DEBUG),
         proc_data,
         received_at,
         {"file_data": file_data, "valid_ext": valid_ext},  # first module parameters
