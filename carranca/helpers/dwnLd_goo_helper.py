@@ -220,7 +220,7 @@ def download_public_google_file(
             downloader = MediaIoBaseDownload(f, request, chunksize=cs)
             task_code += 1 #17
             done = False
-            shared.app_log.debug(f"Download of file {file_full_path} started.")
+            shared.app_log.debug(f"Downloading file {file_full_path} has started.")
             # file_crc32 = crc32(b'')  # Initialize CRC32 checksum
             while done is False:
                 status, done = downloader.next_chunk()
@@ -230,6 +230,7 @@ def download_public_google_file(
 
 
         task_code = 0
+        shared.display.info('download: The file was downloaded.')
     except Exception as e:
         msg_error = f"An error ocurred while downloading the file. Task code {task_code}, message '{e}'.)"
         shared.app_log.error(msg_error, exc_info=task_code)
@@ -239,7 +240,7 @@ def download_public_google_file(
 
 # if __name__ == "__main__":
 #     url = "https://drive.google.com/file/d/1m9crayVYtWXvkOPcQyzKQ2Eqme4jdkxX/view?usp=sharing"
-#     graaande = https://drive.google.com/file/d/14KkGgjb8gx-Yx5NJzrawJ-LcBhbxy9HM/view?usp=drive_link
+#     grande = https://drive.google.com/file/d/14KkGgjb8gx-Yx5NJzrawJ-LcBhbxy9HM/view?usp=drive_link
 #     download_public_google_file(url, "./uploaded_files/")
 
 

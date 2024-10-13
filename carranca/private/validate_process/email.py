@@ -51,7 +51,7 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
             email_sent=True,
         )
         task_code = 0  # !important
-        shared.app_log.debug(f"An email was sent to the user with the validation result.")
+        shared.display.info(f"email: An email was sent to the user with the validation result.")
     except Exception as e:
         task_code += 5
         msg_exception = str(e)

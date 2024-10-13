@@ -85,7 +85,8 @@ def get_user_where(**kwargs: Any) -> Any:
 
 @shared.login_manager.user_loader
 def user_loader(id):
-    return get_user_where(id=id)
+    return Users.query.get(id)
+    # mgd return get_user_where(id=id)
     # mgd return Users.query.filter_by(id=id).first()
 
 

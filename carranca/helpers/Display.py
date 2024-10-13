@@ -3,17 +3,18 @@
 
  Simple colored print to screen
 
- mgd 2024-09-27
+ mgd 2024-09-27,10-11
 
  """
 
 # cSpell:ignore
 
 import time
+from math import log10, modf
 from enum import Enum
 from typing import List
 from datetime import datetime
-from .py_helper import is_str_none_or_empty
+from py_helper import is_str_none_or_empty
 
 
 class Display:
@@ -36,11 +37,12 @@ class Display:
 
     class Kind(Enum):
         PROMPT = 0
-        SIMPLE = 1
-        INFO = 2
-        WARN = 3
-        ERROR = 4
-        DEBUG = 5
+        ELAPSED = 1
+        SIMPLE = 2
+        INFO = 3
+        WARN = 4
+        ERROR = 5
+        DEBUG = 6
 
     # https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
     def code(color_code: int):
@@ -53,6 +55,8 @@ class Display:
     no_color = ""
     reset_color = code(0)
     ESC = code(None)
+    elapsed_format = [f"{{:0{i}}}" for i in range(1, 6)]
+    # elapsed_format[0] = elapsed_format[1]
 
     default = Default(
         # keep same order as Display.__init__
@@ -63,7 +67,8 @@ class Display:
         [
             # https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
             code(36),  # Prompt gray
-            "",  # Simple, no color, default
+            code(90),  # elapsed 999:ss:mm
+            "",  # Simple, default color
             code(32),  # Info green
             code(33),  # Warn yellow
             code(31),  # Error red
@@ -71,6 +76,7 @@ class Display:
         ],
         [
             "",  # Prompt
+            "",  # elapsed format
             "",  # Simple
             "[i] ",  # Info
             "[▲] ",  # Warn
@@ -144,6 +150,11 @@ class Display:
             if is_str_none_or_empty(_prompt)
             else f"{self.color(Display.Kind.PROMPT)}{_prompt}{Display.reset_color}"
         )
+        if self.elapsed_output:
+            start_text = (
+                f"{start_text}{self.color(Display.Kind.ELAPSED)}{self.elapsed()}{Display.reset_color} "
+            )
+
         _icon_output = self.icon_output if icon_output is None else bool(icon_output)
 
         icon = self.icons[kind.value] if _icon_output else ""
@@ -176,38 +187,69 @@ class Display:
         return b
 
     def set_elapsed_output(self, value: bool, elapsed_from: float = None) -> bool:
-        b = self.elapsed_output
+        was_active = self.elapsed_output
         self.elapsed_output = bool(value)
         if elapsed_from is not None:
             self.elapsed_from = elapsed_from
-        elif self.elapsed_output and elapsed_from is None:
+        elif self.elapsed_output:
             self.elapsed_from = time.perf_counter()
+        else:  #
+            self.elapsed_from = None
 
-        return b
+        return was_active
+
+    def elapsed(self, elapsed_to: float = None) -> str:
+        if self.elapsed_from is None:
+            return ""
+
+        end = time.perf_counter() if elapsed_to is None else elapsed_to
+        elapsed_seconds = end - self.elapsed_from
+        minutes = int(elapsed_seconds // 60)
+        seconds = elapsed_seconds % 60
+        x = 0 if minutes == 0 else min(len(Display.elapsed_format) - 1, int(log10(minutes)))
+        if 0 <= x and x < len(Display.elapsed_format):
+            frac_part, ss = modf(seconds)
+            ms = int(round(frac_part * 1000))
+            result = f"{Display.elapsed_format[x].format(minutes)}:{int(ss):02}.{ms:03}"
+        else:
+            result = "**:**.****"
+
+        return result
 
 
-# if __name__ == "__main__":
-#     Display().simple("a")
-#     Display().simple("b")
+if __name__ == "__main__":
 
-#     print("\nClass print:")
-#     for e in Display.Kind:
-#         Display().print(e, e.name)
+    def is_str_none_or_empty(s):
+        return (s is None) or ((str(s) + "").strip() == "")
 
-#     print("\nPrint by function:")
-#     Display().simple("simple")
-#     Display().info("info")
-#     Display().warn("warning")
-#     Display().error("error")
-#     Display().debug("Debug")
-#     print(f"Display().debug_output is [{Display.debug_output()}].")
-#     print(f"Display().icon_output is [{Display.icon_output()}].")
+    import time
+    import random
 
-#     print("\nInstance for `canoa` with 'debug_output` active:")
-#     display = Display("Canoa: ", True, False)
-#     print(f"display.debug_output is [{display.debug_output}].")
-#     print(f"display.icon_output is [{display.icon_output}].")
-#     for e in Display.Kind:
-#         display.print(e, e.name)
+    Display().simple("a")
+    Display().simple("b")
+
+    print("\nClass print:")
+    for e in Display.Kind:
+        Display().print(e, e.name)
+
+    print("\nPrint by function:")
+    Display().simple("simple")
+    Display().info("info")
+    Display().warn("warning")
+    Display().error("error")
+    Display().debug("Debug")
+    print(f"Display().debug_output is [{Display.debug_output()}].")
+    print(f"Display().icon_output is [{Display.icon_output()}].")
+
+    print("\nInstance for `canoa` with 'debug_output` active:")
+    display = Display("Canoa: ", False, True, True, time.perf_counter())  # - 580)
+
+    print(f"display.elapsed_output is [{display.elapsed_output}].")
+    print(f"display.debug_output is [{display.debug_output}].")
+    print(f"display.icon_output is [{display.icon_output}].")
+    for i in range(1, 20):
+        for e in Display.Kind:
+            display.print(e, e.name)
+            time.sleep(random.randint(0, 3))
 
 #  eof

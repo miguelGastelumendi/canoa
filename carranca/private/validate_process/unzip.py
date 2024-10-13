@@ -45,7 +45,7 @@ def unzip(cargo: Cargo) -> Cargo:
                 zip_file.extractall(unzip_folder)
                 msg_error = ''
 
-        shared.app_log.debug(f"The zip file [{zip_full_name}] was unpacked correctly in [{unzip_folder}].")
+        shared.display.info(f"unzip: The file was unpacked in [{unzip_folder}].")
     except Exception as e:
         msg_exception= str(e)
         error_code= task_code + ModuleErrorCode.RECEIVE_FILE_UNZIP

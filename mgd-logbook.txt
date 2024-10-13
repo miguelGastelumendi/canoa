@@ -31,15 +31,26 @@ TODO:
 
     small tasks
         - persist_record to private.models
+        - uploadFileError -> receiveFile
         - share jinja_cache templates + texts (see route_helper templates_found)
         - redo is_connected
         - Fix get_Html()
         - Login Remember not always working
+        - Add display at process
 
 -------------------------------------------------------
   Logbook
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
+
+2024-10-09 β 2.36
+    - process version 2024.10.12_b
+    - check se_saude_07_08.zip
+
+2024-10-09 β 2.35
+    - profile demo
+    - check se_saude_07_08.zip
+
 2024-10-09 β 2.34
     - new profile_management route
 
@@ -70,6 +81,7 @@ TODO:
     - Args new Class
     - the igniter.py is almost ready (all main.py)
 
+--- October ---
 
 2024-09-30 β 2.27
     - __init__.py is now create_app.py
@@ -114,6 +126,7 @@ TODO:
     - Some comments & fixes in dwnLd_goo_helper.py
       for GoogleDrive download (My gd credential vanished)
 
+--- September ---
 
 2024-08-24 β 2.19
     - Fix msg_error in submit.py
@@ -153,6 +166,8 @@ TODO:
     - Download public files from url
     - Download load public files (*not* compressed) from Google Drive
     - Download load public compressed files from Google Drive 80%
+
+--- August ---
 
 2024-07-30 vβ 2.12
     - New  [About]  x

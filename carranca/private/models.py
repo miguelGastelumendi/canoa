@@ -21,27 +21,31 @@ from ..helpers.db_helper import persist_record
 class UserDataFiles(shared.sa.Model):
     __tablename__ = "user_data_files"
 
-    id = Column(Integer, primary_key=True)
-    ticket = Column(String(40), unique=True)
+    # keys (register..on_ins)
+    id = Column(Integer, primary_key=True) # autoinc
     id_users = Column(Integer)   # fk
+    ticket = Column(String(40), unique=True)
+    user_receipt = Column(String(14))
 
+    # sys version (register..on_ins)
     app_version = Column(String(12))
     process_version = Column(String(12))
 
-    file_name = Column(String(80))
-    original_name = Column(String(80), nullable=True, default=None)
-    file_size = Column(Integer)
+    # file info (register..on_ins)
     file_crc32 = Column(Integer)
-    from_os = Column(String(1))
+    file_name = Column(String(80))
     file_origin = Column(String(1))
-    user_receipt = Column(String(14))
+    file_size = Column(Integer)
+    from_os = Column(String(1))
+    original_name = Column(String(80), nullable=True, default=None)
 
     # Process module
-    ## saved at register.py
+    ## (register..on_ins)
     a_received_at = Column(DateTime)
     b_process_started_at = Column(DateTime)
     c_check_started_at = Column(DateTime)
     d_register_started_at = Column(DateTime)
+
     ## saved at email.py
     e_unzip_started_at = Column(DateTime)
     f_submit_started_at = Column(DateTime)
@@ -84,7 +88,7 @@ class UserDataFiles(shared.sa.Model):
 
     def _ins_or_upd(isInsert: bool, uTicket: str, **kwargs) -> None:
         isUpdate = not isInsert
-        with shared.doSession() as session:
+        with shared.do_session() as session:
             try:
                 msg_exists= f"The ticket '{uTicket}' is " + "{0} registered."
                 record_to_ins_or_upd= UserDataFiles._get_record(session, uTicket)

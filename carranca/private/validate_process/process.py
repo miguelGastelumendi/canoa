@@ -52,6 +52,7 @@ def process(
 ) -> list[int, str, str]:
 
     from ...main import shared
+
     current_module_name = __name__.split(".")[-1]
 
     def _get_next_params(cargo: Cargo) -> list[object, dict]:
@@ -62,13 +63,21 @@ def process(
         params = dict(cargo.next)
         return cargo.init(), params
 
-    def _get_msg_exception(e_str: str, msg_exc: str, code: int) -> str:
+    def _get_msg_exception(e: Exception, msg_exc: str, code: int) -> str:
         """prepares a complete exception message for the db & log"""
-        return f"Upload Error: process.Exception: [{e_str}]; {current_module_name}.Exception: [{msg_exc}], Code [{code}]."
+        return f"process: Exception: [{e}]; {current_module_name}.Exception: [{msg_exc}], Code [{code}]."
+
+    def _display(msg):
+        shared.display.info(f"process: {msg}.")
+        return
+
+    def _updated(code):
+        _display(f"The record was updated successfully with process error_code= {code}")
+        return
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
-        "2024.09.25_d",
+        "2024.10.12_b", #process version
         shared.config.APP_DEBUG,
         logged_user,
         ValidateProcessConfig(shared.config.APP_DEBUG),
@@ -79,6 +88,9 @@ def process(
     error_code = 0
     msg_error = ""
     msg_exception = ""
+    elapsed_output = shared.display.set_elapsed_output(True)
+
+    _display("The validation process has started")
 
     """
         Process Loop
@@ -92,9 +104,7 @@ def process(
         current_module_name = current_module.__name__
         try:
             cargo, next_module_params = _get_next_params(cargo)
-            error_code, msg_error, msg_exception, cargo = current_module(
-                cargo, **next_module_params
-            )
+            error_code, msg_error, msg_exception, cargo = current_module(cargo, **next_module_params)
             if error_code > 0:
                 break
         except Exception as e:
@@ -103,51 +113,68 @@ def process(
                 if error_code == 0
                 else ModuleErrorCode.RECEIVE_FILE_EXCEPTION + error_code
             )
-            msg_exception = _get_msg_exception(str(e), msg_exception, error_code)
+            msg_exception = _get_msg_exception(e, msg_exception, error_code)
             msg_error = cargo.default_error if is_str_none_or_empty(msg_error) else msg_error
             break
 
-    current_module_name = "UserDataFiles.update"
-    msg_success = cargo.final.get("msg_success", None)
-    log_msg = "Processing received file: [{0}] raised error code {1}."
-    process_ended = now()
+    try:
+        if error_code == 0:
+            current_module_name =  "UserDataFiles.update"
+        msg_success = cargo.final.get("msg_success", None)
 
-    if is_str_none_or_empty(cargo.table_udf_key):
-        pass  # user_data_file's pk not ready
-    elif error_code == 0:
-        try:
-            UserDataFiles.update(
-                cargo.table_udf_key,
-                error_code=0,
-                success_text=msg_success,
-                z_process_end_at= process_ended
-            )
-        except Exception as e:
-            shared.app_log.fatal(log_msg, e, 0)
-    else:
-        try:
-            UserDataFiles.update(
-                cargo.table_udf_key,
-                error_code=error_code,
-                success_text=msg_success,  # not really success but standard_output
-                # without error, this fields are saved in email.py
-                report_ready_at=cargo.report_ready_at,
-                e_unzip_started_at=cargo.unzip_started_at,
-                f_submit_started_at=cargo.submit_started_at,
-                g_email_started_at=cargo.email_started_at,
-                z_process_end_at= process_ended,
-                error_msg=(
-                    "<sem mensagem de erro>"
-                    if is_str_none_or_empty(msg_error)
-                    else msg_error
-                ),
-                error_text=msg_exception,
-            )
+        _display("Preparing to update the data validation process record")
+        process_ended = now()
+        if is_str_none_or_empty(cargo.table_udf_key):
+            _display("No record was inserted")
+            pass  # user_data_file's pk not ready
+        elif error_code == 0:
+            try:
+                UserDataFiles.update(
+                    cargo.table_udf_key,
+                    error_code=0,
+                    success_text=msg_success,
+                    z_process_end_at=process_ended,
+                )
+                _updated(0)
+            except Exception as e:
+                error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 1
+                fatal_msg = f"An error ocurred while updating the final process record: [{e}]."
+                shared.display.error(fatal_msg)
+                shared.app_log.fatal(fatal_msg)
+        else:
+            fatal_msg = f"Processing {('downloaded' if cargo.pd.file_was_downloaded else 'uploaded')} file [{cargo.pd.received_file_name}] raised error code {error_code} in module '{current_module_name}'."
+            shared.display.error(fatal_msg)
+            shared.app_log.fatal(fatal_msg)
+            try:
+                UserDataFiles.update(
+                    cargo.table_udf_key,
+                    error_code=error_code,
+                    success_text=msg_success,  # not really success but standard_output
+                    # without error, this fields are saved in email.py
+                    report_ready_at=cargo.report_ready_at,
+                    e_unzip_started_at=cargo.unzip_started_at,
+                    f_submit_started_at=cargo.submit_started_at,
+                    g_email_started_at=cargo.email_started_at,
+                    z_process_end_at=process_ended,
+                    error_msg=("<no error message>" if is_str_none_or_empty(msg_error) else msg_error),
+                    error_text=msg_exception,
+                )
+                _updated(error_code)
+            except Exception as e:
+                error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 2
+                msg_exception = _get_msg_exception(e, msg_exception, error_code)
+                shared.display.error(msg_exception)
+                shared.app_log.fatal(msg_exception, exc_info=error_code)
 
-        except Exception as e:
-            error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 1
-            msg_exception = _get_msg_exception(str(e), msg_exception, error_code)
-            shared.app_log.fatal(log_msg, msg_exception, error_code, exc_info=error_code)
+    except Exception as e:
+        error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 3
+        msg_exception = _get_msg_exception(e, msg_exception, error_code)
+        shared.display.error(msg_exception)
+        shared.app_log.fatal(msg_exception, exc_info=error_code)
+
+    finally:
+        _display(f"The validation process end with error code {error_code}")
+        shared.display.set_elapsed_output(elapsed_output)
 
     return error_code, msg_error, msg_exception, cargo.final
 

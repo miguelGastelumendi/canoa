@@ -77,7 +77,7 @@ def _get_form_data(section: str, file: str, folder: str) -> Tuple[str, bool, dic
 
     file = camel_to_snake(section) if file is None else file
     file_name = f"{file}.html.j2"
-    # template must be with '/':
+    # template *must* be with '/':
     template = f"./{folder}/{file_name}"
     full_name = path.join(".", shared.config.TEMPLATES_FOLDER, folder, file_name)
     if full_name in templates_found:

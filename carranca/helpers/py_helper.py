@@ -186,10 +186,13 @@ def set_flags_from_argv(obj):
     """
     for attr in dir(obj):
         flag = f"--{attr}"
+        # param = f"-{attr}"
         if attr.startswith("_"):
             pass  # Skip private attributes
         elif any(f.lower() == flag.lower() for f in argv) if OS_IS_WINDOWS else (flag in argv):
             setattr(obj, attr, True)
+        # elif any(f.lower() == param.lower() for f in argv) if OS_IS_WINDOWS else (param in argv):
+        # TODO: setattr(obj, attr, attr++)
 
         return obj
 

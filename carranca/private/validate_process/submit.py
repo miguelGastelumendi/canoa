@@ -37,13 +37,14 @@ async def _run_validator(
 ):
     #  This function knows quite a lot of how to run [data_validate]
 
+
     run_command = [
         batch_full_name,
-        data_validate_path,   # param 1: path do the data_validate main.py
-        d_v.na_in_folder,     # Named Argument
-        input_folder,         # param 2
-        d_v.na_out_folder,    # Named Argument
-        output_folder,        # param 3
+        data_validate_path,  # param 1: path do the data_validate main.py
+        d_v.na_in_folder,  # Named Argument
+        input_folder,  # param 2
+        d_v.na_out_folder,  # Named Argument
+        output_folder,  # param 3
     ]
 
     if not is_str_none_or_empty(d_v.flags):
@@ -97,6 +98,17 @@ def submit(cargo: Cargo) -> Cargo:
     std_err_str = None
     cargo.submit_started_at = now()
 
+    # return cargo.update(
+    #     0,
+    #     '',
+    #     '',
+    #     {"user_report_full_name": 'fake'},
+    #     {"msg_success": ''},
+    # )
+
+
+
+
     try:
         task_code += 1  # 1
         # shortcuts
@@ -108,9 +120,7 @@ def submit(cargo: Cargo) -> Cargo:
         data_validate_path = cargo.pd.path.data_validate
         if not path.isfile(batch_full_name):  # TODO send to check module
             task_code += 1  # 2
-            raise Exception(
-                f"The `{_cfg.d_v.ui_name}` module caller [{batch_full_name}] was not found."
-            )
+            raise Exception(f"The `{_cfg.d_v.ui_name}` module caller [{batch_full_name}] was not found.")
 
         result_ext = _cfg.output_file.ext
         final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
@@ -141,7 +151,7 @@ def submit(cargo: Cargo) -> Cargo:
         if not path.exists(final_report_full_name):
             task_code += 1  # 6
             raise Exception(
-                f"Report not ready! {_cfg.d_v.ui_name}.stderr: {std_err_str}, {_cfg.d_v.ui_name}.stdout: {std_out_str}"
+                f"\n{shared.app_name}: Report was not found.\n » {_cfg.d_v.ui_name}.stderr:\n{std_err_str}\n » {_cfg.d_v.ui_name}.stdout:\n {std_out_str}\n » End."
             )
         elif stat(final_report_full_name).st_size < 200:
             task_code += 2  # 7
@@ -149,9 +159,7 @@ def submit(cargo: Cargo) -> Cargo:
         else:
             # copy the final_report file to the same folder and
             # with the same name as the uploaded file:
-            user_report_full_name = change_file_ext(
-                cargo.pd.working_file_full_name(), result_ext
-            )
+            user_report_full_name = change_file_ext(cargo.pd.working_file_full_name(), result_ext)
             task_code += 3  # 8
             shutil.move(final_report_full_name, user_report_full_name)
             task_code += 1  # 9
@@ -172,13 +180,15 @@ def submit(cargo: Cargo) -> Cargo:
             shared.app_log.warn("The communication folders between apps were *not* deleted.")
 
     # goto email.py
-    error_code = (
-        0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT
-    )
+    error_code = 0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT
     if error_code == 0:
-        shared.app_log.debug(f"The unzipped files were correctly submitted to '{_cfg.d_v.ui_name}' and a report was generated.")
+        shared.display.info(
+            f"submit: The unzipped files were submitted to '{_cfg.d_v.ui_name}' and a report was generated."
+        )
     else:
-        shared.app_log.error(f"There was a problem submitting the files to '{_cfg.d_v.ui_name}. Error code [{error_code}].")
+        shared.app_log.error(
+            f"There was a problem submitting the files to '{_cfg.d_v.ui_name}'. Error code [{error_code}]."
+        )
 
     return cargo.update(
         error_code,

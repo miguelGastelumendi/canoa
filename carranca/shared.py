@@ -36,8 +36,13 @@ from datetime import datetime
 
 
 class Shared:
-    def __init__(self, config, display, server_address):
+    from .config import BaseConfig
+    from .helpers.Display import Display
+
+    def __init__(self, app_debug: bool, config: BaseConfig, display: Display, server_address: str):
         self.app_log = None
+        self.app_name = config.APP_NAME
+        self.app_debug = app_debug
         self.config = config
         self.display = display
         self.login_manager = None
@@ -45,7 +50,7 @@ class Shared:
         self.sa_engine = None
         self.server_address = server_address
         self.started_at = datetime.now()
-        self.cache = None # TODO: _get_form_data
+        self.cache = None  # TODO: _get_form_data
 
     def keep(self, app, sa, login_manager):
         self.app_log = app.logger
@@ -58,7 +63,7 @@ class Shared:
 
         return self
 
-    def doSession(self):
+    def do_session(self):
         from sqlalchemy.orm import sessionmaker
 
         # https://docs.sqlalchemy.org/en/20/orm/session_basics.html#using-a-sessionmaker

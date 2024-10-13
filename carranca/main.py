@@ -52,13 +52,13 @@ print(f"{'-' * len(the_aperture_msg)}\n{the_aperture_msg}")
 from .igniter import ignite_shared
 from carranca import started
 
-shared = ignite_shared(app_name, started)
+shared, display_mute_after_init = ignite_shared(app_name, started)
 
 # Flask app
 from carranca import create_app  # see __init__.py
 
 app = create_app(app_name, shared.config)
-shared.display.info("The Flask app was quickly created and configured.")
+shared.display.info("The Flask app was created and configured.")
 
 # Database
 from .igniter import ignite_sql_alchemy
@@ -76,12 +76,12 @@ shared.display.info("Flask login manager was instantiated.")
 app.shared = shared.keep(app, sa, login_manager)
 shared.display.info("The global var 'shared' is now ready:")
 if shared.config.APP_DISPLAY_DEBUG_MSG:
-    shared.display.simple(repr(shared), "", False)
+    print(repr(shared))
 
 # Keep shared alive within app
 if shared.config.APP_DISPLAY_DEBUG_MSG and True:
     from .public.debug_info import get_debug_info
-    di = get_debug_info(app, shared.config)
+    di = get_debug_info(app, shared.config) # TODO
 
 # Blue Prints
 _register_blueprints(app)
@@ -93,6 +93,11 @@ shared.display.info("This app's functions were registered into Jinja.")
 # Tell everybody how quick we are
 elapsed = (time.perf_counter() - started) * 1000
 shared.display.info(f"{app_name} is now ready for the trip. It took {elapsed:,.0f}ms to create it.")
+
+if display_mute_after_init:
+    shared.display.mute_all = True
+elif not shared.app_debug:
+    shared.display.debug_output = False
 
 
 if __name__ == "__main__":

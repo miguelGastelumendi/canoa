@@ -16,7 +16,7 @@ from os import path
 from ...main import shared
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.db_helper import get_str_field_length
-from ...helpers.user_helper import  now
+from ...helpers.user_helper import now
 from ...helpers.file_helper import file_must_exist, folder_must_exist, is_same_file_name
 from ...helpers.error_helper import ModuleErrorCode
 
@@ -25,7 +25,6 @@ from .Cargo import Cargo
 
 
 def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
-
     error_code = 0
     msg_exception = ""
     task_code = 0
@@ -47,10 +46,7 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
             task_code = 5
         elif len(cs.received_file_name) > file_name_max_len:
             task_code = 7
-        elif not any(
-            cs.received_file_name.lower().endswith(ext.strip().lower())
-            for ext in valid_ext
-        ):
+        elif not any(cs.received_file_name.lower().endswith(ext.strip().lower()) for ext in valid_ext):
             task_code = 8
         # elif not response.headers.get('Content-Type') == ct in valid_content_types.split(',')): #check if really zip
         # task_code = 10
@@ -73,18 +69,24 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
 
         if task_code == 0:
             if not is_same_file_name(cs.received_original_name, cs.received_file_name):
-                shared.app_log.info(f"The {receive_method} file [{cs.received_original_name}] has been renamed to [{cs.received_file_name}].")
-            shared.app_log.debug(f"The {receive_method} file [{cs.received_file_name}] successfully passed the `check` module.")
+                shared.app_log.info(
+                    f"The {receive_method} file [{cs.received_original_name}] has been renamed to [{cs.received_file_name}]."
+                )
+            shared.display.info(
+                f"check: The {receive_method} file [{cs.received_file_name}] successfully verified."
+            )
         else:
-            shared.app_log.error(f"The {receive_method} file [{cs.received_file_name}] failed in module `check` with code {task_code}.")
+            shared.app_log.error(
+                f"The {receive_method} file [{cs.received_file_name}] failed in module `check` with code {task_code}."
+            )
 
     except Exception as e:
         msg_exception = str(e)
         # is the highest possible (see ModuleErrorCode.RECEIVE_FILE_CHECK + 1)
         task_code = 19
         shared.app_log.fatal(
-            f"Exception [{e}], code {task_code}, occurred in module `check` while validating the {receive_method} file [{cs.received_original_name}]."
-            , exc_info=task_code
+            f"Exception [{e}], code {task_code}, occurred in module `check` while validating the {receive_method} file [{cs.received_original_name}].",
+            exc_info=task_code,
         )
 
     # goto module register.py

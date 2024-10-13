@@ -10,6 +10,7 @@
 # cSpell:ignore sqlalchemy mandatories cssless sendgrid ENDC psycopg2
 
 from typing import Tuple
+from .helpers.py_helper import is_str_none_or_empty
 
 _error_ = "[{0}]: An error ocurred while {1}. Message `{2}`."
 fuse = None
@@ -31,26 +32,53 @@ def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
     msg_error = None
     fuse = None
     try:
-        import json
+        from os import environ
         from .Args import Args
+        from .BaseConfig import app_mode_production, app_mode_development
         from .helpers.Display import Display
         from .helpers.py_helper import set_flags_from_argv
 
         class Fuse:
-            def __init__(self):
-                self.app_name = app_name
-                _args = Args(True)
+            envvars_prefix = f"{app_name.upper()}_"
+
+            # maybe is necessary later:
+            def get_os_env(key: str, default=None) -> str:
+                _key = f"{Fuse.envvars_prefix}{key}"
+                return environ.get(_key, default)
+
+            def __init__(self, app_name, debug_2):
+                _args = Args(debug_2)
                 self.args = set_flags_from_argv(_args)
+                self.args.app_mode = None  # TODO, Test
+                self.app_name = app_name
+                self.app_debug = self.args.app_debug if is_str_none_or_empty(self.args.app_mode) else None
+                self.app_mode = None  # TODO self.args.app_mode
                 self.display = Display(
                     f"{self.app_name}: ",
-                    self.args.display_mute,
-                    self.args.display_debug,
-                    self.args.display_icons,
+                    _args.display_mute,
+                    _args.display_debug,
+                    _args.display_icons,
                     started_from,
                 )
 
-        fuse = Fuse()
-        fuse.display.info("The 'fuse' was started. Now we have how to print pretty.")
+        # Configuration priority (debug as am example):
+        # 1. Command-line argument: --debug
+        # 2. Environment: CANOA_DEBUG
+        # 3. Config: config.APP_DEBUG
+        # 4. Code default
+        # Considerations:
+        #    In this project, there are several configs
+        #    available, of which one is selected according to
+        #    the 'app_mode' argument (: 'D', 'P', etc, see BaseConfig).
+        #    If there is no app_mode, then
+        #
+        debug_4 = False
+        debug_3 = debug_4  # Read above 'Considerations'
+        debug_2 = bool(Fuse.get_os_env("debug", debug_3))
+        fuse = Fuse(app_name, debug_2)
+        fuse.display.info(
+            f"The 'fuse' was started in {(app_mode_development if debug_2 else app_mode_production)} mode (and now we have how to print pretty)."
+        )
         fuse.display.info(f"Current args: {fuse.args}.")
     except Exception as e:
         msg_error = _error_.format(__name__, "starting the fuse", e)
@@ -59,37 +87,37 @@ def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
 
 
 # ---------------------------------------------------------------------------- #
-def _ignite_config() -> Tuple[any, str]:
+from .BaseConfig import BaseConfig
+
+
+def _ignite_config(app_mode) -> Tuple[BaseConfig, str]:
     """
     Select the config, based in the app_mode (production or debug)
     WARNING: Don't run with debug turned on in production!
     """
     config = None  # this config will later be 'globally shared' by shared
     msg_error = None
+    _app_mode = ""
     try:
-        from .config import (
-            app_mode_production,
-            app_mode_debug,
-            config_modes,
-            BaseConfig,
-        )
+        from .config import app_mode_production, app_mode_development, get_config_for_mode
 
-        # 1. argument --debug
-        _app_mode = app_mode_debug if fuse.args.debug else app_mode_production
-        # 2. environment
-        _app_mode = BaseConfig.get_os_env("APP_MODE", app_mode_debug)
-        # 3. load & init
-        config = config_modes[_app_mode]
-        config.init()
-        fuse.display.info(f"The app config, in `{_app_mode}` mode, was ignited.")
+        if is_str_none_or_empty(app_mode):
+            _app_mode = app_mode_development if fuse.app_debug else app_mode_production
+        else:
+            _app_mode = app_mode
+
+        config = get_config_for_mode(_app_mode)
+        if not config:
+            raise (f"Unknown config mode {config}.")
+        fuse.display.info(f"The app config, in '{_app_mode}' mode, was ignited.")
     except KeyError:
         msg_error = _error_.format(
             __name__,
             "selecting the <app_mode>",
-            f"Expected values are [{app_mode_debug}, {app_mode_production}].",
+            f"Expected values are [{app_mode_development}, {app_mode_production}].",
         )
     except Exception as e:
-        msg_error = _error_.format(__name__, "initializing the app config", e)
+        msg_error = _error_.format(__name__, f"initializing the app config in  mode '{_app_mode}'", e)
 
     return config, msg_error
 
@@ -100,7 +128,7 @@ def _check_mandatory_keys(config) -> str:
 
     msg_error = None
     try:
-        from .config import CONFIG_MANDATORY_KEYS
+        from .BaseConfig import CONFIG_MANDATORY_KEYS
 
         def __is_empty(key: str) -> bool:
             value = getattr(config, key, "")
@@ -115,7 +143,7 @@ def _check_mandatory_keys(config) -> str:
                 has_empty = True
 
         msg_error = (
-            ""
+            None
             if not has_empty
             else _error_.format(
                 __name__,
@@ -125,7 +153,7 @@ def _check_mandatory_keys(config) -> str:
         )
 
     except Exception as e:
-        msg_error = _error_.format(__name__, f"checking mandatory keys of `{config.__name__}`", e)
+        msg_error = _error_.format(__name__, f"checking mandatory keys of config[`{config.APP_MODE}`].", e)
 
     return msg_error
 
@@ -138,8 +166,6 @@ def _ignite_server_address(config) -> Tuple[any, str]:
     try:
         from collections import namedtuple
         from urllib.parse import urlparse
-
-        from .helpers.py_helper import is_str_none_or_empty
 
         Address = namedtuple("Address", "host, port")
         address = Address("", 0)
@@ -177,7 +203,8 @@ def _ignite_server_address(config) -> Tuple[any, str]:
 # - ---------------------------------------------------------------------------- #
 # - Public --------------------------------------------------------------------- #
 # - ---------------------------------------------------------------------------- #
-def ignite_shared(app_name, start_at):
+from .Shared import Shared
+def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
     global fuse
 
     fuse, error = _start_fuse(app_name, start_at)
@@ -186,10 +213,11 @@ def ignite_shared(app_name, start_at):
     fuse.display.debug("The fuse was created.")
 
     # Config
-    config, error = _ignite_config()
+    config, error = _ignite_config(fuse.app_mode)
     if error:
         _log_and_exit(error)
     fuse.display.debug("Config was ignited.")
+
 
     # Mandatory Configuration keys
     error = _check_mandatory_keys(config)
@@ -203,10 +231,8 @@ def ignite_shared(app_name, start_at):
         _log_and_exit(error)
     fuse.display.debug("Flask Server Address is ready and 'config' configured.")
 
-    # shared obj
-    from .Shared import Shared
 
-    shared = Shared(config, fuse.display, address)
+    shared = Shared(fuse.app_debug, config, fuse.display, address)
     fuse.display.info("The global var 'shared' was ignited.")
 
     # ---------------------------------------------------------------------------- #
@@ -226,7 +252,7 @@ def ignite_shared(app_name, start_at):
 
     fuse.display.info(f"{__name__} completed with 0 errors and {warns} warnings.")
 
-    return shared
+    return shared, fuse.args.display_mute_after_init
 
 
 # - ---------------------------------------------------------------------------- #

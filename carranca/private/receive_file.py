@@ -19,7 +19,7 @@ from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import path_remove_last_folder, folder_must_exist
 from ..helpers.user_helper import LoggedUser, now
 from ..helpers.error_helper import ModuleErrorCode
-from ..helpers.route_helper import get_private_form_data, get_input_text
+from ..helpers.route_helper import get_private_form_data, get_input_text, is_method_get
 from ..helpers.ui_texts_helper import add_msg_success, add_msg_error
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 from ..config_validate_process import ValidateProcessConfig
@@ -33,6 +33,7 @@ def receive_file() -> str:
     tmpl_form = ReceiveFileForm(request.form)
 
     def _result():
+        #html = render_template(template, form=tmpl_form, **texts)
         return render_template(template, form=tmpl_form, **texts)
 
     if is_get:
@@ -137,10 +138,9 @@ def receive_file() -> str:
             log_msg = add_msg_success(
                 "uploadFileSuccess", texts, pd.user_receipt, logged_user.email
             )
-            shared.app_log.debug(log_msg)
+            shared.display.debug(log_msg)
         else:
             _log_error(msg_error, error_code)
-            ##g.app_log.debug(f"{log_msg} | File stage '{_file}' |{removed} Code {error_code} | Exception Error '{msg_error}'.")
 
     except Exception as e:
         error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code)
