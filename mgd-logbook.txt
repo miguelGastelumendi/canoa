@@ -36,18 +36,20 @@ TODO:
         - redo is_connected
         - Fix get_Html()
         - Login Remember not always working
-        - Add display at process
 
 -------------------------------------------------------
   Logbook
   Atualizar versão em: config.py e db.ui_items.body[89]
 -------------------------------------------------------
+2024-10-14--16 β 2.37
+    - process version 2024.10.16
+    - n checks of repeated submissions
 
-2024-10-09 β 2.36
+2024-10-12 β 2.36
+    - process revised because a bug in a second successive submission
     - process version 2024.10.12_b
-    - check se_saude_07_08.zip
 
-2024-10-09 β 2.35
+2024-10-10,11 β 2.35
     - profile demo
     - check se_saude_07_08.zip
 

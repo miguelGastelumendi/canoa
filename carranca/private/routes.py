@@ -6,7 +6,8 @@
     Equipe da Canoa -- 2024
     mgd
 """
-# cSpell: ignore werkzeug wtforms tmpl
+
+# cSpell: ignore werkzeug wtforms tmpl mgmt
 
 from flask import Blueprint, render_template
 from flask_login import login_required
@@ -24,18 +25,20 @@ from ..helpers.route_helper import (
 # === module variables ====================================
 bp_private = Blueprint(bp_name(base_route_private), base_route_private, url_prefix="")
 
+
 # === Test _ route ========================================
 @bp_private.route("/test_route")
-def  test_route():
+def test_route():
     from ..helpers.dwnLd_goo_helper import download_public_google_file
 
-    i= download_public_google_file(
+    i = download_public_google_file(
         # "https://drive.google.com/file/d/1iXyDi-NcGIobY0NY-fOQ34Ew-gcS0PzY/view?usp=sharing" #zip com pw
         # 'https://drive.google.com/file/d/1k4fW92-QGwp9SfMdHEE4WIFkKMJla763/view?usp=sharing'   #zipped
-          "https://drive.google.com/file/d/1H0BfjYJrf0p_ehqDoUH0wXIJzbAXwUKd/view?usp=sharing" # argow.zipped
-        ,"./uploaded_files/"
+        "https://drive.google.com/file/d/1H0BfjYJrf0p_ehqDoUH0wXIJzbAXwUKd/view?usp=sharing",  # argow.zipped
+        "./uploaded_files/",
     )
     return str(i)
+
 
 # === routes =============================================
 @bp_private.route("/home")
@@ -55,8 +58,8 @@ def home():
 
 
 @login_required
-@bp_private.route("/profile_management", methods=["GET", "POST"])
-def profile_management():
+@bp_private.route("/profile_mgmt", methods=["GET", "POST"])
+def profile_mgmt():
     """
     Through this route, the admin user can manage the profile os
     users
@@ -64,8 +67,9 @@ def profile_management():
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .profile_mgmt import do_profile_management
-        return do_profile_management()
+        from .profile_mgmt import do_profile_mgmt
+
+        return do_profile_mgmt()
 
 
 @login_required
@@ -86,7 +90,9 @@ def receive_file():
         return redirect_to(login_route())
     else:
         from .receive_file import receive_file
-        return receive_file()
+
+        html = receive_file()
+        return html
 
 
 @login_required
@@ -104,6 +110,7 @@ def change_password():
         return redirect_to(login_route())
     else:
         from .access_control.password_change import do_password_change
+
         return do_password_change()
 
 

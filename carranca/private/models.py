@@ -11,7 +11,10 @@
 # cSpell:ignore: nullable psycopg2 sqlalchemy sessionmaker
 
 from psycopg2 import DatabaseError
+from sqlalchemy import select
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text
+from sqlalchemy.orm import Session
+
 # TODO: from sqlalchemy.ext.declarative import declarative_base
 
 from ..main import shared
@@ -22,8 +25,8 @@ class UserDataFiles(shared.sa.Model):
     __tablename__ = "user_data_files"
 
     # keys (register..on_ins)
-    id = Column(Integer, primary_key=True) # autoinc
-    id_users = Column(Integer)   # fk
+    id = Column(Integer, primary_key=True)  # autoinc
+    id_users = Column(Integer)  # fk
     ticket = Column(String(40), unique=True)
     user_receipt = Column(String(14))
 
@@ -60,7 +63,7 @@ class UserDataFiles(shared.sa.Model):
 
     # Set on trigger
     # registered_at, at insert
-    # email_sent_at, at email_sent = T
+    # email_sent_at, when email_sent = T
     # error_at, at error_code not 0
 
     # obsolete
@@ -73,43 +76,43 @@ class UserDataFiles(shared.sa.Model):
 
     # Helpers
     def _get_record(session, uTicket):
-        ''' gets the record with unique Key uTicket '''
-        # TODO: Where
-        # https://docs.sqlalchemy.org/en/20/orm/queryguide/query.html#sqlalchemy.orm.Query.filter
-        records = session.query(UserDataFiles).filter_by(ticket=uTicket)
-        if (records is None) or (records.count() == 0):
-            record = None
-        elif records.count() == 1:
-            record= records.first()
+        """gets the record with unique Key uTicket"""
+        statement = select(UserDataFiles).where(UserDataFiles.ticket == uTicket)
+        rows = session.scalars(statement).all()
+        if not rows:
+            return None
+        elif len(rows) == 1:
+            return rows[0]
         else:
             raise KeyError(f"The ticket {uTicket} return several records, expecting only one.")
 
-        return record
 
     def _ins_or_upd(isInsert: bool, uTicket: str, **kwargs) -> None:
         isUpdate = not isInsert
-        with shared.do_session() as session:
+        with Session(shared.sa_engine) as session:
             try:
-                msg_exists= f"The ticket '{uTicket}' is " + "{0} registered."
-                record_to_ins_or_upd= UserDataFiles._get_record(session, uTicket)
+                msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
+                # Fetch existing record if update, check if record already exists if insert
+                record_to_ins_or_upd = UserDataFiles._get_record(session, uTicket)
+                # check invalid conditions
                 if isUpdate and record_to_ins_or_upd is None:
-                    raise KeyError(msg_exists.format('not'))
+                    raise KeyError(msg_exists.format("not"))
                 elif isInsert and record_to_ins_or_upd is not None:
-                    raise KeyError(msg_exists.format('already'))
+                    raise KeyError(msg_exists.format("already"))
                 elif isInsert:
-                    record_to_ins_or_upd = UserDataFiles(ticket=uTicket)
+                    record_to_ins_or_upd = UserDataFiles(ticket=uTicket, **kwargs)
+                    session.add(record_to_ins_or_upd)
+                else:
+                    for attr, value in kwargs.items():
+                        if value is not None:
+                            setattr(record_to_ins_or_upd, attr, value)
 
-                for attr, value in kwargs.items():
-                    if value is not None:
-                        setattr(record_to_ins_or_upd, attr, value)
-
-                session.add(record_to_ins_or_upd)
                 session.commit()
             except Exception as e:
-                if session:
-                    session.rollback()
-                operation = 'update' if isUpdate else 'insert to'
-                msg_error = f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
+                operation = "update" if isUpdate else "insert to"
+                msg_error = (
+                    f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
+                )
                 shared.app_log.error(msg_error)
                 raise DatabaseError(msg_error)
 
@@ -119,5 +122,6 @@ class UserDataFiles(shared.sa.Model):
 
     def update(uTicket: str, **kwargs) -> None:
         UserDataFiles._ins_or_upd(False, uTicket, **kwargs)
+
 
 # eof

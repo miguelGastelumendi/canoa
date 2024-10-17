@@ -8,7 +8,7 @@
 
 from ..helpers.route_helper import get_private_form_data, get_input_text
 
-def do_profile_management() -> str:
+def do_profile_mgmt() -> str:
     template, is_get, texts = get_private_form_data("profileMgmt")
     #tmpl_form = ReceiveFileForm(request.form)
     return None

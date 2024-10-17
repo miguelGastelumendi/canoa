@@ -25,6 +25,7 @@
 # cSpell:ignore ext
 
 from datetime import datetime
+from typing import Tuple
 
 from ...helpers.py_helper import is_str_none_or_empty
 from ...config_validate_process import ValidateProcessConfig
@@ -49,7 +50,7 @@ def process(
     proc_data: ProcessData,
     received_at: datetime,
     valid_ext: list[str],
-) -> list[int, str, str]:
+) -> Tuple[int, str, str]:
 
     from ...main import shared
 
@@ -77,7 +78,7 @@ def process(
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
-        "2024.10.12_b", #process version
+        "2024.10.16", #process version
         shared.config.APP_DEBUG,
         logged_user,
         ValidateProcessConfig(shared.config.APP_DEBUG),
@@ -126,7 +127,6 @@ def process(
         process_ended = now()
         if is_str_none_or_empty(cargo.table_udf_key):
             _display("No record was inserted")
-            pass  # user_data_file's pk not ready
         elif error_code == 0:
             try:
                 UserDataFiles.update(
@@ -176,7 +176,7 @@ def process(
         _display(f"The validation process end with error code {error_code}")
         shared.display.set_elapsed_output(elapsed_output)
 
-    return error_code, msg_error, msg_exception, cargo.final
+    return error_code, msg_error, msg_exception
 
 
 # eof

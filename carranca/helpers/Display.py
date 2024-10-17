@@ -14,7 +14,7 @@ from math import log10, modf
 from enum import Enum
 from typing import List
 from datetime import datetime
-from py_helper import is_str_none_or_empty
+from .py_helper import is_str_none_or_empty
 
 
 class Display:
@@ -193,7 +193,7 @@ class Display:
             self.elapsed_from = elapsed_from
         elif self.elapsed_output:
             self.elapsed_from = time.perf_counter()
-        else:  #
+        else:
             self.elapsed_from = None
 
         return was_active

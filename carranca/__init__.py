@@ -49,19 +49,26 @@
     Equipe da Canoa -- 2024
     mgd
 """
+# cSpell:ignore sqlalchemy keepalives psycopg2
+
+# For Display() perf display
 
 import time
-
 started = time.perf_counter()
 
+import jinja2
+from flask import Config
+from flask_sqlalchemy import SQLAlchemy
 
-# ---------------------------------------------------------------------------- #
-def create_app(app_name, config):
-    from flask import Flask
 
-    # alternative configuration to Flask
-    app = Flask(app_name)
-    app.config.from_object(config)
+
+def _register_database(app, sa: SQLAlchemy):
+
+    sa.init_app(app)
+
+    # @app.before_first_request
+    # def initialize_database():
+    #     db.create_all()
 
     """ ChatGPT
     During each request:
@@ -70,9 +77,27 @@ def create_app(app_name, config):
         Once the response is ready, the shutdown_session() is called,
         which removes the session to prevent any lingering database connections or transactions.
     """
+
     @app.teardown_request
     def shutdown_session(exception=None):
-        app.shared.sa.session.remove()
+        sa.session.remove()
+
+
+# ---------------------------------------------------------------------------- #
+#from config import BaseConfig
+def create_app(app_name, config: Config, sa: SQLAlchemy):
+    from flask import Flask
+
+    # alternative configuration to Flask
+    app = Flask(app_name)
+    app.config.from_object(config)
+    # TODO: app.config.from_prefixed_env(config.APP_NAME)
+
+    _register_database(app, sa)
+
+    if config.DEBUG_TEMPLATES:
+        # Enable DebugUndefined for better error messages in Jinja2 templates
+        app.jinja_env.undefined = jinja2.DebugUndefined
 
     return app
 

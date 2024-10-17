@@ -87,8 +87,11 @@ def _texts_init():
 
 # === public ==============================================
 
-# TODO: returns a dict<string, string> with the HTML info except for.. not ready, still working...
 def get_html(section: str) -> dict[str, str]:
+    """
+      returns a dict[str, str] with the HTML info
+       TODO except for.. not ready, still working...
+    """
     imgList = get_text('images', section)
     # filter if not is_str_none_or_empty(imgList)
     # select item, text from vw_ui_texts v where v.section_lower = 'html_file' and item not in ('image3.png',  'image4.png')
@@ -96,10 +99,12 @@ def get_html(section: str) -> dict[str, str]:
     return _get_result_set(query)
 
 def get_section(section: str) -> dict[str, str]:
-    """returns a dict<string, string> of the 'section'"""
+    """
+    returns a dict[str, str] of the 'section'
+    """
     query = __get_query('item, text', section)
     _texts = _get_result_set(query)
-    #texts = process_pre_templates(_texts)
+    #texts = process_pre_templates(_texts) # TODO:
     return _texts
 
 def get_text(item: str, section: str, default: str= None) -> str:

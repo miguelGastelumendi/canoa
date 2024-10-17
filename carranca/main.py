@@ -54,17 +54,20 @@ from carranca import started
 
 shared, display_mute_after_init = ignite_shared(app_name, started)
 
-# Flask app
-from carranca import create_app  # see __init__.py
-
-app = create_app(app_name, shared.config)
-shared.display.info("The Flask app was created and configured.")
-
 # Database
 from .igniter import ignite_sql_alchemy
 
-sa = ignite_sql_alchemy(app, shared)
+sa = ignite_sql_alchemy(shared)
 shared.display.info("SQLAlchemy was instantiated and the db connection was successfully tested.")
+
+
+# Flask app
+from carranca import create_app  # see __init__.py
+
+app = create_app(app_name, shared.config, sa)
+shared.obfuscate()
+shared.display.info("The Flask app was created and configured.")
+
 
 # login Manger
 from flask_login import LoginManager
@@ -72,31 +75,41 @@ from flask_login import LoginManager
 login_manager = LoginManager(app)
 shared.display.info("Flask login manager was instantiated.")
 
+
 # Keep shared alive within app
 app.shared = shared.keep(app, sa, login_manager)
 shared.display.info("The global var 'shared' is now ready:")
 if shared.config.APP_DISPLAY_DEBUG_MSG:
     print(repr(shared))
 
+
 # Keep shared alive within app
 if shared.config.APP_DISPLAY_DEBUG_MSG and True:
     from .public.debug_info import get_debug_info
-    di = get_debug_info(app, shared.config) # TODO
+
+    di = get_debug_info(app, shared.config.copy())  # TODO, print
+
+from .public.debug_info import get_debug_info
+get_debug_info(app, shared.config)  # TODO, print
 
 # Blue Prints
 _register_blueprints(app)
 shared.display.info("The blueprints were collected and registered within the app.")
 
+
+# Jinja functions
 _register_jinja(app)
 shared.display.info("This app's functions were registered into Jinja.")
+
 
 # Tell everybody how quick we are
 elapsed = (time.perf_counter() - started) * 1000
 shared.display.info(f"{app_name} is now ready for the trip. It took {elapsed:,.0f}ms to create it.")
 
+# config shared.display
 if display_mute_after_init:
     shared.display.mute_all = True
-elif not shared.app_debug:
+elif not shared.config.APP_DISPLAY_DEBUG_MSG:
     shared.display.debug_output = False
 
 

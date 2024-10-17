@@ -33,13 +33,20 @@
 
 import json
 from datetime import datetime
+from flask import Config
+
+from .helpers.py_helper import copy_attributes
 
 
 class Shared:
-    from .config import BaseConfig
+    """
+    A global hub for shared objects
+    """
+
+    from .Config import DynamicConfig
     from .helpers.Display import Display
 
-    def __init__(self, app_debug: bool, config: BaseConfig, display: Display, server_address: str):
+    def __init__(self, app_debug: bool, config: DynamicConfig, display: Display, server_address: str):
         self.app_log = None
         self.app_name = config.APP_NAME
         self.app_debug = app_debug
@@ -50,9 +57,9 @@ class Shared:
         self.sa_engine = None
         self.server_address = server_address
         self.started_at = datetime.now()
-        self.cache = None  # TODO: _get_form_data
 
     def keep(self, app, sa, login_manager):
+        # https://docs.python.org/3/library/logging.html
         self.app_log = app.logger
         self.sa = sa
         self.sa_engine = sa.get_engine(app)
@@ -63,14 +70,6 @@ class Shared:
 
         return self
 
-    def do_session(self):
-        from sqlalchemy.orm import sessionmaker
-
-        # https://docs.sqlalchemy.org/en/20/orm/session_basics.html#using-a-sessionmaker
-        Session = sessionmaker(bind=self.sa_engine)
-        session = Session()
-        return session
-
     info = {
         "app_log": "Flask's app logger",
         "config": "config.Config",
@@ -79,6 +78,17 @@ class Shared:
         "sa": "SqlAlchemy",
         "sa_engine": "SqlAlchemy engine",
     }
+
+    def obfuscate(self):
+        """ Hide any confidencial info before is displayed in debug mode"""
+        import re
+
+        db_uri_safe = re.sub(
+            self.config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
+            self.config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
+            self.config.SQLALCHEMY_DATABASE_URI,
+        )
+        self.config.SQLALCHEMY_DATABASE_URI = db_uri_safe
 
     def __repr__(self):
         return json.dumps(self.info, indent=4, sort_keys=True)

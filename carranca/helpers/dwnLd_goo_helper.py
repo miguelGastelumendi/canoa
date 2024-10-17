@@ -61,10 +61,12 @@ def get_file_id_from_url(url: str) -> str:
 
     if id is None:
         from urllib.parse import urlparse, parse_qs
-
-        purl = urlparse(surl)
-        qs = parse_qs(purl)
-        id = qs["id"]
+        try:
+            purl = urlparse(surl)
+            qs = parse_qs(purl)
+            id = qs["id"]
+        except:
+            id = None
 
     return id
 
@@ -233,7 +235,7 @@ def download_public_google_file(
         shared.display.info('download: The file was downloaded.')
     except Exception as e:
         msg_error = f"An error ocurred while downloading the file. Task code {task_code}, message '{e}'.)"
-        shared.app_log.error(msg_error, exc_info=task_code)
+        shared.app_log.error(msg_error)
 
     return task_code, gdFile_name, gdFile_md
 

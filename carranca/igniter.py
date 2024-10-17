@@ -49,10 +49,13 @@ def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
             def __init__(self, app_name, debug_2):
                 _args = Args(debug_2)
                 self.args = set_flags_from_argv(_args)
-                self.args.app_mode = None  # TODO, Test
                 self.app_name = app_name
                 self.app_debug = self.args.app_debug if is_str_none_or_empty(self.args.app_mode) else None
-                self.app_mode = None  # TODO self.args.app_mode
+                if not is_str_none_or_empty(self.args.app_mode):
+                    self.app_mode =  self.args.app_mode
+                else:
+                    self.app_mode =  app_mode_development if debug_2 else app_mode_production
+
                 self.display = Display(
                     f"{self.app_name}: ",
                     _args.display_mute,
@@ -62,22 +65,22 @@ def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
                 )
 
         # Configuration priority (debug as am example):
-        # 1. Command-line argument: --debug
+        # 1. Command-line argument (sys.argv): --debug
         # 2. Environment: CANOA_DEBUG
         # 3. Config: config.APP_DEBUG
-        # 4. Code default
+        # 4. Code default values
         # Considerations:
         #    In this project, there are several configs
         #    available, of which one is selected according to
-        #    the 'app_mode' argument (: 'D', 'P', etc, see BaseConfig).
-        #    If there is no app_mode, then
+        #    the 'app_mode' argument (: 'D', 'P', etc, see config.py).
+        #    Taking this inb consideration, we skip 3. Config
         #
         debug_4 = False
         debug_3 = debug_4  # Read above 'Considerations'
         debug_2 = bool(Fuse.get_os_env("debug", debug_3))
         fuse = Fuse(app_name, debug_2)
         fuse.display.info(
-            f"The 'fuse' was started in {(app_mode_development if debug_2 else app_mode_production)} mode (and now we have how to print pretty)."
+            f"The 'fuse' was started in {fuse.app_mode} mode (and now we have how to print pretty)."
         )
         fuse.display.info(f"Current args: {fuse.args}.")
     except Exception as e:
@@ -87,37 +90,23 @@ def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
 
 
 # ---------------------------------------------------------------------------- #
-from .BaseConfig import BaseConfig
+from .Config import DynamicConfig
 
-
-def _ignite_config(app_mode) -> Tuple[BaseConfig, str]:
+def _ignite_config(app_mode) -> Tuple[DynamicConfig, str]:
     """
     Select the config, based in the app_mode (production or debug)
     WARNING: Don't run with debug turned on in production!
     """
     config = None  # this config will later be 'globally shared' by shared
     msg_error = None
-    _app_mode = ""
     try:
-        from .config import app_mode_production, app_mode_development, get_config_for_mode
-
-        if is_str_none_or_empty(app_mode):
-            _app_mode = app_mode_development if fuse.app_debug else app_mode_production
-        else:
-            _app_mode = app_mode
-
-        config = get_config_for_mode(_app_mode)
-        if not config:
-            raise (f"Unknown config mode {config}.")
-        fuse.display.info(f"The app config, in '{_app_mode}' mode, was ignited.")
-    except KeyError:
-        msg_error = _error_.format(
-            __name__,
-            "selecting the <app_mode>",
-            f"Expected values are [{app_mode_development}, {app_mode_production}].",
-        )
+        from .Config import get_config_for_mode
+        config = get_config_for_mode(app_mode)
+        if config is None:
+            raise Exception(f"Unknown config mode {config}.")
+        fuse.display.info(f"The app config, in '{app_mode}' mode, was ignited.")
     except Exception as e:
-        msg_error = _error_.format(__name__, f"initializing the app config in  mode '{_app_mode}'", e)
+        msg_error = _error_.format(__name__, f"initializing the app config in mode '{app_mode}'", e)
 
     return config, msg_error
 
@@ -225,15 +214,16 @@ def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
         _log_and_exit(error)
     fuse.display.debug("All mandatory configuration keys were informed.")
 
+
     # Server Address
     address, error = _ignite_server_address(config)
     if error:
         _log_and_exit(error)
     fuse.display.debug("Flask Server Address is ready and 'config' configured.")
 
-
+    # Create the global hub class 'shared'
     shared = Shared(fuse.app_debug, config, fuse.display, address)
-    fuse.display.info("The global var 'shared' was ignited.")
+    fuse.display.info("The global hub 'shared' was ignited.")
 
     # ---------------------------------------------------------------------------- #
     # Give warnings of import configuration that may be missing
@@ -256,35 +246,21 @@ def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
 
 
 # - ---------------------------------------------------------------------------- #
-def ignite_sql_alchemy(app, shared):
+def ignite_sql_alchemy(shared):
 
     from flask_sqlalchemy import SQLAlchemy
     from sqlalchemy import create_engine, select
 
-    sa = SQLAlchemy(app)
+    sa = SQLAlchemy()
     try:
         engine = create_engine(shared.config.SQLALCHEMY_DATABASE_URI)
         with engine.connect() as connection:
             connection.scalar(select(1))
-            shared.display.debug("The database connection is active.")
+            shared.display.info("The database connection is active.")
 
     except Exception as e:
         _log_and_exit(f"Unable to connect to the database. Error details: [{e}].")
 
-    # Obfuscate the password of SQLALCHEMY_DATABASE_URI value
-    import re
-
-    db_uri_safe = re.sub(
-        shared.config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
-        shared.config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
-        shared.config.SQLALCHEMY_DATABASE_URI,
-    )
-
-    # it (seems) that SQLAlchemy obfuscate the strConn, so I do as well
-    # as it should not be needed any more (just for info)
-    shared.config.SQLALCHEMY_DATABASE_URI = db_uri_safe
-
     return sa
-
 
 # eof

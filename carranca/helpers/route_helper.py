@@ -18,6 +18,7 @@ base_route_public = "public"
 public_route__password_reset = "password_reset"
 templates_found = []
 
+
 def _route(base: str, page: str, **params) -> str:
     address = f"{bp_name(base)}.{page}"
     return url_for(address, **params)
@@ -86,6 +87,7 @@ def _get_form_data(section: str, file: str, folder: str) -> Tuple[str, bool, dic
         templates_found.append(full_name)
     else:
         raise FileNotFoundError(f"The requested template '{full_name}' was not found.")
+
     is_get = is_method_get()
     texts = get_section(section)
     return template, is_get, texts
@@ -107,16 +109,18 @@ def redirect_to(route: str, message: str = None) -> str:
     # TODO: display message 'redirecting to ...
     return redirect(route)
 
-from ..config import BaseConfig
-def is_external_ip_ready(app_config: BaseConfig) -> bool:
-    if is_str_none_or_empty(app_config.SERVER_EXTERNAL_IP):
+
+from ..BaseConfig import BaseConfig
+
+def is_external_ip_ready(config: BaseConfig) -> bool:
+    if is_str_none_or_empty(config.SERVER_EXTERNAL_IP):
         try:
-            app_config.SERVER_EXTERNAL_IP = requests.get(app_config.EXTERNAL_IP_SERVICE).text.strip()
+            config.SERVER_EXTERNAL_IP = requests.get(config.EXTERNAL_IP_SERVICE).text.strip()
         except:
             # LOG
-            app_config.SERVER_EXTERNAL_IP = ""
+            config.SERVER_EXTERNAL_IP = ""
 
-    return not is_str_none_or_empty(app_config.SERVER_EXTERNAL_IP)
+    return not is_str_none_or_empty(config.SERVER_EXTERNAL_IP)
 
 
 # eof

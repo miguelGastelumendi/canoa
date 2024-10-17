@@ -28,13 +28,15 @@ RECEIVE_FILE_DEFAULT_ERROR = "uploadFileError"
 
 # link em gd de test em mgd account https://drive.google.com/file/d/1yn1fAkCQ4Eg1dv0jeV73U6-KETUKVI58/view?usp=sharing
 
+
 def receive_file() -> str:
-    template, is_get, texts = get_private_form_data("receiveFile") # TODO find by algo the file name
+    template, is_get, texts = get_private_form_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
 
     def _result():
-        #html = render_template(template, form=tmpl_form, **texts)
-        return render_template(template, form=tmpl_form, **texts)
+        tmpl = render_template(template, form=tmpl_form, **texts)
+        result = tmpl.strip()
+        return result
 
     if is_get:
         return _result()
@@ -42,7 +44,7 @@ def receive_file() -> str:
     def _log_error(msg_id: str, code: int, msg: str = "") -> int:
         error_code = ModuleErrorCode.RECEIVE_FILE_ADMIT + code
         log_error = add_msg_error(msg_id, texts, error_code, msg)
-        shared.app_log.error(log_error, exc_info=error_code)
+        shared.app_log.error(log_error)
         return error_code
 
     try:
@@ -113,9 +115,7 @@ def receive_file() -> str:
                 task_code += 1  # 10
                 pd.received_original_name = md["name"]
             else:
-                shared.app_log.error(
-                    f"Download error code {download_code}.", exc_info=download_code
-                )
+                shared.app_log.error(f"Download error code {download_code}.")
                 fn = filename if filename else "<ainda sem nome>"
                 task_code += 2  # 11
                 error_code = _log_error("receiveFileAdmit_bad_dl", task_code, fn)
@@ -130,14 +130,10 @@ def receive_file() -> str:
         from .validate_process.process import process
 
         task_code += 1
-        error_code, msg_error, _, data = process(
-            logged_user, file_data, pd, received_at, valid_extensions
-        )
+        error_code, msg_error, _ = process(logged_user, file_data, pd, received_at, valid_extensions)
 
         if error_code == 0:
-            log_msg = add_msg_success(
-                "uploadFileSuccess", texts, pd.user_receipt, logged_user.email
-            )
+            log_msg = add_msg_success("uploadFileSuccess", texts, pd.user_receipt, logged_user.email)
             shared.display.debug(log_msg)
         else:
             _log_error(msg_error, error_code)
@@ -146,6 +142,9 @@ def receive_file() -> str:
         error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code)
         shared.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
 
-    return _result()
+    tmpl = _result()
+    shared.display.debug(tmpl)
+    return tmpl
+
 
 # eof

@@ -84,7 +84,7 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         # so process.end knows what to do (update or skip)
         file_registered = cargo.file_registered(user_dataFiles_key)
         task_code = 0  # very important!
-        shared.display.info(f"register: The file information was inserted in the database.")
+        shared.display.info(f"register: The file information was inserted into the database.")
     except Exception as e:
         task_code += 10
         msg_exception = str(e)

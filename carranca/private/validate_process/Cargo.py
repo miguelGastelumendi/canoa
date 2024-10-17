@@ -97,7 +97,7 @@ class Cargo:
 
         Returns:
             tuple:
-            int   error code (0 none)
+            int   error code (0 no error)
             str   an entry in vw_ui_texts (see texts_helper.py[get_msg_error()])
             str   exception error message, to be logged, in order to assist in the debugging process
             obj   self, the Cargo instance

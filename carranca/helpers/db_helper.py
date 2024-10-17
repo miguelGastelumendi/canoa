@@ -107,6 +107,7 @@ def retrieve_dict(query: str):
             elif isinstance(data[0], tuple) and len(data) == 2:
                 result = {data[0]: data[1]}
     except Exception as e:
+        result = {}
         shared.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
 
     # # Check if the result is a tuple of tuples (multiple rows)
@@ -114,7 +115,7 @@ def retrieve_dict(query: str):
     #     # We expect at least two columns (key, value) for dictionary creation
     #     return {row[0]: row[1] for row in data}
 
-    return result
+    return result.copy() # there is a very strange error
 
 
 def persist_record(record: any, task_code: int = 1) -> None:

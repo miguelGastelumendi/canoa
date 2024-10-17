@@ -5,17 +5,20 @@
  mgd 2024-04-09--27
 
  """
- # cSpell:ignore latin CCITT
 
+# cSpell:ignore latin CCITT
+
+import copy
 import time
 import platform
 from sys import argv
 from datetime import datetime
+from typing import Dict, Any, Type, Tuple
 
 OS_NAME_IS = platform.system()
-OS_IS_WINDOWS = (OS_NAME_IS == "Windows")
-OS_IS_LINUX = (OS_NAME_IS == "Linux")
-OS_IS_MAC = (OS_NAME_IS == "Darwin")
+OS_IS_WINDOWS = OS_NAME_IS == "Windows"
+OS_IS_LINUX = OS_NAME_IS == "Linux"
+OS_IS_MAC = OS_NAME_IS == "Darwin"
 
 
 def now() -> datetime:
@@ -27,17 +30,17 @@ def is_str_none_or_empty(s: str) -> bool:
     """
     Returns True if the argument is None of an empty (only spaces, \t, \t, etc) string
     """
-    return (s is None) or ((str(s) + '').strip() == '')
+    return (s is None) or ((str(s) + "").strip() == "")
 
 
 def to_str(s: str) -> str:
     """
     Returns the argument as a string, striping spaces
     """
-    return '' if is_str_none_or_empty(s) else (s + '').strip()
+    return "" if is_str_none_or_empty(s) else (s + "").strip()
 
 
-def strip_and_ignore_empty(s: str, sep = ',', max_split = -1) -> list[str]:
+def strip_and_ignore_empty(s: str, sep=",", max_split=-1) -> list[str]:
     """
     Returns a list of the striped items created by splitting s and ignoring empty items
     """
@@ -48,21 +51,21 @@ def strip_and_ignore_empty(s: str, sep = ',', max_split = -1) -> list[str]:
 
     return result
 
-def camel_to_snake(string: str) -> str :
-  """Converts a camel case string to snake case.
 
-  Args:
-    string: The camel case string to convert.
+def camel_to_snake(string: str) -> str:
+    """Converts a camel case string to snake case.
 
-  Returns:
-    The converted snake case string.
-  """
-  snake_case = ""
-  for char in string:
-    snake_case += ('_' if char.isupper() else '' ) + char.lower()
+    Args:
+      string: The camel case string to convert.
 
-  return snake_case.strip("_")  # Remove leading underscores
+    Returns:
+      The converted snake case string.
+    """
+    snake_case = ""
+    for char in string:
+        snake_case += ("_" if char.isupper() else "") + char.lower()
 
+    return snake_case.strip("_")  # Remove leading underscores
 
 
 def coalesce(val1, val2):
@@ -94,21 +97,20 @@ def crc16(data: bytes | str) -> int:
         print(f"{crc16('Hello, World!'):04X}")
     """
 
-    if (data is None):
+    if data is None:
         return 0
     elif type(data) == bytes:
         pass
     elif not isinstance(data, str):
-        raise TypeError('Expecting bytes of str parameter.')
+        raise TypeError("Expecting bytes of str parameter.")
     elif is_str_none_or_empty(data):
         return 0
-    else: # Convert string to bytes
+    else:  # Convert string to bytes
         data = data.encode()
-
 
     crc = 0xFFFF
     for byte in data:
-        crc ^= (byte << 8)
+        crc ^= byte << 8
         for _ in range(8):
             if crc & 0x8000:
                 crc = (crc << 1) ^ 0x1021
@@ -129,19 +131,19 @@ def current_milliseconds():
 
 def to_base(number: int, base: int) -> str:
     if base < 2 or base > 36:
-        raise ValueError('Base must be between 2 and 36.')
+        raise ValueError("Base must be between 2 and 36.")
 
-    result = ''
+    result = ""
     if number == 0:
-        result = '0'
+        result = "0"
     elif base == 2:
-        result = format(number, 'b')
+        result = format(number, "b")
     elif base == 8:
-        result = format(number, 'o')
+        result = format(number, "o")
     elif base == 16:
-        result = format(number, 'x')
+        result = format(number, "x")
     else:
-        base_digits = '0123456789abcdefghijklmnopqrstuvwxyz'[:base]  # Digits for the specified base
+        base_digits = "0123456789abcdefghijklmnopqrstuvwxyz"[:base]  # Digits for the specified base
         while number:
             number, remainder = divmod(number, base)
             result = base_digits[remainder] + result
@@ -159,15 +161,15 @@ def decode_std_text(std_text: bytes):
     Returns:
     A string containing the decoded output.
     """
-    if std_text is None or std_text == b'':
-        return ''
+    if std_text is None or std_text == b"":
+        return ""
 
     try:
         # Try UTF-8 first, as it's commonly used
-        return std_text.decode('utf-8')
+        return std_text.decode("utf-8")
     except UnicodeDecodeError:
         # If UTF-8 fails, try common encodings for Windows and latin-1
-        for encoding in ('latin-1', 'cp1252'):
+        for encoding in ("latin-1", "cp1252"):
             try:
                 return std_text.decode(encoding)
             except Exception:
@@ -195,6 +197,43 @@ def set_flags_from_argv(obj):
         # TODO: setattr(obj, attr, attr++)
 
         return obj
+
+
+class EmptyClass:
+    pass
+
+
+def copy_attributes(class_instance: Any, this_types: Tuple[Type] | Type = None) -> EmptyClass:
+    """
+    Copies the specified simple type attributes from a class_instance,
+        of the ones specified in the second argument
+        or the defaults
+
+    Args:
+        config: The Config object to copy attributes from.
+        this_types: An optional type to add to the list of included types or a
+            Tuple of types to use instead of the default list
+
+    Returns:
+        A dictionary containing the copied attributes.
+    """
+
+    default_types = (str, int, float, bool)
+
+    if this_types is None:
+        valid_types = default_types
+    elif isinstance(this_types, type):
+        valid_types = default_types + (this_types,)
+    elif isinstance(this_types, tuple):
+        valid_types = this_types
+
+    copy_instance = EmptyClass()
+    for key, value in class_instance.__dict__.items():
+        if isinstance(value, valid_types):
+            setattr(copy_instance, key, value)
+
+    return copy_instance
+
 
 # class MyCustomDict(dict):
 #     def __getattr__(self, attr):

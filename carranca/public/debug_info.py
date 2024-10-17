@@ -44,7 +44,7 @@ def get_debug_info(app, config) -> List[Tuple[str, str]]:
     _add("External address ", coalesce(config.SERVER_EXTERNAL_IP, "<set on demand>"))
     _add("External port", coalesce(config.SERVER_EXTERNAL_PORT, "<none>"))
 
-    _add("Versions of the main packages", "")
+    _add("Main package versions", "")
     _add("Python", platform.python_version())
     _add("SQLAlchemy", sqlalchemy.__version__)
     _add("Flask", flask.__version__)
@@ -61,15 +61,16 @@ def get_debug_info(app, config) -> List[Tuple[str, str]]:
 
     _add("OS Path", os.getcwd())
 
-    # if bPrint:
-    #     for name, value in result:
-    #         kind, v = (
-    #             (shared.display.Kind.SIMPLE, ": " + value)
-    #             if value
-    #             else (shared.display.Kind.INFO, "_" * vl)
-    #         )
-    #         shared.display.print(kind, f"{name.rjust(ml)}{v}", "", False)
+    if True:
+        from ..main import shared
 
+        for name, value in result:
+            kind, v = (
+                (shared.display.Kind.SIMPLE, ": " + value)
+                if value
+                else (shared.display.Kind.INFO, "_" * vl)
+            )
+            shared.display.print(kind, f"{name.rjust(ml)}{v}", "", False)
 
     # max_len_first = max(len(first) for first, _ in tuples)
     # max_len_second = max(len(second) for _, second in tuples)
