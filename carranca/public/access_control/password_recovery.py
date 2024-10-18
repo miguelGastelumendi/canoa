@@ -10,7 +10,7 @@
 from flask import render_template, request
 import secrets
 
-from ...helpers.db_helper import persist_record
+from ...public.models import persist_user
 from ...helpers.email_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode
 from ...helpers.ui_texts_helper import add_msg_error, add_msg_success
@@ -22,7 +22,7 @@ from ...helpers.route_helper import (
     get_account_form_data,
     public_route__password_reset,
 )
-from ..models import Users, get_user_where
+from ..models import  get_user_where
 from ..wtforms import PasswordRecoveryForm
 
 
@@ -57,7 +57,7 @@ def password_recovery():
             task_code += 1  # 8
             record_to_update.recover_email_token = token
             task_code += 1  # 9
-            persist_record(record_to_update, task_code)
+            persist_user(record_to_update, task_code)
             add_msg_success('emailSent', texts)
             task_code = 0
     except Exception as e:  # TODO: log

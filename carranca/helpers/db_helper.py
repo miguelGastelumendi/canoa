@@ -8,34 +8,17 @@
 # cSpell:ignore psycopg2 sqlalchemy
 
 from typing import Any, Union, Tuple, Optional
-from psycopg2 import DatabaseError
 from sqlalchemy import text
 
 from ..main import shared
 from .py_helper import is_str_none_or_empty
 
 
-def is_connected() -> bool:
-    """
-    Checks the database connection status.
-
-    Returns:
-        True if the connection is successful, False otherwise.
-    """
-
-    try:
-        shared.sa_engine.connect()
-        return True
-    except Exception as e:
-        shared.app_log.error(f"Connection Error: [{e}].")
-        return False
-
-
 def execute_sql(query: str):
     """ Runs an SQL query and returns the result """
     result = None
     if not is_str_none_or_empty(query):
-        with shared.sa_engine.connect() as connection:
+        with shared.sa_engine().connect() as connection:
             _text = text(query)
             result = connection.execute(_text)
 
@@ -117,21 +100,6 @@ def retrieve_dict(query: str):
 
     return result.copy() # there is a very strange error
 
-
-def persist_record(record: any, task_code: int = 1) -> None:
-    """
-    Args:
-      record: query result
-      task_code: int
-    """
-    try:
-        shared.sa.session.add(record)
-        task_code += 1
-        shared.sa.session.commit()
-    except Exception as e:
-        shared.sa.session.rollback()
-        e.task_code = task_code
-        raise DatabaseError(e)
 
 
 def get_str_field_length(table_model: object, field_name: str) -> str:

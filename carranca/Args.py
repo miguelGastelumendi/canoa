@@ -7,7 +7,7 @@
  """
 
 import json
-
+from .helpers.py_helper import set_flags_from_argv
 
 class Args:
     def __init__(self, as_debug):
@@ -21,6 +21,15 @@ class Args:
 
     def __repr__(self):
         return json.dumps(self.__dict__, indent=None, separators=(",", ":"), sort_keys=True)
+
+    @classmethod
+    def ignite(cls, json_str):
+        data = json.loads(json_str)
+        return cls(**data)
+
+    def from_arguments(self):
+        set_flags_from_argv(self)
+        return self
 
 
 # eof

@@ -34,9 +34,10 @@ def _init_envvar_of_config(cfg, fuse):
     Initialize BaseConfig
     from environment variables
     """
+    envvars_prefix = f"{fuse.app_name}_".upper()
     for key, value in environ.items():
-        attribute_name = key[len(fuse.envvars_prefix) :]
-        if not key.startswith(fuse.envvars_prefix):
+        attribute_name = key[len(envvars_prefix) :]
+        if not key.upper().startswith(envvars_prefix):
             pass
         elif hasattr(cfg, attribute_name):
             value = bool(value) if value.capitalize() in [str(True), str(False)] else value
@@ -54,6 +55,8 @@ class DynamicConfig(BaseConfig):
     def __init__(self):
         from .igniter import fuse
 
+        # flask has config.from_prefixed_env() that us used in create_app
+        # but I need one now, and displaying some msg.
         _init_envvar_of_config(self, fuse)
         fuse.display.info(f"Config {self.APP_MODE} was instantiated.")
         self.TEMPLATES_FOLDER =  _get_template_folder()
@@ -121,8 +124,6 @@ def get_config_for_mode(app_mode: str) -> DynamicConfig:
         config= ProductionConfig()
     elif app_mode == app_mode_development:
         config= DevelopmentConfig()
-    else:
-        return None
 
     return config
 

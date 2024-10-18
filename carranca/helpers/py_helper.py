@@ -196,7 +196,7 @@ def set_flags_from_argv(obj):
         # elif any(f.lower() == param.lower() for f in argv) if OS_IS_WINDOWS else (param in argv):
         # TODO: setattr(obj, attr, attr++)
 
-        return obj
+    return obj
 
 
 class EmptyClass:

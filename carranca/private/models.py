@@ -14,18 +14,19 @@ from psycopg2 import DatabaseError
 from sqlalchemy import select
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text
 from sqlalchemy.orm import Session
-
-# TODO: from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base
 
 from ..main import shared
-from ..helpers.db_helper import persist_record
+
+# https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
+Base = declarative_base()
 
 
-class UserDataFiles(shared.sa.Model):
+class UserDataFiles(Base):
     __tablename__ = "user_data_files"
 
     # keys (register..on_ins)
-    id = Column(Integer, primary_key=True)  # autoinc
+    id = Column(Integer, primary_key=True, autoincrement=True)
     id_users = Column(Integer)  # fk
     ticket = Column(String(40), unique=True)
     user_receipt = Column(String(14))
@@ -86,10 +87,9 @@ class UserDataFiles(shared.sa.Model):
         else:
             raise KeyError(f"The ticket {uTicket} return several records, expecting only one.")
 
-
     def _ins_or_upd(isInsert: bool, uTicket: str, **kwargs) -> None:
         isUpdate = not isInsert
-        with Session(shared.sa_engine) as session:
+        with Session(shared.sa_engine()) as session:
             try:
                 msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
                 # Fetch existing record if update, check if record already exists if insert

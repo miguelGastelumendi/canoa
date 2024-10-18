@@ -11,7 +11,7 @@ from flask import render_template, request
 from flask_login import login_user
 
 from ...main import shared
-from ...helpers.db_helper import persist_record
+from ...public.models import persist_user
 from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
 from ...helpers.ui_texts_helper import add_msg_error
@@ -64,10 +64,11 @@ def login():
                 user.recover_email_token = None
                 user.last_login_at = now()
                 task_code += 1  # 12
-                persist_record(user, task_code)
+                persist_user(user, task_code)
 
                 remember_me = not is_str_none_or_empty(request.form.get('remember_me'))
                 task_code += 1  # 13
+                # for this login work, User must inherited from SQLAlchemy.Model
                 login_user(user, remember_me)
                 task_code += 1  # 14
                 return redirect_to(home_route())

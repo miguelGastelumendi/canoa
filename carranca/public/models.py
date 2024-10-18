@@ -6,23 +6,27 @@
     mgd
 """
 
-# cSpell:ignore nullable sqlalchemy
+# cSpell:ignore nullable sqlalchemy psycopg2
 
 from typing import Any
-from flask_login import UserMixin
+from psycopg2 import DatabaseError
+from sqlalchemy import select
 from sqlalchemy import Column, Computed, Integer, String, DateTime, Boolean, LargeBinary
+from flask_login import UserMixin
+from sqlalchemy.orm import Session
+from flask_sqlalchemy import SQLAlchemy
 
 from ..main import shared
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
 
 
-class Users(shared.sa.Model, UserMixin):
+class Users(UserMixin, shared.db().Model):
 
     __tablename__ = "users"
 
     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(100), unique=True)
     username_lower = Column(String(100), Computed(""))  # TODO deferred
     email = Column(String(64), unique=True)
@@ -51,19 +55,6 @@ class Users(shared.sa.Model, UserMixin):
         return str(self.username)
 
 
-def get_users_where(**kwargs: Any) -> Any:
-    """
-    Select one, several or none user records
-    Check result against None then result.count():
-        user =  None
-                if not records or records.count() == 0
-                else
-                records.first()
-    """
-    records = Users.query.filter_by(**kwargs)
-    return records
-
-
 def get_user_where(**kwargs: Any) -> Any:
     """
     Select a user by a unique filter
@@ -71,16 +62,31 @@ def get_user_where(**kwargs: Any) -> Any:
         `r= Users.query.filter_by(username_lower = username.lower()).first()`
     that can rais an error, see this code.
     """
-    records = get_users_where(**kwargs)
+    user = None
+    records = Users.query.filter_by(**kwargs)
     if not records or records.count() == 0:
-        user = None
+        pass
     elif records.count() == 1:
         user = records.first()
     else:
-        # TODO LOG filter
-        raise KeyError(f"The selection return {records.count()} users, expect one or none.")
+        msg = f"The selection return {records.count()} users, expect one or none."
+        shared.app_log.error(msg)
+        raise KeyError(msg)
 
     return user
+
+def persist_user(record: any, task_code: int = 1) -> None:
+
+    # as this model inherits from SQLAlchemy (sa) the session must be from sa
+    sa = shared.db()
+    try:
+        sa.session.add(record)
+        task_code += 1
+        sa.session.commit()
+    except Exception as e:
+        sa.session.rollback()
+        e.task_code = task_code
+        raise DatabaseError(e)
 
 
 @shared.login_manager.user_loader

@@ -4,19 +4,29 @@
     mgd
     Equipe da Canoa -- 2024
 """
-#cSpell:ignore cuser
 
+# cSpell:ignore cuser
+
+from os import environ
 from typing import Any
-from .py_helper import current_milliseconds, to_base, now, crc16
 from flask_login import current_user
 
+from .py_helper import current_milliseconds, to_base, now, crc16
+
 _code_shift_id = 903
-_ticket_receipt_sep = '_'
+_ticket_receipt_sep = "_"
+
+
+# maybe is necessary later:
+def get_os_env(key: str, default=None, prefix: str = None) -> str:
+    _key = key if prefix is None else f"{prefix}_{key}"
+    return environ.get(_key, default)
+
 
 def now_as_text() -> str:
     # current date time for user
     ##- TODO: get config <- from ui_texts
-    return now().strftime('%d/%m/%Y às %H:%M')
+    return now().strftime("%d/%m/%Y às %H:%M")
 
 
 def get_user_code(id: int) -> str:
@@ -27,8 +37,10 @@ def get_user_code(id: int) -> str:
     """
     return to_base(_code_shift_id + id, 21).zfill(5)
 
+
 def get_user_folder(id: int) -> str:
     return get_user_code(id)
+
 
 def get_file_ticket(user_code: str) -> str:
     """
@@ -44,7 +56,7 @@ def get_file_ticket(user_code: str) -> str:
     """
     # `user_receipt` (see below) dependes heavily in the format of the file_ticket
     ms = to_base(current_milliseconds(), 22).zfill(6)  # max = ggi.48g
-    now_str = now().strftime('%Y-%m-%d')
+    now_str = now().strftime("%Y-%m-%d")
     file_ticket = f"{user_code}{_ticket_receipt_sep}{now_str}{_ticket_receipt_sep}{ms}"
     return file_ticket
 
@@ -72,6 +84,7 @@ class LoggedUser:
         email (str): User's email address.
 
     """
+
     def __init__(self):
         cuser = current_user
         self.logged = cuser is not None
@@ -82,11 +95,11 @@ class LoggedUser:
             self.id = cuser.id
             self.email = cuser.email
         else:
-            self.name = ''
-            self.code = '0'
-            self.folder = ''
+            self.name = ""
+            self.code = "0"
+            self.folder = ""
             self.id = -1
-            self.email = ''
+            self.email = ""
 
 
 # TODO:

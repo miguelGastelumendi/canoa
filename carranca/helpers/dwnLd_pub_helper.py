@@ -85,7 +85,7 @@ def download_public_file(url, filename, guess_extension_if_not_provided=True) ->
         task_code = 0 if code == 0 else code + code_offset
         if task_code > 0:
             raise RuntimeError(f"Fault from '{content_type}'.")
-        shared.app_log.display(
+        shared.display.info(
             f"The file from the link {url} of type '{content_type}' was successfully retrieved and saved to [{new_filename}]."
         )
 
@@ -186,7 +186,7 @@ def download_public_google_file(file_id, file_folder):
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            print("Download %d%%." % int(status.progress() * 100))
+            shared.display.debug("download: progress %d%%." % int(status.progress() * 100))
     finally:
         fh.close()
 

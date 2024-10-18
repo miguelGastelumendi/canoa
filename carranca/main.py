@@ -23,10 +23,10 @@ def _register_jinja(app):
     from .helpers.route_helper import private_route, public_route
 
     def __get_name() -> str:
-        return app.shared.config.APP_NAME
+        return app.config['APP_NAME']
 
     def __get_version() -> str:
-        return app.shared.config.APP_VERSION
+        return app.config['APP_VERSION'] # TODO: ?
 
     app.jinja_env.globals.update(
         app_version=__get_version,
@@ -57,14 +57,14 @@ shared, display_mute_after_init = ignite_shared(app_name, started)
 # Database
 from .igniter import ignite_sql_alchemy
 
-sa = ignite_sql_alchemy(shared)
+_ = ignite_sql_alchemy(shared)
 shared.display.info("SQLAlchemy was instantiated and the db connection was successfully tested.")
 
 
 # Flask app
 from carranca import create_app  # see __init__.py
 
-app = create_app(app_name, shared.config, sa)
+app = create_app(app_name, shared.config)
 shared.obfuscate()
 shared.display.info("The Flask app was created and configured.")
 
@@ -77,7 +77,7 @@ shared.display.info("Flask login manager was instantiated.")
 
 
 # Keep shared alive within app
-app.shared = shared.keep(app, sa, login_manager)
+shared.keep(app, login_manager)
 shared.display.info("The global var 'shared' is now ready:")
 if shared.config.APP_DISPLAY_DEBUG_MSG:
     print(repr(shared))

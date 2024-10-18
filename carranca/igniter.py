@@ -9,8 +9,10 @@
 
 # cSpell:ignore sqlalchemy mandatories cssless sendgrid ENDC psycopg2
 
-from typing import Tuple
+from typing import Tuple, Any
 from .helpers.py_helper import is_str_none_or_empty
+
+from .Args import Args
 
 _error_ = "[{0}]: An error ocurred while {1}. Message `{2}`."
 fuse = None
@@ -25,60 +27,62 @@ def _log_and_exit(ups: str):
 
 
 # ---------------------------------------------------------------------------- #
-def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
+# Fuse a igniter helper
+class Fuse:
+    def __init__(self, app_name, display: Any, args: Args):
+        from .BaseConfig import app_mode_production, app_mode_development
+
+        self.app_name = app_name
+        self.app_debug = args.app_debug
+        self.display = display
+        self.args = args
+
+        if is_str_none_or_empty(args.app_mode):
+            self.app_mode = app_mode_development if args.app_debug else app_mode_production
+        else:
+            self.app_mode = self.args.app_mode
+
+
+# ---------------------------------------------------------------------------- #
+def _get_debug_2(app_name: str) -> bool:
+
+    # Configuration priority (debug as am example):
+    # 1. Command-line argument (sys.argv): --debug
+    # 2. Environment: CANOA_DEBUG
+    # 3. Config: config.APP_DEBUG
+    # 4. Code default values
+    # Considerations:
+    #    In this project, there are several configs
+    #    available, of which one is selected according to
+    #    the 'app_mode' argument (: 'D', 'P', etc, see config.py).
+    #    Taking this inb consideration, we skip 3. Config
+    #
+    from .helpers.user_helper import get_os_env
+
+    debug_4 = False
+    debug_3 = debug_4  # Read above 'Considerations'
+    debug_2 = bool(get_os_env("debug", debug_3, app_name))
+    return debug_2
+
+
+# ---------------------------------------------------------------------------- #
+def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, str]:
     """
-    Create the 'fuse' that will ignite all the initializations classes
+    Create the 'fuse' that will assists the initializations of classes
     """
     msg_error = None
     fuse = None
     try:
-        from os import environ
-        from .Args import Args
-        from .BaseConfig import app_mode_production, app_mode_development
         from .helpers.Display import Display
-        from .helpers.py_helper import set_flags_from_argv
 
-        class Fuse:
-            envvars_prefix = f"{app_name.upper()}_"
-
-            # maybe is necessary later:
-            def get_os_env(key: str, default=None) -> str:
-                _key = f"{Fuse.envvars_prefix}{key}"
-                return environ.get(_key, default)
-
-            def __init__(self, app_name, debug_2):
-                _args = Args(debug_2)
-                self.args = set_flags_from_argv(_args)
-                self.app_name = app_name
-                self.app_debug = self.args.app_debug if is_str_none_or_empty(self.args.app_mode) else None
-                if not is_str_none_or_empty(self.args.app_mode):
-                    self.app_mode =  self.args.app_mode
-                else:
-                    self.app_mode =  app_mode_development if debug_2 else app_mode_production
-
-                self.display = Display(
-                    f"{self.app_name}: ",
-                    _args.display_mute,
-                    _args.display_debug,
-                    _args.display_icons,
-                    started_from,
-                )
-
-        # Configuration priority (debug as am example):
-        # 1. Command-line argument (sys.argv): --debug
-        # 2. Environment: CANOA_DEBUG
-        # 3. Config: config.APP_DEBUG
-        # 4. Code default values
-        # Considerations:
-        #    In this project, there are several configs
-        #    available, of which one is selected according to
-        #    the 'app_mode' argument (: 'D', 'P', etc, see config.py).
-        #    Taking this inb consideration, we skip 3. Config
-        #
-        debug_4 = False
-        debug_3 = debug_4  # Read above 'Considerations'
-        debug_2 = bool(Fuse.get_os_env("debug", debug_3))
-        fuse = Fuse(app_name, debug_2)
+        display = Display(
+            f"{app_name}: ",
+            args.display_mute,
+            args.display_debug,
+            args.display_icons,
+            started_from,
+        )
+        fuse = Fuse(app_name, display, args)
         fuse.display.info(
             f"The 'fuse' was started in {fuse.app_mode} mode (and now we have how to print pretty)."
         )
@@ -90,7 +94,8 @@ def _start_fuse(app_name: str, started_from: float) -> Tuple[any, str]:
 
 
 # ---------------------------------------------------------------------------- #
-from .Config import DynamicConfig
+from .DynamicConfig import DynamicConfig
+
 
 def _ignite_config(app_mode) -> Tuple[DynamicConfig, str]:
     """
@@ -100,7 +105,8 @@ def _ignite_config(app_mode) -> Tuple[DynamicConfig, str]:
     config = None  # this config will later be 'globally shared' by shared
     msg_error = None
     try:
-        from .Config import get_config_for_mode
+        from .DynamicConfig import get_config_for_mode
+
         config = get_config_for_mode(app_mode)
         if config is None:
             raise Exception(f"Unknown config mode {config}.")
@@ -193,10 +199,15 @@ def _ignite_server_address(config) -> Tuple[any, str]:
 # - Public --------------------------------------------------------------------- #
 # - ---------------------------------------------------------------------------- #
 from .Shared import Shared
+
+
 def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
     global fuse
 
-    fuse, error = _start_fuse(app_name, start_at)
+    debug_2 = _get_debug_2(app_name)
+    args = Args(debug_2).from_arguments()
+
+    fuse, error = _start_fuse(app_name, args, start_at)
     if error:
         _log_and_exit(error)
     fuse.display.debug("The fuse was created.")
@@ -207,22 +218,20 @@ def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
         _log_and_exit(error)
     fuse.display.debug("Config was ignited.")
 
-
     # Mandatory Configuration keys
     error = _check_mandatory_keys(config)
     if error:
         _log_and_exit(error)
     fuse.display.debug("All mandatory configuration keys were informed.")
 
-
     # Server Address
-    address, error = _ignite_server_address(config)
+    _, error = _ignite_server_address(config)
     if error:
         _log_and_exit(error)
     fuse.display.debug("Flask Server Address is ready and 'config' configured.")
 
     # Create the global hub class 'shared'
-    shared = Shared(fuse.app_debug, config, fuse.display, address)
+    shared = Shared(fuse.app_debug, config, fuse.display)
     fuse.display.info("The global hub 'shared' was ignited.")
 
     # ---------------------------------------------------------------------------- #
@@ -241,8 +250,11 @@ def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
         )
 
     fuse.display.info(f"{__name__} completed with 0 errors and {warns} warnings.")
+    display_mute_after_init = fuse.args.display_mute_after_init
 
-    return shared, fuse.args.display_mute_after_init
+    fuse = None  # not need it anymore
+
+    return shared, display_mute_after_init
 
 
 # - ---------------------------------------------------------------------------- #
@@ -262,5 +274,32 @@ def ignite_sql_alchemy(shared):
         _log_and_exit(f"Unable to connect to the database. Error details: [{e}].")
 
     return sa
+
+
+# - ---------------------------------------------------------------------------- #
+def reignite_shared():
+    global fuse
+
+    import time
+    from flask_sqlalchemy import SQLAlchemy
+
+    from main import app_name
+
+    start_at = time.perf_counter()
+    fuse, error = _start_fuse(app_name, start_at)
+
+    # if error:
+    #     fuse.display.error(f"The `fuse` was not create created: [{error}].")
+
+    # # Config
+    # config, error = _ignite_config(fuse.app_mode)
+    # if error:
+    #     fuse.display.error(f"The `config` was not create create: [{error}].")
+
+    # Create the global hub class 'shared'
+    shared = Shared(fuse.app_debug, fuse.display)
+    fuse.display.info("The global hub 'shared' was ignited.")
+    fuse = None  # not need it anymore
+
 
 # eof

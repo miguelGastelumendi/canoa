@@ -62,38 +62,38 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 
-def _register_database(app, sa: SQLAlchemy):
+# def _register_database(app, sa: SQLAlchemy):
 
-    sa.init_app(app)
+#     sa.init_app(app)
 
-    # @app.before_first_request
-    # def initialize_database():
-    #     db.create_all()
+#     # @app.before_first_request
+#     # def initialize_database():
+#     #     db.create_all()
 
-    """ ChatGPT
-    During each request:
-        Flask receives the request.
-        Your view logic runs, interacting with the database through app_db.
-        Once the response is ready, the shutdown_session() is called,
-        which removes the session to prevent any lingering database connections or transactions.
-    """
-
-    @app.teardown_request
-    def shutdown_session(exception=None):
-        sa.session.remove()
+#     """ ChatGPT
+#     During each request:
+#         Flask receives the request.
+#         Your view logic runs, interacting with the database through app_db.
+#         Once the response is ready, the shutdown_session() is called,
+#         which removes the session to prevent any lingering database connections or transactions.
+#     """
+#     @app.teardown_request
+#     def shutdown_session(exception=None):
+#        sa.session.remove()
 
 
 # ---------------------------------------------------------------------------- #
 #from config import BaseConfig
-def create_app(app_name, config: Config, sa: SQLAlchemy):
+def create_app(app_name, config: Config):
     from flask import Flask
 
     # alternative configuration to Flask
     app = Flask(app_name)
+    app.config.from_prefixed_env(config.APP_NAME)
     app.config.from_object(config)
-    # TODO: app.config.from_prefixed_env(config.APP_NAME)
 
-    _register_database(app, sa)
+    #with app.app_context():
+    # _register_database(app, sa)
 
     if config.DEBUG_TEMPLATES:
         # Enable DebugUndefined for better error messages in Jinja2 templates

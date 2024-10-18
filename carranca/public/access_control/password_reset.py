@@ -9,9 +9,9 @@
 
 from flask import render_template, request
 
+from ...public.models import persist_user
 from ...helpers.pw_helper import hash_pass
 from ...helpers.py_helper import now, to_str
-from ...helpers.db_helper import persist_record
 from ...helpers.error_helper import ModuleErrorCode
 from ...helpers.ui_texts_helper import add_msg_error, add_msg_success
 from ...helpers.route_helper import (
@@ -69,7 +69,7 @@ def password_reset(token):
                 record_to_update.password = hash_pass(password)
                 record_to_update.recover_email_token = None
                 task_code += 1  # 6
-                persist_record(record_to_update, task_code)
+                persist_user(record_to_update, task_code)
                 add_msg_success('resetPwSuccess', texts)
     except Exception as e:
         msg = add_msg_error('errorPasswordReset', texts, task_code)

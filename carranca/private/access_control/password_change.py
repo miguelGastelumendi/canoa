@@ -10,8 +10,8 @@
 from flask import render_template, request
 from flask_login import current_user
 
+from ...public.models import persist_user
 from ...helpers.pw_helper import internal_logout, hash_pass
-from ...helpers.db_helper import persist_record
 from ...helpers.error_helper import ModuleErrorCode
 from ...helpers.ui_texts_helper import add_msg_error, add_msg_success
 from ...helpers.route_helper import (
@@ -55,7 +55,7 @@ def do_password_change():
             task_code += 1  # 5
             user.password = hash_pass(password)
             task_code += 1  # 6
-            persist_record(user, task_code)
+            persist_user(user, task_code)
             task_code += 1  # 7
             add_msg_success('chgPwSuccess', texts)
             task_code += 1  # 8

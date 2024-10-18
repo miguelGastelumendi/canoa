@@ -11,7 +11,7 @@ from typing import Any
 from flask import render_template, request
 
 from ...main import shared
-from ...helpers.db_helper import persist_record
+from ...public.models import persist_user
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...helpers.error_helper import ModuleErrorCode
 from ...helpers.ui_texts_helper import add_msg_success, add_msg_error
@@ -54,7 +54,7 @@ def register():
             task_code+= 1 # 4
             user_record_to_insert = Users(**request.form)
             task_code+= 1 # 5
-            persist_record(user_record_to_insert, task_code)
+            persist_user(user_record_to_insert, task_code)
             task_code+= 1 # 6
             add_msg_success('welcome', texts)
 

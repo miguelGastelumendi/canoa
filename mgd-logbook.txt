@@ -37,10 +37,13 @@ TODO:
         - Fix get_Html()
         - Login Remember not always working
 
--------------------------------------------------------
+-----------------------------------------------------------
   Logbook
-  Atualizar versão em: config.py e db.ui_items.body[89]
--------------------------------------------------------
+  Atualizar versão em: BaseConfig.py e db.ui_items.body[89]
+-----------------------------------------------------------
+2024-10-17 β 2.38
+    - Utilizar Flask.g
+
 2024-10-14--16 β 2.37
     - process version 2024.10.16
     - n checks of repeated submissions

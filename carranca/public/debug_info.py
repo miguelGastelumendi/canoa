@@ -48,6 +48,7 @@ def get_debug_info(app, config) -> List[Tuple[str, str]]:
     _add("Python", platform.python_version())
     _add("SQLAlchemy", sqlalchemy.__version__)
     _add("Flask", flask.__version__)
+    _add("Flask Login", flask.__version__)
     _add("Jinja2", importlib.metadata.version("jinja2"))
 
     _add("Flask", "")
