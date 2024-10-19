@@ -76,7 +76,6 @@ def get_user_where(**kwargs: Any) -> Any:
     return user
 
 def persist_user(record: any, task_code: int = 1) -> None:
-
     # as this model inherits from SQLAlchemy (sa) the session must be from sa
     sa = shared.db()
     try:

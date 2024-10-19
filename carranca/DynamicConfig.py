@@ -17,6 +17,7 @@ from .BaseConfig import BaseConfig, app_mode_development, app_mode_production
 from .helpers.py_helper import is_str_none_or_empty
 from .helpers.wtf_helper import LenValidate
 
+
 # Get the Jinja Template folder name
 def _get_template_folder():
     from jinja2 import Environment, FileSystemLoader
@@ -50,6 +51,7 @@ def _init_envvar_of_config(cfg, fuse):
                 f"[{attribute_name}] is not an attribute of `Config`, will not set envvar value."
             )
 
+
 class DynamicConfig(BaseConfig):
 
     def __init__(self):
@@ -59,7 +61,7 @@ class DynamicConfig(BaseConfig):
         # but I need one now, and displaying some msg.
         _init_envvar_of_config(self, fuse)
         fuse.display.info(f"Config {self.APP_MODE} was instantiated.")
-        self.TEMPLATES_FOLDER =  _get_template_folder()
+        self.TEMPLATES_FOLDER = _get_template_folder()
 
         # min & max text length for pw & user_name
         self.len_val_for_pw = LenValidate(6, 22)
@@ -68,14 +70,15 @@ class DynamicConfig(BaseConfig):
 
         # initialize special attributes
 
-        def _if_debug(attrib):
-            return bool(bool(self.APP_PROPAGATE_DEBUG) if attrib is None else attrib)
+        def _if_debug(attrib, default=self.APP_DEBUG):
+            return default if attrib is None else bool(attrib)
 
-        self.APP_DEBUG = _if_debug(self.APP_DEBUG)
-        self.APP_MINIFIED = _if_debug(self.APP_MINIFIED)
-        self.APP_DISPLAY_DEBUG_MSG = _if_debug(self.APP_DISPLAY_DEBUG_MSG)
-        self.APP_DEBUG = _if_debug(self.APP_DEBUG)
-        self.DEBUG_TEMPLATES = _if_debug(self.DEBUG_TEMPLATES)
+        self.APP_DEBUG = bool(self.APP_DEBUG)
+        if self.APP_PROPAGATE_DEBUG:
+            self.APP_MINIFIED = _if_debug(self.APP_MINIFIED, not self.APP_DEBUG)
+            self.DEBUG_TEMPLATES = _if_debug(self.DEBUG_TEMPLATES)
+            self.APP_DISPLAY_DEBUG_MSG = _if_debug(self.APP_DISPLAY_DEBUG_MSG)
+
         if is_str_none_or_empty(self.SECRET_KEY):
             """
             SECRET_KEY
@@ -92,8 +95,9 @@ class DevelopmentConfig(DynamicConfig):
     The Debug Configuration Class for the App
     """
 
-    APP_PROPAGATE_DEBUG =True
     APP_MODE = app_mode_development
+    APP_DEBUG = True
+    APP_PROPAGATE_DEBUG = True
 
     # == Flask ==
     SERVER_ADDRESS = (
@@ -110,9 +114,9 @@ class ProductionConfig(DynamicConfig):
     The Production Configuration Class for the App
     """
 
-    APP_PROPAGATE_DEBUG = False
-    APP_DEBUG = False
     APP_MODE = app_mode_production
+    APP_DEBUG = False
+    APP_PROPAGATE_DEBUG = False
 
 
 def get_config_for_mode(app_mode: str) -> DynamicConfig:
@@ -121,10 +125,11 @@ def get_config_for_mode(app_mode: str) -> DynamicConfig:
     """
     config = None
     if app_mode == app_mode_production:
-        config= ProductionConfig()
+        config = ProductionConfig()
     elif app_mode == app_mode_development:
-        config= DevelopmentConfig()
+        config = DevelopmentConfig()
 
     return config
+
 
 # eof

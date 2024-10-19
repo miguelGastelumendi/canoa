@@ -1,0 +1,65 @@
+{#
+carranca\templates\layouts\grid.html
+---------------------------------
+
+Managed & Displays grids
+Used by:
+carranca\templates\
+
+
+mgd
+#}
+
+{% set dlg_var_close= False %}
+{% set dlg_var_vCentered= True %}
+{% set dlg_cls_header= 'formHeader' %}
+{% set dlg_cls_title= 'formTitle' %}
+{% set dlg_cls_size= 'modal-xl' %} {# Size: sm, <>, lg, xl #}
+    {% set dlg_cls_top= 'mt-6' %}
+    {% set dlg_cls_footer= '' %} {# collapse, #}
+    {% set dlg_spt_frm= '' %}
+
+    {% extends "./layouts/dialog.html.j2" %}
+    {% block base_blc_head_js %}
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+
+    {% endblock base_blc_head_js %}
+    {% block dlg_blc_body %}
+
+    {% block frm_blc_above %}
+    {% endblock frm_blc_above %}
+
+    <div id="grid_container" class="ag-theme-quartz" style="height: 500px"></div>
+
+
+    {% block frm_blc_below %}
+    {% endblock frm_blc_below %}
+
+    {% endblock dlg_blc_body %}
+
+    {% block dlg_blc_javascript %}
+    <script>
+        const usersSep = {{ users_sep | tojson  }};
+        const sepList = {{ sep_list | tojson  }};
+        const gridOptions = {
+            rowData: usersSep
+            , columnDefs: [
+                { field: "id", flex: 1, hide: true },
+                { field: "name", headerName: "Nome", flex: 1 },
+                {
+                    field: "sep",
+                    flex: 2,
+                    headerName: "SEP",
+                    editable: true,
+                    cellEditor: 'agSelectCellEditor',
+                    cellEditorParams: { values: sepList },
+                },
+                { field: "when", flex: 1 }
+            ]
+        };
+        const myGridElement = document.querySelector('#grid_container');
+        agGrid.createGrid(myGridElement, gridOptions);
+    </script>
+    {% endblock dlg_blc_javascript %}
+
+    {# eof #}

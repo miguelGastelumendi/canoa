@@ -8,10 +8,10 @@
 
 # Equipe da Canoa -- 2024
 #
-# cSpell:ignore: nullable psycopg2 sqlalchemy sessionmaker
+# cSpell:ignore: nullable psycopg2 sqlalchemy sessionmaker mgmt
 
 from psycopg2 import DatabaseError
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
@@ -109,6 +109,7 @@ class UserDataFiles(Base):
 
                 session.commit()
             except Exception as e:
+                session.rollback()
                 operation = "update" if isUpdate else "insert to"
                 msg_error = (
                     f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
@@ -122,6 +123,33 @@ class UserDataFiles(Base):
 
     def update(uTicket: str, **kwargs) -> None:
         UserDataFiles._ins_or_upd(False, uTicket, **kwargs)
+
+
+class MgmtUser(Base):
+    __tablename__ = "vw_mgmt_user_sep"
+
+    # https://docs.sqlalchemy.org/en/13/core/type_basics.html
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100))
+    sep = Column(Integer, unique=True)
+    when = Column(DateTime)
+
+    def get_grid_view():
+        msg_error = None
+        with Session(shared.sa_engine()) as session:
+            try:
+                sep_list = [
+                    {"id": sep.id, "name": sep.name}
+                    for sep in session.execute(text(f"SELECT id, name FROM vw_mgmt_sep")).fetchall()
+                ]
+                users_sep = [
+                    {"id": usr.id, "name": usr.name, "sep": usr.sep, "when": usr.when}
+                    for usr in session.scalars(select(MgmtUser)).all()
+                ]
+            except Exception as e:
+                msg_error = str(e)
+
+        return users_sep, sep_list, msg_error
 
 
 # eof

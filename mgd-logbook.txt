@@ -9,6 +9,7 @@ TODO:
         b. sent email with errors
         c. replace db_helper.persist_record with Users.update
         d. if template not ready use Error Template
+        e. Always send Success & Error message to forms, if error -> alert -> close -> [!] -> display again
         0. About title
         1. β 2.17
         2. Set User Name in e-mail
@@ -41,6 +42,9 @@ TODO:
   Logbook
   Atualizar versão em: BaseConfig.py e db.ui_items.body[89]
 -----------------------------------------------------------
+2024-10-18--19 β 2.39
+    - Grid, part 1
+
 2024-10-17 β 2.38
     - Utilizar Flask.g
 

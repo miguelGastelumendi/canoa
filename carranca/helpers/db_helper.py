@@ -8,6 +8,7 @@
 # cSpell:ignore psycopg2 sqlalchemy
 
 from typing import Any, Union, Tuple, Optional
+from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 from ..main import shared
