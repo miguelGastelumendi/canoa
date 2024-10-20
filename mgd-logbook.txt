@@ -42,6 +42,9 @@ TODO:
   Logbook
   Atualizar versão em: BaseConfig.py e db.ui_items.body[89]
 -----------------------------------------------------------
+2024-10-20 β 2.40
+    - Grid, part 2
+
 2024-10-18--19 β 2.39
     - Grid, part 1
 

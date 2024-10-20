@@ -22,7 +22,16 @@ mgd
     {% extends "./layouts/dialog.html.j2" %}
     {% block base_blc_head_js %}
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <style>
+        .item-exist {
+            background-color: coral
+                /* Light red background rgba(255, 0, 0, 0.2);*/
+        }
 
+        .item-none {
+            color: darkgrey;
+        }
+    </style>
     {% endblock base_blc_head_js %}
     {% block dlg_blc_body %}
 
@@ -39,26 +48,122 @@ mgd
 
     {% block dlg_blc_javascript %}
     <script>
-        const usersSep = {{ users_sep | tojson  }};
-        const sepList = {{ sep_list | tojson  }};
+        const noneItem = '{{ noneItem }}';
+        const usersSep = {{ usersSep | tojson }};
+        const usedList = usersSep.map(item => item.sep).filter(item => item !== noneItem);
+        const intitalList = {{ sepList | tojson }};
+        let selectList = [...intitalList];
+        let assignedList = []
+        window.addEventListener('beforeunload', (event) => {
+            if (assignedList.length > 0) {
+                event.preventDefault();
+                event.returnValue = '';
+            }
+        });
+
+        const sortList = (lst) => {
+            return lst.sort((a, b) => {
+                if (a === noneItem) return 1;
+                if (b === noneItem) return -1;
+                return a.localeCompare(b);
+            });
+        };
+        const need_refresh = (value) => {
+            if (usedList.includes(value)) {
+                setTimeout(() => { params.api.refreshCells({ columns: ['sep'], force: true }) }, 0)
+            }
+        };
         const gridOptions = {
             rowData: usersSep
             , columnDefs: [
                 { field: "id", flex: 1, hide: true },
-                { field: "name", headerName: "Nome", flex: 1 },
+                { field: "name", headerName: "Sectorista", flex: 1 },
                 {
                     field: "sep",
+                    headerName: "SEP Atual",
                     flex: 2,
-                    headerName: "SEP",
-                    editable: true,
-                    cellEditor: 'agSelectCellEditor',
-                    cellEditorParams: { values: sepList },
+                    cellClassRules: {
+                        'item-none': params => params.value === noneItem,
+                        'item-exist': params => assignedList.includes(params.value), não funciona
+                    },
                 },
-                { field: "when", flex: 1 }
+                {
+                    field: "sep_new",
+                    headerName: "Novo SEP",
+                    flex: 2,
+                    editable: true,
+                    cellClassRules: { 'item-none': params => params.value === noneItem },
+                    cellEditor: 'agSelectCellEditor',
+                    cellEditorParams: params => { return { values: selectList }; }, incluir o atual
+                    valueSetter: (params) => {
+                        const oldValue = params.oldValue;
+                        const newValue = params.newValue;
+                        if (newValue === oldValue) return false;
+
+                        if (oldValue !== noneItem && !selectList.includes(oldValue)) {
+                            selectList.push(oldValue);
+                            selectList = sortList(selectList)
+                            assignedList = assignedList.filter(item => item !== oldValue);
+                            need_refresh(oldValue)
+                        }
+                        if (newValue !== noneItem) {
+                            selectList = selectList.filter(item => item !== newValue);
+                            assignedList.push(newValue)
+                            need_refresh(newValue)
+                        }
+                        params.data.sep_new = newValue;
+                        return true;
+                    }
+                },
+                { field: "when", headerName: "Atribuído", flex: 1 }
             ]
         };
         const myGridElement = document.querySelector('#grid_container');
+
         agGrid.createGrid(myGridElement, gridOptions);
+        /*
+let rowData = [  initial data  ];
+
+// Initialize the grid
+const gridOptions = {
+    columnDefs: [
+        // Define your columns here
+    ],
+    rowData: rowData,
+    onCellValueChanged: (event) => {
+        const updatedNode = event.node.data;
+        const index = rowData.findIndex(row => row.id === updatedNode.id);
+        if (index > -1) {
+            rowData[index] = updatedNode;
+        }
+    }
+};
+
+// Example save function
+function saveData() {
+    localStorage.setItem('agGridData', JSON.stringify(rowData));
+}
+
+// Load saved data
+function loadData() {
+    const savedData = localStorage.getItem('agGridData');
+    if (savedData) {
+        rowData = JSON.parse(savedData);
+        gridOptions.api.setRowData(rowData);
+    }
+}
+
+// Initialize grid
+const eGridDiv = document.querySelector('#myGrid');
+new agGrid.Grid(eGridDiv, gridOptions);
+
+// Load data on page load
+loadData();
+
+// Save data before refresh
+window.addEventListener('beforeunload', saveData);
+
+        */
     </script>
     {% endblock dlg_blc_javascript %}
 

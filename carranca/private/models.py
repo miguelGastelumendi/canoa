@@ -10,12 +10,12 @@
 #
 # cSpell:ignore: nullable psycopg2 sqlalchemy sessionmaker mgmt
 
+from typing import Any, List, Tuple
 from psycopg2 import DatabaseError
 from sqlalchemy import select, text
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
-
 from ..main import shared
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
@@ -131,19 +131,32 @@ class MgmtUser(Base):
     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100))
-    sep = Column(Integer, unique=True)
+    sep = Column(String(100), unique=True)
+    sep_new = Column(String(100))
     when = Column(DateTime)
 
-    def get_grid_view():
+    def get_grid_view(none_item: str) -> Tuple[List[Any], List[Tuple[str, str]], str]:
         msg_error = None
         with Session(shared.sa_engine()) as session:
             try:
+
+                def _item(id: int, name: str):
+                    return {"id": id, "name": name}
+
                 sep_list = [
-                    {"id": sep.id, "name": sep.name}
-                    for sep in session.execute(text(f"SELECT id, name FROM vw_mgmt_sep")).fetchall()
+                    _item(sep.id, sep.name)
+                    for sep in session.execute(text(f"SELECT id, name FROM vw_mgmt_sep ORDER BY name")).fetchall()
                 ]
+                sep_list.append(_item(0, none_item))
+
                 users_sep = [
-                    {"id": usr.id, "name": usr.name, "sep": usr.sep, "when": usr.when}
+                    {
+                        "id": usr.id,
+                        "name": usr.name,
+                        "sep": none_item if usr.sep is None else usr.sep,
+                        "sep_new": none_item,
+                        "when": usr.when,
+                    }
                     for usr in session.scalars(select(MgmtUser)).all()
                 ]
             except Exception as e:
