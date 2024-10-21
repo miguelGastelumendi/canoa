@@ -1,4 +1,4 @@
-{#
+column_news_sep{#
 carranca\templates\layouts\grid.html
 ---------------------------------
 
@@ -10,8 +10,9 @@ carranca\templates\
 mgd
 #}
 
-{% set dlg_var_close= False %}
-{% set dlg_var_vCentered= True %}
+{% set dlg_var_close= true %}
+{% set dlg_var_ok_text = "Salvar" %}
+{% set dlg_var_vCentered= true %}
 {% set dlg_cls_header= 'formHeader' %}
 {% set dlg_cls_title= 'formTitle' %}
 {% set dlg_cls_size= 'modal-xl' %} {# Size: sm, <>, lg, xl #}
@@ -22,24 +23,32 @@ mgd
     {% extends "./layouts/dialog.html.j2" %}
     {% block base_blc_head_js %}
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    {% endblock base_blc_head_js %}
+    {% block base_blc_head_css %}
     <style>
         .item-exist {
-            background-color: coral
-                /* Light red background rgba(255, 0, 0, 0.2);*/
+            background: coral;
+        }
+
+        .item-remove {
+            color: firebrick;
         }
 
         .item-none {
             color: darkgrey;
         }
-    </style>
-    {% endblock base_blc_head_js %}
-    {% block dlg_blc_body %}
 
+        .column_sep_new {
+            background-color: azure;
+        }
+    </style>
+    {% endblock base_blc_head_css %}
+
+    {% block dlg_blc_body %}
     {% block frm_blc_above %}
     {% endblock frm_blc_above %}
 
     <div id="grid_container" class="ag-theme-quartz" style="height: 500px"></div>
-
 
     {% block frm_blc_below %}
     {% endblock frm_blc_below %}
@@ -48,11 +57,13 @@ mgd
 
     {% block dlg_blc_javascript %}
     <script>
-        const noneItem = '{{ noneItem }}';
+        const itemNone = '{{ itemNone }}';
+        const itemRemove = '{{ itemRemove }}';
         const usersSep = {{ usersSep | tojson }};
-        const usedList = usersSep.map(item => item.sep).filter(item => item !== noneItem);
-        const intitalList = {{ sepList | tojson }};
-        let selectList = [...intitalList];
+        const usedList = usersSep.map(item => item.sep)
+        const initialList = {{ sepList | tojson }};
+        const ignoreList = [itemRemove, itemNone]
+        let selectList = [...initialList];
         let assignedList = []
         window.addEventListener('beforeunload', (event) => {
             if (assignedList.length > 0) {
@@ -61,16 +72,12 @@ mgd
             }
         });
 
-        const sortList = (lst) => {
-            return lst.sort((a, b) => {
-                if (a === noneItem) return 1;
-                if (b === noneItem) return -1;
-                return a.localeCompare(b);
-            });
-        };
-        const need_refresh = (value) => {
-            if (usedList.includes(value)) {
-                setTimeout(() => { params.api.refreshCells({ columns: ['sep'], force: true }) }, 0)
+        const sortList = (lst) => lst.sort((a, b) => a.localeCompare(b));
+
+        const need_refresh = (api, value) => {
+            console.log(`need_refrshhecking 'item-exist': ${value} <- ${assignedList.includes(value)}`);
+            if (assignedList.includes(value)) {
+                setTimeout(() => { api.refreshCells({ columns: ['sep'], force: true }) }, 0)
             }
         };
         const gridOptions = {
@@ -83,8 +90,12 @@ mgd
                     headerName: "SEP Atual",
                     flex: 2,
                     cellClassRules: {
-                        'item-none': params => params.value === noneItem,
-                        'item-exist': params => assignedList.includes(params.value), não funciona
+                        'item-none': params => params.value === itemNone,
+                        'item-exist': params => {
+                            console.log(`Checking 'item-exist': ${params.value} <- ${assignedList.includes(params.value)}`);
+                            //params => assignedList.includes(params.value)
+                            return assignedList.includes(params.value);
+                        },
                     },
                 },
                 {
@@ -92,24 +103,34 @@ mgd
                     headerName: "Novo SEP",
                     flex: 2,
                     editable: true,
-                    cellClassRules: { 'item-none': params => params.value === noneItem },
+                    cellClass: 'column_sep_new',
+                    cellClassRules: {
+                        'item-none': params => params.value === itemNone,
+                        'item-remove': params => params.value === itemRemove,
+                    },
                     cellEditor: 'agSelectCellEditor',
-                    cellEditorParams: params => { return { values: selectList }; }, incluir o atual
+                    cellEditorParams: params => {
+                        let lst = [...selectList]
+                        if (!lst.includes(params.value) && !ignoreList.includes(params.value)) {
+                            lst.push(params.value)
+                        }
+                        lst = sortList(lst).concat(ignoreList)
+                        return { values: lst };
+                    },
                     valueSetter: (params) => {
                         const oldValue = params.oldValue;
                         const newValue = params.newValue;
                         if (newValue === oldValue) return false;
 
-                        if (oldValue !== noneItem && !selectList.includes(oldValue)) {
-                            selectList.push(oldValue);
-                            selectList = sortList(selectList)
+                        if (!ignoreList.includes(oldValue)) {
+                            selectList.push(oldValue)
+                            need_refresh(params.api, oldValue) // remove back-color
                             assignedList = assignedList.filter(item => item !== oldValue);
-                            need_refresh(oldValue)
                         }
-                        if (newValue !== noneItem) {
+                        if (!ignoreList.includes(newValue)) {
                             selectList = selectList.filter(item => item !== newValue);
                             assignedList.push(newValue)
-                            need_refresh(newValue)
+                            need_refresh(params.api, newValue) // set back-color
                         }
                         params.data.sep_new = newValue;
                         return true;

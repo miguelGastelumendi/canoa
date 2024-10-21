@@ -41,7 +41,7 @@ class BaseConfig(Config):
     APP_NAME = app_name
 
     # major.minor.patch
-    APP_VERSION = "β 2.38"  # &beta;
+    APP_VERSION = "β 2.3"  # &beta;
 
     """ Internal attributes
         ------------------

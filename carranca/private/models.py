@@ -135,7 +135,7 @@ class MgmtUser(Base):
     sep_new = Column(String(100))
     when = Column(DateTime)
 
-    def get_grid_view(none_item: str) -> Tuple[List[Any], List[Tuple[str, str]], str]:
+    def get_grid_view(item_none: str) -> Tuple[List[Any], List[Tuple[str, str]], str]:
         msg_error = None
         with Session(shared.sa_engine()) as session:
             try:
@@ -147,14 +147,14 @@ class MgmtUser(Base):
                     _item(sep.id, sep.name)
                     for sep in session.execute(text(f"SELECT id, name FROM vw_mgmt_sep ORDER BY name")).fetchall()
                 ]
-                sep_list.append(_item(0, none_item))
+                # sep_list.append(_item(0, item_none))
 
                 users_sep = [
                     {
                         "id": usr.id,
                         "name": usr.name,
-                        "sep": none_item if usr.sep is None else usr.sep,
-                        "sep_new": none_item,
+                        "sep": item_none if usr.sep is None else usr.sep,
+                        "sep_new": item_none,
                         "when": usr.when,
                     }
                     for usr in session.scalars(select(MgmtUser)).all()
