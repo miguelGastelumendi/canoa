@@ -42,8 +42,11 @@ TODO:
   Logbook
   Atualizar versão em: BaseConfig.py e db.ui_items.body[89]
 -----------------------------------------------------------
-2024-10-21 β 3.2
+2024-10-21 β 3.3
     - Grid, Demo ajustes
+
+2024-10-21 β 3.2
+    - Grid, new requirements.txt
 
 2024-10-21 β 3.1
     - Grid, Demo o único que funciona :—(
