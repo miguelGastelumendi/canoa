@@ -1,4 +1,4 @@
-# mgd 2023.05.28
+# mgd 2023.10.17
 beautifulsoup4>=4.12.3
 email-validator==1.1.3
 Flask>=3.0.3

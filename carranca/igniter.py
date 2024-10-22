@@ -14,7 +14,7 @@ from .helpers.py_helper import is_str_none_or_empty
 
 from .Args import Args
 
-_error_ = "[{0}]: An error ocurred while {1}. Message `{2}`."
+_error_msg = "[{0}]: An error ocurred while {1}. Message `{2}`."
 fuse = None
 
 
@@ -88,7 +88,7 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
         )
         fuse.display.info(f"Current args: {fuse.args}.")
     except Exception as e:
-        msg_error = _error_.format(__name__, "starting the fuse", e)
+        msg_error = _error_msg.format(__name__, "starting the fuse", str(e))
 
     return fuse, msg_error
 
@@ -112,7 +112,7 @@ def _ignite_config(app_mode) -> Tuple[DynamicConfig, str]:
             raise Exception(f"Unknown config mode {config}.")
         fuse.display.info(f"The app config, in '{app_mode}' mode, was ignited.")
     except Exception as e:
-        msg_error = _error_.format(__name__, f"initializing the app config in mode '{app_mode}'", e)
+        msg_error = _error_msg.format(__name__, f"initializing the app config in mode '{app_mode}'", str(e))
 
     return config, msg_error
 
@@ -133,22 +133,24 @@ def _check_mandatory_keys(config) -> str:
             return empty
 
         has_empty = False
+        empty_keys= ''
         for key in CONFIG_MANDATORY_KEYS:
             if __is_empty(key):
+                empty_keys= f"{empty_keys}{key},"
                 has_empty = True
 
         msg_error = (
             None
             if not has_empty
-            else _error_.format(
+            else _error_msg.format(
                 __name__,
-                "confirming the existence of the mandatory configuration keys",
-                "",
+                f"confirming the existence of the mandatory configuration keys {CONFIG_MANDATORY_KEYS}",
+                empty_keys
             )
         )
 
     except Exception as e:
-        msg_error = _error_.format(__name__, f"checking mandatory keys of config[`{config.APP_MODE}`].", e)
+        msg_error = _error_msg.format(__name__, f"checking mandatory keys of config[`{config.APP_MODE}`].", e)
 
     return msg_error
 
@@ -185,7 +187,7 @@ def _ignite_server_address(config) -> Tuple[any, str]:
         fuse.display.error(
             f"`urlparse('{config.SERVER_ADDRESS}', '{default_scheme}') -> parsed: {address.host}:{address.port}`"
         )
-        msg_error = _error_.format(
+        msg_error = _error_msg.format(
             __name__,
             f"parsing server address. Expect value is [HostName:Port], found: [{config.SERVER_ADDRESS}]",
             e,
