@@ -11,7 +11,7 @@
 
 import zipfile
 from .Cargo import Cargo
-from ...main import shared
+from ...Shared import shared
 from ...helpers.user_helper import  now
 from ...helpers.error_helper import ModuleErrorCode
 

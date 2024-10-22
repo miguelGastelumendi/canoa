@@ -14,9 +14,10 @@ from typing import Any, List, Tuple
 from psycopg2 import DatabaseError
 from sqlalchemy import select, text
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text
-from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
-from ..main import shared
+
+from carranca import Session
+from ..Shared import shared
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
 Base = declarative_base()
@@ -89,33 +90,36 @@ class UserDataFiles(Base):
 
     def _ins_or_upd(isInsert: bool, uTicket: str, **kwargs) -> None:
         isUpdate = not isInsert
-        with Session(shared.sa_engine()) as session:
-            try:
-                msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
-                # Fetch existing record if update, check if record already exists if insert
-                record_to_ins_or_upd = UserDataFiles._get_record(session, uTicket)
-                # check invalid conditions
-                if isUpdate and record_to_ins_or_upd is None:
-                    raise KeyError(msg_exists.format("not"))
-                elif isInsert and record_to_ins_or_upd is not None:
-                    raise KeyError(msg_exists.format("already"))
-                elif isInsert:
-                    record_to_ins_or_upd = UserDataFiles(ticket=uTicket, **kwargs)
-                    session.add(record_to_ins_or_upd)
-                else:
-                    for attr, value in kwargs.items():
-                        if value is not None:
-                            setattr(record_to_ins_or_upd, attr, value)
+        session = Session()
+        try:
+            msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
+            # Fetch existing record if update, check if record already exists if insert
+            record_to_ins_or_upd = UserDataFiles._get_record(session, uTicket)
+            # check invalid conditions
+            if isUpdate and record_to_ins_or_upd is None:
+                raise KeyError(msg_exists.format("not"))
+            elif isInsert and record_to_ins_or_upd is not None:
+                raise KeyError(msg_exists.format("already"))
+            elif isInsert:
+                record_to_ins_or_upd = UserDataFiles(ticket=uTicket, **kwargs)
+                session.add(record_to_ins_or_upd)
+            else:
+                for attr, value in kwargs.items():
+                    if value is not None:
+                        setattr(record_to_ins_or_upd, attr, value)
 
-                session.commit()
-            except Exception as e:
-                session.rollback()
-                operation = "update" if isUpdate else "insert to"
-                msg_error = (
-                    f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
-                )
-                shared.app_log.error(msg_error)
-                raise DatabaseError(msg_error)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            operation = "update" if isUpdate else "insert to"
+            msg_error = (
+                f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
+            )
+            shared.app_log.error(msg_error)
+            raise DatabaseError(msg_error)
+        finally:
+            session.close()
+
 
     # Public insert/update
     def insert(uTicket: str, **kwargs) -> None:
@@ -137,30 +141,31 @@ class MgmtUser(Base):
 
     def get_grid_view(item_none: str) -> Tuple[List[Any], List[Tuple[str, str]], str]:
         msg_error = None
-        with Session(shared.sa_engine()) as session:
-            try:
+        session = Session()
+        try:
+            def _item(id: int, name: str):
+                return {"id": id, "name": name}
 
-                def _item(id: int, name: str):
-                    return {"id": id, "name": name}
+            sep_list = [
+                _item(sep.id, sep.name)
+                for sep in session.execute(text(f"SELECT id, name FROM vw_mgmt_sep ORDER BY name")).fetchall()
+            ]
+            # sep_list.append(_item(0, item_none))
 
-                sep_list = [
-                    _item(sep.id, sep.name)
-                    for sep in session.execute(text(f"SELECT id, name FROM vw_mgmt_sep ORDER BY name")).fetchall()
-                ]
-                # sep_list.append(_item(0, item_none))
-
-                users_sep = [
-                    {
-                        "id": usr.id,
-                        "name": usr.name,
-                        "sep": item_none if usr.sep is None else usr.sep,
-                        "sep_new": item_none,
-                        "when": usr.when,
-                    }
-                    for usr in session.scalars(select(MgmtUser)).all()
-                ]
-            except Exception as e:
-                msg_error = str(e)
+            users_sep = [
+                {
+                    "id": usr.id,
+                    "name": usr.name,
+                    "sep": item_none if usr.sep is None else usr.sep,
+                    "sep_new": item_none,
+                    "when": usr.when,
+                }
+                for usr in session.scalars(select(MgmtUser)).all()
+            ]
+        except Exception as e:
+            msg_error = str(e)
+        finally:
+            session.close()
 
         return users_sep, sep_list, msg_error
 

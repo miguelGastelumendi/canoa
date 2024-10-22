@@ -8,7 +8,7 @@
 _jinja_pre_template_mark = '^'
 
 def _jinja_pre_template(val: str) -> str:
-    from ..main import shared
+    from ..Shared import shared
     text = val
     try:
         # Create a template from the value

@@ -24,7 +24,7 @@ from ...helpers.py_helper import (
 from ...helpers.user_helper import now
 from ...helpers.file_helper import change_file_ext
 from ...helpers.error_helper import ModuleErrorCode
-from ...main import shared
+from ...Shared import shared
 
 
 async def _run_validator(

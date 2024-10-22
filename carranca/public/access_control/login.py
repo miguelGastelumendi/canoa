@@ -10,7 +10,7 @@
 from flask import render_template, request
 from flask_login import login_user
 
-from ...main import shared
+from ...Shared import shared
 from ...public.models import persist_user
 from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
@@ -38,6 +38,7 @@ def login():
         task_code += 1  # 2
         template, is_get, texts = get_account_form_data('login')
         task_code += 1  # 3
+        logged_in = False
         if is_get and is_someone_logged():
             internal_logout()
         elif is_get:
@@ -64,12 +65,13 @@ def login():
                 user.recover_email_token = None
                 user.last_login_at = now()
                 task_code += 1  # 12
-                persist_user(user, task_code)
-
                 remember_me = not is_str_none_or_empty(request.form.get('remember_me'))
                 task_code += 1  # 13
-                # for this login work, User must inherited from SQLAlchemy.Model
                 login_user(user, remember_me)
+                logged_in = True
+                task_code += 1  # 14
+                persist_user(user, task_code)
+                # for this login work, User must inherited from SQLAlchemy.Model
                 task_code += 1  # 14
                 return redirect_to(home_route())
 
@@ -77,6 +79,8 @@ def login():
         msg = add_msg_error('errorLogin', texts, task_code)
         shared.app_log.error(e)
         shared.app_log.debug(msg)
+        if logged_in:
+            internal_logout()
         #TODO if template not ready use Error Template
     return render_template(
         template,

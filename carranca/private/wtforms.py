@@ -10,7 +10,7 @@
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, FileField, StringField
 from wtforms.validators import InputRequired, Length, URL
-from ..main import shared
+from ..Shared import shared
 
 # -------------------------------------------------------------
 # Text here ha no relevance, the ui_text table is actually used.

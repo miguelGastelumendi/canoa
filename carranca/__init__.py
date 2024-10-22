@@ -49,55 +49,133 @@
     Equipe da Canoa -- 2024
     mgd
 """
-# cSpell:ignore sqlalchemy keepalives psycopg2
-
-# For Display() perf display
+# cSpell:ignore app_name sqlalchemy sessionmaker autoflush
 
 import time
+
 started = time.perf_counter()
 
 import jinja2
-from flask import Config
+from flask import Flask
+from sqlalchemy import create_engine
+from flask_login import LoginManager
+from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 
 
+# ============================================================================ #
+# Public variables
+db = SQLAlchemy()
+login_manager = LoginManager()
+Session = None
 
-# def _register_database(app, sa: SQLAlchemy):
 
-#     sa.init_app(app)
+# ============================================================================ #
+# Private methods
+# ---------------------------------------------------------------------------- #
+def _register_blueprints(app):
+    from .private.routes import bp_private
+    from .public.routes import bp_public
 
-#     # @app.before_first_request
-#     # def initialize_database():
-#     #     db.create_all()
-
-#     """ ChatGPT
-#     During each request:
-#         Flask receives the request.
-#         Your view logic runs, interacting with the database through app_db.
-#         Once the response is ready, the shutdown_session() is called,
-#         which removes the session to prevent any lingering database connections or transactions.
-#     """
-#     @app.teardown_request
-#     def shutdown_session(exception=None):
-#        sa.session.remove()
+    app.register_blueprint(bp_private)
+    app.register_blueprint(bp_public)
+    return
 
 
 # ---------------------------------------------------------------------------- #
-#from config import BaseConfig
-def create_app(app_name, config: Config):
-    from flask import Flask
+def _register_jinja(app, debugUndefined):
+    from .helpers.route_helper import private_route, public_route
 
-    # alternative configuration to Flask
-    app = Flask(app_name)
-    app.config.from_prefixed_env(config.APP_NAME)
-    app.config.from_object(config)
+    def __get_name() -> str:
+        return app.config["APP_NAME"]
 
-    #with app.app_context():
-    # _register_database(app, sa)
+    def __get_version() -> str:
+        return app.config["APP_VERSION"]
 
-    if config.DEBUG_TEMPLATES:
+    app.jinja_env.globals.update(
+        app_version=__get_version,
+        app_name=__get_name,
+        private_route=private_route,
+        public_route=public_route,
+    )
+
+    if debugUndefined:
         # Enable DebugUndefined for better error messages in Jinja2 templates
         app.jinja_env.undefined = jinja2.DebugUndefined
+    return
+
+
+# ---------------------------------------------------------------------------- #
+def _register_login_manager(app):
+
+    login_manager.init_app(app)
+    return
+
+
+# ---------------------------------------------------------------------------- #
+def _register_db(app):
+
+    db.init_app(app)
+    # @app.before_first_request
+    # def initialize_database():
+    #     db.create_all()
+
+    """ ChatGPT
+    During each request:
+        Flask receives the request.
+        Your view logic runs, interacting with the database through app_db.
+        Once the response is ready, the shutdown_session() is called,
+        which removes the session to prevent any lingering database connections or transactions.
+    """
+
+    @app.teardown_request
+    def shutdown_session(exception=None):
+        Session.remove()
+
+
+# ============================================================================ #
+# App + helpers
+def create_app(app_name):
+
+    # === Create the Flask lApp  ===`#
+    app = Flask(app_name, static_folder="static", instance_relative_config=True)
+
+    # === Check if all mandatory information is ready === #
+    from .igniter import ignite_shared
+
+    shared, display_mute_after_init = ignite_shared(app_name, started)
+    shared.display.info("The Flask App was created.")
+
+    # -- Configuration
+    app.config.from_prefixed_env(app_name)
+    app.config.from_object(shared.config)
+    shared.display.info("App's config was successfully bound.")
+
+    # -- Register modules
+    _register_db(app)
+    shared.display.info("The db was registered.")
+    _register_blueprints(app)
+    shared.display.info("The blueprints were collected and registered within the app.")
+    _register_jinja(app, shared.config.DEBUG_TEMPLATES)
+    shared.display.info("This app's functions were registered into Jinja.")
+    _register_login_manager(app)
+    shared.display.info("The Login Manager was initialized with the app.")
+
+    # -- Database
+    from .igniter import ignite_sql_connection
+
+    uri = shared.db_obfuscate()
+    ignite_sql_connection(shared, uri)
+    shared.display.info("SQLAlchemy was instantiated and the db connection was successfully tested.")
+
+    # -- Database
+    global Session
+    engine = create_engine(uri)
+    Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+
+    # config shared.display
+    if display_mute_after_init:
+        shared.display.mute_all = True
 
     return app
 

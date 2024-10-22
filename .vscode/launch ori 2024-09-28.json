@@ -20,6 +20,9 @@
         "--no-reload",
       ],
       "jinja": true,
+                // https://stackoverflow.com/questions/73635412/flask-run-with-argument
+                // https://flask.palletsprojects.com/en/3.0.x/cli/
+                //, "--app --display_mute"
 
 
       "justMyCode": true,

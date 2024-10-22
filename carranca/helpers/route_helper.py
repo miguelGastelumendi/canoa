@@ -11,7 +11,7 @@ from os import path
 from typing import Tuple, Any
 from flask import redirect, request, url_for
 from .py_helper import is_str_none_or_empty, camel_to_snake, to_str
-from ..main import shared
+from ..Shared import shared
 
 base_route_private = "private"
 base_route_public = "public"

@@ -7,7 +7,7 @@
    mgd 2024-10-01--07
 """
 
-# cSpell:ignore sqlalchemy mandatories cssless sendgrid ENDC psycopg2
+# cSpell:ignore sqlalchemy app_name cssless sendgrid ENDC psycopg2 mandatories
 
 from typing import Tuple, Any
 from .helpers.py_helper import is_str_none_or_empty
@@ -102,7 +102,7 @@ def _ignite_config(app_mode) -> Tuple[DynamicConfig, str]:
     Select the config, based in the app_mode (production or debug)
     WARNING: Don't run with debug turned on in production!
     """
-    config = None  # this config will later be 'globally shared' by shared
+    config = None  # this config will later be 'shared' by shared
     msg_error = None
     try:
         from .DynamicConfig import get_config_for_mode
@@ -156,7 +156,6 @@ def _check_mandatory_keys(config) -> str:
 # ---------------------------------------------------------------------------- #
 def _ignite_server_address(config) -> Tuple[any, str]:
     """Confirm validity of the server address"""
-    address = None  # this address will later be 'globally shared' by shared
     msg_error = None
     try:
         from collections import namedtuple
@@ -198,7 +197,7 @@ def _ignite_server_address(config) -> Tuple[any, str]:
 # - ---------------------------------------------------------------------------- #
 # - Public --------------------------------------------------------------------- #
 # - ---------------------------------------------------------------------------- #
-from .Shared import Shared
+from .Shared import Shared, create_shared
 
 
 def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
@@ -231,8 +230,8 @@ def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
     fuse.display.debug("Flask Server Address is ready and 'config' configured.")
 
     # Create the global hub class 'shared'
-    shared = Shared(fuse.app_debug, config, fuse.display)
-    fuse.display.info("The global hub 'shared' was ignited.")
+    shared = create_shared(fuse.app_debug, config, fuse.display)
+    fuse.display.info("The session 'shared'  variable was ignited.")
 
     # ---------------------------------------------------------------------------- #
     # Give warnings of import configuration that may be missing
@@ -258,14 +257,11 @@ def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
 
 
 # - ---------------------------------------------------------------------------- #
-def ignite_sql_alchemy(shared):
+def ignite_sql_connection(shared, uri):
 
-    from flask_sqlalchemy import SQLAlchemy
     from sqlalchemy import create_engine, select
-
-    sa = SQLAlchemy()
     try:
-        engine = create_engine(shared.config.SQLALCHEMY_DATABASE_URI)
+        engine = create_engine(uri)
         with engine.connect() as connection:
             connection.scalar(select(1))
             shared.display.info("The database connection is active.")
@@ -273,17 +269,17 @@ def ignite_sql_alchemy(shared):
     except Exception as e:
         _log_and_exit(f"Unable to connect to the database. Error details: [{e}].")
 
-    return sa
+    return
 
 
 # - ---------------------------------------------------------------------------- #
-def reignite_shared():
+def reignite_shared(app_name):
     global fuse
 
     import time
     from flask_sqlalchemy import SQLAlchemy
 
-    from main import app_name
+    ###   from main import app_name
 
     start_at = time.perf_counter()
     fuse, error = _start_fuse(app_name, start_at)
@@ -298,8 +294,10 @@ def reignite_shared():
 
     # Create the global hub class 'shared'
     shared = Shared(fuse.app_debug, fuse.display)
-    fuse.display.info("The global hub 'shared' was ignited.")
+    fuse.display.info("The session 'shared' variable was reignited.")
     fuse = None  # not need it anymore
+    # elif not shared.config.APP_DISPLAY_DEBUG_MSG:
+    # shared.display.debug_output = False
 
 
 # eof

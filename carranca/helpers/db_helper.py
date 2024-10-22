@@ -8,10 +8,9 @@
 # cSpell:ignore psycopg2 sqlalchemy
 
 from typing import Any, Union, Tuple, Optional
-from sqlalchemy.orm import Session
 from sqlalchemy import text
 
-from ..main import shared
+from carranca import Session
 from .py_helper import is_str_none_or_empty
 
 
@@ -19,9 +18,9 @@ def execute_sql(query: str):
     """ Runs an SQL query and returns the result """
     result = None
     if not is_str_none_or_empty(query):
-        with shared.sa_engine().connect() as connection:
-            _text = text(query)
-            result = connection.execute(_text)
+        _text = text(query)
+        session= Session()
+        result = session.execute(_text)
 
     return result
 

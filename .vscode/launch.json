@@ -9,8 +9,8 @@
             "type": "debugpy",
             "request": "launch",
             "console": "integratedTerminal",
-            "module": "flask",
             //"program": "${workspaceFolder}/carranca/main.py",
+            "module": "flask",
             "env": {
                 "CANOA_DEBUG": "1",
                 "FLASK_APP": "main",
@@ -21,9 +21,6 @@
                 "run"
                 , "--no-reload"
                 , "--no-debugger"
-                // https://stackoverflow.com/questions/73635412/flask-run-with-argument
-                // https://flask.palletsprojects.com/en/3.0.x/cli/
-                //, "--app --display_mute"
               ],
             "jinja": true,
             "justMyCode": true,

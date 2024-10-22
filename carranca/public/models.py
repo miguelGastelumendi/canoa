@@ -7,21 +7,22 @@
 """
 
 # cSpell:ignore nullable sqlalchemy psycopg2
+from carranca import Session, db, login_manager
 
 from typing import Any
 from psycopg2 import DatabaseError
-from sqlalchemy import select
+# from sqlalchemy import select
 from sqlalchemy import Column, Computed, Integer, String, DateTime, Boolean, LargeBinary
 from flask_login import UserMixin
-from sqlalchemy.orm import Session
-from flask_sqlalchemy import SQLAlchemy
+# from sqlalchemy.orm import Session
+# from flask_sqlalchemy import SQLAlchemy
 
-from ..main import shared
+from ..Shared import shared
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
 
 
-class Users(UserMixin, shared.db().Model):
+class Users(UserMixin, db.Model):
 
     __tablename__ = "users"
 
@@ -54,7 +55,7 @@ class Users(UserMixin, shared.db().Model):
     def __repr__(self):
         return str(self.username)
 
-
+@staticmethod
 def get_user_where(**kwargs: Any) -> Any:
     """
     Select a user by a unique filter
@@ -63,39 +64,58 @@ def get_user_where(**kwargs: Any) -> Any:
     that can rais an error, see this code.
     """
     user = None
-    records = Users.query.filter_by(**kwargs)
-    if not records or records.count() == 0:
-        pass
-    elif records.count() == 1:
-        user = records.first()
-    else:
-        msg = f"The selection return {records.count()} users, expect one or none."
-        shared.app_log.error(msg)
-        raise KeyError(msg)
+    session = Session()
+    try:
+        records = session.query(Users).filter_by(**kwargs)
+        if not records or records.count() == 0:
+            pass
+        elif records.count() == 1:
+            user = records.first()
+        else:
+            msg = f"The selection return {records.count()} users, expect one or none."
+            shared.app_log.error(msg)
+            raise KeyError(msg)
+    finally:
+        session.close()
 
     return user
 
 def persist_user(record: any, task_code: int = 1) -> None:
-    # as this model inherits from SQLAlchemy (sa) the session must be from sa
-    sa = shared.db()
+    session = Session()
+    task_code = 0
     try:
-        sa.session.add(record)
         task_code += 1
-        sa.session.commit()
+        if session.object_session(record) is not None:
+            task_code += 2
+            session.expunge(record)
+        task_code = 3
+        session.add(record)
+        task_code += 1
+        session.commit()
     except Exception as e:
-        sa.session.rollback()
+        session.rollback()
         e.task_code = task_code
         raise DatabaseError(e)
+    finally:
+        session.close()
+    # try:
+    #     session.add(record)
+    #     task_code += 1
+    #     session.commit()
+    # except Exception as e:
+    #     session.rollback()
+    #     e.task_code = task_code
+    #     raise DatabaseError(e)
+    # finally:
+    #     session.close()
 
 
-@shared.login_manager.user_loader
+@login_manager.user_loader
 def user_loader(id):
     return Users.query.get(id)
-    # mgd return get_user_where(id=id)
-    # mgd return Users.query.filter_by(id=id).first()
 
 
-@shared.login_manager.request_loader
+@login_manager.request_loader
 def request_loader(request):
     username = "" if len(request.form) == 0 else request.form.get("username")
     user = None if is_str_none_or_empty(username) else get_user_where(username_lower=username.lower())

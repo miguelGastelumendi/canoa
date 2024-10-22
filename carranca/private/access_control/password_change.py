@@ -22,7 +22,7 @@ from ...helpers.route_helper import (
     get_account_form_data,
 )
 from ...public.models import get_user_where
-from ...main import shared
+from ...Shared import shared
 from ..wtforms import ChangePassword
 
 

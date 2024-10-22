@@ -13,7 +13,7 @@
 
 from os import path
 
-from ...main import shared
+from ...Shared import shared
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.db_helper import get_str_field_length
 from ...helpers.user_helper import now

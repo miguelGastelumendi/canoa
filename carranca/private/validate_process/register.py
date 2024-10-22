@@ -14,7 +14,7 @@
 import os
 from zlib import crc32
 
-from ...main import shared
+from ...Shared import shared
 from ...helpers.py_helper import OS_IS_WINDOWS
 from ...helpers.user_helper import now
 from ...helpers.error_helper import ModuleErrorCode

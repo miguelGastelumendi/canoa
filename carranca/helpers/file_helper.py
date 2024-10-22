@@ -9,7 +9,7 @@ import os
 import shutil
 from os import path, makedirs
 
-from ..main import shared
+from ..Shared import shared
 
 
 def file_full_name_parse(file_full_name: str) -> tuple[str, str, str]:

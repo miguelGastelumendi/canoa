@@ -12,7 +12,7 @@
 
 from .Cargo import Cargo
 from ..models import UserDataFiles
-from ...main import shared
+from ...Shared import shared
 from ...helpers.user_helper import now_as_text, now
 from ...helpers.email_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode

@@ -52,7 +52,7 @@ def process(
     valid_ext: list[str],
 ) -> Tuple[int, str, str]:
 
-    from ...main import shared
+    from ...Shared import shared
 
     current_module_name = __name__.split(".")[-1]
 
@@ -78,7 +78,7 @@ def process(
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
-        "2024.10.16", #process version
+        "2024.10.21", #process version
         shared.config.APP_DEBUG,
         logged_user,
         ValidateProcessConfig(shared.config.APP_DEBUG),

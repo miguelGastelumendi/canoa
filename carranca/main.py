@@ -11,30 +11,6 @@
 import time
 
 
-def _register_blueprints(app):
-    from .private.routes import bp_private
-    from .public.routes import bp_public
-
-    app.register_blueprint(bp_private)
-    app.register_blueprint(bp_public)
-
-
-def _register_jinja(app):
-    from .helpers.route_helper import private_route, public_route
-
-    def __get_name() -> str:
-        return app.config['APP_NAME']
-
-    def __get_version() -> str:
-        return app.config['APP_VERSION'] # TODO: ?
-
-    app.jinja_env.globals.update(
-        app_version=__get_version,
-        app_name=__get_name,
-        private_route=private_route,
-        public_route=public_route,
-    )
-
 
 # -------------------------------------------------------
 # Main --------------------------------------------------
@@ -47,38 +23,18 @@ app_name = "Canoa"
 the_aperture_msg = f"{app_name} is starting in {__name__}."
 print(f"{'-' * len(the_aperture_msg)}\n{the_aperture_msg}")
 
-# check mandatory information and create
-#  Global var, to simplify sharing objects
-from .igniter import ignite_shared
-from carranca import started
-
-shared, display_mute_after_init = ignite_shared(app_name, started)
-
-# Database
-from .igniter import ignite_sql_alchemy
-
-_ = ignite_sql_alchemy(shared)
-shared.display.info("SQLAlchemy was instantiated and the db connection was successfully tested.")
-
 
 # Flask app
-from carranca import create_app  # see __init__.py
+from carranca import create_app, started  # see __init__.py
 
-app = create_app(app_name, shared.config)
-shared.obfuscate()
-shared.display.info("The Flask app was created and configured.")
+app = create_app(app_name)
 
-
-# login Manger
-from flask_login import LoginManager
-
-login_manager = LoginManager(app)
-shared.display.info("Flask login manager was instantiated.")
-
+from .Shared import shared
+shared.display.info("All mandatory information has been checked and is available. The app is ready to run.")
 
 # Keep shared alive within app
-shared.keep(app, login_manager)
-shared.display.info("The global var 'shared' is now ready:")
+shared.keep(app)
+shared.display.info("The session 'shared' variable is now ready.")
 if shared.config.APP_DISPLAY_DEBUG_MSG:
     print(repr(shared))
 
@@ -90,27 +46,12 @@ if shared.config.APP_DISPLAY_DEBUG_MSG and True:
     di = get_debug_info(app, shared.config.copy())  # TODO, print
 
 from .public.debug_info import get_debug_info
+
 get_debug_info(app, shared.config)  # TODO, print
-
-# Blue Prints
-_register_blueprints(app)
-shared.display.info("The blueprints were collected and registered within the app.")
-
-
-# Jinja functions
-_register_jinja(app)
-shared.display.info("This app's functions were registered into Jinja.")
-
 
 # Tell everybody how quick we are
 elapsed = (time.perf_counter() - started) * 1000
 shared.display.info(f"{app_name} is now ready for the trip. It took {elapsed:,.0f}ms to create it.")
-
-# config shared.display
-if display_mute_after_init:
-    shared.display.mute_all = True
-elif not shared.config.APP_DISPLAY_DEBUG_MSG:
-    shared.display.debug_output = False
 
 
 if __name__ == "__main__":

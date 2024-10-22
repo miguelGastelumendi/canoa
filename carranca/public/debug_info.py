@@ -63,7 +63,7 @@ def get_debug_info(app, config) -> List[Tuple[str, str]]:
     _add("OS Path", os.getcwd())
 
     if True:
-        from ..main import shared
+        from ..Shared import shared
 
         for name, value in result:
             kind, v = (
