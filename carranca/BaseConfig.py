@@ -40,8 +40,8 @@ class BaseConfig(Config):
     """
     APP_NAME = app_name
 
-    # major.minor.patch
-    APP_VERSION = "β 3.5"  # &beta;
+    # &beta; major.minor.patch
+    APP_VERSION = "β 3.6"
 
     """ Canoa Configurations
         --------------------------
@@ -82,11 +82,17 @@ class BaseConfig(Config):
     TESTING = None  # <- True if APP_PROPAGATE_DEBUG else False
     DEBUG_TEMPLATES = None  # <- True if APP_PROPAGATE_DEBUG else False
     # this does'nt work (spend a day to find out), is SERVER_NAME: SERVER_ADDRESS = ""
-    # Inform the application what host and port it is bound to (NO Scheme)
-    SERVER_NAME = ""
+    # https://flask.palletsprojects.com/en/latest/config/#SERVER_NAME
+    # Inform the application what host and port it is bound to (NO Scheme).
+    # SERVER_NAME = "" use it after understand how
     PREFERRED_URL_SCHEME=  ""
     SECRET_KEY = ""
     SESSION_COOKIE_NAME = f"{app_name.lower()}"
+    # TODO
+    # # Flask helper: will be divided into
+    # SERVER_ADDRESS = ""
+    # FLASK_RUN_HOST = "127.0.0.4"
+    # FLASK_RUN_PORT = "1235"
 
     """ SQLAlchemy
         --------------------------

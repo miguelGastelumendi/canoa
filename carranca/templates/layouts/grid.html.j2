@@ -40,6 +40,10 @@ mgd
             color: darkgrey;
         }
 
+        .item-added {
+            color: limegreen;
+        }
+
         .column_sep_new {
             background-color: azure;
         }
@@ -63,12 +67,12 @@ mgd
         const usersSep = {{ usersSep | tojson }};
         const usedList = usersSep.map(item => item.sep)
         const initialList = {{ sepList | tojson }};
-        const ignoreList = [itemRemove, itemNone]
-        const col_sep_new = 'sep_new'
-        let activeRow = null
-        let addedItems = []
+        const ignoreList = [itemRemove, itemNone];
+        const col_sep_new = 'sep_new';
+        let activeRow = null;
+        let addedList = [];
         let selectList = [...initialList];
-        let assignedList = []
+        let assignedList = [];
         window.addEventListener('beforeunload', (event) => {
             if (assignedList.length > 0) {
                 event.preventDefault();
@@ -99,7 +103,7 @@ mgd
                     flex: 2,
                     cellClassRules: {
                         'item-none': params => params.value === itemNone,
-                        'item-exist': params => { return assignedList.includes(params.value); }
+                        'item-exist': params => assignedList.includes(params.value),
                     },
                 },
                 {
@@ -111,13 +115,12 @@ mgd
                     cellClassRules: {
                         'item-none': params => params.value === itemNone,
                         'item-remove': params => params.value === itemRemove,
+                        'item-added': params => addedList.includes(params.value),
                     },
                     cellEditor: 'agSelectCellEditor',
                     cellEditorParams: params => {
                         let lst = [...selectList]
-                        if (!lst.includes(params.value) && !ignoreList.includes(params.value)) {
-                            lst.push(params.value)
-                        }
+                        if (!lst.includes(params.value) && !ignoreList.includes(params.value)) { lst.push(params.value) }
                         lst = sortList(lst).concat(ignoreList)
                         return { values: lst };
                     },
@@ -144,15 +147,21 @@ mgd
             ]
         }; // gridOptions
 
-        toLowerPlus = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-        exist_sep = (item) => {
-            _item = toLowerPlus(item).trim()
-            lst = initialList.concat(ignoreList).concat(addedItems);
-            const exits = lst.filter(a => toLowerPlus(a) === _item);
-            return exits.length > 0
+        getPrompt = (msg, _default) => {
+            api.stopEditing();
+            text = trim_it(prompt(msg, _default))
+            return text
         }
 
-        const trim_it = (item) => ((item == null) || (item.trim() === '')) ? '' : item.trim()
+        toLowerPlus = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        exist_sep = (item) => {
+            _item = toLowerPlus(item).trim();
+            lst = initialList.concat(ignoreList).concat(addedList);
+            const exits = lst.filter(a => toLowerPlus(a) === _item);
+            return exits.length > 0;
+        }
+
+        const trim_it = (item) => ((item == null) || (item.trim() === '')) ? '' : item.trim();
         const item_add = (sep_new) => {
             result = false;
             if (sep_new == '') {
@@ -160,31 +169,37 @@ mgd
             } else if (exist_sep(sep_new)) {
                 alert(`O nome '${sep_new}' já está na lista.`);
             } else {
-                sortList(addedItems, sep_new);
+                sortList(addedList, sep_new);
                 sortList(selectList, sep_new);
-                activeRow.data[col_sep_new] = sep_new
-                api.refreshCells({ rowIndex: activeRow.rowIndex, force: true })
+                activeRow.setDataValue(col_sep_new, sep_new);
                 result = true;
             }
             return result;
         }
-        const grid_add = () => {
-            let sep_new = trim_it(prompt('Informe o nome do SEP a ser adicionado'))
-            item_add(sep_new)
-        }
-        const grid_edit = () => {
+        const getActiveCellValue = () => {
             const celllValue = trim_it(activeRow == null ? null : activeRow.data[col_sep_new]);
             if (celllValue == '') {
-                alert('Clique na coluna [Novo SEP] da linha que contém o novo SEP novo que deseja editar.')
+                alert('Clique na coluna [Novo SEP] na linha onde deseja adicionar ou editar.');
+            }
+            return celllValue;
+        }
+        const grid_add = () => {
+            if (getActiveCellValue() == '') { return }
+            let sep_new = getPrompt('Informe o nome do SEP a ser adicionado');
+            item_add(sep_new);
+        }
+        const grid_edit = () => {
+            const celllValue = getActiveCellValue()
+            if (celllValue == '') {
+                // ignore
             } else if (initialList.includes(celllValue) || ignoreList.includes(celllValue)) {
                 alert('Somente SEP adicionados podem ser editados.')
             } else {
-                let sep_new = trim_it(prompt('Informe o nome do SEP (branco para remover)', celllValue))
+                let sep_new = getPrompt('Informe o nome do SEP (branco para remover)', celllValue);
                 if (sep_new !== celllValue) {
-                    // remove old
                     selectList = selectList.filter(item => item !== celllValue);
-                    addedItems = addedItems.filter(item => item !== celllValue);
-                    item_add(sep_new)
+                    addedList = addedList.filter(item => item !== celllValue);
+                    item_add(sep_new);
                 }
             }
         }
