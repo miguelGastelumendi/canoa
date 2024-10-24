@@ -18,7 +18,7 @@ from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 
 
-from ..Shared import shared
+from ..Sidekick import sidekick
 from .py_helper import is_str_none_or_empty, to_str
 from .file_helper import is_same_file_name, change_file_ext, path_remove_last_folder
 
@@ -165,7 +165,7 @@ def download_public_google_file(
 
         # TODO: Pass as param
         service_account_file = path.join(
-            path_remove_last_folder(shared.config.ROOT_FOLDER),
+            path_remove_last_folder(sidekick.config.ROOT_FOLDER),
             "LocalDrive",
             "canoa-download-key.json",
         )
@@ -222,21 +222,21 @@ def download_public_google_file(
             downloader = MediaIoBaseDownload(f, request, chunksize=cs)
             task_code += 1 #17
             done = False
-            shared.display.info(f"download: The download of the file [{file_full_path}] has begun.")
+            sidekick.display.info(f"download: The download of the file [{file_full_path}] has begun.")
             # file_crc32 = crc32(b'')  # Initialize CRC32 checksum
             while done is False:
                 status, done = downloader.next_chunk()
                 # TODO find how: file_crc32 = crc32(status, file_crc32)
                 if status:
-                    shared.display.info.debug("download: progress %d%%." % int(status.progress() * 100))
+                    sidekick.display.info.debug("download: progress %d%%." % int(status.progress() * 100))
 
 
         task_code = 0
-        shared.display.info('download: The file was downloaded.')
+        sidekick.display.info('download: The file was downloaded.')
     except Exception as e:
         msg_error = f"An error ocurred while downloading the file. Task code {task_code}, message '{e}'.)"
-        shared.display.error(msg_error)
-        shared.app_log.error(msg_error)
+        sidekick.display.error(msg_error)
+        sidekick.app_log.error(msg_error)
 
     return task_code, gdFile_name, gdFile_md
 

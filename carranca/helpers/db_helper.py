@@ -62,7 +62,7 @@ def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
         # Single row with a single column
         return rows[0][0]
   except Exception as e:
-    shared.app_log.error(f"An error occurred retrieving db data [{query}]: {e}")
+    sidekick.app_log.error(f"An error occurred retrieving db data [{query}]: {e}")
     return None
 
 
@@ -91,7 +91,7 @@ def retrieve_dict(query: str):
                 result = {data[0]: data[1]}
     except Exception as e:
         result = {}
-        shared.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
+        sidekick.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
 
     # # Check if the result is a tuple of tuples (multiple rows)
     # if isinstance(data, tuple) and all(isinstance(row, tuple) and len(row) >= 2 for row in data):
@@ -99,7 +99,6 @@ def retrieve_dict(query: str):
     #     return {row[0]: row[1] for row in data}
 
     return result.copy() # there is a very strange error
-
 
 
 def get_str_field_length(table_model: object, field_name: str) -> str:

@@ -13,8 +13,8 @@ import time
 from math import log10, modf
 from enum import Enum
 from typing import List
-from datetime import datetime
-from .py_helper import is_str_none_or_empty
+from platform import uname
+from .py_helper import is_str_none_or_empty, OS_IS_WINDOWS
 
 
 class Display:
@@ -56,7 +56,6 @@ class Display:
     reset_color = code(0)
     ESC = code(None)
     elapsed_format = [f"{{:0{i}}}" for i in range(1, 6)]
-    # elapsed_format[0] = elapsed_format[1]
 
     default = Default(
         # keep same order as Display.__init__
@@ -102,6 +101,14 @@ class Display:
         colors: List[str] = None,
         icons: List[str] = None,
     ):
+        os_color = True
+        try:
+            # https://en.wikipedia.org/wiki/ANSI_escape_code#DOS_and_Windows
+            # Since 2016! Windows 10 version 1511
+            os_color = False if OS_IS_WINDOWS and int(uname().version.split(".")[0]) < 10 else True
+        except:
+            os_color = not OS_IS_WINDOWS
+
         _d = Display.default  # value is None => use default
         self.mute = True if mute_all else False
         self.prompt = _d.prompt if prompt is None else prompt
@@ -109,17 +116,17 @@ class Display:
         self.icon_output = _d.icon_output if icon_output is None else icon_output
         self.elapsed_output = elapsed_from is not None
         self.elapsed_from = elapsed_from if self.elapsed_output else time.perf_counter()
-        self.colors = _d.colors if colors is None else colors
+        self.colors = (_d.colors if colors is None else colors) if os_color else []
         self.icons = _d.icons if icons is None else icons
         k_error = "Parameter '{0}' must be a list of Display.Kind items."
-        if colors is not None and len(colors) != len(Display.Kind):
+        if colors is not None and not (len(colors) == len(Display.Kind) or len(colors) == 0):
             raise ValueError(k_error.format("colors"))
 
         if icons is not None and len(icons) != len(Display.Kind):
             raise ValueError(k_error.format("icons"))
 
     def color(self, kind: Kind) -> str:
-        return self.colors[kind.value]
+        return "" if len(self.colors) == 0 else self.colors[kind.value]
 
     def print(
         self, kind_or_color: Kind | str, msg: str, prompt: str = None, icon_output: bool = None
@@ -218,6 +225,15 @@ class Display:
 
 
 if __name__ == "__main__":
+    from platform import uname
+
+    os_color = True
+    try:
+        os_color = False if OS_IS_WINDOWS and int(uname().version.split(".")[0]) < 7 else True
+    except:
+        os_color = not OS_IS_WINDOWS
+
+    print(os_color)
 
     def is_str_none_or_empty(s):
         return (s is None) or ((str(s) + "").strip() == "")

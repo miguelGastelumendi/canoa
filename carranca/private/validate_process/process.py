@@ -52,7 +52,7 @@ def process(
     valid_ext: list[str],
 ) -> Tuple[int, str, str]:
 
-    from ...Shared import shared
+    from ...Sidekick import sidekick
 
     current_module_name = __name__.split(".")[-1]
 
@@ -69,7 +69,7 @@ def process(
         return f"process: Exception: [{e}]; {current_module_name}.Exception: [{msg_exc}], Code [{code}]."
 
     def _display(msg):
-        shared.display.info(f"process: {msg}.")
+        sidekick.display.info(f"process: {msg}.")
         return
 
     def _updated(code):
@@ -79,9 +79,9 @@ def process(
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
         "2024.10.21", #process version
-        shared.config.APP_DEBUG,
+        sidekick.debugging,
         logged_user,
-        ValidateProcessConfig(shared.config.APP_DEBUG),
+        ValidateProcessConfig(sidekick.debugging),
         proc_data,
         received_at,
         {"file_data": file_data, "valid_ext": valid_ext},  # first module parameters
@@ -89,7 +89,7 @@ def process(
     error_code = 0
     msg_error = ""
     msg_exception = ""
-    elapsed_output = shared.display.set_elapsed_output(True)
+    elapsed_output = sidekick.display.set_elapsed_output(True)
 
     _display("The validation process has started")
 
@@ -139,12 +139,12 @@ def process(
             except Exception as e:
                 error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 1
                 fatal_msg = f"An error ocurred while updating the final process record: [{e}]."
-                shared.display.error(fatal_msg)
-                shared.app_log.fatal(fatal_msg)
+                sidekick.display.error(fatal_msg)
+                sidekick.app_log.fatal(fatal_msg)
         else:
             fatal_msg = f"Processing {('downloaded' if cargo.pd.file_was_downloaded else 'uploaded')} file [{cargo.pd.received_file_name}] raised error code {error_code} in module '{current_module_name}'."
-            shared.display.error(fatal_msg)
-            shared.app_log.fatal(fatal_msg)
+            sidekick.display.error(fatal_msg)
+            sidekick.app_log.fatal(fatal_msg)
             try:
                 UserDataFiles.update(
                     cargo.table_udf_key,
@@ -163,18 +163,18 @@ def process(
             except Exception as e:
                 error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 2
                 msg_exception = _get_msg_exception(e, msg_exception, error_code)
-                shared.display.error(msg_exception)
-                shared.app_log.fatal(msg_exception, exc_info=error_code)
+                sidekick.display.error(msg_exception)
+                sidekick.app_log.fatal(msg_exception, exc_info=error_code)
 
     except Exception as e:
         error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 3
         msg_exception = _get_msg_exception(e, msg_exception, error_code)
-        shared.display.error(msg_exception)
-        shared.app_log.fatal(msg_exception, exc_info=error_code)
+        sidekick.display.error(msg_exception)
+        sidekick.app_log.fatal(msg_exception, exc_info=error_code)
 
     finally:
         _display(f"The validation process end with error code {error_code}")
-        shared.display.set_elapsed_output(elapsed_output)
+        sidekick.display.set_elapsed_output(elapsed_output)
 
     return error_code, msg_error, msg_exception
 

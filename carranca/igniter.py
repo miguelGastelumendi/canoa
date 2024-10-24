@@ -10,7 +10,7 @@
 # cSpell:ignore sqlalchemy app_name cssless sendgrid ENDC psycopg2 mandatories
 
 from typing import Tuple, Any
-from .helpers.py_helper import is_str_none_or_empty
+from .helpers.py_helper import coalesce, is_str_none_or_empty
 
 from .Args import Args
 
@@ -33,7 +33,7 @@ class Fuse:
         from .BaseConfig import app_mode_production, app_mode_development
 
         self.app_name = app_name
-        self.app_debug = args.app_debug
+        self.debugging = args.app_debug
         self.display = display
         self.args = args
 
@@ -97,22 +97,25 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
 from .DynamicConfig import DynamicConfig
 
 
-def _ignite_config(app_mode) -> Tuple[DynamicConfig, str]:
+def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
     """
     Select the config, based in the app_mode (production or debug)
     WARNING: Don't run with debug turned on in production!
     """
-    config = None  # this config will later be 'shared' by shared
+    config = None  # this config will later be shared by sidekick
     msg_error = None
     try:
         from .DynamicConfig import get_config_for_mode
 
-        config = get_config_for_mode(app_mode)
+        config = get_config_for_mode(fuse.app_mode)  # Todo send app_debug from parameters
         if config is None:
-            raise Exception(f"Unknown config mode {config}.")
-        fuse.display.info(f"The app config, in '{app_mode}' mode, was ignited.")
+            raise Exception(f"Unknown config mode '{fuse.app_mode}'.")
+
+        config.debugging = fuse.debugging if fuse.debugging else config.APP_DEBUG
+        config.args = fuse.args
+        fuse.display.info(f"The app config, in '{fuse.app_mode}' mode, was ignited.")
     except Exception as e:
-        msg_error = _error_msg.format(__name__, f"initializing the app config in mode '{app_mode}'", str(e))
+        msg_error = _error_msg.format(__name__, f"initializing the app config in mode '{fuse.app_mode}'.", str(e))
 
     return config, msg_error
 
@@ -133,10 +136,10 @@ def _check_mandatory_keys(config) -> str:
             return empty
 
         has_empty = False
-        empty_keys= ''
+        empty_keys = ""
         for key in CONFIG_MANDATORY_KEYS:
             if __is_empty(key):
-                empty_keys= f"{empty_keys}{key},"
+                empty_keys = f"{empty_keys}{key},"
                 has_empty = True
 
         msg_error = (
@@ -145,18 +148,20 @@ def _check_mandatory_keys(config) -> str:
             else _error_msg.format(
                 __name__,
                 f"confirming the existence of the mandatory configuration keys {CONFIG_MANDATORY_KEYS}",
-                empty_keys
+                empty_keys,
             )
         )
 
     except Exception as e:
-        msg_error = _error_msg.format(__name__, f"checking mandatory keys of config[`{config.APP_MODE}`].", e)
+        msg_error = _error_msg.format(
+            __name__, f"checking mandatory keys of config[`{config.APP_MODE}`].", e
+        )
 
     return msg_error
 
 
 # ---------------------------------------------------------------------------- #
-def _ignite_server_address(config) -> Tuple[any, str]:
+def _ignite_server_name(config) -> Tuple[any, str]:
     """Confirm validity of the server address"""
     msg_error = None
     try:
@@ -164,32 +169,27 @@ def _ignite_server_address(config) -> Tuple[any, str]:
         from urllib.parse import urlparse
 
         Address = namedtuple("Address", "host, port")
-        address = Address("", 0)
 
-        default_scheme = "http://"
-        url = urlparse(config.SERVER_ADDRESS, default_scheme, False)
+        try_url = f"http://{config.SERVER_NAME}"
+        url = urlparse(try_url)
 
-        # There is a bug is Linux (?) url.hostname  & url.port are always None
-        path = ["", ""] if is_str_none_or_empty(url.path) else f"{url.path}:".split(":")
-        address = Address(
-            path[0] if is_str_none_or_empty(url.hostname) else url.hostname,
-            path[1] if is_str_none_or_empty(url.port) else url.port,
-        )
-
+        address = Address(url.hostname, url.port)
         if is_str_none_or_empty(address.host) or (address.port == 0):
-            msg_error = f"Invalid host or port address found in [{config.SERVER_ADDRESS}], parsed: {address.host}:{address.port}`."
+            msg_error = f"Invalid host or port address found in [{config.SERVER_NAME}], parsed: {address.host}:{address.port}`."
         else:
-            fuse.display.info(f"The Flask Server Address address will be '{address.host}:{address.port}'.")
-            setattr(config, "SERVER_HOST", address.host)
-            setattr(config, "SERVER_PORT", address.port)
+            config.SERVER_NAME = f"{address.host}:{address.port}"
+            scheme = (
+                ""
+                if is_str_none_or_empty(config.PREFERRED_URL_SCHEME)
+                else f"{config.PREFERRED_URL_SCHEME}://"
+            )
+            fuse.display.info(f"The Flask Server Address address will be '{scheme}{config.SERVER_NAME}'.")
 
     except Exception as e:
-        fuse.display.error(
-            f"`urlparse('{config.SERVER_ADDRESS}', '{default_scheme}') -> parsed: {address.host}:{address.port}`"
-        )
+        fuse.display.error(f"`urlparse({try_url}) -> parsed: {address.host}:{address.port}`")
         msg_error = _error_msg.format(
             __name__,
-            f"parsing server address. Expect value is [HostName:Port], found: [{config.SERVER_ADDRESS}]",
+            f"parsing server address. Expect value is [HostName:Port], found: [{config.SERVER_NAME}]",
             e,
         )
 
@@ -199,10 +199,10 @@ def _ignite_server_address(config) -> Tuple[any, str]:
 # - ---------------------------------------------------------------------------- #
 # - Public --------------------------------------------------------------------- #
 # - ---------------------------------------------------------------------------- #
-from .Shared import Shared, create_shared
+from .Sidekick import Sidekick, create_sidekick
 
 
-def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
+def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
     global fuse
 
     debug_2 = _get_debug_2(app_name)
@@ -214,10 +214,10 @@ def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
     fuse.display.debug("The fuse was created.")
 
     # Config
-    config, error = _ignite_config(fuse.app_mode)
+    config, error = _ignite_config(fuse)
     if error:
         _log_and_exit(error)
-    fuse.display.debug("Config was ignited.")
+    fuse.display.debug(f"Config was ignited, debugging is {config.debugging}.")
 
     # Mandatory Configuration keys
     error = _check_mandatory_keys(config)
@@ -226,14 +226,14 @@ def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
     fuse.display.debug("All mandatory configuration keys were informed.")
 
     # Server Address
-    _, error = _ignite_server_address(config)
+    _, error = _ignite_server_name(config)
     if error:
         _log_and_exit(error)
-    fuse.display.debug("Flask Server Address is ready and 'config' configured.")
+    fuse.display.debug("Flask's Server Name is ready and 'config' configured.")
 
-    # Create the global hub class 'shared'
-    shared = create_shared(fuse.app_debug, config, fuse.display)
-    fuse.display.info("The session 'shared'  variable was ignited.")
+    # Create the session shared 'sidekick'
+    sidekick = create_sidekick(config, fuse.display)
+    fuse.display.info("The session 'sidekick' was ignited.")
 
     # ---------------------------------------------------------------------------- #
     # Give warnings of import configuration that may be missing
@@ -255,18 +255,19 @@ def ignite_shared(app_name, start_at) -> Tuple[Shared, bool]:
 
     fuse = None  # not need it anymore
 
-    return shared, display_mute_after_init
+    return sidekick, display_mute_after_init
 
 
 # - ---------------------------------------------------------------------------- #
-def ignite_sql_connection(shared, uri):
+def ignite_sql_connection(sidekick, uri):
 
     from sqlalchemy import create_engine, select
+
     try:
         engine = create_engine(uri)
         with engine.connect() as connection:
             connection.scalar(select(1))
-            shared.display.info("The database connection is active.")
+            sidekick.display.info("The database connection is active.")
 
     except Exception as e:
         _log_and_exit(f"Unable to connect to the database. Error details: [{e}].")
@@ -275,7 +276,7 @@ def ignite_sql_connection(shared, uri):
 
 
 # - ---------------------------------------------------------------------------- #
-def reignite_shared(app_name):
+def __reignite_sidekick(app_name):
     global fuse
 
     import time
@@ -296,10 +297,10 @@ def reignite_shared(app_name):
 
     # Create the global hub class 'shared'
     shared = Shared(fuse.app_debug, fuse.display)
-    fuse.display.info("The session 'shared' variable was reignited.")
+    fuse.display.info("The session 'shared'variable was reignited.")
     fuse = None  # not need it anymore
-    # elif not shared.config.APP_DISPLAY_DEBUG_MSG:
-    # shared.display.debug_output = False
+    # elif not sidekick.config.APP_DISPLAY_DEBUG_MSG:
+    # sidekick.display.debug_output = False
 
 
 # eof

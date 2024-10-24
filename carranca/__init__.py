@@ -11,7 +11,7 @@
         ├── carranca/          # main application package
         |    ├── __init__.py   # crucial (tells Python that tis folder is a package (carranca). Creates the app
         │    ├── main.py       # <- You are here
-        │    ├── shared.py     # shared var with most used object (app, config, sa, etc)
+        │    ├── sidekick.py     # shared var with most used object (app, config, sa, etc)
         │    ├── config.py     # configuration file
         │    ├── config_..     # config_validate_process.py specific configurations for the validate process
         │    ├── helpers
@@ -56,7 +56,7 @@ import time
 started = time.perf_counter()
 
 import jinja2
-from flask import Flask
+from flask import Flask, g
 from sqlalchemy import create_engine
 from flask_login import LoginManager
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -68,6 +68,7 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 login_manager = LoginManager()
 Session = None
+Config = None
 
 
 # ============================================================================ #
@@ -133,49 +134,89 @@ def _register_db(app):
         Session.remove()
 
 
+# ---------------------------------------------------------------------------- #
+def db_obfuscate(config):
+    """Hide any confidencial info before is displayed in debug mode"""
+    import re
+
+    db_uri = str(config.SQLALCHEMY_DATABASE_URI)
+    db_uri_safe = re.sub(
+        config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
+        config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
+        config.SQLALCHEMY_DATABASE_URI,
+    )
+    config.SQLALCHEMY_DATABASE_URI = db_uri_safe
+    return db_uri
+
+
 # ============================================================================ #
 # App + helpers
-def create_app(app_name):
-
-    # === Create the Flask lApp  ===`#
-    app = Flask(app_name, static_folder="static", instance_relative_config=True)
+def create_app(app_name: str):
 
     # === Check if all mandatory information is ready === #
-    from .igniter import ignite_shared
+    from .igniter import ignite_sidekick
 
-    shared, display_mute_after_init = ignite_shared(app_name, started)
-    shared.display.info("The Flask App was created.")
+    sidekick, display_mute_after_init = ignite_sidekick(app_name, started)
 
-    # -- Configuration
+    # === Create the Flask App  ===`#
+    name = __name__ if __name__.find(".") < 0 else __name__.split(".")[0]
+    app = Flask(name)
+    sidekick.display.info("The Flask App was created.")
+
+    # -- app config
+    from .helpers.py_helper import copy_attributes
+
+    #_config = copy_attributes(sidekick.config)  # only attributes needed
+    app.config.from_object(sidekick.config)
     app.config.from_prefixed_env(app_name)
-    app.config.from_object(shared.config)
-    shared.display.info("App's config was successfully bound.")
+    sidekick.display.info("App's config was successfully bound.")
 
     # -- Register modules
     _register_db(app)
-    shared.display.info("The db was registered.")
-    _register_blueprints(app)
-    shared.display.info("The blueprints were collected and registered within the app.")
-    _register_jinja(app, shared.config.DEBUG_TEMPLATES)
-    shared.display.info("This app's functions were registered into Jinja.")
-    _register_login_manager(app)
-    shared.display.info("The Login Manager was initialized with the app.")
+    sidekick.display.info("The db was registered.")
 
-    # -- Database
+    _register_blueprints(app)
+    sidekick.display.info("The blueprints were collected and registered within the app.")
+
+    _register_jinja(app, sidekick.config.DEBUG_TEMPLATES)
+    sidekick.display.info("This app's functions were registered into Jinja.")
+
+    _register_login_manager(app)
+    sidekick.display.info("The Login Manager was initialized with the app.")
+
+    # == Config
+    global Config
+    uri = db_obfuscate(sidekick.config)
+    Config = sidekick.config
+
+    # -- Connect to Database
     from .igniter import ignite_sql_connection
 
-    uri = shared.db_obfuscate()
-    ignite_sql_connection(shared, uri)
-    shared.display.info("SQLAlchemy was instantiated and the db connection was successfully tested.")
+    ignite_sql_connection(sidekick, uri)
+    sidekick.display.info("SQLAlchemy was instantiated and the db connection was successfully tested.")
 
-    # -- Database
+    # == Database Session
     global Session
     engine = create_engine(uri)
     Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+    sidekick.display.info("A sharable scoped SQLAlchemy session was instantiated.")
 
-    # config shared.display
+    # config sidekick.display
     if display_mute_after_init:
-        shared.display.mute_all = True
+        sidekick.display.mute_all = True
+
+    @app.before_request
+    def do_before_request():
+        # TODO
+        # if "sidekick" not in g:
+        #     from .Sidekick import recreate_sidekick
+        #     g.sidekick = recreate_sidekick(Config, app_name)
+
+        from .Sidekick import recreate_sidekick
+        sidekick = recreate_sidekick(Config, app)
+
+    # run parameters host & port are taken from SERVER_NAME
+    # https://flask.palletsprojects.com/en/3.0.x/api/#flask.Flask.run
 
     return app
 

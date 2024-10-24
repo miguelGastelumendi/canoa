@@ -11,7 +11,7 @@
 # cSpell:ignore werkzeug tmpl sqlalchemy lastpasswordchange errorhandler assis
 
 from flask import Blueprint, render_template
-from ..Shared import shared
+from ..Sidekick import sidekick
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.route_helper import (
     bp_name,
@@ -137,7 +137,7 @@ def docs(docName: str):
 # Errors --------------------------------------------------
 # TODO: fix check unauthorized_handler
 from carranca import login_manager
-login_manager.unauthorized_handler
+@login_manager.unauthorized_handler
 def unauthorized_handler():
     return render_template("home/page-403.html"), 403
 

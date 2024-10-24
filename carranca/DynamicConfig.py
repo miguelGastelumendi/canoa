@@ -10,11 +10,12 @@
 
 # cSpell:ignore SQLALCHEMY searchpath
 
+from typing import Any
 from os import environ
 from hashlib import sha384
 
 from .BaseConfig import BaseConfig, app_mode_development, app_mode_production
-from .helpers.py_helper import is_str_none_or_empty
+from .helpers.py_helper import as_bool, is_str_none_or_empty
 from .helpers.wtf_helper import LenValidate
 
 
@@ -36,20 +37,21 @@ def _init_envvar_of_config(cfg, fuse):
     from environment variables
     """
     envvars_prefix = f"{fuse.app_name}_".upper()
+    t = str(True).lower()
+    f = str(False).lower()
     for key, value in environ.items():
         attribute_name = key[len(envvars_prefix) :]
         if not key.upper().startswith(envvars_prefix):
             pass
-        elif hasattr(cfg, attribute_name):
-            value = bool(value) if value.capitalize() in [str(True), str(False)] else value
-            if is_str_none_or_empty(value):
-                fuse.display.warn(f"Ignoring empty envvar value for key [{key}], keeping original.")
-            else:
-                setattr(cfg, attribute_name, value)
-        elif cfg.APP_DEBUG:
-            fuse.display.warn(
+        elif not hasattr(cfg, attribute_name):
+            fuse.display.debug(
                 f"[{attribute_name}] is not an attribute of `Config`, will not set envvar value."
             )
+        elif is_str_none_or_empty(value):
+            fuse.display.warn(f"Ignoring empty envvar value for key [{key}], keeping original.")
+        else:
+            _value = as_bool(value) if value.lower() in [t, f, 't', '1'] else value
+            setattr(cfg, attribute_name, _value)
 
 
 class DynamicConfig(BaseConfig):
@@ -69,14 +71,17 @@ class DynamicConfig(BaseConfig):
         self.len_val_for_email = LenValidate(8, 60)
 
         # initialize special attributes
+        self.APP_DEBUG = as_bool(self.APP_DEBUG, False)
+        self.DEBUG = as_bool(self.DEBUG, self.APP_DEBUG)
 
+        # propagate APP_DEBUG
         def _if_debug(attrib, default=self.APP_DEBUG):
-            return default if attrib is None else bool(attrib)
+            return default if attrib is None else as_bool(attrib)
 
-        self.APP_DEBUG = bool(self.APP_DEBUG)
         if self.APP_PROPAGATE_DEBUG:
+            self.TESTING = _if_debug(self.TESTING)  # Flask
             self.APP_MINIFIED = _if_debug(self.APP_MINIFIED, not self.APP_DEBUG)
-            self.DEBUG_TEMPLATES = _if_debug(self.DEBUG_TEMPLATES)
+            self.DEBUG_TEMPLATES = _if_debug(self.DEBUG_TEMPLATES)  # jinja
             self.APP_DISPLAY_DEBUG_MSG = _if_debug(self.APP_DISPLAY_DEBUG_MSG)
 
         if is_str_none_or_empty(self.SECRET_KEY):
@@ -99,13 +104,7 @@ class DevelopmentConfig(DynamicConfig):
     APP_DEBUG = True
     APP_PROPAGATE_DEBUG = True
 
-    # == Flask ==
-    SERVER_ADDRESS = (
-        # All IPs at port 5001
-        "http://0.0.0.0:5001"
-        if is_str_none_or_empty(BaseConfig.SERVER_ADDRESS)
-        else BaseConfig.SERVER_ADDRESS
-    )
+    SERVER_NAME = "127.0.0.1:5000"
 
 
 # Production Config
@@ -117,8 +116,10 @@ class ProductionConfig(DynamicConfig):
     APP_MODE = app_mode_production
     APP_DEBUG = False
     APP_PROPAGATE_DEBUG = False
+    SERVER_NAME = "192.168.0.1:54754"
 
 
+# Config factory by mode, add others
 def get_config_for_mode(app_mode: str) -> DynamicConfig:
     """
     Return the appropriated cOnfiguration

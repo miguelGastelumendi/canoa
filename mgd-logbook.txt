@@ -31,10 +31,8 @@ TODO:
 
 
     small tasks
-        - persist_record to private.models
-        - uploadFileError -> receiveFile
+        - check use of formMainBtn in *.j2
         - share jinja_cache templates + texts (see route_helper templates_found)
-        - redo is_connected
         - Fix get_Html()
         - Login Remember not always working
 
@@ -42,6 +40,12 @@ TODO:
   Logbook
   Atualizar versão em: BaseConfig.py e db.ui_items.body[89]
 -----------------------------------------------------------
+2024-10-23 1 β 3.5
+    - Grid,   Grid, add/edit SEP, sidekick
+
+2024-10-22 1 β 3.4
+    - Grid, Demo db
+
 2024-10-21 β 3.3
     - Grid, Demo ajustes
 

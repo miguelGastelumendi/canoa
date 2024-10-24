@@ -10,7 +10,7 @@
 from flask import render_template, request
 from flask_login import login_user
 
-from ...Shared import shared
+from ...Sidekick import sidekick
 from ...public.models import persist_user
 from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
@@ -77,8 +77,8 @@ def login():
 
     except Exception as e:
         msg = add_msg_error('errorLogin', texts, task_code)
-        shared.app_log.error(e)
-        shared.app_log.debug(msg)
+        sidekick.app_log.error(e)
+        sidekick.app_log.debug(msg)
         if logged_in:
             internal_logout()
         #TODO if template not ready use Error Template

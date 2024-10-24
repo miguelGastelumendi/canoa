@@ -13,7 +13,7 @@
 
 from os import path
 
-from ...Shared import shared
+from ...Sidekick import sidekick
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.db_helper import get_str_field_length
 from ...helpers.user_helper import now
@@ -69,14 +69,14 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
 
         if task_code == 0:
             if not is_same_file_name(cs.received_original_name, cs.received_file_name):
-                shared.app_log.info(
+                sidekick.app_log.info(
                     f"The {receive_method} file [{cs.received_original_name}] has been renamed to [{cs.received_file_name}]."
                 )
-            shared.display.info(
+            sidekick.display.info(
                 f"check: The {receive_method} file [{cs.received_file_name}] successfully verified."
             )
         else:
-            shared.app_log.error(
+            sidekick.app_log.error(
                 f"The {receive_method} file [{cs.received_file_name}] failed in module `check` with code {task_code}."
             )
 
@@ -84,7 +84,7 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
         msg_exception = str(e)
         # is the highest possible (see ModuleErrorCode.RECEIVE_FILE_CHECK + 1)
         task_code = 19
-        shared.app_log.fatal(
+        sidekick.app_log.fatal(
             f"Exception [{e}], code {task_code}, occurred in module `check` while validating the {receive_method} file [{cs.received_original_name}].",
             exc_info=task_code,
         )

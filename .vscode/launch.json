@@ -12,6 +12,9 @@
             "module": "flask",
             "env": {
                 "CANOA_DEBUG": "T",
+                // https://flask.palletsprojects.com/en/latest/config/#SERVER_NAME
+                // PREFERRED_URL_SCHEME
+                // https://flask.palletsprojects.com/en/latest/cli/  Command Line I
                 "FLASK_APP": "main",
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "T",

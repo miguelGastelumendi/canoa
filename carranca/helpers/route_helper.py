@@ -11,7 +11,7 @@ from os import path
 from typing import Tuple, Any
 from flask import redirect, request, url_for
 from .py_helper import is_str_none_or_empty, camel_to_snake, to_str
-from ..Shared import shared
+from ..Sidekick import sidekick
 
 base_route_private = "private"
 base_route_public = "public"
@@ -80,7 +80,7 @@ def _get_form_data(section: str, file: str, folder: str) -> Tuple[str, bool, dic
     file_name = f"{file}.html.j2"
     # template *must* be with '/':
     template = f"./{folder}/{file_name}"
-    full_name = path.join(".", shared.config.TEMPLATES_FOLDER, folder, file_name)
+    full_name = path.join(".", sidekick.config.TEMPLATES_FOLDER, folder, file_name)
     if full_name in templates_found:
         pass
     elif path.isfile(full_name):

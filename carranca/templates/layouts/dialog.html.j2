@@ -13,7 +13,7 @@ Displays:
         _cls_ => Class
         -id-  => ID
         _blc_ => Block
-        _spt_ => Script
+        _js_ => Script
 
 
 mgd
@@ -39,9 +39,13 @@ mgd
                {% endblock dlg_blc_body %}
             </div>
             <div class="modal-footer justify-content-center {{dlg_cls_footer}}">
+               {% block dlg_blc_footer_left %}
+               {% endblock dlg_blc_footer_left %}
                 <form action="{{ public_route('login') }}" method="GET">
-                    <button type="submit" class="btn btn-primary dlgBtnClose {{dlg_var_ok_text}}">{{(dlg_var_ok_text | default("OK"))}}</button>
+                    <button type="submit" class="btn btn-primary {{dlg_cls_btnOk}}">{{(dlg_var_ok_text | default("OK"))}}</button>
                 </form>
+               {% block dlg_blc_footer_right %}
+               {% endblock dlg_blc_footer_right %}
             </div>
          </div>
       </div>
@@ -54,7 +58,7 @@ mgd
 {% endblock dlg_blc_javascript %}
 
 <script>
-   {{dlg_spt_frm}}
+   {{dlg_js_frm}}
 </script>
 {% endblock base_blc_body_js %}
 

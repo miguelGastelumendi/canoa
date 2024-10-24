@@ -65,7 +65,7 @@ def send_email(
         ValueError: if the attachment file (file_to_send) has an extension with unknown type.
         RuntimeError: error within the send_mail API
     """
-    from ..Shared import shared
+    from ..Sidekick import sidekick
 
     status_code = 0
     task = ""
@@ -125,7 +125,7 @@ def send_email(
 
         task = "creating Mail data"
         mail = sendgrid.Mail(
-            from_email=shared.config.EMAIL_ORIGINATOR,
+            from_email=sidekick.config.EMAIL_ORIGINATOR,
             to_emails=to_address,
             subject=texts["subject"],
             html_content=texts["content"],
@@ -144,7 +144,7 @@ def send_email(
         _addTo(bcc_address, mail.add_bcc)
 
         task = "preparing Api"
-        apiKey = shared.config.EMAIL_API_KEY
+        apiKey = sidekick.config.EMAIL_API_KEY
         sg = sendgrid.SendGridAPIClient(apiKey)
         if is_str_none_or_empty(file_to_send_full_name):
             pass
@@ -186,7 +186,7 @@ def send_email(
         )
         msg = getattr(e, "body", str(e))
         msg_error = f"{error} SendGrid: [{msg}]."
-        shared.app_log.error(msg_error)
+        sidekick.app_log.error(msg_error)
         raise RuntimeError(msg_error)
 
 

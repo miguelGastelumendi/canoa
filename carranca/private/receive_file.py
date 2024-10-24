@@ -14,7 +14,7 @@ from .wtforms import ReceiveFileForm
 from werkzeug.utils import secure_filename
 from .validate_process.ProcessData import ProcessData
 
-from ..Shared import shared
+from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import path_remove_last_folder, folder_must_exist
 from ..helpers.user_helper import LoggedUser, now
@@ -44,7 +44,7 @@ def receive_file() -> str:
     def _log_error(msg_id: str, code: int, msg: str = "") -> int:
         error_code = ModuleErrorCode.RECEIVE_FILE_ADMIT + code
         log_error = add_msg_error(msg_id, texts, error_code, msg)
-        shared.app_log.error(log_error)
+        sidekick.app_log.error(log_error)
         return error_code
 
     try:
@@ -77,8 +77,8 @@ def receive_file() -> str:
         logged_user = LoggedUser()
 
         def doProcessData() -> tuple[bool, ProcessData]:
-            receive_file_cfg = ValidateProcessConfig(shared.config.APP_DEBUG)
-            common_folder = path_remove_last_folder(shared.config.ROOT_FOLDER)
+            receive_file_cfg = ValidateProcessConfig(sidekick.debugging)
+            common_folder = path_remove_last_folder(sidekick.config.ROOT_FOLDER)
             pd = ProcessData(
                 logged_user.code,
                 logged_user.folder,
@@ -115,7 +115,7 @@ def receive_file() -> str:
                 task_code += 1  # 10
                 pd.received_original_name = md["name"]
             else:
-                shared.app_log.error(f"Download error code {download_code}.")
+                sidekick.app_log.error(f"Download error code {download_code}.")
                 fn = filename if filename else "<ainda sem nome>"
                 task_code += 2  # 11
                 error_code = _log_error("receiveFileAdmit_bad_dl", task_code, fn)
@@ -134,16 +134,16 @@ def receive_file() -> str:
 
         if error_code == 0:
             log_msg = add_msg_success("uploadFileSuccess", texts, pd.user_receipt, logged_user.email)
-            shared.display.debug(log_msg)
+            sidekick.display.debug(log_msg)
         else:
             _log_error(msg_error, error_code)
 
     except Exception as e:
         error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code)
-        shared.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
+        sidekick.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
 
     tmpl = _result()
-    shared.display.debug(tmpl)
+    sidekick.display.debug(tmpl)
     return tmpl
 
 

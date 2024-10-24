@@ -1,9 +1,11 @@
-{#carranca\templates\layouts\grid.html
+{#
+carranca\templates\layouts\grid.html
 ---------------------------------
 
 Managed & Displays grids
 Used by:
-carranca\templates\
+carranca\templates\private
+- profile_mgmt.html.j2
 
 mgd
 #}
@@ -14,11 +16,13 @@ mgd
 {% set dlg_cls_header= 'formHeader' %}
 {% set dlg_cls_title= 'formTitle' %}
 {% set dlg_cls_size= 'modal-xl' %} {# Size: sm, <>, lg, xl #}
+
     {% set dlg_cls_top= 'mt-6' %}
     {% set dlg_cls_footer= '' %} {# collapse, #}
-    {% set dlg_spt_frm= '' %}
+    {% set dlg_js_frm= '' %}
 
     {% extends "./layouts/dialog.html.j2" %}
+
     {% block base_blc_head_js %}
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
     {% endblock base_blc_head_js %}
@@ -43,16 +47,15 @@ mgd
     {% endblock base_blc_head_css %}
 
     {% block dlg_blc_body %}
-    {% block frm_blc_above %}
-    {% endblock frm_blc_above %}
-
     <div id="grid_container" class="ag-theme-quartz" style="height: 500px"></div>
 
-    {% block frm_blc_below %}
-    {% endblock frm_blc_below %}
-
     {% endblock dlg_blc_body %}
-
+    {% block dlg_blc_footer_left %}
+    <button type="button" onclick="grid_add()" class="btn btn-primary">{{(dlg_var_add_text |
+        default("Adicionar"))}}</button>
+    <button type="button" onclick="grid_edit()" class="btn btn-primary">{{(dlg_var_edit_text |
+        default("Editar"))}}</button>
+    {% endblock dlg_blc_footer_left %}
     {% block dlg_blc_javascript %}
     <script>
         const itemNone = '{{ itemNone }}';
@@ -61,6 +64,9 @@ mgd
         const usedList = usersSep.map(item => item.sep)
         const initialList = {{ sepList | tojson }};
         const ignoreList = [itemRemove, itemNone]
+        const col_sep_new = 'sep_new'
+        let activeRow = null
+        let addedItems = []
         let selectList = [...initialList];
         let assignedList = []
         window.addEventListener('beforeunload', (event) => {
@@ -70,16 +76,20 @@ mgd
             }
         });
 
-        const sortList = (lst) => lst.sort((a, b) => a.localeCompare(b));
-
+        const sortList = (lst, newItem) => {
+            if (newItem != null) { lst.push(newItem) }
+            lst.sort((a, b) => a.localeCompare(b));
+            return lst;
+        };
         const need_refresh = (api, value) => {
-            console.log(`need_refrshhecking 'item-exist': ${value} <- ${assignedList.includes(value)}`);
             if (assignedList.includes(value)) {
                 setTimeout(() => { api.refreshCells({ columns: ['sep'], force: true }) }, 0)
             }
         };
         const gridOptions = {
-            rowData: usersSep
+            //rowSelection: 'single'
+            onCellFocused: (event) => { activeRow = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex); }
+            , rowData: usersSep
             , columnDefs: [
                 { field: "id", flex: 1, hide: true },
                 { field: "name", headerName: "Sectorista", flex: 1 },
@@ -89,15 +99,11 @@ mgd
                     flex: 2,
                     cellClassRules: {
                         'item-none': params => params.value === itemNone,
-                        'item-exist': params => {
-                            console.log(`Checking 'item-exist': ${params.value} <- ${assignedList.includes(params.value)}`);
-                            //params => assignedList.includes(params.value)
-                            return assignedList.includes(params.value);
-                        },
+                        'item-exist': params => { return assignedList.includes(params.value); }
                     },
                 },
                 {
-                    field: "sep_new",
+                    field: col_sep_new,
                     headerName: "Novo SEP",
                     flex: 2,
                     editable: true,
@@ -136,53 +142,54 @@ mgd
                 },
                 { field: "when", headerName: "Atribuído", flex: 1 }
             ]
-        };
-        const myGridElement = document.querySelector('#grid_container');
+        }; // gridOptions
 
-        agGrid.createGrid(myGridElement, gridOptions);
-        /*
-let rowData = [  initial data  ];
-
-// Initialize the grid
-const gridOptions = {
-    columnDefs: [
-        // Define your columns here
-    ],
-    rowData: rowData,
-    onCellValueChanged: (event) => {
-        const updatedNode = event.node.data;
-        const index = rowData.findIndex(row => row.id === updatedNode.id);
-        if (index > -1) {
-            rowData[index] = updatedNode;
+        toLowerPlus = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        exist_sep = (item) => {
+            _item = toLowerPlus(item).trim()
+            lst = initialList.concat(ignoreList).concat(addedItems);
+            const exits = lst.filter(a => toLowerPlus(a) === _item);
+            return exits.length > 0
         }
-    }
-};
 
-// Example save function
-function saveData() {
-    localStorage.setItem('agGridData', JSON.stringify(rowData));
-}
-
-// Load saved data
-function loadData() {
-    const savedData = localStorage.getItem('agGridData');
-    if (savedData) {
-        rowData = JSON.parse(savedData);
-        gridOptions.api.setRowData(rowData);
-    }
-}
-
-// Initialize grid
-const eGridDiv = document.querySelector('#myGrid');
-new agGrid.Grid(eGridDiv, gridOptions);
-
-// Load data on page load
-loadData();
-
-// Save data before refresh
-window.addEventListener('beforeunload', saveData);
-
-        */
+        const trim_it = (item) => ((item == null) || (item.trim() === '')) ? '' : item.trim()
+        const item_add = (sep_new) => {
+            result = false;
+            if (sep_new == '') {
+                // ignore
+            } else if (exist_sep(sep_new)) {
+                alert(`O nome '${sep_new}' já está na lista.`);
+            } else {
+                sortList(addedItems, sep_new);
+                sortList(selectList, sep_new);
+                activeRow.data[col_sep_new] = sep_new
+                api.refreshCells({ rowIndex: activeRow.rowIndex, force: true })
+                result = true;
+            }
+            return result;
+        }
+        const grid_add = () => {
+            let sep_new = trim_it(prompt('Informe o nome do SEP a ser adicionado'))
+            item_add(sep_new)
+        }
+        const grid_edit = () => {
+            const celllValue = trim_it(activeRow == null ? null : activeRow.data[col_sep_new]);
+            if (celllValue == '') {
+                alert('Clique na coluna [Novo SEP] da linha que contém o novo SEP novo que deseja editar.')
+            } else if (initialList.includes(celllValue) || ignoreList.includes(celllValue)) {
+                alert('Somente SEP adicionados podem ser editados.')
+            } else {
+                let sep_new = trim_it(prompt('Informe o nome do SEP (branco para remover)', celllValue))
+                if (sep_new !== celllValue) {
+                    // remove old
+                    selectList = selectList.filter(item => item !== celllValue);
+                    addedItems = addedItems.filter(item => item !== celllValue);
+                    item_add(sep_new)
+                }
+            }
+        }
+        const myGridElement = document.querySelector('#grid_container');
+        api = agGrid.createGrid(myGridElement, gridOptions);
     </script>
     {% endblock dlg_blc_javascript %}
 

@@ -29,29 +29,29 @@ from carranca import create_app, started  # see __init__.py
 
 app = create_app(app_name)
 
-from .Shared import shared
-shared.display.info("All mandatory information has been checked and is available. The app is ready to run.")
+from .Sidekick import sidekick
+sidekick.display.info("All mandatory information has been checked and is available. The app is ready to run.")
 
 # Keep shared alive within app
-shared.keep(app)
-shared.display.info("The session 'shared' variable is now ready.")
-if shared.config.APP_DISPLAY_DEBUG_MSG:
-    print(repr(shared))
+sidekick.keep(app)
+sidekick.display.info("The session 'sidekick' variable is now ready.")
+if sidekick.config.APP_DISPLAY_DEBUG_MSG:
+    print(repr(sidekick))
 
 
 # Keep shared alive within app
-if shared.config.APP_DISPLAY_DEBUG_MSG and True:
+if sidekick.config.APP_DISPLAY_DEBUG_MSG and True:
     from .public.debug_info import get_debug_info
 
-    di = get_debug_info(app, shared.config.copy())  # TODO, print
+    di = get_debug_info(app, sidekick.config.copy())  # TODO, print
 
 from .public.debug_info import get_debug_info
 
-get_debug_info(app, shared.config)  # TODO, print
+get_debug_info(app, sidekick.config)  # TODO, print
 
 # Tell everybody how quick we are
 elapsed = (time.perf_counter() - started) * 1000
-shared.display.info(f"{app_name} is now ready for the trip. It took {elapsed:,.0f}ms to create it.")
+sidekick.display.info(f"{app_name} is now ready for the trip. It took {elapsed:,.0f}ms to create it.")
 
 
 if __name__ == "__main__":

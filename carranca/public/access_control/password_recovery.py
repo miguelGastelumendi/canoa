@@ -27,7 +27,7 @@ from ..wtforms import PasswordRecoveryForm
 
 
 def password_recovery():
-    from ...Shared import shared
+    from ...Sidekick import sidekick
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_RECOVERY.value
     tmpl_form, template, tmpl_form, texts = init_form_vars()
@@ -45,13 +45,13 @@ def password_recovery():
             pass
         elif record_to_update is None:
             add_msg_error('emailNotRegistered', texts)
-        elif not is_external_ip_ready(shared.config):
+        elif not is_external_ip_ready(sidekick.config):
             add_msg_error('noExternalIP', texts)
         else:
             task_code += 1  # 5
             token = secrets.token_urlsafe()
             task_code += 1  # 6
-            url = f"http://{shared.config.SERVER_EXTERNAL_IP}{shared.config.SERVER_EXTERNAL_PORT}{public_route(public_route__password_reset, token= token)}"
+            url = f"http://{sidekick.config.SERVER_EXTERNAL_IP}{sidekick.config.SERVER_EXTERNAL_PORT}{public_route(public_route__password_reset, token= token)}"
             task_code += 1  # 7
             send_email(send_to, 'passwordRecovery_email', {'url': url})
             task_code += 1  # 8

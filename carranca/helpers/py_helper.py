@@ -8,13 +8,13 @@
 
 # cSpell:ignore latin CCITT
 
-import copy
 import time
 import platform
 from sys import argv
 from datetime import datetime
-from typing import Dict, Any, Type, Tuple
+from typing import Any, Type, Tuple
 
+# https://docs.python.org/3/library/platform.html#platform.system
 OS_NAME_IS = platform.system()
 OS_IS_WINDOWS = OS_NAME_IS == "Windows"
 OS_IS_LINUX = OS_NAME_IS == "Linux"
@@ -38,6 +38,13 @@ def to_str(s: str) -> str:
     Returns the argument as a string, striping spaces
     """
     return "" if is_str_none_or_empty(s) else (s + "").strip()
+
+
+# initialize special attributes
+def as_bool(val: Any, val_if_none: bool | None = False) -> bool:
+    # fmt: off
+    return (val_if_none if val is None else str(val).lower() in ["1", "t", str(True).lower(),])
+    # fmt: on
 
 
 def strip_and_ignore_empty(s: str, sep=",", max_split=-1) -> list[str]:

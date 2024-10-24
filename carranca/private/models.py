@@ -17,7 +17,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text
 from sqlalchemy.ext.declarative import declarative_base
 
 from carranca import Session
-from ..Shared import shared
+from ..Sidekick import sidekick
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
 Base = declarative_base()
@@ -115,7 +115,7 @@ class UserDataFiles(Base):
             msg_error = (
                 f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
             )
-            shared.app_log.error(msg_error)
+            sidekick.app_log.error(msg_error)
             raise DatabaseError(msg_error)
         finally:
             session.close()

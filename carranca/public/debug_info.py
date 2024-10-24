@@ -7,17 +7,17 @@
 """
 
 # cSpell:ignore sqlalchemy
-import os
-import flask
-import platform
-import sqlalchemy
-import importlib.metadata
-
 from typing import List, Tuple
 
 
 def get_debug_info(app, config) -> List[Tuple[str, str]]:
     from ..helpers.py_helper import coalesce, is_str_none_or_empty
+    from os import getcwd
+    from flask import __version__ as flask_version
+    from jinja2 import __version__ as jinja2_version
+    from platform import python_version, uname
+    from sqlalchemy import __version__ as sqlalchemy_v
+    from flask_login import __version__ as flask_login_version
 
     """App & and main packages version"""
     result = []
@@ -34,44 +34,44 @@ def get_debug_info(app, config) -> List[Tuple[str, str]]:
     _add(f"{config.APP_NAME} Configuration", "")
     _add("Version", config.APP_VERSION)
     _add("Mode", config.APP_MODE)
-    _add("Debug", config.APP_DEBUG)
-    _add("Debug Messages", config.APP_DEBUG)
+    _add("Debug", config.debugging)
+    _add("Debug Messages", config.APP_DISPLAY_DEBUG_MSG)
 
     _add("Page Compression", config.APP_MINIFIED)
     _add("App root folder", config.ROOT_FOLDER)
     _add("Database address", config.SQLALCHEMY_DATABASE_URI)
-    _add("Server address", config.SERVER_ADDRESS)
+    _add("Server 'name'", config.SERVER_NAME)
     _add("External address ", coalesce(config.SERVER_EXTERNAL_IP, "<set on demand>"))
     _add("External port", coalesce(config.SERVER_EXTERNAL_PORT, "<none>"))
 
-    _add("Main package versions", "")
-    _add("Python", platform.python_version())
-    _add("SQLAlchemy", sqlalchemy.__version__)
-    _add("Flask", flask.__version__)
-    _add("Flask Login", flask.__version__)
-    _add("Jinja2", importlib.metadata.version("jinja2"))
+    _add("Main versions", "")
+    _add("OS", f"{uname().system} v {uname().version} on {uname().node}")
+    _add("Python", python_version())
+    _add("Flask Login", flask_login_version)
+    _add("SQLAlchemy", sqlalchemy_v)
+    _add("Jinja2", jinja2_version)
+    _add("Flask", flask_version)
 
     _add("Flask", "")
     _add("Name", app.name)
     _add("DEBUG", app.debug)
     _add("TESTING", app.testing)
-    _add("SECRET_KEY", ("" if is_str_none_or_empty(app.secret_key) else "*******"))
+    _add("SECRET_KEY", ("" if is_str_none_or_empty(app.secret_key) else "*"*11))
     _add("Root Path", app.root_path)
     _add("Template Folder", app.template_folder)
     _add("Static Folder", app.static_folder)
-
-    _add("OS Path", os.getcwd())
+    _add("Current working dir", getcwd())
 
     if True:
-        from ..Shared import shared
+        from ..Sidekick import sidekick
 
         for name, value in result:
             kind, v = (
-                (shared.display.Kind.SIMPLE, ": " + value)
+                (sidekick.display.Kind.SIMPLE, ": " + value)
                 if value
-                else (shared.display.Kind.INFO, "_" * vl)
+                else (sidekick.display.Kind.INFO, "_" * vl)
             )
-            shared.display.print(kind, f"{name.rjust(ml)}{v}", "", False)
+            sidekick.display.print(kind, f"{name.rjust(ml)}{v}", "", False)
 
     # max_len_first = max(len(first) for first, _ in tuples)
     # max_len_second = max(len(second) for _, second in tuples)

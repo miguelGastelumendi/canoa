@@ -24,7 +24,7 @@ from ...helpers.py_helper import (
 from ...helpers.user_helper import now
 from ...helpers.file_helper import change_file_ext
 from ...helpers.error_helper import ModuleErrorCode
-from ...Shared import shared
+from ...Sidekick import sidekick
 
 
 async def _run_validator(
@@ -52,9 +52,9 @@ async def _run_validator(
 
     if debug_validator and not is_str_none_or_empty(d_v.flag_debug):
         run_command.append(d_v.flag_debug)
-        shared.app_log.info(" ".join(run_command))
+        sidekick.app_log.info(" ".join(run_command))
     else:
-        shared.app_log.debug(" ".join(run_command))
+        sidekick.app_log.debug(" ".join(run_command))
 
     # Run the script command asynchronously
     stdout = None
@@ -70,7 +70,7 @@ async def _run_validator(
 
     except Exception as e:
         err_msg = f"{d_v.ui_name}.running: {e}"
-        shared.app_log.critical(err_msg)
+        sidekick.app_log.critical(err_msg)
         return "", err_msg
 
     # Decode the output from bytes to string
@@ -151,7 +151,7 @@ def submit(cargo: Cargo) -> Cargo:
         if not path.exists(final_report_full_name):
             task_code += 1  # 6
             raise Exception(
-                f"\n{shared.app_name}: Report was not found.\n » {_cfg.d_v.ui_name}.stderr:\n{std_err_str}\n » {_cfg.d_v.ui_name}.stdout:\n {std_out_str}\n » End."
+                f"\n{sidekick.app_name}: Report was not found.\n » {_cfg.d_v.ui_name}.stderr:\n{std_err_str}\n » {_cfg.d_v.ui_name}.stdout:\n {std_out_str}\n » End."
             )
         elif stat(final_report_full_name).st_size < 200:
             task_code += 2  # 7
@@ -167,7 +167,7 @@ def submit(cargo: Cargo) -> Cargo:
     except Exception as e:
         error_code = task_code
         msg_exception = str(e)
-        shared.app_log.fatal(msg_exception, exc_info=error_code)
+        sidekick.app_log.fatal(msg_exception, exc_info=error_code)
     finally:
         try:
             if cargo.receive_file_cfg.remove_report:
@@ -177,16 +177,16 @@ def submit(cargo: Cargo) -> Cargo:
                 pass  # rename and move?
 
         except:
-            shared.app_log.warn("The communication folders between apps were *not* deleted.")
+            sidekick.app_log.warn("The communication folders between apps were *not* deleted.")
 
     # goto email.py
     error_code = 0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT
     if error_code == 0:
-        shared.display.info(
+        sidekick.display.info(
             f"submit: The unzipped files were submitted to '{_cfg.d_v.ui_name}' and a report was generated."
         )
     else:
-        shared.app_log.error(
+        sidekick.app_log.error(
             f"There was a problem submitting the files to '{_cfg.d_v.ui_name}'. Error code [{error_code}]."
         )
 

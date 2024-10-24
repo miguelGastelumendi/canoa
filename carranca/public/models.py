@@ -17,7 +17,7 @@ from flask_login import UserMixin
 # from sqlalchemy.orm import Session
 # from flask_sqlalchemy import SQLAlchemy
 
-from ..Shared import shared
+from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
 
@@ -73,7 +73,7 @@ def get_user_where(**kwargs: Any) -> Any:
             user = records.first()
         else:
             msg = f"The selection return {records.count()} users, expect one or none."
-            shared.app_log.error(msg)
+            sidekick.app_log.error(msg)
             raise KeyError(msg)
     finally:
         session.close()

@@ -8,11 +8,11 @@
 _jinja_pre_template_mark = '^'
 
 def _jinja_pre_template(val: str) -> str:
-    from ..Shared import shared
+    from ..Sidekick import sidekick
     text = val
     try:
         # Create a template from the value
-        template = shared.app.jinja_env.from_string(val)
+        template = sidekick.app.jinja_env.from_string(val)
         text= template.render()
 
         return text

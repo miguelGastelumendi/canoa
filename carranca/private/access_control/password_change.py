@@ -22,7 +22,7 @@ from ...helpers.route_helper import (
     get_account_form_data,
 )
 from ...public.models import get_user_where
-from ...Shared import shared
+from ...Sidekick import sidekick
 from ..wtforms import ChangePassword
 
 
@@ -44,8 +44,8 @@ def do_password_change():
 
         if is_get:
             pass
-        elif not shared.config.len_val_for_pw.check(password):
-            add_msg_error('invalidPassword', texts, shared.config.len_val_for_pw.min, shared.config.len_val_for_pw.max)
+        elif not sidekick.config.len_val_for_pw.check(password):
+            add_msg_error('invalidPassword', texts, sidekick.config.len_val_for_pw.min, sidekick.config.len_val_for_pw.max)
         elif password != confirm_password:
             add_msg_error('passwordsAreDifferent', texts)
         elif user is None:
