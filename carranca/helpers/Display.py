@@ -105,7 +105,7 @@ class Display:
         try:
             # https://en.wikipedia.org/wiki/ANSI_escape_code#DOS_and_Windows
             # Since 2016! Windows 10 version 1511
-            os_color = False if OS_IS_WINDOWS and int(uname().version.split(".")[0]) < 10 else True
+            os_color = OS_IS_WINDOWS and int(uname().version.split(".")[0]) > 9
         except:
             os_color = not OS_IS_WINDOWS
 
