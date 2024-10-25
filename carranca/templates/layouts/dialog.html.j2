@@ -39,13 +39,8 @@ mgd
                {% endblock dlg_blc_body %}
             </div>
             <div class="modal-footer justify-content-center {{dlg_cls_footer}}">
-               {% block dlg_blc_footer_left %}
-               {% endblock dlg_blc_footer_left %}
-                <form action="{{ public_route('login') }}" method="GET">
-                    <button type="submit" class="btn btn-primary {{dlg_cls_btnOk}}">{{(dlg_var_ok_text | default("OK"))}}</button>
-                </form>
-               {% block dlg_blc_footer_right %}
-               {% endblock dlg_blc_footer_right %}
+               {% block dlg_blc_footer %}
+               {% endblock dlg_blc_footer %}
             </div>
          </div>
       </div>

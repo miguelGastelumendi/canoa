@@ -1,38 +1,67 @@
-{# receive_file.html.j2 (mgd) #}
+{#
+profile_mgmt.html.j2
 
-{% extends "./layouts/grid.html.j2" %}
+Managed & Displays a grid with sep profile
 
-{% block frm_blc_above %}
-    {% if msgSuccess %}
-        <div class="d-grid">
-            <button type="button" class="btn formMainBtn"
-                onclick="window.location.href='{{ private_route('home') }}'">{{ successButton }}</button>
+mgd
+#}
+
+{% set dlg_var_close= true %}
+{% set dlg_var_ok_text = "Salvar" %}
+{% set dlg_var_vCentered= true %}
+{% set dlg_cls_header= 'formHeader' %}
+{% set dlg_cls_title= 'formTitle' %}
+{% set dlg_cls_size= 'modal-xl' %} {# Size: sm, <>, lg, xl #}
+
+    {% set dlg_cls_top= 'mt-6' %}
+    {% set dlg_cls_footer= '' %} {# collapse, #}
+    {% set dlg_js_frm= '' %}
+
+    {% extends "./layouts/dialog.html.j2" %}
+
+    {% block base_blc_head_js %}
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    {% endblock base_blc_head_js %}
+
+    {% block dlg_blc_body %}
+
+
+    <div id="grid_container" class="ag-theme-quartz" style="height: 500px"></div>
+
+    {% endblock dlg_blc_body %}
+
+    {% block dlg_blc_footer %}
+    <div class="mb-3 row">
+        <div class="col-auto">
+            <button type="button" onclick="grid_add()" class="formMainBtn">{{(grd_var_add_text |
+                default("Adicionar"))}}</button>
         </div>
-    {% endif %}
-{% endblock frm_blc_above %}
-
-{% block frm_blc_content %}
-    {% if not msgSuccess %}
-        <div class="form-group mb-3">
-            <label class="formLabel" inert for={{ id }}>{{ fileLabel }}</label>
-            <div class="input-group">
-                <span class="input-group-text">
-                    <span class="fa fa-upload fa-lg"></span>
-                </span>
-                {# {{ form.filename() }} #}
-            </div>
+        <div class="col-auto">
+            <button type="button" onclick="grid_edit()" class="formMainBtn">{{(grd_var_edit_text |
+                default("Editar"))}}</button>
         </div>
-        <div class="form-group mb-3">
-            <label class="formLabel" inert for={{ id }}>{{ urlLabel }}</label>
-            <div class="input-group">
-                <span class="input-group-text">
-                    <span class="fa fa-cloud-upload fa-lg"></span>
-                </span>
-                {# {{ form.urlname(class="form-control") }} #}
-            </div>
+        <div class="col-auto">
+            <form id="hiddenForm" onsubmit="return gridCargo('{{gridData}}')" method="POST" action="{{private_route('profile_mgmt')}}">
+                <input type="hidden" name="{{gridData}}" id="{{gridData}}">
+                <input type="hidden" name="{{gridKey}}" value="{{gridValue}}">
+                <input type="submit" style="display:none;">
+                <button type="submit" class="formMainBtn">{{(grd_var_save_text | default("Salvar"))}}</button>
+            </form>
         </div>
-    {% endif %}
-{% endblock frm_blc_content %}
+    </div>
+    {% endblock dlg_blc_footer %}
+    {% block dlg_blc_javascript %}
+    <script>
+        const itemNone = '{{ itemNone }}';
+        const itemRemove = '{{ itemRemove }}';
+        const usersSep = {{ usersSep | tojson }};
+        const usedList = usersSep.map(item => item.sep)
+        const initialList = {{ sepList | tojson }};
+        const ignoreList = [itemRemove, itemNone];
+        const col_sep_new = 'sep_new';
+        const cols_header = ['Sectorista', 'SEP Atual', 'Novo SEP', 'Atribuído'];
 
-
-{# eof #}
+    </script>
+    <script src="/static/js/profile_mgmt.js"></script>
+    {% endblock dlg_blc_javascript %}
+    {# eof #}

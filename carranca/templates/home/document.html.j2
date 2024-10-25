@@ -23,4 +23,10 @@
 {{ documentBody | safe }}
 {% endblock dlg_blc_body %}
 
+{% block dlg_blc_footer %}
+<form action="{{ public_route('login') }}" method="GET">
+    <button type="submit" class="btn btn-primary {{dlg_cls_btnOk}}" style="min-width: 8em;">{{(doc_var_ok_text | default("OK"))}}</button>
+</form>
+{% endblock dlg_blc_footer %}
+
 {# eof #}

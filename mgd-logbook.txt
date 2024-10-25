@@ -40,6 +40,10 @@ TODO:
   Logbook
   Atualizar versão em: BaseConfig.py e db.ui_items.body[89]
 -----------------------------------------------------------
+
+2024-10-24 β 3.7
+    - Grid, save SEP 20%
+
 2024-10-24 β 3.6
     - Grid, add/edit SEP 90%
 

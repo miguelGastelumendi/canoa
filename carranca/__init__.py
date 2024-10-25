@@ -131,7 +131,10 @@ def _register_db(app):
 
     @app.teardown_request
     def shutdown_session(exception=None):
-        Session.remove()
+        try:
+            Session.remove()
+        except Exception as e:
+            print(f"An error ocurred removing the current session [{Session}]. Error [{e}].")
 
 
 # ---------------------------------------------------------------------------- #

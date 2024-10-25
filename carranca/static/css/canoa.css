@@ -1,5 +1,5 @@
 /* ============================================
- *     carranca\static\css\canoa.css
+ *  carranca\static\css\canoa.css
  *
  *  2024-02-12
  *  Miguel Gastelumendi -- mgd
@@ -24,7 +24,7 @@ body {
 
 
 /* ============================================
- *     carranca\templates\layouts\dialog.tmpl
+ *  carranca\templates\layouts\dialog.tmpl
  * ============================================ */
 
 .dlgShow {
@@ -40,7 +40,31 @@ body {
 
 
 /* ============================================
- *     carranca\templates\layouts\form.html
+ *  carranca\templates\layouts\grid.html.j2
+ * ============================================ */
+
+.grd-item-exist {
+    background: coral;
+}
+
+.grd-item-remove {
+    color: firebrick;
+}
+
+.grd-item-none {
+    color: darkgrey;
+}
+
+.grd-item-added {
+    color: limegreen;
+}
+
+.grd-col-sep_new {
+    background-color: azure;
+}
+
+/* ============================================
+ *  carranca\templates\layouts\form.html
  * ============================================ */
 .formHeader {
    background-color: var(--titleBackColor);
