@@ -112,14 +112,11 @@ class UserDataFiles(Base):
         except Exception as e:
             session.rollback()
             operation = "update" if isUpdate else "insert to"
-            msg_error = (
-                f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
-            )
+            msg_error = f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
             sidekick.app_log.error(msg_error)
             raise DatabaseError(msg_error)
         finally:
             session.close()
-
 
     # Public insert/update
     def insert(uTicket: str, **kwargs) -> None:
@@ -143,15 +140,12 @@ class MgmtUser(Base):
         msg_error = None
         session = Session()
         try:
-            def _item(id: int, name: str):
-                return {"id": id, "name": name}
-
             sep_list = [
-                _item(sep.id, sep.name)
-                for sep in session.execute(text(f"SELECT id, name FROM vw_mgmt_sep ORDER BY name")).fetchall()
+                {"id": sep.id, "name": sep.name}
+                for sep in session.execute(
+                    text(f"SELECT id, name FROM vw_mgmt_sep ORDER BY name")
+                ).fetchall()
             ]
-            # sep_list.append(_item(0, item_none))
-
             users_sep = [
                 {
                     "id": usr.id,
@@ -168,6 +162,27 @@ class MgmtUser(Base):
             session.close()
 
         return users_sep, sep_list, msg_error
+
+    def save_grid_view(remove_list, update_list) -> str:
+
+        msg_error = None
+        session = Session()
+        try:
+            for user_data in remove_list:
+                user = session.query(MgmtUser).filter_by(id=user_data["id"]).one_or_none()
+            if user:
+                user.sep_new = user_data["sep_new"]
+            else:
+                print(f"User with ID {user_data['id']} not found.")
+
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            msg_error = str(e)
+        finally:
+            session.close()
+
+        return msg_error
 
 
 # eof

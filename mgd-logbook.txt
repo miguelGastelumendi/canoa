@@ -10,6 +10,7 @@ TODO:
         c. replace db_helper.persist_record with Users.update
         d. if template not ready use Error Template
         e. Always send Success & Error message to forms, if error -> alert -> close -> [!] -> display again
+        f. Standardize css class names as my-class-name
         0. About title
         1. β 2.17
         2. Set User Name in e-mail
@@ -40,6 +41,9 @@ TODO:
   Logbook
   Atualizar versão em: BaseConfig.py e db.ui_items.body[89]
 -----------------------------------------------------------
+
+2024-10-25 β 3.8
+    - Grid, save SEP 60%
 
 2024-10-24 β 3.7
     - Grid, save SEP 20%

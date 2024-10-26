@@ -33,19 +33,19 @@ mgd
     {% block dlg_blc_footer %}
     <div class="mb-3 row">
         <div class="col-auto">
-            <button type="button" onclick="grid_add()" class="formMainBtn">{{(grd_var_add_text |
+            <button type="button" onclick="gridAdd()" class="formMainBtn">{{(grdBtnAdd |
                 default("Adicionar"))}}</button>
         </div>
         <div class="col-auto">
-            <button type="button" onclick="grid_edit()" class="formMainBtn">{{(grd_var_edit_text |
+            <button type="button" onclick="gridEdit()" class="formMainBtn">{{(grdBtnEdit |
                 default("Editar"))}}</button>
         </div>
         <div class="col-auto">
-            <form id="hiddenForm" onsubmit="return gridCargo('{{gridData}}')" method="POST" action="{{private_route('profile_mgmt')}}">
-                <input type="hidden" name="{{gridData}}" id="{{gridData}}">
-                <input type="hidden" name="{{gridKey}}" value="{{gridValue}}">
+            <form id="hiddenForm" onsubmit="return gridCargo('{{gridRsp}}')" method="POST" action="{{private_route('profile_mgmt')}}">
+                <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
+                <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
                 <input type="submit" style="display:none;">
-                <button type="submit" class="formMainBtn">{{(grd_var_save_text | default("Salvar"))}}</button>
+                <button type="submit" class="formMainBtn">{{(grdBtnSave | default("Salvar"))}}</button>
             </form>
         </div>
     </div>
@@ -57,9 +57,8 @@ mgd
         const usersSep = {{ usersSep | tojson }};
         const usedList = usersSep.map(item => item.sep)
         const initialList = {{ sepList | tojson }};
-        const ignoreList = [itemRemove, itemNone];
-        const col_sep_new = 'sep_new';
-        const cols_header = ['Sectorista', 'SEP Atual', 'Novo SEP', 'Atribuído'];
+        const colSepNew = 'sep_new';
+        const colHeaders = ['Sectorista', 'SEP Atual', 'Novo SEP', 'Atribuído'];
 
     </script>
     <script src="/static/js/profile_mgmt.js"></script>

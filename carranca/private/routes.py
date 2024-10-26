@@ -29,15 +29,8 @@ bp_private = Blueprint(bp_name(base_route_private), base_route_private, url_pref
 # === Test _ route ========================================
 @bp_private.route("/test_route")
 def test_route():
-    from ..helpers.dwnLd_goo_helper import download_public_google_file
 
-    i = download_public_google_file(
-        # "https://drive.google.com/file/d/1iXyDi-NcGIobY0NY-fOQ34Ew-gcS0PzY/view?usp=sharing" #zip com pw
-        # 'https://drive.google.com/file/d/1k4fW92-QGwp9SfMdHEE4WIFkKMJla763/view?usp=sharing'   #zipped
-        "https://drive.google.com/file/d/1H0BfjYJrf0p_ehqDoUH0wXIJzbAXwUKd/view?usp=sharing",  # argow.zipped
-        "./uploaded_files/",
-    )
-    return str(i)
+    return
 
 
 # === routes =============================================
