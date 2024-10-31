@@ -130,11 +130,11 @@ class MgmtUser(Base):
     __tablename__ = "vw_mgmt_user_sep"
 
     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100))
-    sep = Column(String(100), unique=True)
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_name = Column(String(100))
+    sep_name = Column(String(100), unique=True)
     sep_new = Column(String(100))
-    when = Column(DateTime)
+    assigned_at = Column(DateTime)
 
     def get_grid_view(item_none: str) -> Tuple[List[Any], List[Tuple[str, str]], str]:
         msg_error = None
@@ -143,16 +143,16 @@ class MgmtUser(Base):
             sep_list = [
                 {"id": sep.id, "name": sep.name}
                 for sep in session.execute(
-                    text(f"SELECT id, name FROM vw_mgmt_sep ORDER BY name")
+                    text(f"SELECT id, name FROM sep ORDER BY name")
                 ).fetchall()
             ]
             users_sep = [
                 {
-                    "id": usr.id,
-                    "name": usr.name,
-                    "sep": item_none if usr.sep is None else usr.sep,
+                    "user_id": usr.user_id,
+                    "user_name": usr.user_name,
+                    "sep_name": item_none if usr.sep_name is None else usr.sep_name,
                     "sep_new": item_none,
-                    "when": usr.when,
+                    "when": usr.assigned_at,
                 }
                 for usr in session.scalars(select(MgmtUser)).all()
             ]

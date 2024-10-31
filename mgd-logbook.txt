@@ -42,6 +42,9 @@ TODO:
   Atualizar versão em: BaseConfig.py e db.ui_items.body[89]
 -----------------------------------------------------------
 
+2024-10-28,31 β 3.9
+    - Grid, save SEP 90%, db ready
+
 2024-10-25 β 3.8
     - Grid, save SEP 60%
 

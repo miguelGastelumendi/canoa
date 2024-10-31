@@ -2,7 +2,7 @@
  * @preserve
  * profile_mgmt.js
  * version 0.2
- * 2023.10.18 -- 24
+ * 2023.10.18 -- 31
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -33,10 +33,10 @@ const gridOptions = {
     onCellFocused: (event) => { activeRow = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex); }
     , rowData: usersSep
     , columnDefs: [
-        { field: "id", flex: 1, hide: true },
-        { field: "name", headerName: colHeaders[0], flex: 1 },
+        { field: "user_id", flex: 1, hide: true },
+        { field: "user_name", headerName: colHeaders[0], flex: 1 },
         {
-            field: "sep",
+            field: "sep_name",
             headerName: colHeaders[1],
             flex: 2,
             cellClassRules: {

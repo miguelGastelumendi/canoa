@@ -35,6 +35,7 @@ def do_profile_mgmt() -> str:
         sep_name_list = [sep["name"] for sep in sep_list]
         tmpl = render_template(template, usersSep=users_sep, sepList=sep_name_list, **texts)
     elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
+        # TODO: error
         pass
     else:
         gridResponse = request.form.get(js_grid_rsp)
@@ -62,7 +63,7 @@ def _apply_data(grid_response: dict) -> Tuple[str, str]:
         problem = []
         none = 0
         grid = grid_response["grid"]
-        seps = [item["sep"] for item in grid]
+        seps = [item["sep_name"] for item in grid]
         task_code += 1
         for item in grid:
             sep_new = item["sep_new"]
@@ -70,7 +71,7 @@ def _apply_data(grid_response: dict) -> Tuple[str, str]:
                 none += 1
             elif sep_new != str_remove:  # new sep
                 assign.append(item)
-            elif item["sep"] != str_none:  # ignore remove none
+            elif item["sep_name"] != str_none:  # ignore remove none
                 remove.append(item)
 
         msg_error = MgmtUser.save_grid_view(remove, assign)
