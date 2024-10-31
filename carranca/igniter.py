@@ -161,7 +161,7 @@ def _check_mandatory_keys(config) -> str:
 
 
 # ---------------------------------------------------------------------------- #
-def _ignite_server_name(config) -> Tuple[any, str]:
+def _ignite_SERVER_ADDRESS(config) -> Tuple[any, str]:
     """Confirm validity of the server address"""
     msg_error = None
     try:
@@ -170,26 +170,26 @@ def _ignite_server_name(config) -> Tuple[any, str]:
 
         Address = namedtuple("Address", "host, port")
 
-        try_url = f"http://{config.SERVER_NAME}"
+        try_url = f"http://{config.SERVER_ADDRESS}"
         url = urlparse(try_url)
 
         address = Address(url.hostname, url.port)
         if is_str_none_or_empty(address.host) or (address.port == 0):
-            msg_error = f"Invalid host or port address found in [{config.SERVER_NAME}], parsed: {address.host}:{address.port}`."
+            msg_error = f"Invalid host or port address found in [{config.SERVER_ADDRESS}], parsed: {address.host}:{address.port}`."
         else:
-            config.SERVER_NAME = f"{address.host}:{address.port}"
+            config.SERVER_ADDRESS = f"{address.host}:{address.port}"
             scheme = (
                 ""
                 if is_str_none_or_empty(config.PREFERRED_URL_SCHEME)
                 else f"{config.PREFERRED_URL_SCHEME}://"
             )
-            fuse.display.info(f"The Flask Server Address address will be '{scheme}{config.SERVER_NAME}'.")
+            fuse.display.info(f"The Flask Server Address address will be '{scheme}{config.SERVER_ADDRESS}'.")
 
     except Exception as e:
         fuse.display.error(f"`urlparse({try_url}) -> parsed: {address.host}:{address.port}`")
         msg_error = _error_msg.format(
             __name__,
-            f"parsing server address. Expect value is [HostName:Port], found: [{config.SERVER_NAME}]",
+            f"parsing server address. Expect value is [HostName:Port], found: [{config.SERVER_ADDRESS}]",
             e,
         )
 

@@ -17,7 +17,7 @@ from .main import app_name
 from .helpers.py_helper import is_str_none_or_empty
 
 
-CONFIG_MANDATORY_KEYS = ["SQLALCHEMY_DATABASE_URI", "SERVER_NAME", "SECRET_KEY", "APP_MODE"]
+CONFIG_MANDATORY_KEYS = ["SQLALCHEMY_DATABASE_URI", "SERVER_ADDRESS", "SECRET_KEY", "APP_MODE"]
 
 # === Available app/config modes, add yours own mode here (extend)
 app_mode_production: str = "Production"  # capital P
@@ -41,7 +41,7 @@ class BaseConfig(Config):
     APP_NAME = app_name
 
     # &beta; major.minor.patch
-    APP_VERSION = "β 3.8"
+    APP_VERSION = "β 3.9"
 
     """ Canoa Configurations
         --------------------------

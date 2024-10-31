@@ -40,7 +40,7 @@ def get_debug_info(app, config) -> List[Tuple[str, str]]:
     _add("Page Compression", config.APP_MINIFIED)
     _add("App root folder", config.ROOT_FOLDER)
     _add("Database address", config.SQLALCHEMY_DATABASE_URI)
-    _add("Server 'name'", config.SERVER_NAME)
+    _add("Server 'name'", config.SERVER_ADDRESS)
     _add("External address ", coalesce(config.SERVER_EXTERNAL_IP, "<set on demand>"))
     _add("External port", coalesce(config.SERVER_EXTERNAL_PORT, "<none>"))
 

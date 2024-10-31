@@ -43,7 +43,7 @@ TODO:
 -----------------------------------------------------------
 
 2024-10-28,31 β 3.9
-    - Grid, save SEP 90%, db ready
+    - Grid, save SEP 90%, db ready, remove SERVER_NAME
 
 2024-10-25 β 3.8
     - Grid, save SEP 60%

@@ -104,7 +104,7 @@ class DevelopmentConfig(DynamicConfig):
     APP_DEBUG = True
     APP_PROPAGATE_DEBUG = True
 
-    SERVER_NAME = "127.0.0.1:5000"
+    SERVER_ADDRESS = "127.0.0.1:5000"
 
 
 # Production Config
@@ -116,7 +116,7 @@ class ProductionConfig(DynamicConfig):
     APP_MODE = app_mode_production
     APP_DEBUG = False
     APP_PROPAGATE_DEBUG = False
-    SERVER_NAME = "192.168.0.1:54754"
+    SERVER_ADDRESS = "192.168.0.1:54754"
 
 
 # Config factory by mode, add others
