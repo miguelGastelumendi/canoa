@@ -161,7 +161,7 @@ def _check_mandatory_keys(config) -> str:
 
 
 # ---------------------------------------------------------------------------- #
-def _ignite_SERVER_ADDRESS(config) -> Tuple[any, str]:
+def _ignite_server_name(config) -> Tuple[any, str]:
     """Confirm validity of the server address"""
     msg_error = None
     try:
