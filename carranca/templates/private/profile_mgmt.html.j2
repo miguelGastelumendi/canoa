@@ -41,7 +41,8 @@ mgd
                 default("Editar"))}}</button>
         </div>
         <div class="col-auto">
-            <form id="hiddenForm" onsubmit="return gridCargo('{{gridRsp}}')" method="POST" action="{{private_route('profile_mgmt')}}">
+            <form id="hiddenForm" onsubmit="return gridCargo('{{gridRsp}}')" method="POST"
+                action="{{private_route('profile_mgmt')}}">
                 <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
                 <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
                 <input type="submit" style="display:none;">
@@ -58,6 +59,7 @@ mgd
         const usedList = usersSep.map(item => item.sep)
         const initialList = {{ sepList | tojson }};
         const colSepNew = 'sep_new';
+        const colSepOld = 'sep_name';
         const colHeaders = ['Sectorista', 'SEP Atual', 'Novo SEP', 'Atribuído'];
 
     </script>

@@ -20,5 +20,7 @@ var usersSep = /** @type {JSON} */ '';
 var itemNone = /** @type {string} */ '';
 var itemRemove = /** @type {string} */ '';
 var colSepNew = /** @type {string} */ '';
+var colSepOld = /** @type {string} */ '';
+
 
 /* eof */

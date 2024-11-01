@@ -36,12 +36,12 @@ const gridOptions = {
         { field: "user_id", flex: 1, hide: true },
         { field: "user_name", headerName: colHeaders[0], flex: 1 },
         {
-            field: "sep_name",
+            field: colSepOld,
             headerName: colHeaders[1],
             flex: 2,
             cellClassRules: {
                 'grd-item-none': params => params.value === itemNone,
-                'grd-item-exist': params => assignedList.includes(params.value),
+                'grd-item-exist': params => assignedList.includes(params.value) && (params.data[colSepNew] == itemNone),
             },
         },
         {
@@ -57,9 +57,10 @@ const gridOptions = {
             },
             cellEditor: 'agSelectCellEditor',
             cellEditorParams: params => {
-                let lst = [...selectList]
+                const sepOld = params.data[colSepOld]
+                let lst = [...selectList].filter(a => a != sepOld);
                 if (!lst.includes(params.value) && !ignoreList.includes(params.value)) { lst.push(params.value) }
-                lst = sortList(lst).concat(ignoreList)
+                lst = sortList(lst).concat((sepOld == itemNone) ? [itemNone] : ignoreList)
                 return { values: lst };
             },
             valueSetter: (params) => {
@@ -157,7 +158,7 @@ const sortList = (lst, newItem) => {
 };
 const need_refresh = (api, value) => {
     if (assignedList.includes(value)) {
-        setTimeout(() => { api.refreshCells({ columns: ['sep'], force: true }) }, 0)
+        setTimeout(() => { api.refreshCells({ columns: [colSepOld], force: true }) }, 0)
     }
 };
 const getPrompt = (msg, _default) => {

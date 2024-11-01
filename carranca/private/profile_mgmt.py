@@ -21,15 +21,15 @@ def do_profile_mgmt() -> str:
     js_grid_sec_key = "gridSecKey"
     js_grid_rsp = "gridRsp"
 
-    if is_get:
-        # Até criar ui_texts:
-        texts["itemNone"] = "(nenhum)"
-        texts["itemRemove"] = "(remover)"
-        # py/js communication
-        texts[js_grid_rsp] = js_grid_rsp
-        texts["gridSecValue"] = js_grid_sec_value
-        texts[js_grid_sec_key] = js_grid_sec_key
+    # Até criar ui_texts:
+    texts["itemNone"] = "(nenhum)"
+    texts["itemRemove"] = "(remover)"
+    # py/js communication
+    texts[js_grid_rsp] = js_grid_rsp
+    texts["gridSecValue"] = js_grid_sec_value
+    texts[js_grid_sec_key] = js_grid_sec_key
 
+    if is_get:
         users_sep, sep_list, msg_error = MgmtUser.get_grid_view(texts["itemNone"])
 
         sep_name_list = [sep["name"] for sep in sep_list]
@@ -41,7 +41,7 @@ def do_profile_mgmt() -> str:
         gridResponse = request.form.get(js_grid_rsp)
         grid_response = json.loads(gridResponse)
         msg_success, msg_error = _apply_data(grid_response)
-        print(grid_response)
+        # TODO show final, with email sent
 
     return tmpl
 
@@ -63,7 +63,6 @@ def _apply_data(grid_response: dict) -> Tuple[str, str]:
         problem = []
         none = 0
         grid = grid_response["grid"]
-        seps = [item["sep_name"] for item in grid]
         task_code += 1
         for item in grid:
             sep_new = item["sep_new"]

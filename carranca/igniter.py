@@ -183,6 +183,9 @@ def _ignite_server_name(config) -> Tuple[any, str]:
                 if is_str_none_or_empty(config.PREFERRED_URL_SCHEME)
                 else f"{config.PREFERRED_URL_SCHEME}://"
             )
+            # Flask Config
+            config.RUN_HOST = address.host
+            config.RUN_PORT = address.port
             fuse.display.info(f"The Flask Server Address address will be '{scheme}{config.SERVER_ADDRESS}'.")
 
     except Exception as e:

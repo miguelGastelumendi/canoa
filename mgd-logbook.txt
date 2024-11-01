@@ -42,8 +42,22 @@ TODO:
   Atualizar versão em: BaseConfig.py e db.ui_items.body[89]
 -----------------------------------------------------------
 
-2024-10-28,31 β 3.9
-    - Grid, save SEP 90%, db ready, remove SERVER_NAME
+------- 2024 - November ----------
+----------------------------------
+
+
+
+2024-11-
+    - TODO returno de error (com os dados do grid) e msg de ok
+
+------- 2024 - October -----------
+----------------------------------
+
+2024-10-31 β 3.10
+    - Grid, save SEP 100, Log 100%
+
+2024-10-28,31 β 3.9 a, b
+    - Grid, save SEP 90%, db ready, remove config.SERVER_NAME
 
 2024-10-25 β 3.8
     - Grid, save SEP 60%
@@ -123,7 +137,9 @@ TODO:
     - Args new Class
     - the igniter.py is almost ready (all main.py)
 
---- October ---
+
+------- 2024 - September ---------
+----------------------------------
 
 2024-09-30 β 2.27
     - __init__.py is now create_app.py
@@ -168,7 +184,9 @@ TODO:
     - Some comments & fixes in dwnLd_goo_helper.py
       for GoogleDrive download (My gd credential vanished)
 
---- September ---
+
+--------- 2024 - August ----------
+----------------------------------
 
 2024-08-24 β 2.19
     - Fix msg_error in submit.py
@@ -209,7 +227,9 @@ TODO:
     - Download load public files (*not* compressed) from Google Drive
     - Download load public compressed files from Google Drive 80%
 
---- August ---
+
+----------- 2024 - July ----------
+----------------------------------
 
 2024-07-30 vβ 2.12
     - New  [About]  x
@@ -300,6 +320,9 @@ TODO:
 
 2024-07.01 v β 1.7
     1. Fixed for Linux, sending to Windows to check
+
+----------- 2024 - June ----------
+----------------------------------
 
 2024-06-22 v β 1.6
     1.  Check all wtForms validators (create app_config.LenFor.name & pw)

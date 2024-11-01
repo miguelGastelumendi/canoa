@@ -28,7 +28,6 @@ class UserDataFiles(Base):
 
     # keys (register..on_ins)
     id = Column(Integer, primary_key=True, autoincrement=True)
-    id_users = Column(Integer)  # fk
     ticket = Column(String(40), unique=True)
     user_receipt = Column(String(14))
 
@@ -36,6 +35,7 @@ class UserDataFiles(Base):
     app_version = Column(String(12))
     process_version = Column(String(12))
 
+    id_users = Column(Integer)  # fk
     # file info (register..on_ins)
     file_crc32 = Column(Integer)
     file_name = Column(String(80))
@@ -142,9 +142,7 @@ class MgmtUser(Base):
         try:
             sep_list = [
                 {"id": sep.id, "name": sep.name}
-                for sep in session.execute(
-                    text(f"SELECT id, name FROM sep ORDER BY name")
-                ).fetchall()
+                for sep in session.execute(text(f"SELECT id, name FROM sep ORDER BY name")).fetchall()
             ]
             users_sep = [
                 {
@@ -164,21 +162,34 @@ class MgmtUser(Base):
         return users_sep, sep_list, msg_error
 
     def save_grid_view(remove_list, update_list) -> str:
-
         msg_error = None
         session = Session()
+        id = "user_id"
+
         try:
-            for user_data in remove_list:
-                user = session.query(MgmtUser).filter_by(id=user_data["id"]).one_or_none()
-            if user:
-                user.sep_new = user_data["sep_new"]
-            else:
-                print(f"User with ID {user_data['id']} not found.")
+
+            def _get_user(user_data: dict) -> MgmtUser | None:
+                id = user_data["user_id"]
+                user = session.query(MgmtUser).filter_by(user_id=id).one_or_none()
+                if user:
+                    return user
+                sidekick.app_log.error(f"{__name__}: User with ID {id} not found, cannot update.")
+
+            for user_data in remove_list:  # first remove
+                user = _get_user(user_data)
+                if user:
+                    user.sep_new = None
+
+            for user_data in update_list:  # then update
+                user = _get_user(user_data)
+                if user:
+                    user.sep_new = user_data["sep_new"]
 
             session.commit()
         except Exception as e:
             session.rollback()
             msg_error = str(e)
+            sidekick.app_log.error(f"Unable to commit data: [{msg_error}].")
         finally:
             session.close()
 
