@@ -129,12 +129,12 @@ def _register_db(app):
         which removes the session to prevent any lingering database connections or transactions.
     """
 
-    @app.teardown_request
-    def shutdown_session(exception=None):
-        try:
-            Session.remove()
-        except Exception as e:
-            print(f"An error ocurred removing the current session [{Session}]. Error [{e}].")
+    # @app.teardown_request
+    # def shutdown_session(exception=None):
+    #     try:
+    #         Session.remove()
+    #     except Exception as e:
+    #         print(f"An error ocurred removing the current session [{Session}]. Error [{e}].")
 
 
 # ---------------------------------------------------------------------------- #
@@ -169,7 +169,7 @@ def create_app(app_name: str):
     # -- app config
     from .helpers.py_helper import copy_attributes
 
-    #_config = copy_attributes(sidekick.config)  # only attributes needed
+    # _config = copy_attributes(sidekick.config)  # only attributes needed
     app.config.from_object(sidekick.config)
     app.config.from_prefixed_env(app_name)
     sidekick.display.info("App's config was successfully bound.")
@@ -216,6 +216,7 @@ def create_app(app_name: str):
         #     g.sidekick = recreate_sidekick(Config, app_name)
 
         from .Sidekick import recreate_sidekick
+
         sidekick = recreate_sidekick(Config, app)
 
     # run parameters host & port are taken from SERVER_NAME

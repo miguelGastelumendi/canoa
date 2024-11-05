@@ -6,29 +6,57 @@
  * ============================================ */
 
 :root {
-   --project-name: 'Canoa';
+    --project-name: 'Canoa';
 
-   --buttonBackColor: #647663;
-   --buttonTextColor: white;
-   --titleBackColor: #c4884c;
-   --titleTextColor: white;
-   --labelTextColor: #c4884c;
-   --linkTextColor: #60370e;
+    --buttonBackColor: #647663;
+    --buttonTextColor: white;
+    --titleBackColor: #c4884c;
+    --titleTextColor: white;
+    --labelTextColor: #c4884c;
+    --linkTextColor: #60370e;
 }
 
 body {
-   background: url(/static/img/pages/canoa_fundo.jpeg) no-repeat fixed;
-   /* background: url(/static/img/pages/canoa_fundo-w.jpeg) no-repeat fixed; */
-   background-size: cover;
+    /* background: url(/static/img/pages/canoa_fundo.jpeg) no-repeat fixed; */
+    background: url(/static/img/pages/canoa_fundo-w.jpeg) no-repeat fixed;
+    background-size: cover;
 }
 
+
+/* ============================================
+ *  templates\includes\mnu.tmpl
+ * ============================================ */
+.nav-button {
+    /* Base styles for all navigation buttons */
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.nav-button-enabled {
+    /* Styles for enabled buttons */
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.nav-button-disabled {
+    /* Styles for disabled buttons */
+    background-color: #ccc;
+    border: 1px solid #ccc;
+    color: #999;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 
 /* ============================================
  *  carranca\templates\layouts\dialog.tmpl
  * ============================================ */
 
 .dlgShow {
-   display: block !important;
+    display: block !important;
 }
 
 .dlgBtnClose {
@@ -67,61 +95,61 @@ body {
  *  carranca\templates\layouts\form.html
  * ============================================ */
 .formHeader {
-   background-color: var(--titleBackColor);
+    background-color: var(--titleBackColor);
 }
 
 .formTitle {
-   color: var(--titleTextColor);
-   font-size: 1.5rem;
+    color: var(--titleTextColor);
+    font-size: 1.5rem;
 }
 
 .formLabel {
-   color: var(--labelTextColor);
-   padding: 0 .4em;
+    color: var(--labelTextColor);
+    padding: 0 .4em;
 }
 
 .formText {
-   color: var(--labelTextColor);
+    color: var(--labelTextColor);
 }
 
 .formLine {
-   margin-bottom: 0px;
+    margin-bottom: 0px;
 }
 
 .formLink {
-   color: var(--linkTextColor);
-   font-weight: 400;
+    color: var(--linkTextColor);
+    font-weight: 400;
 }
 
 .formLink:hover {
-   text-decoration: underline;
+    text-decoration: underline;
 }
 
 .formTwoCells {
-   display: flex;
-   justify-content: space-between;
-   margin: 6px 0 6px;
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0 6px;
 }
 
 .formCheckBtn {
-   accent-color: var(--buttonBackColor);
+    accent-color: var(--buttonBackColor);
 }
 
 .formMainBtn {
-   background-color: var(--buttonBackColor);
-   border: none;
-   color: var(--buttonTextColor);
-   font-size: 1.1rem;
+    background-color: var(--buttonBackColor);
+    border: none;
+    color: var(--buttonTextColor);
+    font-size: 1.1rem;
 }
 
 .formMainBtn:hover {
-   background-color: var(--buttonBackColor);
-   filter: brightness(120%);
+    background-color: var(--buttonBackColor);
+    filter: brightness(120%);
 }
 
 .formMainBtn:disabled {
-   background-color: var(--buttonBackColor);
-   filter: brightness(60%);
+    background-color: var(--buttonBackColor);
+    filter: brightness(60%);
 }
 
 /* ============================================
@@ -129,17 +157,17 @@ body {
  * ============================================ */
 
 @media screen and (max-width: 992px) {
-   .divInputProjectName {
-      width: 60%;
-   }
+    .divInputProjectName {
+        width: 60%;
+    }
 
-   .divRememberLogin {
-      font-size: 13px;
-   }
+    .divRememberLogin {
+        font-size: 13px;
+    }
 }
 
 ::-webkit-input-placeholder {
-   font-style: italic;
+    font-style: italic;
 }
 
 /*~*/

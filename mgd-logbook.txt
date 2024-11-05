@@ -1,6 +1,6 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
-#spell:ignore venv ccedil atilde receivefile datetime saude
+#spell:ignore venv ccedil atilde receivefile datetime saude mgmt
 TODO:
 
 
@@ -31,7 +31,13 @@ TODO:
         G. β 2.11
 
 
-    small tasks
+    ##Gris Tasks##
+        - Create backend_msg.html.j2 (see form & sep_mgmt)
+        - formStatus in (0 : Normal, 1: Success, 2: Error ) msg always goes to frontEnd
+
+
+
+    ##Small Tasks##
         - check use of formMainBtn in *.j2
         - share jinja_cache templates + texts (see route_helper templates_found)
         - Fix get_Html()
@@ -47,8 +53,12 @@ TODO:
 
 
 
-2024-11-
-    - TODO returno de error (com os dados do grid) e msg de ok
+2024-11-01, 04 β 3.11
+    - profile_mgmt -> sep_mgmt
+    - sep_mgmt v2
+    - sep_mgmt has info
+    - navigation.html -> menu.html
+    - TODO return de error (com os dados do grid) e msg de ok
 
 ------- 2024 - October -----------
 ----------------------------------

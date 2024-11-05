@@ -1,5 +1,6 @@
 {#
-profile_mgmt.html.j2
+sep_mgmt.html.j2
+extends "./layouts/dialog.html.j2"
 
 Managed & Displays a grid with sep profile
 
@@ -24,8 +25,7 @@ mgd
     {% endblock base_blc_head_js %}
 
     {% block dlg_blc_body %}
-
-
+    {% include "includes/backend-msg.html.j2" %}
     <div id="grid_container" class="ag-theme-quartz" style="height: 500px"></div>
 
     {% endblock dlg_blc_body %}
@@ -42,11 +42,12 @@ mgd
         </div>
         <div class="col-auto">
             <form id="hiddenForm" onsubmit="return gridCargo('{{gridRsp}}')" method="POST"
-                action="{{private_route('profile_mgmt')}}">
+                action="{{private_route('sep_mgmt')}}">
                 <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
                 <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
                 <input type="submit" style="display:none;">
-                <button type="submit" class="formMainBtn">{{(grdBtnSave | default("Salvar"))}}</button>
+                <button type="submit" class="formMainBtn" disabled id="{{gridSubmit_id}}">{{(grdBtnSave |
+                    default("Salvar"))}}</button>
             </form>
         </div>
     </div>
@@ -55,14 +56,14 @@ mgd
     <script>
         const itemNone = '{{ itemNone }}';
         const itemRemove = '{{ itemRemove }}';
-        const usersSep = {{ usersSep | tojson }};
-        const usedList = usersSep.map(item => item.sep)
-        const initialList = {{ sepList | tojson }};
+        const usersSep = /** @type {JSON} */({{ usersSep | tojson }});
+        const usedList = /** @type {String[]} */(usersSep.map(item => item.sep))
+        const initialList =  /** @type {String[]} */({{ sepList | tojson }});
         const colSepNew = 'sep_new';
         const colSepOld = 'sep_name';
         const colHeaders = ['Sectorista', 'SEP Atual', 'Novo SEP', 'Atribuído'];
-
+        const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmit_id}}'));
     </script>
-    <script src="/static/js/profile_mgmt.js"></script>
+    <script src="/static/js/sep_mgmt.js"></script>
     {% endblock dlg_blc_javascript %}
     {# eof #}

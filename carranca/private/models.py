@@ -126,7 +126,7 @@ class UserDataFiles(Base):
         UserDataFiles._ins_or_upd(False, uTicket, **kwargs)
 
 
-class MgmtUser(Base):
+class MgmtSepUser(Base):
     __tablename__ = "vw_mgmt_user_sep"
 
     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
@@ -152,7 +152,7 @@ class MgmtUser(Base):
                     "sep_new": item_none,
                     "when": usr.assigned_at,
                 }
-                for usr in session.scalars(select(MgmtUser)).all()
+                for usr in session.scalars(select(MgmtSepUser)).all()
             ]
         except Exception as e:
             msg_error = str(e)
@@ -168,9 +168,9 @@ class MgmtUser(Base):
 
         try:
 
-            def _get_user(user_data: dict) -> MgmtUser | None:
+            def _get_user(user_data: dict) -> MgmtSepUser | None:
                 id = user_data["user_id"]
-                user = session.query(MgmtUser).filter_by(user_id=id).one_or_none()
+                user = session.query(MgmtSepUser).filter_by(user_id=id).one_or_none()
                 if user:
                     return user
                 sidekick.app_log.error(f"{__name__}: User with ID {id} not found, cannot update.")
@@ -188,8 +188,8 @@ class MgmtUser(Base):
             session.commit()
         except Exception as e:
             session.rollback()
-            msg_error = str(e)
-            sidekick.app_log.error(f"Unable to commit data: [{msg_error}].")
+            msg_error = f"Unable to commit data: [{str(e)}]."
+            sidekick.app_log.error(msg_error)
         finally:
             session.close()
 

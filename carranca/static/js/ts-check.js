@@ -8,7 +8,7 @@
  * Miguel Gastelumendi -- mgd
  *
  * A dummy variable declarations files for @ts-check
- * as example, see profile_mgmt.js
+ * as example, see sep_mgmt.js
 */
 // @ts-check
 
@@ -21,6 +21,7 @@ var itemNone = /** @type {string} */ '';
 var itemRemove = /** @type {string} */ '';
 var colSepNew = /** @type {string} */ '';
 var colSepOld = /** @type {string} */ '';
+var btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById("myb"));
 
 
 /* eof */

@@ -1,7 +1,7 @@
 /**
  * @preserve
- * profile_mgmt.js
- * version 0.2
+ * sep_mgmt.js
+ * version 0.3
  * 2023.10.18 -- 31
  * Miguel Gastelumendi -- mgd
 */
@@ -18,6 +18,7 @@ let activeRow = null;
 let addedList = [];
 let assignedList = [];
 let selectList = [...initialList];
+let removeCount = 0
 const ignoreList = [itemRemove, itemNone];
 
 window.addEventListener('beforeunload', (event) => {
@@ -72,13 +73,17 @@ const gridOptions = {
                     selectList.push(oldValue)
                     need_refresh(params.api, oldValue) // remove back-color
                     assignedList = assignedList.filter(item => item !== oldValue);
+
                 }
                 if (!ignoreList.includes(newValue)) {
                     selectList = selectList.filter(item => item !== newValue);
                     assignedList.push(newValue)
                     need_refresh(params.api, newValue) // set back-color
                 }
+                if (oldValue === itemRemove) { removeCount--; }
+                if (newValue === itemRemove) { removeCount++; }
                 params.data.sep_new = newValue;
+                btnGridSubmit.disabled = (assignedList.length == 0) && (removeCount == 0)
                 return true;
             }
         },
@@ -89,8 +94,8 @@ const gridOptions = {
 
 //-------------
 //== Init
-const myGridElement = document.querySelector('#grid_container');
-const api = /** type {Object} */(agGrid.createGrid(myGridElement, gridOptions));
+const gridContainer = document.querySelector('#grid_container');
+const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
 
 
 //-------------

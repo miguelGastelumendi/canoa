@@ -1,20 +1,23 @@
+{# {% block base_blc_content %} #}
+{% with menuEnabled=True %}
 {% extends "layouts/base.html.j2" %}
+{% endwith %}
+{# {% endblock base_blc_content %} #}
 
-
-{% block base_blc_content %}
-   {% include 'includes/navigation.html' %}
-{% endblock base_blc_content %}
-
+{#
 {% block base_blc_body_js %}
-    <script>
-        function logout(){ if (confirm("Confirma sair de Canoa?")) window.location.href="./logout"; } {# TODO #}
-        function working(text){ alert(text) }
-        function display(){
-            const modal = new bootstrap.Modal(document.getElementById('startUpInfo'), { keyboard: false})
+<script>
+    function logout() { if (confirm("Confirma sair de Canoa?")) window.location.href = "./logout"; }
+    /*
+        function working(text) { alert(text) }
+        function display() {
+            const modal = new bootstrap.Modal(document.getElementById('startUpInfo'), { keyboard: false })
             modal.show()
         }
-            setTimeout(()=> display(), 500);
-    </script>
+        setTimeout(() => display(), 500);
+    */
+</script>
 {% endblock base_blc_body_js %}
+#}
 
 {# eof #}

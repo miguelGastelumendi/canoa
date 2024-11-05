@@ -8,53 +8,58 @@ Displays:
 - carranca\templates\home\document.html.j2
 
 - names:
-    dlg<x>Name, x:
-        _var_ => Variable
-        _cls_ => Class
-        -id-  => ID
-        _blc_ => Block
-        _js_ => Script
+dlg<x>Name, x:
+    _var_ => Variable
+    _cls_ => Class
+    -id- => ID
+    _blc_ => Block
+    _js_ => Script
 
 
-mgd
-#}
+    mgd
+    #}
 
-{% extends "./layouts/base.html.j2" %}
+    {% extends "./layouts/base.html.j2" %}
 
-{% block base_blc_content %}
-<section>
-   <div class="modal{%+ if not (dlg_var_vCentered|default(False)) %} {{dlg_cls_top}}{% endif %}" style="{{(dlg_var_style|default('display: block;'))}}" tabindex="-1" id="dlg-id-main">
-      <div class="modal-dialog {{dlg_cls_size}} {%+ if dlg_var_vCentered %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dalog}}">
-         <div class="modal-content dlgContent {{dlg_cls_content}}">
-            <div class="modal-header dlgHeader {{dlg_cls_header}}">
-                <h5 class="modal-title {{dlg_cls_title}}" inert>{{ (formTitle | default(app_name())) }}</h5>
-                <form action="{{ public_route('login') }}" method="GET">
-                    <button type="submit" class="btn-close {{dlg_cls_btnClose}}" data-bs-dismiss="modal"
-                        {%+ if not (dlg_var_close|default(True)) %}style='display: none;' {% endif %} aria-label="Close">
-                    </button>
-                </form>
+    {% block base_blc_content %}
+    <section>
+        <div class="modal{%+ if not (dlg_var_vCentered|default(False)) %} {{dlg_cls_top}}{% endif %}"
+            style="{{(dlg_var_style|default('display: block;'))}}" tabindex="-1" id="dlg-id-main">
+            <div
+                class="modal-dialog {{dlg_cls_size}} {%+ if dlg_var_vCentered %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dialog}}">
+                <div class="modal-content dlgContent {{dlg_cls_content}}">
+                    <div class="modal-header dlgHeader {{dlg_cls_header}}">
+                        <h5 class="modal-title {{dlg_cls_title}}" inert>{{ (formTitle | default(app_name())) }}</h5>
+                        <form action="{{ public_route('login') }}" method="GET">
+                            <button type="submit" class="btn-close {{dlg_cls_btnClose}}" data-bs-dismiss="modal" {%+ if
+                                not (dlg_var_close|default(True)) %}style='display: none;' {% endif %}
+                                aria-label="Close">
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-body dlgBody {{dlg_cls_body}}">
+                        {% block dlg_blc_body %}
+                        {% endblock dlg_blc_body %}
+                    </div>
+                    <div class="modal-footer justify-content-center {{dlg_cls_footer}}">
+                        {% block dlg_blc_footer %}
+                        {% endblock dlg_blc_footer %}
+                    </div>
+                </div>
             </div>
-            <div class="modal-body dlgBody {{dlg_cls_body}}">
-               {% block dlg_blc_body %}
-               {% endblock dlg_blc_body %}
-            </div>
-            <div class="modal-footer justify-content-center {{dlg_cls_footer}}">
-               {% block dlg_blc_footer %}
-               {% endblock dlg_blc_footer %}
-            </div>
-         </div>
-      </div>
-   </div>
-</section>
-{% endblock base_blc_content %}
+        </div>
+    </section>
+    {% endblock base_blc_content %}
 
-{% block base_blc_body_js %}
-{% block dlg_blc_javascript %}
-{% endblock dlg_blc_javascript %}
+    {% block base_blc_body_js %}
+    {% block dlg_blc_javascript %}
+    {% endblock dlg_blc_javascript %}
 
-<script>
-   {{dlg_js_frm}}
-</script>
-{% endblock base_blc_body_js %}
+    {% if dlg_js_frm %}
+    <script>
+        { { dlg_js_frm } }
+    </script>
+    {% endif %}
+    {% endblock base_blc_body_js %}
 
-{# eof #}
+    {# eof #}

@@ -1,4 +1,14 @@
-{# login.html.j2 (mgd) #}
+{# ------------------------------------
+
+./accounts/login.html.j2
+------------------------
+Login Form
+
+Extends:
+./layouts/form.html.j2
+
+mgd
+--------------------------------------- #}
 
 {% set dlg_var_close= False %}
 {% extends "./layouts/form.html.j2" %}
@@ -35,7 +45,8 @@
     <!-- { RememberMe -->
     <div class="">
         {{ form.remember_me(class="formCheckBtn", id="rememberMe") }}
-        <label class="form-check-label formLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe }}</label>
+        <label class="form-check-label formLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe
+            }}</label>
     </div>
     <!-- RememberMe } -->
 </div>

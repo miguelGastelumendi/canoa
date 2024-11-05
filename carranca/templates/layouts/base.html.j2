@@ -1,43 +1,61 @@
-{#
-   carranca\templates\layouts\base.html.j2
-   --------------------------------
-   The Base Template for Canoa
+{# ------------------------------------
+./layouts/base.html.j2
+--------------------------------
+The Base Template for Canoa
 
-   mgd
-#}
+Used by:
+./layouts/dialog.html.j2
+./private/home.html.j2
+
+mgd
+--------------------------------------- #}
 <!DOCTYPE html>
 <html lang="pt-br">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>Canoa {%+ if pageTitle %} &ndash; {{pageTitle}}{% endif %}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="title" content="Canoa">
-        <meta name="author" content="Equipe `Canoa`">
-        <meta name="description" content="Canoa">
 
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon/favicon-32.png') }}">
-        <link rel="icon" type="image/png" sizes="64x64" href="{{ url_for('static', filename='img/favicon/favicon-64.png') }}">
+<head>
 
-        <!-- Fontawesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <!-- Pixel CSS -->
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/pixel.css') }}">
-        <!-- Canoa CSS -->
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/canoa.css') }}">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Canoa {%+ if pageTitle %} &ndash; {{pageTitle}}{% endif %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="title" content="Canoa">
+    <meta name="author" content="Equipe `Canoa`">
+    <meta name="description" content="Canoa">
 
-        {% block base_blc_head_js %}{% endblock base_blc_head_js %}
-        {% block base_blc_head_css %}{% endblock base_blc_head_css %}
-    </head>
-    <body>
-         <main>
-         {% block base_blc_content %}
-         {% endblock base_blc_content %}
-         </main>
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static', filename='img/favicon/favicon-32.png') }}">
+    <link rel="icon" type="image/png" sizes="64x64"
+        href="{{ url_for('static', filename='img/favicon/favicon-64.png') }}">
 
-         {% block base_blc_htmlHelpers %}{% endblock base_blc_htmlHelpers %}
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+        integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Pixel CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pixel.css') }}">
+    <!-- Canoa CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/canoa.css') }}">
 
-         {% include 'includes/scripts.html' %}
+    {% block base_blc_head_js %}{% endblock base_blc_head_js %}
+    {% block base_blc_head_css %}{% endblock base_blc_head_css %}
+</head>
 
-         {% block base_blc_body_js %}{% endblock base_blc_body_js %}
-    </body>
+<body>
+    <main>
+        {% set menuEnabled = menuEnabled|default(False) %}
+        {% with menuEnabled=menuEnabled %}
+        {% include 'includes/navigation.html' %}
+        {% endwith %}
+
+        {% block base_blc_content %}
+        {% endblock base_blc_content %}
+    </main>
+
+    {% block base_blc_htmlHelpers %}{% endblock base_blc_htmlHelpers %}
+
+    {% include 'includes/scripts.html' %}
+
+    {% block base_blc_body_js %}{% endblock base_blc_body_js %}
+</body>
+
 </html>
+{# eof #}

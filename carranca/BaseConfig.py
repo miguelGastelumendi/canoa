@@ -41,7 +41,7 @@ class BaseConfig(Config):
     APP_NAME = app_name
 
     # &beta; major.minor.patch
-    APP_VERSION = "β 3.9"
+    APP_VERSION = "β 3.11"
 
     """ Canoa Configurations
         --------------------------
@@ -85,7 +85,7 @@ class BaseConfig(Config):
     # https://flask.palletsprojects.com/en/latest/config/#SERVER_NAME
     # Inform the application what host and port it is bound to (NO Scheme).
     # SERVER_NAME = "" use it after understand how
-    PREFERRED_URL_SCHEME=  ""
+    PREFERRED_URL_SCHEME = ""
     SECRET_KEY = ""
     SESSION_COOKIE_NAME = f"{app_name.lower()}"
     # TODO

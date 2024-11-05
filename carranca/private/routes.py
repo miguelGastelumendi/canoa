@@ -51,8 +51,8 @@ def home():
 
 
 @login_required
-@bp_private.route("/profile_mgmt", methods=["GET", "POST"])
-def profile_mgmt():
+@bp_private.route("/sep_mgmt", methods=["GET", "POST"])
+def sep_mgmt():
     """
     Through this route, the admin user can manage the profile os
     users
@@ -60,9 +60,9 @@ def profile_mgmt():
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .profile_mgmt import do_profile_mgmt
+        from .sep_mgmt import do_sep_mgmt
 
-        return do_profile_mgmt()
+        return do_sep_mgmt()
 
 
 @login_required

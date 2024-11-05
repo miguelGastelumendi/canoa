@@ -1,0 +1,38 @@
+{# ------------------------------------
+./includes/menu.html.j2
+--------------------------------
+The menu header
+
+Used by:
+./layouts/base.html.j2
+
+mgd
+--------------------------------------- #}
+
+<header class="header-global">
+    <nav id="navbar-main" aria-label="Primary menu"
+        class="navbar navbar-expand-lg navbar-dark container-xxl flex-wrap flex-md-nowrap"
+        style="height: 70px; padding: 0 !important; background-color:#ffffff7a;">
+        <div class="container">
+            <a type="button" href="{{ private_route('receive_file') }}"
+                title="Abre o formulário para submeter um arquivo ZIP o do Google Drive ao processo de valida&ccedil;&atilde;o">
+                [Validar dados]
+            </a>
+            <a type="button" href="{{ private_route('sep_mgmt') }}" title="Abre o grid de Gestão de SEP">
+                [Gestão de SEP]
+            </a>
+            <a type="button" href="https://docs.google.com/document/d/1ZYOQricIqeNkZ3XnLoSXp-lKle9V1UTb-acASZtAa4E/edit"
+                target="_blank" rel="noopener noreferrer"
+                title="Abre o documento 'Especifica&ccedil;&atilde;o de Requisitos e Formatos' em outra aba">
+                [Especifica&ccedil;&atilde;o]
+            </a>
+            <a type="button" href="docs/termsofuse">[Pol&iacute;tica de Privacidade]</a>
+            <a type="button" href="{{ private_route('change_password') }}">[Mudar senha]</a>
+            <a type="button" href="docs/aboutApp">[Sobre]</a>
+            <!-- <a type="button" onclick= "working('Sobre {{ app_name() }}, versão {{ app_version() }}')">[Sobre]</a> -->
+            <!-- a type="button" href="{{ private_route('test_route') }}">[testar arquivo]</a  -->
+            <a type="button" onclick="logout()">[Sair:&nbsp;&nbsp;{{ current_user.username }}]</a>
+        </div>
+    </nav>
+</header>
+{# eof #}

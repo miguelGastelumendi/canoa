@@ -1,0 +1,35 @@
+{#
+carranca\templates\includes\backend-msg.html.j2
+---------------------------------
+
+Displays HTML messages (Error, Info & Success)
+Used by:
+carranca\templates\accounts\
+- from.html.j2
+- sep_mgmt.html.j2
+
+mgd
+#}
+
+
+{% if msgInfo or msgError or msgSuccess %}
+<!-- { BackendMessage -->
+<div class="text-center text-md-center mt-md-0 mb-3">
+    <span class="font-weight-normal">
+        {% if msgError %}
+        <div class="alert alert-danger mt-3">
+            {{ msgError | safe }}
+        </div>
+        {% elif msgSuccess %}
+        <div class="alert alert-success mt-3">
+            {{ msgSuccess | safe }}
+        </div>
+        {% elif msgInfo %}
+        <div class="alert alert-info mt-3">
+            {{ msgInfo | safe }}
+        </div>
+        {% endif %}
+    </span>
+</div>
+<!-- BackendMessage } -->
+{% endif %}
