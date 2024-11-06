@@ -11,21 +11,23 @@ import os
 import hashlib
 import binascii
 
+
 class Codec:
-    utf_8= 'utf-8'
-    ascii= 'ascii'
+    utf_8 = "utf-8"
+    ascii = "ascii"
 
 
 def __dopwh(text: str, salt: str) -> str:
-    pwd_digest = hashlib.pbkdf2_hmac('sha512', text.encode(Codec.utf_8), salt.encode(Codec.ascii), 100000)
+    pwd_digest = hashlib.pbkdf2_hmac("sha512", text.encode(Codec.utf_8), salt.encode(Codec.ascii), 100000)
     pwd_hashed = binascii.hexlify(pwd_digest)
     return pwd_hashed
 
 
 # Inspiration -> https://www.vitoshacademy.com/hashing-passwords-in-python/
 
+
 def hash_pass(user_password: str) -> str:
-    """  Hash a password for storing. """
+    """Hash a password for storing."""
     salt = hashlib.sha256(os.urandom(60)).hexdigest()
     pwd_hashed = __dopwh(user_password, salt)
     return salt.encode(Codec.ascii) + pwd_hashed  # return bytes
@@ -40,8 +42,9 @@ def hash_pass(user_password: str) -> str:
 #     pwdhash = binascii.hexlify(pwdhash).decode(Codec.ascii)
 #     return pwdhash == stored_password
 
+
 def verify_pass(provided_password: str, stored_password: str) -> bool:
-    """ Verify a stored password against one provided by user. """
+    """Verify a stored password against one provided by user."""
     stored_password = stored_password.decode(Codec.ascii)
     stored_pwd_hashed = stored_password[64:]
     provided_pwd_hashed = __dopwh(provided_password, stored_password[:64]).decode(Codec.ascii)
@@ -53,9 +56,10 @@ def is_someone_logged() -> bool:
     # in some context, current_user is an 'invalid pointer'
     # see models.py:request_loader
     from flask_login import current_user
+
     logged = False
     try:
-        logged = False if not current_user else current_user.is_authenticated and (current_user.id > 0)
+        logged = False if current_user is None else current_user.is_authenticated and (current_user.id > 0)
     except:
         logged = False
 
@@ -65,9 +69,12 @@ def is_someone_logged() -> bool:
 def nobody_is_logged() -> bool:
     return not is_someone_logged()
 
+
 def internal_logout():
     from flask_login import logout_user
+
     logout_user()
     return
+
 
 # eof

@@ -1,17 +1,22 @@
-{#
+{# ------------------------------------
+./private/receive_file.html.j2
+-------------------------------
+Receive the file from the user and sends
+it to data validate, returns an e-mail
 
-receive_file.html.j2
+Extends:
+./layouts/form.html.j2
 
-
-(mgd) #}
+mgd
+--------------------------------------- #}
 
 {% extends "./layouts/form.html.j2" %}
 
 {% block frm_blc_above %}
 {% if msgSuccess %}
 <div class="d-grid">
-    <button type="button" class="btn formMainBtn" onclick="window.location.href='{{ private_route('home') }}'">{{
-        successButton }}</button>
+    <button type="button" class="btn form-main-btn" onclick="window.location.href='{{ private_route('home') }}'">
+        {{successButton }}</button>
 </div>
 {% endif %}
 {% endblock frm_blc_above %}
@@ -19,7 +24,7 @@ receive_file.html.j2
 {% block frm_blc_content %}
 {% if not msgSuccess %}
 <div class="form-group mb-3">
-    <label class="formLabel" inert for={{ form.filename.id }}>{{ fileLabel }}</label>
+    <label class="form-label" inert for={{ form.filename.id }}>{{ fileLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <span class="fa fa-upload fa-lg"></span>
@@ -28,7 +33,7 @@ receive_file.html.j2
     </div>
 </div>
 <div class="form-group mb-3">
-    <label class="formLabel" inert for={{ form.urlname.id }}>{{ urlLabel }}</label>
+    <label class="form-label" inert for={{ form.urlname.id }}>{{ urlLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <span class="fa fa-cloud-upload fa-lg"></span>
@@ -38,6 +43,5 @@ receive_file.html.j2
 </div>
 {% endif %}
 {% endblock frm_blc_content %}
-
 
 {# eof #}

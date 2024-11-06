@@ -1,16 +1,19 @@
-{#
-   Displays simple or HTML documents
-   The document should be divided into two parts: css & body
+{# ------------------------------------
+./home/document.html.j2
+-----------------------
+Displays simple or HTML documents
+The document should be divided into
+two parts: css & body
 
-   mgd 2024.03
-#}
+Extends
+/layouts/dialog.html.j2
 
-{# classes #}
+mgd 2024.03
+--------------------------------------- #}
+
 {% set dlg_var_vCentered= True %}
-{% set dlg_cls_size= 'modal-lg' %}
-
-{# variables#}
 {% set dlg_var_scroll= True %}
+{% set dlg_cls_size= 'modal-lg' %}
 
 {% extends "/layouts/dialog.html.j2" %}
 
@@ -25,7 +28,9 @@
 
 {% block dlg_blc_footer %}
 <form action="{{ public_route('login') }}" method="GET">
-    <button type="submit" class="btn btn-primary {{dlg_cls_btnOk}}" style="min-width: 8em;">{{(doc_var_ok_text | default("OK"))}}</button>
+    <button type="submit" class="btn btn-primary {{dlg_cls_btnOk}}" style="min-width: 8em;">
+        {{(doc_var_ok_text | default("OK"))}}
+    </button>
 </form>
 {% endblock dlg_blc_footer %}
 

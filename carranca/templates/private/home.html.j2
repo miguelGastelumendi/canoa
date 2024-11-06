@@ -1,23 +1,19 @@
-{# {% block base_blc_content %} #}
-{% with menuEnabled=True %}
-{% extends "layouts/base.html.j2" %}
-{% endwith %}
-{# {% endblock base_blc_content %} #}
+{# ------------------------------------
+./private/home.html.j2
+-----------------------
+`home` page is the _landing page_ for users
+`login` page is for visitors
 
-{#
-{% block base_blc_body_js %}
-<script>
-    function logout() { if (confirm("Confirma sair de Canoa?")) window.location.href = "./logout"; }
-    /*
-        function working(text) { alert(text) }
-        function display() {
-            const modal = new bootstrap.Modal(document.getElementById('startUpInfo'), { keyboard: false })
-            modal.show()
-        }
-        setTimeout(() => display(), 500);
-    */
-</script>
-{% endblock base_blc_body_js %}
-#}
+
+Extends:
+./layouts/base.html.j2
+
+mgd
+--------------------------------------- #}
+
+{# the only page that the menu is enabled (for now 2024-11-05) #}
+
+{%set navButtonState = 'nav-button-enabled'%}
+{% extends "layouts/base.html.j2" %}
 
 {# eof #}

@@ -31,14 +31,14 @@ TODO:
         G. β 2.11
 
 
-    ##Gris Tasks##
-        - Create backend_msg.html.j2 (see form & sep_mgmt)
-        - formStatus in (0 : Normal, 1: Success, 2: Error ) msg always goes to frontEnd
-
+    ##Grid Tasks##
+        - Create new msgInfo (as msgError, mgsSuccess) to give instructions
+        - Store the username in a "dummy" column to record who made changes to the grid.
+        - Check constraints eg (remove)
 
 
     ##Small Tasks##
-        - check use of formMainBtn in *.j2
+        - check use o form-main-btn in *.j2
         - share jinja_cache templates + texts (see route_helper templates_found)
         - Fix get_Html()
         - Login Remember not always working
@@ -50,7 +50,9 @@ TODO:
 
 ------- 2024 - November ----------
 ----------------------------------
-
+2024-11-05 β 3.12
+    - Database v3, sep + log  new columns, uix's
+    - sep_mgmt v3
 
 
 2024-11-01, 04 β 3.11

@@ -2,7 +2,8 @@
 
 ./accounts/login.html.j2
 ------------------------
-Login Form
+`login` page the _landing page_ for visitors
+`home` page is for users
 
 Extends:
 ./layouts/form.html.j2
@@ -17,7 +18,7 @@ mgd
 
 <!-- { User Name -->
 <div class="form-group">
-    <label class="formLabel" inert for="user_name">{{ userLabel }}</label>
+    <label class="form-label" inert for="user_name">{{ userLabel }}</label>
     <div class="input-group">
         <!-- Font Awesome fas fa- ...-->
         <span class="input-group-text">
@@ -30,7 +31,7 @@ mgd
 
 <!--{ Password  -->
 <div class="form-group mt-3">
-    <label class="formLabel" inert for="pwd_login">{{ passwordLabel }}</label>
+    <label class="form-label" inert for="pwd_login">{{ passwordLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <span class="fas fa-unlock-alt"></span>
@@ -44,8 +45,8 @@ mgd
 <div class="form-group mt-3">
     <!-- { RememberMe -->
     <div class="">
-        {{ form.remember_me(class="formCheckBtn", id="rememberMe") }}
-        <label class="form-check-label formLabel" class="form-check-label mb-0" for="rememberMe">{{ rememberMe
+        {{ form.remember_me(class="form-check-btn", id="rememberMe") }}
+        <label class="form-check-label form-label" class="form-check-label mb-0" for="rememberMe">{{ rememberMe
             }}</label>
     </div>
     <!-- RememberMe } -->
@@ -56,16 +57,16 @@ mgd
 {% block frm_blc_below %}
 <div class="row no-gutters mt-3">
     <div class="col-6">
-        <a href="docs/privacyPolicy" class="formLink">{{ privacyPolicy }}</a>
+        <a href="docs/privacyPolicy" class="form-link">{{ privacyPolicy }}</a>
     </div>
     <div class="col-6 text-right">
-        <a href="{{ public_route('password_recovery') }}" class="formLink">{{ forgotPassword }}</a>
+        <a href="{{ public_route('password_recovery') }}" class="form-link">{{ forgotPassword }}</a>
     </div>
     <div class="col-6">
-        <a href="docs/termsOfUse" class="formLink">{{ termsOfUse }}</a>
+        <a href="docs/termsOfUse" class="form-link">{{ termsOfUse }}</a>
     </div>
     <div class="col-6 text-right">
-        <a href="{{ public_route('register') }}" class="formLink">{{ gotoRegister }}</a>
+        <a href="{{ public_route('register') }}" class="form-link">{{ gotoRegister }}</a>
     </div>
 </div>
 {% endblock frm_blc_below %}

@@ -86,6 +86,7 @@ def _register_blueprints(app):
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app, debugUndefined):
     from .helpers.route_helper import private_route, public_route
+    from .helpers.pw_helper import is_someone_logged
 
     def __get_name() -> str:
         return app.config["APP_NAME"]
@@ -93,9 +94,13 @@ def _register_jinja(app, debugUndefined):
     def __get_version() -> str:
         return app.config["APP_VERSION"]
 
+    def __user_is_logged() -> bool:
+        return is_someone_logged()
+
     app.jinja_env.globals.update(
         app_version=__get_version,
         app_name=__get_name,
+        user_logged=__user_is_logged,
         private_route=private_route,
         public_route=public_route,
     )

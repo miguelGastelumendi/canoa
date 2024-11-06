@@ -5,6 +5,8 @@
  *  Miguel Gastelumendi -- mgd
  * ============================================ */
 
+/* cSpell:ignore unselectable searchpath callout Konqueror */
+
 :root {
     --project-name: 'Canoa';
 
@@ -22,55 +24,62 @@ body {
     background-size: cover;
 }
 
+.unselectable-text {
+    -webkit-touch-callout: none;
+    /* iOS */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+}
 
 /* ============================================
- *  templates\includes\mnu.tmpl
+ *  menu.html.j2
  * ============================================ */
 .nav-button {
     /* Base styles for all navigation buttons */
     display: inline-block;
+    white-space: nowrap;
     padding: 10px 20px;
     border-radius: 5px;
     text-decoration: none;
     cursor: pointer;
+    background-color: inherit;
+    /* Inherit background color from parent element */
+    /* Add this to remove default button borders */
+    border: none;
 }
 
 .nav-button-enabled {
-    /* Styles for enabled buttons */
-    background-color: #f2f2f2;
-    border: 1px solid #ddd;
-    color: #333;
+    color: var(--linkTextColor);
 }
 
 .nav-button-disabled {
-    /* Styles for disabled buttons */
-    background-color: #ccc;
-    border: 1px solid #ccc;
-    color: #999;
-    cursor: not-allowed;
+    /* color: #999; */
+    color: var(--labelTextColor);
     pointer-events: none;
 }
 
 /* ============================================
  *  carranca\templates\layouts\dialog.tmpl
  * ============================================ */
-
-.dlgShow {
-    display: block !important;
+.dialog-header {
+    background-color: var(--titleBackColor);
 }
 
-.dlgBtnClose {
-    background-color: var(--buttonBackColor);
-    border: none;
-    color: var(--buttonTextColor);
-    min-width: 5rem;
+.dialog-title {
+    color: var(--titleTextColor);
+    font-size: 1.5rem;
 }
-
 
 /* ============================================
  *  carranca\templates\layouts\grid.html.j2
  * ============================================ */
-
 .grd-item-exist {
     background: coral;
 }
@@ -94,60 +103,46 @@ body {
 /* ============================================
  *  carranca\templates\layouts\form.html
  * ============================================ */
-.formHeader {
-    background-color: var(--titleBackColor);
-}
-
-.formTitle {
-    color: var(--titleTextColor);
-    font-size: 1.5rem;
-}
-
-.formLabel {
+.form-label {
     color: var(--labelTextColor);
     padding: 0 .4em;
 }
 
-.formText {
+.form-text {
     color: var(--labelTextColor);
 }
 
-.formLine {
+.form-line {
     margin-bottom: 0px;
 }
 
-.formLink {
+.form-link {
     color: var(--linkTextColor);
     font-weight: 400;
 }
 
-.formLink:hover {
+.form-link:hover {
     text-decoration: underline;
 }
 
-.formTwoCells {
-    display: flex;
-    justify-content: space-between;
-    margin: 6px 0 6px;
-}
 
-.formCheckBtn {
+.form-check-btn {
     accent-color: var(--buttonBackColor);
 }
 
-.formMainBtn {
+.form-main-btn {
     background-color: var(--buttonBackColor);
     border: none;
     color: var(--buttonTextColor);
     font-size: 1.1rem;
 }
 
-.formMainBtn:hover {
+.form-main-btn:hover {
     background-color: var(--buttonBackColor);
     filter: brightness(120%);
 }
 
-.formMainBtn:disabled {
+.form-main-btn:disabled {
     background-color: var(--buttonBackColor);
     filter: brightness(60%);
 }

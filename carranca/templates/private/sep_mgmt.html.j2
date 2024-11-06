@@ -1,69 +1,63 @@
-{#
-sep_mgmt.html.j2
-extends "./layouts/dialog.html.j2"
+{# ------------------------------------
 
-Managed & Displays a grid with sep profile
+sep_mgmt.html.j2
+-----------------
+Managed & Displays a grid with sep «—» user
+
+Extends
+./layouts/dialog.html.j2
 
 mgd
-#}
+--------------------------------------- #}
+{# only specify if different from default #}
+{% set dlg_cls_size= 'modal-xl' %}
 
-{% set dlg_var_close= true %}
-{% set dlg_var_ok_text = "Salvar" %}
-{% set dlg_var_vCentered= true %}
-{% set dlg_cls_header= 'formHeader' %}
-{% set dlg_cls_title= 'formTitle' %}
-{% set dlg_cls_size= 'modal-xl' %} {# Size: sm, <>, lg, xl #}
+{% extends "./layouts/dialog.html.j2" %}
 
-    {% set dlg_cls_top= 'mt-6' %}
-    {% set dlg_cls_footer= '' %} {# collapse, #}
-    {% set dlg_js_frm= '' %}
+{% block base_blc_head_js %}
+<script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+{% endblock base_blc_head_js %}
 
-    {% extends "./layouts/dialog.html.j2" %}
+{% block dlg_blc_body %}
+{% include "includes/backend-msg.html.j2" %}
+<div id="grid_container" class="ag-theme-quartz" style="height: 400px"></div>
 
-    {% block base_blc_head_js %}
-    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
-    {% endblock base_blc_head_js %}
+{% endblock dlg_blc_body %}
 
-    {% block dlg_blc_body %}
-    {% include "includes/backend-msg.html.j2" %}
-    <div id="grid_container" class="ag-theme-quartz" style="height: 500px"></div>
-
-    {% endblock dlg_blc_body %}
-
-    {% block dlg_blc_footer %}
-    <div class="mb-3 row">
-        <div class="col-auto">
-            <button type="button" onclick="gridAdd()" class="formMainBtn">{{(grdBtnAdd |
-                default("Adicionar"))}}</button>
-        </div>
-        <div class="col-auto">
-            <button type="button" onclick="gridEdit()" class="formMainBtn">{{(grdBtnEdit |
-                default("Editar"))}}</button>
-        </div>
-        <div class="col-auto">
-            <form id="hiddenForm" onsubmit="return gridCargo('{{gridRsp}}')" method="POST"
-                action="{{private_route('sep_mgmt')}}">
-                <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
-                <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
-                <input type="submit" style="display:none;">
-                <button type="submit" class="formMainBtn" disabled id="{{gridSubmit_id}}">{{(grdBtnSave |
-                    default("Salvar"))}}</button>
-            </form>
-        </div>
+{% block dlg_blc_footer %}
+<div class="mb-3 row">
+    <div class="col-auto">
+        <button type="button" onclick="gridAdd()" class="form-main-btn">{{(grdBtnAdd |
+            default("Adicionar"))}}</button>
     </div>
-    {% endblock dlg_blc_footer %}
-    {% block dlg_blc_javascript %}
-    <script>
-        const itemNone = '{{ itemNone }}';
-        const itemRemove = '{{ itemRemove }}';
-        const usersSep = /** @type {JSON} */({{ usersSep | tojson }});
-        const usedList = /** @type {String[]} */(usersSep.map(item => item.sep))
-        const initialList =  /** @type {String[]} */({{ sepList | tojson }});
-        const colSepNew = 'sep_new';
-        const colSepOld = 'sep_name';
-        const colHeaders = ['Sectorista', 'SEP Atual', 'Novo SEP', 'Atribuído'];
-        const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmit_id}}'));
-    </script>
-    <script src="/static/js/sep_mgmt.js"></script>
-    {% endblock dlg_blc_javascript %}
-    {# eof #}
+    <div class="col-auto">
+        <button type="button" onclick="gridEdit()" class="form-main-btn">{{(grdBtnEdit |
+            default("Editar"))}}</button>
+    </div>
+    <div class="col-auto">
+        <form id="hiddenForm" onsubmit="return gridCargo('{{gridRsp}}')" method="POST"
+            action="{{private_route('sep_mgmt')}}">
+            <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
+            <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
+            <input type="submit" style="display:none;">
+            <button type="submit" class="form-main-btn" disabled id="{{gridSubmit_id}}">{{(grdBtnSave |
+                default("Salvar"))}}</button>
+        </form>
+    </div>
+</div>
+{% endblock dlg_blc_footer %}
+{% block dlg_blc_javascript %}
+<script>
+    const itemNone = '{{ itemNone }}';
+    const itemRemove = '{{ itemRemove }}';
+    const usersSep = /** @type {JSON} */({{ usersSep | tojson }});
+    const usedList = /** @type {String[]} */(usersSep.map(item => item.sep))
+    const initialList =  /** @type {String[]} */({{ sepList | tojson }});
+    const colSepNew = 'sep_new';
+    const colSepOld = 'sep_name';
+    const colHeaders = ['Sectorista', 'SEP Atual', 'Novo SEP', 'Atribuído'];
+    const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmit_id}}'));
+</script>
+<script src="/static/js/sep_mgmt.js"></script>
+{% endblock dlg_blc_javascript %}
+{# eof #}

@@ -1,6 +1,6 @@
 {# ------------------------------------
 ./layouts/base.html.j2
---------------------------------
+-----------------------
 The Base Template for Canoa
 
 Used by:
@@ -35,17 +35,22 @@ mgd
     <!-- Canoa CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/canoa.css') }}">
 
+    <script>
+        const logout = () => { if (confirm("Confirma sair de Canoa?")) window.location.href = "./logout" };
+    </script>
+
     {% block base_blc_head_js %}{% endblock base_blc_head_js %}
     {% block base_blc_head_css %}{% endblock base_blc_head_css %}
 </head>
 
 <body>
     <main>
-        {% set menuEnabled = menuEnabled|default(False) %}
-        {% with menuEnabled=menuEnabled %}
-        {% include 'includes/navigation.html' %}
+        {% if user_logged() %}
+        {% set setNavButtonState= navButtonState | default('nav-button-disabled') %}
+        {% with navButtonState = setNavButtonState %}
+        {% include 'includes/navigator.html.j2' %}
         {% endwith %}
-
+        {% endif %}
         {% block base_blc_content %}
         {% endblock base_blc_content %}
     </main>

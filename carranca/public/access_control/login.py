@@ -5,6 +5,7 @@
     Equipe da Canoa -- 2024
     mgd
 """
+
 # cSpell:ignore tmpl sqlalchemy wtforms
 
 from flask import render_template, request
@@ -36,7 +37,7 @@ def login():
         task_code += 1  # 1
         tmpl_form = LoginForm(request.form)
         task_code += 1  # 2
-        template, is_get, texts = get_account_form_data('login')
+        template, is_get, texts = get_account_form_data("login")
         task_code += 1  # 3
         logged_in = False
         if is_get and is_someone_logged():
@@ -45,27 +46,27 @@ def login():
             pass
         else:
             task_code += 1  # 4
-            username = get_input_text('username') #TODO tmpl_form
+            username = get_input_text("username")  # TODO tmpl_form
             task_code += 1  # 5
-            password = get_input_text('password')
+            password = get_input_text("password")
             task_code += 1  # 5
             search_for = to_str(username).lower()
             task_code += 1  # 7
-            user = get_user_where(username_lower = search_for) # by uname
+            user = get_user_where(username_lower=search_for)  # by uname
             task_code += 1  # 8
-            user = get_user_where(email = search_for) if user is None else user #or by email
+            user = get_user_where(email=search_for) if user is None else user  # or by email
             task_code += 1  # 9
             if not user or not verify_pass(password, user.password):
-                add_msg_error('userOrPwdIsWrong', texts)
+                add_msg_error("userOrPwdIsWrong", texts)
             elif user.disabled:
-                add_msg_error('userIsDisabled', texts)
+                add_msg_error("userIsDisabled", texts)
             else:
                 task_code += 1  # 10
                 task_code += 1  # 11
                 user.recover_email_token = None
                 user.last_login_at = now()
                 task_code += 1  # 12
-                remember_me = not is_str_none_or_empty(request.form.get('remember_me'))
+                remember_me = not is_str_none_or_empty(request.form.get("remember_me"))
                 task_code += 1  # 13
                 login_user(user, remember_me)
                 logged_in = True
@@ -76,16 +77,18 @@ def login():
                 return redirect_to(home_route())
 
     except Exception as e:
-        msg = add_msg_error('errorLogin', texts, task_code)
+        msg = add_msg_error("errorLogin", texts, task_code)
         sidekick.app_log.error(e)
         sidekick.app_log.debug(msg)
         if logged_in:
             internal_logout()
-        #TODO if template not ready use Error Template
+        # TODO if template not ready use Error Template
+
     return render_template(
         template,
         form=tmpl_form,
         **texts,
     )
+
 
 # eof

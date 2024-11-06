@@ -58,9 +58,9 @@ def do_sep_mgmt() -> str:
         if is_str_none_or_empty(msg_error_save) and is_str_none_or_empty(msg_error_read):
             texts["msgSuccess"] = "As mudanças foram salvas."
         elif is_str_none_or_empty(msg_error_save):
-            texts["msgError"] = msg_error_save
-        else:
             texts["msgError"] = msg_error_read
+        else:
+            texts["msgError"] = msg_error_save
 
         # TODO show final, with email sent
 
