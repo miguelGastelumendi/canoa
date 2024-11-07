@@ -1,7 +1,7 @@
 """
  Equipe da Canoa -- 2024
 
- Some functions that I missed. Brought to Py
+ Some functions I miss. I brought to Py
  mgd 2024-04-09--27
 
  """
@@ -129,11 +129,23 @@ def crc16(data: bytes | str) -> int:
     return crc
 
 
-def current_milliseconds():
+# def current_milliseconds():
+def ms_since_epoch():
+    """
+    milliseconds since the last Unix epoch (January 1, 1970, 00:00:00 UTC).
+    """
+    return time.time_ns() // 1_000_000
+
+
+def ms_since_midnight():
     """
     max -> d86400000 -> x526 5C00 -> (22)ggi.48g
     """
-    return time.time_ns() // 1_000_000
+    today = datetime.now()
+    midnight = today.replace(hour=0, minute=0, second=0, microsecond=0)
+    time_delta = today - midnight
+    ms_since_midnight = (time_delta.total_seconds() * 1000) + (time_delta.microseconds / 1000)
+    return int(ms_since_midnight)
 
 
 def to_base(number: int, base: int) -> str:

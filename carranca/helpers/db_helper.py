@@ -15,55 +15,56 @@ from .py_helper import is_str_none_or_empty
 
 
 def execute_sql(query: str):
-    """ Runs an SQL query and returns the result """
+    """Runs an SQL query and returns the result"""
     result = None
     if not is_str_none_or_empty(query):
         _text = text(query)
-        session= Session()
+        session = Session()
         result = session.execute(_text)
 
     return result
 
 
 def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
-  """
-  Executes the given SQL query and returns the result in 3 modes:
-    1.  N rows c column
-    1.  N rows 1 column
-    2.  1 row N columns
-    3.  1 row 1 column
+    """
+    Executes the given SQL query and returns the result in 3 modes:
+      1.  N rows c column
+      1.  N rows 1 column
+      2.  1 row N columns
+      3.  1 row 1 column
 
-  Args:
-    sql: The SQL query to execute.
+    Args:
+      sql: The SQL query to execute.
 
-  Returns:
-    - A tuple of values if the query returns multiple rows with a single column each.
-    - A tuple of values if the query returns a single row with multiple columns.
-    - A single value if the query returns a single row with a single column.
-    - None if an error occurs or the query returns no results.
-  """
+    Returns:
+      - A tuple of values if the query returns multiple rows with a single column each.
+      - A tuple of values if the query returns a single row with multiple columns.
+      - A single value if the query returns a single row with a single column.
+      - None if an error occurs or the query returns no results.
+    """
+    from ..Sidekick import sidekick
 
-  try:
-    data_rows = execute_sql(query)
-    rows = data_rows.fetchall()
+    try:
+        data_rows = execute_sql(query)
+        rows = data_rows.fetchall()
 
-    if not rows:
+        if not rows:
+            return None
+        elif len(rows) > 1 and len(rows[0]) > 1:
+            # Multiple rows with multiple columns
+            return tuple(tuple(row) for row in rows)
+        elif len(rows) > 1:
+            # Multiple rows with one column each
+            return tuple(line[0] for line in rows)
+        elif len(rows[0]) > 1:
+            # Single row with multiple columns
+            return tuple(rows[0])
+        else:
+            # Single row with a single column
+            return rows[0][0]
+    except Exception as e:
+        sidekick.app_log.error(f"An error occurred retrieving db data [{query}]: {e}")
         return None
-    elif len(rows) > 1 and len(rows[0]) > 1:
-        # Multiple rows with multiple columns
-        return tuple(tuple(row) for row in rows)
-    elif len(rows) > 1:
-        # Multiple rows with one column each
-        return tuple(line[0] for line in rows)
-    elif len(rows[0]) > 1:
-        # Single row with multiple columns
-        return tuple(rows[0])
-    else:
-        # Single row with a single column
-        return rows[0][0]
-  except Exception as e:
-    sidekick.app_log.error(f"An error occurred retrieving db data [{query}]: {e}")
-    return None
 
 
 def retrieve_dict(query: str):
@@ -78,6 +79,8 @@ def retrieve_dict(query: str):
       - A dictionary where the first column is the key and the second column is the value.
       - An empty dictionary if the query returns no data or an error occurs.
     """
+    from ..Sidekick import sidekick
+
     data = retrieve_data(query)
 
     result = {}
@@ -98,7 +101,7 @@ def retrieve_dict(query: str):
     #     # We expect at least two columns (key, value) for dictionary creation
     #     return {row[0]: row[1] for row in data}
 
-    return result.copy() # there is a very strange error
+    return result.copy()  # there is a very strange error
 
 
 def get_str_field_length(table_model: object, field_name: str) -> str:

@@ -115,7 +115,9 @@ def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
         config.args = fuse.args
         fuse.display.info(f"The app config, in '{fuse.app_mode}' mode, was ignited.")
     except Exception as e:
-        msg_error = _error_msg.format(__name__, f"initializing the app config in mode '{fuse.app_mode}'.", str(e))
+        msg_error = _error_msg.format(
+            __name__, f"initializing the app config in mode '{fuse.app_mode}'.", str(e)
+        )
 
     return config, msg_error
 
@@ -186,7 +188,9 @@ def _ignite_server_name(config) -> Tuple[any, str]:
             # Flask Config
             config.RUN_HOST = address.host
             config.RUN_PORT = address.port
-            fuse.display.info(f"The Flask Server Address address will be '{scheme}{config.SERVER_ADDRESS}'.")
+            fuse.display.info(
+                f"The Flask Server Address address will be '{scheme}{config.SERVER_ADDRESS}'."
+            )
 
     except Exception as e:
         fuse.display.error(f"`urlparse({try_url}) -> parsed: {address.host}:{address.port}`")

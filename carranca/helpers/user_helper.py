@@ -11,7 +11,7 @@ from os import environ
 from typing import Any
 from flask_login import current_user
 
-from .py_helper import current_milliseconds, to_base, now, crc16
+from .py_helper import ms_since_midnight, to_base, now, crc16
 
 _code_shift_id = 903
 _ticket_receipt_sep = "_"
@@ -55,7 +55,7 @@ def get_file_ticket(user_code: str) -> str:
     13    : ms do dia em base 22
     """
     # `user_receipt` (see below) dependes heavily in the format of the file_ticket
-    ms = to_base(current_milliseconds(), 22).zfill(6)  # max = ggi.48g
+    ms = to_base(ms_since_midnight(), 22).zfill(6)  # max = ggi.48g = d86.400.000
     now_str = now().strftime("%Y-%m-%d")
     file_ticket = f"{user_code}{_ticket_receipt_sep}{now_str}{_ticket_receipt_sep}{ms}"
     return file_ticket
@@ -71,6 +71,20 @@ def get_user_receipt(ticket: str) -> str:
     parts = ticket.split(_ticket_receipt_sep)
     receipt = f"{parts[1]}{_ticket_receipt_sep}{crc:04X}"
     return receipt
+
+
+def get_batch_code() -> str:  # len 10
+    from datetime import datetime
+
+    _base = 22
+    dt_from = datetime(2023, 12, 31)  # starting project date
+    dt_diff = datetime.now() - dt_from
+    days = dt_diff.days
+
+    ms = to_base(ms_since_midnight(), _base).zfill(6)  # max = ggi.48g
+    dy = to_base(days, _base).zfill(3)  # max= kkk => 10140/365= até 2050 ;-O
+    batch_code = f"{dy}.{ms}"
+    return batch_code
 
 
 class LoggedUser:

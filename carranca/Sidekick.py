@@ -29,13 +29,14 @@
 # cSpell:ignore sqlalchemy mgd appcontext
 
 import json
-from flask import Flask, g
+from flask import Flask
 from datetime import datetime
 from .helpers.Display import Display
 from .DynamicConfig import DynamicConfig
 
 sidekick = None
 # ---
+
 
 def create_sidekick(config: DynamicConfig, display: Display):
     global sidekick

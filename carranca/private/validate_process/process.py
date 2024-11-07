@@ -78,7 +78,7 @@ def process(
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
-        "2024.10.21", #process version
+        "2024.10.21",  # process version
         sidekick.debugging,
         logged_user,
         ValidateProcessConfig(sidekick.debugging),
@@ -120,7 +120,7 @@ def process(
 
     try:
         if error_code == 0:
-            current_module_name =  "UserDataFiles.update"
+            current_module_name = "UserDataFiles.update"
         msg_success = cargo.final.get("msg_success", None)
 
         _display("Preparing to update the data validation process record")

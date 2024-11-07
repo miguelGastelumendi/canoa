@@ -11,9 +11,11 @@ from carranca import Session, db, login_manager
 
 from typing import Any
 from psycopg2 import DatabaseError
+
 # from sqlalchemy import select
 from sqlalchemy import Column, Computed, Integer, String, DateTime, Boolean, LargeBinary
 from flask_login import UserMixin
+
 # from sqlalchemy.orm import Session
 # from flask_sqlalchemy import SQLAlchemy
 
@@ -55,6 +57,7 @@ class Users(UserMixin, db.Model):
     def __repr__(self):
         return str(self.username)
 
+
 @staticmethod
 def get_user_where(**kwargs: Any) -> Any:
     """
@@ -79,6 +82,7 @@ def get_user_where(**kwargs: Any) -> Any:
         session.close()
 
     return user
+
 
 def persist_user(record: any, task_code: int = 1) -> None:
     session = Session()

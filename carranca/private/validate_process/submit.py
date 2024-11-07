@@ -37,7 +37,6 @@ async def _run_validator(
 ):
     #  This function knows quite a lot of how to run [data_validate]
 
-
     run_command = [
         batch_full_name,
         data_validate_path,  # param 1: path do the data_validate main.py
@@ -105,9 +104,6 @@ def submit(cargo: Cargo) -> Cargo:
     #     {"user_report_full_name": 'fake'},
     #     {"msg_success": ''},
     # )
-
-
-
 
     try:
         task_code += 1  # 1

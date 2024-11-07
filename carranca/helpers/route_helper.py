@@ -112,6 +112,7 @@ def redirect_to(route: str, message: str = None) -> str:
 
 from ..BaseConfig import BaseConfig
 
+
 def is_external_ip_ready(config: BaseConfig) -> bool:
     if is_str_none_or_empty(config.SERVER_EXTERNAL_IP):
         try:

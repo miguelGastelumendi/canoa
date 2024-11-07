@@ -33,13 +33,13 @@ def login():
     tmpl_form, template, is_get, texts = init_form_vars()
     # TODO test, fake form?
 
+    logged_in = False
     try:
         task_code += 1  # 1
         tmpl_form = LoginForm(request.form)
         task_code += 1  # 2
         template, is_get, texts = get_account_form_data("login")
         task_code += 1  # 3
-        logged_in = False
         if is_get and is_someone_logged():
             internal_logout()
         elif is_get:

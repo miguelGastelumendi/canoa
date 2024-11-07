@@ -50,8 +50,15 @@ TODO:
 
 ------- 2024 - November ----------
 ----------------------------------
+2024-11-06 β 3.13
+    - Database v4,
+        To assist sending email:
+        . new view vw_mgmt_email_sep
+        . new cols in log_user_sep
+    - sep_mgmt v4
+
 2024-11-05 β 3.12
-    - Database v3, sep + log  new columns, uix's
+    - Database v3, sep + log  new columns, uix's, search_name -> name_lower
     - sep_mgmt v3
 
 

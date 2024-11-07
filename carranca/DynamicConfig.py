@@ -50,7 +50,7 @@ def _init_envvar_of_config(cfg, fuse):
         elif is_str_none_or_empty(value):
             fuse.display.warn(f"Ignoring empty envvar value for key [{key}], keeping original.")
         else:
-            _value = as_bool(value) if value.lower() in [t, f, 't', '1'] else value
+            _value = as_bool(value) if value.lower() in [t, f, "t", "1"] else value
             setattr(cfg, attribute_name, _value)
 
 

@@ -11,7 +11,8 @@ import requests
 import puremagic
 import urllib.parse
 from os import path, remove, rename
-#from zlib import crc32
+
+# from zlib import crc32
 
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.discovery import build
@@ -61,6 +62,7 @@ def get_file_id_from_url(url: str) -> str:
 
     if id is None:
         from urllib.parse import urlparse, parse_qs
+
         try:
             purl = urlparse(surl)
             qs = parse_qs(purl)
@@ -71,9 +73,7 @@ def get_file_id_from_url(url: str) -> str:
     return id
 
 
-def download_response(
-    response: requests.Response, filename: str, rename_it: bool
-) -> int:
+def download_response(response: requests.Response, filename: str, rename_it: bool) -> int:
 
     task_code = 1
     _, file_ext = path.splitext(filename)
@@ -88,9 +88,7 @@ def download_response(
                     task_code = 6
                     f.write(chunk)
                     task_code = 8
-                    ext_by_magic = (
-                        ext_by_magic if ext_found else puremagic.what(None, chunk)
-                    )
+                    ext_by_magic = ext_by_magic if ext_found else puremagic.what(None, chunk)
                     ext_found = ext_found or bool(
                         ext_by_magic
                     )  # just try to find extension with the first `chunk`
@@ -109,7 +107,7 @@ def download_response(
 def download_public_google_file(
     url_or_file_id: str,
     file_folder: str,
-    file_name_format: str = '',
+    file_name_format: str = "",
     del_file_if_exists: bool = True,
     debug: bool = False,
 ) -> tuple[int, str]:
@@ -141,9 +139,7 @@ def download_public_google_file(
         gdFile_id = None
         if is_str_none_or_empty(url_or_file_id) or len(url_or_file_id) < 10:
             task_code = 2
-            raise ValueError(
-                f"Invalid parameter value 'url_or_file_id' [{url_or_file_id}]]."
-            )
+            raise ValueError(f"Invalid parameter value 'url_or_file_id' [{url_or_file_id}]].")
         elif url_or_file_id.lower().startswith("https://"):
             task_code = 3
             gdFile_id = get_file_id_from_url(url_or_file_id)
@@ -170,57 +166,56 @@ def download_public_google_file(
             "canoa-download-key.json",
         )
 
-        task_code += 1 #7
+        task_code += 1  # 7
         if not path.isfile(service_account_file):
             raise FileNotFoundError(service_account_file)
 
-        task_code += 1 #8
-        credentials = Credentials.from_service_account_file(
-            service_account_file, scopes=scope
-        )
+        task_code += 1  # 8
+        credentials = Credentials.from_service_account_file(service_account_file, scopes=scope)
 
-        task_code += 1 #9
+        task_code += 1  # 9
         gdService = build("drive", "v3", credentials=credentials)
 
-        task_code += 1 #10
+        task_code += 1  # 10
         gdFile_md = get_file_metadata(gdService, gdFile_id)
 
-        task_code += 1 #11
+        task_code += 1  # 11
         original_file_name = gdFile_md["name"]
 
         name, ext = path.splitext(original_file_name)
         if is_str_none_or_empty(file_name_format):
             gdFile_name = original_file_name
-        elif '{0}' in file_name_format:
+        elif "{0}" in file_name_format:
             gdFile_name = f"{file_name_format.format(name)}{ext}"
-        elif  '.' in file_name_format:
+        elif "." in file_name_format:
             gdFile_name = original_file_name
         else:
             gdFile_name = original_file_name + ext
 
-        file_full_path = path.join(file_folder, gdFile_name) if not is_str_none_or_empty(file_folder) else gdFile_name
-
+        file_full_path = (
+            path.join(file_folder, gdFile_name) if not is_str_none_or_empty(file_folder) else gdFile_name
+        )
 
         if not path.isfile(file_full_path):
             pass
         elif del_file_if_exists:
-            task_code += 1  #12
+            task_code += 1  # 12
             remove(file_full_path)
             if path.isfile(file_full_path):
                 PermissionError(file_full_path)
         else:
-            task_code += 2  #13
+            task_code += 2  # 13
             FileExistsError(file_full_path)
 
-        task_code += 3  #14
+        task_code += 3  # 14
         request = gdService.files().get_media(fileId=gdFile_id)
 
-        task_code += 1 #15
+        task_code += 1  # 15
         with open(file_full_path, "wb") as f:
-            task_code += 1 #16
+            task_code += 1  # 16
             cs = int(0 if not debug else 2 * 1024 * 1024)  # 2MB
             downloader = MediaIoBaseDownload(f, request, chunksize=cs)
-            task_code += 1 #17
+            task_code += 1  # 17
             done = False
             sidekick.display.info(f"download: The download of the file [{file_full_path}] has begun.")
             # file_crc32 = crc32(b'')  # Initialize CRC32 checksum
@@ -230,9 +225,8 @@ def download_public_google_file(
                 if status:
                     sidekick.display.info.debug("download: progress %d%%." % int(status.progress() * 100))
 
-
         task_code = 0
-        sidekick.display.info('download: The file was downloaded.')
+        sidekick.display.info("download: The file was downloaded.")
     except Exception as e:
         msg_error = f"An error ocurred while downloading the file. Task code {task_code}, message '{e}'.)"
         sidekick.display.error(msg_error)

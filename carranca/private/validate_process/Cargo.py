@@ -104,9 +104,7 @@ class Cargo:
         """
         self.step += 1
         self.error_code = error_code
-        self.msg_error = (
-            Cargo.default_error if is_str_none_or_empty(msg_error) else msg_error
-        )
+        self.msg_error = Cargo.default_error if is_str_none_or_empty(msg_error) else msg_error
         self.msg_exception = msg_exception
         self.next = dict(next)  # new next procedure parameters
         self.final.update(final)  # keep data though loops

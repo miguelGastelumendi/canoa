@@ -3,7 +3,7 @@
 
     mgd
     Equipe da Canoa -- 2024
-    cSpell:ignore cuser
+    cSpell:ignore cuser Setorista
 """
 
 # Equipe da Canoa -- 2024
@@ -13,7 +13,7 @@
 from typing import Any, List, Tuple
 from psycopg2 import DatabaseError
 from sqlalchemy import select, text
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text
+from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 
 from carranca import Session
@@ -126,20 +126,36 @@ class UserDataFiles(Base):
         UserDataFiles._ins_or_upd(False, uTicket, **kwargs)
 
 
-class MgmtSepUser(Base):
+class MgmtUserSep(Base):
+    """
+    `vw_mgmt_user_sep` is view that provide the user
+    with a UI grid to assign or remove SEP
+    to or from a user.
+    """
+
     __tablename__ = "vw_mgmt_user_sep"
 
     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
-    user_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
     user_name = Column(String(100))
+    user_disabled = Column(Boolean)
     sep_name = Column(String(100), unique=True)
     sep_new = Column(String(100))
     assigned_at = Column(DateTime)
+    assigned_by = Column(Integer)
+    batch_code = Column(String(10))
 
+    # Helpers
     def get_grid_view(item_none: str) -> Tuple[List[Any], List[Tuple[str, str]], str]:
+        """
+        Returns the `vw_mgmt_user_sep` view with the necessary columns to
+        provide the user with a UI grid to assign or remove SEP
+        to or from a user.
+        """
         msg_error = None
         session = Session()
         try:
+
             sep_list = [
                 {"id": sep.id, "name": sep.name}
                 for sep in session.execute(text(f"SELECT id, name FROM sep ORDER BY name")).fetchall()
@@ -148,11 +164,12 @@ class MgmtSepUser(Base):
                 {
                     "user_id": usr.user_id,
                     "user_name": usr.user_name,
+                    "disabled": usr.user_disabled,
                     "sep_name": item_none if usr.sep_name is None else usr.sep_name,
                     "sep_new": item_none,
                     "when": usr.assigned_at,
                 }
-                for usr in session.scalars(select(MgmtSepUser)).all()
+                for usr in session.scalars(select(MgmtUserSep)).all()
             ]
         except Exception as e:
             msg_error = str(e)
@@ -161,39 +178,27 @@ class MgmtSepUser(Base):
 
         return users_sep, sep_list, msg_error
 
-    def save_grid_view(remove_list, update_list) -> str:
-        msg_error = None
-        session = Session()
-        id = "user_id"
 
-        try:
+class MgmtEmailSep(Base):
+    """
+    Table `log_user_sep` logs the actions done
+    on the UI grid by the adm.
 
-            def _get_user(user_data: dict) -> MgmtSepUser | None:
-                id = user_data["user_id"]
-                user = session.query(MgmtSepUser).filter_by(user_id=id).one_or_none()
-                if user:
-                    return user
-                sidekick.app_log.error(f"{__name__}: User with ID {id} not found, cannot update.")
+    This `view vw_mgmt_email_sep` exposes columns
+    to assist sending emails.
+    """
 
-            for user_data in remove_list:  # first remove
-                user = _get_user(user_data)
-                if user:
-                    user.sep_new = None
+    __tablename__ = "vw_mgmt_email_sep"
 
-            for user_data in update_list:  # then update
-                user = _get_user(user_data)
-                if user:
-                    user.sep_new = user_data["sep_new"]
-
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            msg_error = f"Unable to commit data: [{str(e)}]."
-            sidekick.app_log.error(msg_error)
-        finally:
-            session.close()
-
-        return msg_error
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, Computed(""))
+    user_name = Column(String, Computed(""))
+    user_email = Column(String, Computed(""))
+    sep_name_new = Column(String, Computed(""))
+    sep_name_old = Column(String, Computed(""))
+    email_at = Column(DateTime)
+    email_error = Column(String(400))
+    batch_code = Column(String(10), Computed(""))
 
 
 # eof

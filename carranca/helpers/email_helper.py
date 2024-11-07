@@ -77,7 +77,9 @@ def send_email(
         elif isinstance(email_to, dict):
             recipients = dict(email_to)
         else:
-            error = f"Unknown `email_to` datatype {type(email_to)}, expected is [str|dict]. Cannot send email."
+            error = (
+                f"Unknown `email_to` datatype {type(email_to)}, expected is [str|dict]. Cannot send email."
+            )
             raise ValueError(error)
 
         to_address = recipients.get("to", None)
@@ -85,15 +87,12 @@ def send_email(
         bcc_address = recipients.get("bcc", None)
 
         if is_str_none_or_empty(to_address) and not is_str_none_or_empty(cc_address):
-            print(
-                "Warning: Sending email with only BCC recipient might be rejected by some servers."
-            )
+            print("Warning: Sending email with only BCC recipient might be rejected by some servers.")
 
         task = "checking attachment type"
         ext = (
             None
-            if is_str_none_or_empty(file_to_send_full_name)
-            or not is_str_none_or_empty(file_to_send_type)
+            if is_str_none_or_empty(file_to_send_full_name) or not is_str_none_or_empty(file_to_send_type)
             else path.splitext(file_to_send_full_name)[1].lower()
         )
         if ext is None:
@@ -134,7 +133,7 @@ def send_email(
         def _addTo(address: str, fAdd: Callable[[str, str], None]) -> int:
             result = 0
             for item in strip_and_ignore_empty(address, ";"):
-                info = strip_and_ignore_empty(item, ',', 2)
+                info = strip_and_ignore_empty(item, ",", 2)
                 fAdd(info[0] if len(info) == 1 else tuple(info))
                 result += 1
             return result
@@ -181,9 +180,7 @@ def send_email(
         return sent
     except Exception as e:
         sc = status_code if status_code != 0 else getattr(e, "status_code", 0)
-        error = (
-            f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
-        )
+        error = f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
         msg = getattr(e, "body", str(e))
         msg_error = f"{error} SendGrid: [{msg}]."
         sidekick.app_log.error(msg_error)

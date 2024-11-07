@@ -41,7 +41,7 @@ class BaseConfig(Config):
     APP_NAME = app_name
 
     # &beta; major.minor.patch
-    APP_VERSION = "β 3.11"
+    APP_VERSION = "β 3.13"
 
     """ Canoa Configurations
         --------------------------

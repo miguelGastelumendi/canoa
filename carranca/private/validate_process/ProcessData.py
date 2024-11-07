@@ -70,18 +70,12 @@ class ProcessData:
                 user_folder,
             )
 
-            self.working_folder = (
-                self.user.downloaded
-                if si.file_was_downloaded
-                else self.user.uploaded
-            )
+            self.working_folder = self.user.downloaded if si.file_was_downloaded else self.user.uploaded
             # Path to the patent folder off both apps: canoa and data_validate
             self.apps_parent_path = path_remove_last_folder(common_folder)
 
             # Path to a common folder to be used by both apps canoa & data_validate
-            data_tunnel = path.join(
-                self.apps_parent_path, ProcessData._Folder.data_tunnel
-            )
+            data_tunnel = path.join(self.apps_parent_path, ProcessData._Folder.data_tunnel)
             # Path where the user's zip file is extracted
             self.data_tunnel_user_write = path.join(
                 data_tunnel, user_folder, ProcessData._Folder.validate_input
@@ -116,9 +110,7 @@ class ProcessData:
         self.folder = self._Folder()  # not really needed, but conventions.
         self.file_was_downloaded = file_was_downloaded
         self.file_was_uploaded = not file_was_downloaded
-        self.path = self._Path(
-            self, user_folder, common_folder, data_validate_folder, batch_name
-        )
+        self.path = self._Path(self, user_folder, common_folder, data_validate_folder, batch_name)
         # values are given in receive_file.py
         self.received_file_name = ""
         self.received_original_name = None

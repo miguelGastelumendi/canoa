@@ -134,12 +134,12 @@ def _register_db(app):
         which removes the session to prevent any lingering database connections or transactions.
     """
 
-    # @app.teardown_request
-    # def shutdown_session(exception=None):
-    #     try:
-    #         Session.remove()
-    #     except Exception as e:
-    #         print(f"An error ocurred removing the current session [{Session}]. Error [{e}].")
+    @app.teardown_request
+    def shutdown_session(exception=None):
+        try:
+            Session.remove()
+        except Exception as e:
+            print(f"An error ocurred removing the current session [{Session}]. Error [{e}].")
 
 
 # ---------------------------------------------------------------------------- #

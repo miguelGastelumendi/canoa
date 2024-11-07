@@ -56,7 +56,7 @@ def get_debug_info(app, config) -> List[Tuple[str, str]]:
     _add("Name", app.name)
     _add("DEBUG", app.debug)
     _add("TESTING", app.testing)
-    _add("SECRET_KEY", ("" if is_str_none_or_empty(app.secret_key) else "*"*11))
+    _add("SECRET_KEY", ("" if is_str_none_or_empty(app.secret_key) else "*" * 11))
     _add("Root Path", app.root_path)
     _add("Template Folder", app.template_folder)
     _add("Static Folder", app.static_folder)

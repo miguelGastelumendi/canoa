@@ -235,9 +235,6 @@ if __name__ == "__main__":
 
     print(os_color)
 
-    def is_str_none_or_empty(s):
-        return (s is None) or ((str(s) + "").strip() == "")
-
     import time
     import random
 
