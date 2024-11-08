@@ -143,7 +143,7 @@ def receive_file() -> str:
         sidekick.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
 
     tmpl = _result()
-    sidekick.display.debug(tmpl)
+    # sidekick.display.debug(tmpl)
     return tmpl
 
 

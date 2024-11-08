@@ -30,7 +30,7 @@ from ..models import get_user_where
 
 def login():
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
-    tmpl_form, template, is_get, texts = init_form_vars()
+    tmpl_form, template, is_get, uiTexts = init_form_vars()
     # TODO test, fake form?
 
     logged_in = False
@@ -38,7 +38,7 @@ def login():
         task_code += 1  # 1
         tmpl_form = LoginForm(request.form)
         task_code += 1  # 2
-        template, is_get, texts = get_account_form_data("login")
+        template, is_get, uiTexts = get_account_form_data("login")
         task_code += 1  # 3
         if is_get and is_someone_logged():
             internal_logout()
@@ -57,9 +57,9 @@ def login():
             user = get_user_where(email=search_for) if user is None else user  # or by email
             task_code += 1  # 9
             if not user or not verify_pass(password, user.password):
-                add_msg_error("userOrPwdIsWrong", texts)
+                add_msg_error("userOrPwdIsWrong", uiTexts)
             elif user.disabled:
-                add_msg_error("userIsDisabled", texts)
+                add_msg_error("userIsDisabled", uiTexts)
             else:
                 task_code += 1  # 10
                 task_code += 1  # 11
@@ -71,13 +71,17 @@ def login():
                 login_user(user, remember_me)
                 logged_in = True
                 task_code += 1  # 14
+                msg = f"{user.username} (with id {user.id}) just logged in."
+                sidekick.display.info(msg)
+                sidekick.app_log.info(msg)
+                # user is lost here
                 persist_user(user, task_code)
                 # for this login work, User must inherited from SQLAlchemy.Model
                 task_code += 1  # 14
                 return redirect_to(home_route())
 
     except Exception as e:
-        msg = add_msg_error("errorLogin", texts, task_code)
+        msg = add_msg_error("errorLogin", uiTexts, task_code)
         sidekick.app_log.error(e)
         sidekick.app_log.debug(msg)
         if logged_in:
@@ -87,7 +91,7 @@ def login():
     return render_template(
         template,
         form=tmpl_form,
-        **texts,
+        **uiTexts,
     )
 
 

@@ -11,7 +11,6 @@
 import time
 
 
-
 # -------------------------------------------------------
 # Main --------------------------------------------------
 # -------------------------------------------------------
@@ -30,29 +29,24 @@ from carranca import create_app, started  # see __init__.py
 app = create_app(app_name)
 
 from .Sidekick import sidekick
-sidekick.display.info("All mandatory information has been checked and is available. The app is ready to run.")
+
+sidekick.display.info(
+    "All mandatory information has been checked and is available. The app is ready to run."
+)
 
 # Keep shared alive within app
 sidekick.keep(app)
-sidekick.display.info("The session 'sidekick' variable is now ready.")
+sidekick.display.info("The session 'sidekick' variable is now ready for the current session.")
+
 if sidekick.config.APP_DISPLAY_DEBUG_MSG:
     print(repr(sidekick))
-
-
-# Keep shared alive within app
-if sidekick.config.APP_DISPLAY_DEBUG_MSG and True:
     from .public.debug_info import get_debug_info
 
-    di = get_debug_info(app, sidekick.config.copy())  # TODO, print
-
-from .public.debug_info import get_debug_info
-
-get_debug_info(app, sidekick.config)  # TODO, print
+    di = get_debug_info(app, sidekick.config)  # TODO, print
 
 # Tell everybody how quick we are
 elapsed = (time.perf_counter() - started) * 1000
 sidekick.display.info(f"{app_name} is now ready for the trip. It took {elapsed:,.0f}ms to create it.")
-
 
 if __name__ == "__main__":
     app.run()

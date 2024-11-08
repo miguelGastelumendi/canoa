@@ -50,6 +50,14 @@ TODO:
 
 ------- 2024 - November ----------
 ----------------------------------
+
+2024-11-07 β 3.14
+    - Log process to file
+    - Database v5, enters correction fase
+    - sep_mgmt v5, enters correction fase
+    - sep_edit v1, displays form, DB ready
+
+
 2024-11-06 β 3.13
     - Database v4,
         To assist sending email:

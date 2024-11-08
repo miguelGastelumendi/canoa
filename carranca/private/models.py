@@ -21,6 +21,7 @@ from ..Sidekick import sidekick
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
 Base = declarative_base()
+SepRecords = List[dict[str, Any]]
 
 
 class UserDataFiles(Base):
@@ -146,7 +147,7 @@ class MgmtUserSep(Base):
     batch_code = Column(String(10))
 
     # Helpers
-    def get_grid_view(item_none: str) -> Tuple[List[Any], List[Tuple[str, str]], str]:
+    def get_grid_view(item_none: str) -> Tuple[SepRecords, List[Tuple[str, str]], str]:
         """
         Returns the `vw_mgmt_user_sep` view with the necessary columns to
         provide the user with a UI grid to assign or remove SEP
@@ -199,6 +200,20 @@ class MgmtEmailSep(Base):
     email_at = Column(DateTime)
     email_error = Column(String(400))
     batch_code = Column(String(10), Computed(""))
+
+
+class MgmtSep(Base):
+    """
+    Table `sep` keeps the basic information of
+    each SEP
+    """
+
+    __tablename__ = "sep"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100), unique=True)
+    description = Column(String(140))
+    icon_file_name = Column(String(120))
 
 
 # eof

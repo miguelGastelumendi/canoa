@@ -72,8 +72,8 @@ class Sidekick:
         self.app_log = None if app is None else app.logger
         return
 
-    def __repr__(self):
-        return json.dumps(self.info, indent=4, sort_keys=True)
+    # def __repr__(self):
+    #     return json.dumps(self.config__dict__, indent=4, sort_keys=True)
 
 
 # eof

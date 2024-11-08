@@ -59,7 +59,7 @@ class Users(UserMixin, db.Model):
 
 
 @staticmethod
-def get_user_where(**kwargs: Any) -> Any:
+def get_user_where(**kwargs: Any) -> Users:
     """
     Select a user by a unique filter
     This def if to avoid the use of .first, like in:

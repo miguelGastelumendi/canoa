@@ -44,21 +44,29 @@ def get_user_folder(id: int) -> str:
 
 def get_file_ticket(user_code: str) -> str:
     """
-        1    1  1   1             =  4  separators, _ (underscore) and - (for date)
-    4    4    2  2  13            = 25
-    0635_2024-04-30_1714523156580 = 29
+        1    1  1   1           =  4  separators, _ (underscore) and - (for date)
+    4    4    2  2  6           = 18
+    0635_2024-04-30_abcdef      = 22
 
     4    : usuário
     _    : separador
     4-2-2: data yyyy-mm-dd
     _    : separador
-    13    : ms do dia em base 22
+    6    : ms do dia em base 22
     """
     # `user_receipt` (see below) dependes heavily in the format of the file_ticket
-    ms = to_base(ms_since_midnight(), 22).zfill(6)  # max = ggi.48g = d86.400.000
-    now_str = now().strftime("%Y-%m-%d")
-    file_ticket = f"{user_code}{_ticket_receipt_sep}{now_str}{_ticket_receipt_sep}{ms}"
+    ms = ms_since_midnight(True)  # max = ggi.48g = d86.400.000
+    today_str = now().strftime("%Y-%m-%d")  # 4-2-2
+    file_ticket = f"{user_code}{_ticket_receipt_sep}{today_str}{_ticket_receipt_sep}{ms}"
     return file_ticket
+
+
+def get_unique_filename(name: str, ext: str = "") -> str:
+    # https://strftime.org/
+    today_str = now().strftime("%Y-%m-%d")  # 4-2-2_6
+    ms = ms_since_midnight(True)
+    filename = f"{name}{today_str}_{ms}{ext}"
+    return filename
 
 
 def get_user_receipt(ticket: str) -> str:
@@ -81,7 +89,7 @@ def get_batch_code() -> str:  # len 10
     dt_diff = datetime.now() - dt_from
     days = dt_diff.days
 
-    ms = to_base(ms_since_midnight(), _base).zfill(6)  # max = ggi.48g
+    ms = ms_since_midnight(True)  # max = ggi.48g
     dy = to_base(days, _base).zfill(3)  # max= kkk => 10140/365= até 2050 ;-O
     batch_code = f"{dy}.{ms}"
     return batch_code

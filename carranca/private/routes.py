@@ -54,7 +54,9 @@ def home():
 @bp_private.route("/sep_mgmt", methods=["GET", "POST"])
 def sep_mgmt():
     """
-    Through this route, the admin user can manage the profile os
+    Through this route, the admin user can manage which
+    user is the 'owner' of a SEP
+
     users
     """
     if nobody_is_logged():
@@ -63,6 +65,20 @@ def sep_mgmt():
         from .sep_mgmt import do_sep_mgmt
 
         return do_sep_mgmt()
+
+
+@login_required
+@bp_private.route("/sep_edit", methods=["GET", "POST"])
+def sep_edit():
+    """
+    Through this route, the user can edit a SEP data
+    """
+    if nobody_is_logged():
+        return redirect_to(login_route())
+    else:
+        from .sep_edit import do_sep_edit
+
+        return do_sep_edit()
 
 
 @login_required

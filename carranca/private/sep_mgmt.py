@@ -8,123 +8,165 @@
 # cSpell: ignore mgmt tmpl
 
 import json
-from typing import Any, List, Tuple
+from typing import Tuple
 from flask import render_template, request
 
+from .models import MgmtUserSep, SepRecords
+from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_batch_code
+from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data
+from ..helpers.hints_helper import TextsUI
+
+
+proc_return = Tuple[str, str, int]
 
 
 def do_sep_mgmt() -> str:
-    from .models import MgmtUserSep
 
-    task_code = 0
-    template, is_get, texts = get_private_form_data("sepMgmt")
-    js_grid_sec_value = "7298kaj0fk9dl-sd=)0x"
-    js_grid_sec_key = "gridSecKey"
-    js_grid_rsp = "gridRsp"
-    js_grid_submit_id = "gridSubmitID"
-
-    # Até criar ui_texts:
-    texts["itemNone"] = "(nenhum)"
-    texts["itemRemove"] = "(remover)"
-    # py/js communication
-    texts[js_grid_rsp] = js_grid_rsp
-    texts["gridSecValue"] = js_grid_sec_value
-    texts[js_grid_submit_id] = js_grid_submit_id
-    texts[js_grid_sec_key] = js_grid_sec_key
-
-    def __get_grid_data():
-        users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view(texts["itemNone"])
-        sep_name_list = [sep["name"] for sep in sep_list]
-        return users_sep, sep_name_list, msg_error
-
-    if is_get:
-        users_sep, sep_name_list, msg_error = __get_grid_data()
-        texts["msgInfo"] = (
-            """
-            Para atribuir um SEP, selecione um da lista 'Novo SEP'.
-            Use o item (Remover) para cancelar a atribuição.
-            Para criar um novo SEP, use o botão [Adicionar] e [Editar] para alterá-lo.
-            """
-        )
-    elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
-        texts["msgError"] = "A chave mudou."
-        # TODO goto login
-    else:
+    task_code = 0  # ModuleErrorCode.SEP_MANAGEMENT.value
+    try:
         task_code += 1
-        txtGridResponse = request.form.get(js_grid_rsp)
-        task_code += 1
-        jsonGridResponse = json.loads(txtGridResponse)
-        task_code += 1
-        batch_code = get_batch_code()
-        # save data to db
-        msg_success, msg_error_save, task_code = _save_data(jsonGridResponse, batch_code, task_code)
-        task_code += 1
-        if is_str_none_or_empty(msg_error_save):  # send mails
-            msg_error_mail, task_code = _send_email(batch_code, task_code)
-            msg_email = (
-                "Os emails foram enviados."
-                if is_str_none_or_empty(msg_error_mail)
-                else "mais houve um error ao enviar os emails [{0}].".format(msg_error_mail)
-            )
-            msg_success = f"{msg_success} {msg_email}"
+        template, is_get, uiTexts = get_private_form_data("sepMgmt")
 
-        users_sep, sep_name_list, msg_error_read = __get_grid_data()
-        if is_str_none_or_empty(msg_error_save) and is_str_none_or_empty(msg_error_read):
-            texts["msgSuccess"] = msg_success
-        elif is_str_none_or_empty(msg_error_save):
-            texts["msgError"] = msg_error_read
+        js_grid_sec_value = "7298kaj0fk9dl-sd=)0x"
+        js_grid_sec_key = "gridSecKey"
+        js_grid_rsp = "gridRsp"
+        js_grid_submit_id = "gridSubmitID"
+
+        # Até criar ui_texts:
+        uiTexts["itemNone"] = "(nenhum)"
+        uiTexts["itemRemove"] = "(remover)"
+        # py/js communication
+        uiTexts[js_grid_rsp] = js_grid_rsp
+        uiTexts["gridSecValue"] = js_grid_sec_value
+        uiTexts[js_grid_submit_id] = js_grid_submit_id
+        uiTexts[js_grid_sec_key] = js_grid_sec_key
+
+        def __get_grid_data():
+            users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view(uiTexts["itemNone"])
+            sep_name_list = [sep["name"] for sep in sep_list]
+            return users_sep, sep_name_list, msg_error
+
+        if is_get:
+            users_sep, sep_name_list, msg_error = __get_grid_data()
+            if not is_str_none_or_empty(msg_error):
+                uiTexts["msgError"] = msg_error
+            else:
+                uiTexts["msgInfo"] = (
+                    """
+                    Para atribuir um SEP, selecione um da lista 'Novo SEP'.
+                    Use o item (Remover) para cancelar a atribuição.
+                    Para criar um novo SEP, use o botão [Adicionar] e [Editar] para alterá-lo.
+                    """
+                )
+        elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
+            uiTexts["msgError"] = "A chave mudou."
+            # TODO goto login
         else:
-            texts["msgError"] = msg_error_save
+            task_code += 1
+            txtGridResponse = request.form.get(js_grid_rsp)
+            msg_success, msg_error, task_code = _save_and_email(txtGridResponse, uiTexts, task_code)
+            task_code += 1
+            users_sep, sep_name_list, msg_error_read = __get_grid_data()
+            if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
+                uiTexts["msgSuccess"] = msg_success
+            elif is_str_none_or_empty(msg_error):
+                uiTexts["msgError"] = msg_error_read
+            else:
+                uiTexts["msgError"] = msg_error
 
-    tmpl = render_template(template, usersSep=users_sep, sepList=sep_name_list, **texts)
+    except Exception as e:
+        # msg = add_msg_error("errorPasswordChange", uiTexts, task_code)
+        sidekick.app_log.error(e)
+
+    tmpl = render_template(template, usersSep=users_sep, sepList=sep_name_list, **uiTexts)
     return tmpl
 
 
-def _save_data(grid_response: dict, batch_code: str, task_code: int) -> Tuple[str, str]:
-    """saves user modifications to the DB via the view's trigger"""
+def _save_and_email(txtGridResponse: str, uiTexts: TextsUI, task_code: int) -> proc_return:
+    """Saves data & sends emails"""
     task_code += 1
-    msg_success = "As modificações foram salvas."
-    msg_error = ""
-    try:
-        actions = grid_response["actions"]
-        task_code += 1
-        str_remove = actions["remove"]
-        task_code += 1
-        str_none = actions["none"]
-        task_code += 1
-        remove = []
-        assign = []
-        none = 0
-        grid = grid_response["grid"]
-        task_code += 1
-        for item in grid:
-            sep_new = item["sep_new"]
-            if sep_new == str_none:
-                none += 1
-            elif sep_new != str_remove:  # new sep
-                assign.append(item)
-            elif item["sep_name"] != str_none:  # ignore remove none
-                remove.append(item)
+    jsonGridResponse = json.loads(txtGridResponse)
+    task_code += 1
+    batch_code = get_batch_code()
+    msg_success_save, msg_error, task_code = _save_data(jsonGridResponse, batch_code, uiTexts, task_code)
+    if not is_str_none_or_empty(msg_error):
+        return None, msg_error, task_code
 
-        if len(remove) + len(assign) == 0:
+    task_code += 1
+    msg_success_email, msg_error, task_code = _send_email(batch_code, uiTexts, task_code)
+    if not is_str_none_or_empty(msg_error):
+        return None, msg_error, task_code
+
+    msg_success = f"{msg_success_save} {msg_success_email}"
+    return msg_success, None, task_code
+
+
+def _save_data(
+    grid_response: dict[str, any], batch_code: str, uiTexts: TextsUI, task_code: int
+) -> proc_return:
+    """saves user modifications to the DB via the view's trigger"""
+    msg_success = None
+    msg_error = None
+    try:
+        msg_error, remove, assign, task_code = _prepare_data_to_save(grid_response, uiTexts, task_code)
+        task_code += 1
+        if not is_str_none_or_empty(msg_error):
+            return "", msg_error, task_code
+        elif len(remove) + len(assign) == 0:
             return "Nenhuma tarefa a ser feita.", "", task_code
 
         task_code += 1
-        msg_error = _save_grid_view(remove, assign, batch_code)
+        _, msg_error, task_code = _save_data_to_db(remove, assign, batch_code, uiTexts, task_code)
+        task_code += 1
         if is_str_none_or_empty(msg_error):
             msg_success = f"{0} remoções e {1} atribuições foram realizadas.".format(
                 len(remove), len(assign)
             )
     except Exception as e:
-        msg_error = str(e)
+        msg_error = f"Unable to prepare/send data {task_code}: [{str(e)}]."
 
     return msg_success, msg_error, task_code
 
 
-def _save_grid_view(remove_list: List[Any], update_list: List[Any], batch_code: str) -> str:
+def _prepare_data_to_save(
+    grid_response: dict[str, any], uiTexts: TextsUI, task_code: int
+) -> Tuple[str, SepRecords, SepRecords, int]:
+    """Distributes the modifications in two groups: remove & assign"""
+
+    msg_error = None
+    try:
+        actions = grid_response["actions"]
+        task_code += 1
+        str_remove: str = actions["remove"]
+        task_code += 1
+        str_none: str = actions["none"]
+        task_code += 1
+        remove: SepRecords = []
+        assign: SepRecords = []
+        grid: SepRecords = grid_response["grid"]
+        task_code += 1
+        for item in grid:
+            sep_new = item["sep_new"]
+            if sep_new == str_none:
+                pass
+            elif sep_new != str_remove:  # new sep
+                assign.append(item)
+            elif item["sep_name"] != str_none:  # ignore remove none
+                remove.append(item)
+
+    except Exception as e:
+        # uiTexts:
+        msg_error = f"Unable to prepare data {task_code}: [{str(e)}]."
+
+    return msg_error, remove, assign, task_code
+
+
+def _save_data_to_db(
+    remove: SepRecords, update: SepRecords, batch_code: str, uiTexts: TextsUI, task_code: int
+) -> proc_return:
     """
     Saves user-made changes to the UI grid to the database
     via an 'instead-of' trigger that:
@@ -137,15 +179,10 @@ def _save_grid_view(remove_list: List[Any], update_list: List[Any], batch_code: 
     from .models import MgmtUserSep
     from ..Sidekick import sidekick
 
-    remove_count = len(remove_list)
-    update_count = len(update_list)
-
-    if (remove_count + update_count) == 0:
-        return None
-
     msg_error = None
     assigned_by = current_user.id
     user_not_found = []
+    task_code += 1
     session = Session()
     try:
 
@@ -161,24 +198,28 @@ def _save_grid_view(remove_list: List[Any], update_list: List[Any], batch_code: 
 
         id = "user_id"
         # TODO auto remove reassignment
-        for user_sep_data in remove_list:  # first remove
+        task_code += 1
+        for user_sep_data in remove:  # first remove
             __set_user_sep_new(user_sep_data[id], None)
 
-        for user_sep_data in update_list:  # then update
+        task_code += 1
+        for user_sep_data in update:  # then update
             __set_user_sep_new(user_sep_data[id], user_sep_data["sep_new"])
 
+        task_code += 1
         session.commit()
     except Exception as e:
         session.rollback()
-        msg_error = f"Unable to commit data: [{str(e)}]."
+        # uiTexts:
+        msg_error = f"Unable to commit data {task_code}: [{str(e)}]."
         sidekick.app_log.error(msg_error)
     finally:
         session.close()
 
-    return msg_error
+    return "", msg_error, task_code
 
 
-def _send_email(batch_code: str, task_code: int) -> Tuple[str, str]:
+def _send_email(batch_code: str, uiTexts: TextsUI, task_code: int) -> proc_return:
     """
     Send an email for each user with a
     'new' SEP or if it was removed
@@ -187,6 +228,7 @@ def _send_email(batch_code: str, task_code: int) -> Tuple[str, str]:
     from .models import MgmtEmailSep
     from ..Sidekick import sidekick
     from ..helpers.py_helper import now
+    from ..helpers.email_helper import send_email
 
     task_code += 1
     msg_error = None
@@ -194,22 +236,56 @@ def _send_email(batch_code: str, task_code: int) -> Tuple[str, str]:
     try:
         user_emails = session.query(MgmtEmailSep).filter_by(batch_code=batch_code).all()
         if not user_emails:
-            return None
+            return None, "Nenhum e-mail pendente encontrado", task_code
+
+        email_send = 0
+        email_error = 0
+        invalid_state = []
+        texts = {}
+        texts["subject"] = "Novidades sobre o seu SEP em Canoa"
+        intro = "Prezado {0},<br>"
+        uiTexts["sepSetNew"] = (
+            "Prezado {0},<br><br>Nesta data, o SEP '{1}' foi atribuído para você.<br><br><i>Equipe Canoa</i>"
+        )
+        uiTexts["sepRemoved"] = (
+            "Prezado {0},<br><br>A partir desta data, o SEP '{2}' não estará mais a seu cuidado.<br><br><i>Equipe Canoa</i>"
+        )
+        uiTexts["sepChanged"] = (
+            "Prezado {0},<br><br>A partir desta data, O SEP '{1}' estará sob seus cuidados no lugar do SEP '{2}'.<br><br><i>Equipe Canoa</i>"
+        )
         for user in user_emails:
-            user.email_at = now()
-            user.email_error = None
+            msg = None
+            try:
+                if user.sep_name_old == None and user.sep_name_new == None:
+                    invalid_state.append(user)
+                elif user.sep_name_old == None:
+                    msg = uiTexts["sepSetNew"].format(user.user_name, user.sep_name_new)
+                elif user.sep_name_new == None:
+                    msg = uiTexts["sepRemoved"].format(user.user_name, user.sep_name_new, user.sep_name_old)
+                else:
+                    msg = uiTexts["sepChanged"].format(user.user_name, user.sep_name_new, user.sep_name_old)
+
+                texts["content"] = msg
+                if send_email(user.user_email, texts):
+                    user.email_at = now()
+                    email_send += 1
+                else:
+                    raise Exception("email was not send, no error was generated.")
+            except Exception as e:
+                user.email_error = str(e)
+                email_error += 1
 
         session.commit()
 
     # session.commit()
     except Exception as e:
         session.rollback()
-        msg_error = f"Unable to read email data: [{str(e)}]."
+        msg_error = f"Unable to send email {task_code}: [{str(e)}]."
         sidekick.app_log.error(msg_error)
     finally:
         session.close()
 
-    return msg_error, task_code
+    return "Emails enviados com sucesso.", msg_error, task_code
 
 
 # eof

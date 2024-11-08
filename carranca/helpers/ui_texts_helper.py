@@ -10,8 +10,9 @@
 
 # cSpell:ignore getDictResultset connstr adaptabrasil
 
-from .py_helper import is_str_none_or_empty
 from .db_helper import retrieve_data
+from .py_helper import is_str_none_or_empty
+from .hints_helper import TextsUI
 from .jinja_helper import process_pre_templates
 
 # === local var ===========================================
@@ -60,7 +61,7 @@ def _get_row(item: str, section: str) -> tuple[str, str]:
     return ("", "") if result is None else result
 
 
-def _add_msg(item: str, section: str, name: str, texts: dict[str, str] = None, *args) -> str:
+def _add_msg(item: str, section: str, name: str, texts=None, *args) -> str:
     """Retrieves text and optionally adds it to a dictionary.
 
     Args:
@@ -79,7 +80,7 @@ def _add_msg(item: str, section: str, name: str, texts: dict[str, str] = None, *
     except:
         value = s
 
-    if texts:
+    if texts:  # from .ui_texts_helper import TextsUI
         texts[name] = value
 
     return value
@@ -95,9 +96,9 @@ def _texts_init():
 # === public ==============================================
 
 
-def get_html(section: str) -> dict[str, str]:
+def get_html(section: str) -> TextsUI:
     """
-    returns a dict[str, str] with the HTML info
+    returns a TextsUI with the HTML info
      TODO except for.. not ready, still working...
     """
     imgList = get_text("images", section)
@@ -107,9 +108,9 @@ def get_html(section: str) -> dict[str, str]:
     return _get_result_set(query)
 
 
-def get_section(section: str) -> dict[str, str]:
+def get_section(section: str) -> TextsUI:
     """
-    returns a dict[str, str] of the 'section'
+    returns a TextsUI of the 'section'
     """
     query = __get_query("item, text", section)
     _texts = _get_result_set(query)
@@ -131,14 +132,14 @@ def get_text(item: str, section: str, default: str = None) -> str:
     return text
 
 
-def add_msg_error(item: str, texts: dict[str, str] = None, *args) -> str:
+def add_msg_error(item: str, texts: TextsUI = None, *args) -> str:
     """
     returns text for the item/'sec_Error' pair and adds pair to texts => texts.add( text, 'msgError')
     """
     return _add_msg(item, sec_Error, msg_error, texts, *args)
 
 
-def add_msg_success(item: str, texts: dict[str, str] = None, *args) -> str:
+def add_msg_success(item: str, texts: TextsUI = None, *args) -> str:
     """
     returns `text` for the [item, 'sec_Success'] pair
     (of the vw_ui_texts wonderful view)

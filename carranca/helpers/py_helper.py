@@ -137,15 +137,15 @@ def ms_since_epoch():
     return time.time_ns() // 1_000_000
 
 
-def ms_since_midnight():
+def ms_since_midnight(toBase22: bool) -> int | str:
     """
     max -> d86400000 -> x526 5C00 -> (22)ggi.48g
     """
     today = datetime.now()
     midnight = today.replace(hour=0, minute=0, second=0, microsecond=0)
     time_delta = today - midnight
-    ms_since_midnight = (time_delta.total_seconds() * 1000) + (time_delta.microseconds / 1000)
-    return int(ms_since_midnight)
+    ms = int((time_delta.total_seconds() * 1000) + (time_delta.microseconds / 1000))
+    return to_base(ms, 22).zfill(6) if toBase22 else ms
 
 
 def to_base(number: int, base: int) -> str:
@@ -229,7 +229,7 @@ def copy_attributes(class_instance: Any, this_types: Tuple[Type] | Type = None) 
         or the defaults
 
     Args:
-        config: The Config object to copy attributes from.
+        class_instance: The instance object copy attributes from.
         this_types: An optional type to add to the list of included types or a
             Tuple of types to use instead of the default list
 

@@ -139,7 +139,8 @@ def _register_db(app):
         try:
             Session.remove()
         except Exception as e:
-            print(f"An error ocurred removing the current session [{Session}]. Error [{e}].")
+            if app:
+                app.logger.error(f"An error ocurred removing the current session [{Session}]. Error [{e}].")
 
 
 # ---------------------------------------------------------------------------- #
@@ -163,13 +164,14 @@ def create_app(app_name: str):
 
     # === Check if all mandatory information is ready === #
     from .igniter import ignite_sidekick
+    from .igniter import ignite_log_file
 
     sidekick, display_mute_after_init = ignite_sidekick(app_name, started)
 
     # === Create the Flask App  ===`#
     name = __name__ if __name__.find(".") < 0 else __name__.split(".")[0]
     app = Flask(name)
-    sidekick.display.info("The Flask App was created.")
+    sidekick.display.info(f"The Flask App was created, named '{name}'.")
 
     # -- app config
     from .helpers.py_helper import copy_attributes
@@ -179,6 +181,13 @@ def create_app(app_name: str):
     app.config.from_prefixed_env(app_name)
     sidekick.display.info("App's config was successfully bound.")
 
+    # -- Logfile
+    if sidekick.config.LOG_TO_FILE:
+        filename, level = ignite_log_file(sidekick.config, app)
+        info = f"file '{filename}' with level {level}"
+        sidekick.display.info(f"Logging to {info}.")
+        app.logger.log(sidekick.config.LOG_FILE_LEVEL, f"{sidekick.config.APP_NAME}'s log {info} is ready.")
+
     # -- Register modules
     _register_db(app)
     sidekick.display.info("The db was registered.")
@@ -187,7 +196,9 @@ def create_app(app_name: str):
     sidekick.display.info("The blueprints were collected and registered within the app.")
 
     _register_jinja(app, sidekick.config.DEBUG_TEMPLATES)
-    sidekick.display.info("This app's functions were registered into Jinja.")
+    sidekick.display.info(
+        f"This app's functions were registered into Jinja (with debug_templates {sidekick.config.DEBUG_TEMPLATES})."
+    )
 
     _register_login_manager(app)
     sidekick.display.info("The Login Manager was initialized with the app.")

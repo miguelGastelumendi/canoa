@@ -1,0 +1,56 @@
+{# ------------------------------------
+./private/sep_edit.html.j2
+-------------------------------
+Edit the attributes of a SEP
+
+Extends:
+./layouts/form.html.j2
+
+mgd
+--------------------------------------- #}
+
+{% extends "./layouts/form.html.j2" %}
+
+{% block frm_blc_above %}
+{% if msgSuccess %}
+<div class="d-grid">
+    <button type="button" class="btn form-main-btn" onclick="window.location.href='{{ private_route('home') }}'">
+        {{successButton }}</button>
+</div>
+{% endif %}
+{% endblock frm_blc_above %}
+
+{% block frm_blc_content %}
+{% if not msgSuccess %}
+<div class="form-group mb-3">
+    <label class="form-label" inert for={{ form.name.id }}>{{ nameLabel }}</label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <span class="fa"></span>
+        </span>
+        {{ form.name() }}
+    </div>
+</div>
+<div class="form-group mb-3">
+    <label class="form-label" inert for={{ form.description.id }}>{{ descriptionLabel }}</label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <span class="fa"></span>
+        </span>
+        {{ form.description() }}
+    </div>
+</div>
+
+<div class="form-group mb-3">
+    <label class="form-label" inert for={{ form.icon_filename.id }}>{{ fileLabel }}</label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <span class="fa fa-upload fa-lg"></span>
+        </span>
+        {{ form.icon_filename() }}
+    </div>
+</div>
+{% endif %}
+{% endblock frm_blc_content %}
+
+{# eof #}

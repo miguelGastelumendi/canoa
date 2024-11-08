@@ -10,6 +10,7 @@
 # cSpell:ignore sqlalchemy app_name cssless sendgrid ENDC psycopg2 mandatories
 
 from typing import Tuple, Any
+
 from .helpers.py_helper import coalesce, is_str_none_or_empty
 
 from .Args import Args
@@ -203,6 +204,55 @@ def _ignite_server_name(config) -> Tuple[any, str]:
     return address, msg_error
 
 
+# ---------------------------------------------------------------------------- #
+def ignite_log_file(config: DynamicConfig, app) -> Tuple[str, str]:
+    import logging
+
+    if not config.LOG_TO_FILE:
+        return "", logging.NOTSET
+
+    from os import path
+    from .helpers.user_helper import get_unique_filename
+    from logging.handlers import RotatingFileHandler
+    from .helpers.file_helper import folder_must_exist
+
+    msg_error = None
+    full_name = ""
+    task = "file_name"
+    try:
+        file_name = config.LOG_FILE_NAME
+        if is_str_none_or_empty(file_name):
+            file_name = get_unique_filename(f"{config.APP_NAME}_", ".log")
+            config.LOG_FILE_NAME = file_name
+
+        task = "file_folder"
+        file_folder = config.LOG_FILE_FOLDER
+        if is_str_none_or_empty(file_folder):
+            file_folder = "log_files"
+            config.LOG_FILE_FOLDER = file_folder
+
+        if not folder_must_exist(file_folder):
+            msg_error = f"Cannot create log's files folder [{file_folder}]."
+
+        task = "full_name"
+        full_name = path.join(".", config.LOG_FILE_FOLDER, file_name)
+
+        task = "level"
+        s_level = logging._levelToName[config.LOG_FILE_LEVEL]
+
+        task = "handler"
+        handler = RotatingFileHandler(full_name, maxBytes=10000, backupCount=1)
+        handler.setLevel(config.LOG_FILE_LEVEL)
+        app.logger.addHandler(handler)
+    except Exception as e:
+        msg_error = f"Cannot create log's {task}: [{e}]"
+
+    if not is_str_none_or_empty(msg_error):
+        _log_and_exit(msg_error)
+
+    return full_name, s_level
+
+
 # - ---------------------------------------------------------------------------- #
 # - Public --------------------------------------------------------------------- #
 # - ---------------------------------------------------------------------------- #
@@ -256,6 +306,9 @@ def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
         fuse.display.warning(
             f"The app email originator is not defined, the app will not be able to send emails."
         )
+
+    # ---------------------------------------------------------------------------- #
+    # Final message
 
     fuse.display.info(f"{__name__} completed with 0 errors and {warns} warnings.")
     display_mute_after_init = fuse.args.display_mute_after_init

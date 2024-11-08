@@ -41,7 +41,7 @@ carranca/static/docs/
 user_files/
 uploaded_files/
 downloaded_files/
-LocalDrive/
+LocalStorage/
 
 ## Canoa linux
 mount-win.sh

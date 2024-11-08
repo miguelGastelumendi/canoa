@@ -12,6 +12,7 @@
 
 from os import path
 from flask import Config
+import logging
 
 from .main import app_name
 from .helpers.py_helper import is_str_none_or_empty
@@ -41,7 +42,7 @@ class BaseConfig(Config):
     APP_NAME = app_name
 
     # &beta; major.minor.patch
-    APP_VERSION = "β 3.13"
+    APP_VERSION = "β 3.14"
 
     """ Canoa Configurations
         --------------------------
@@ -55,7 +56,7 @@ class BaseConfig(Config):
     APP_PROPAGATE_DEBUG = False
     APP_DEBUG = None
     APP_MINIFIED = None  # <- True if APP_PROPAGATE_DEBUG else False
-    APP_DISPLAY_DEBUG_MSG = None < -True if APP_PROPAGATE_DEBUG else False
+    APP_DISPLAY_DEBUG_MSG = None  # <- True if APP_PROPAGATE_DEBUG else False
     APP_MODE = "None"  # see below (enum)
 
     """ Helpers Configuration
@@ -78,6 +79,11 @@ class BaseConfig(Config):
         this must be set individually for each APP_MODE (see config.py)
         to send envvars directly to flask use the FLASK_ prefix
     """
+    LOG_TO_FILE = True  # Log
+    LOG_FILE_LEVEL = logging.INFO
+    # folder is log_files
+    LOG_FILE_FOLDER = None  # "log_files"
+    LOG_FILE_NAME = None  # defaults to APP_NAME.datetime.log
     DEBUG = None  # <- True if APP_PROPAGATE_DEBUG else False
     TESTING = None  # <- True if APP_PROPAGATE_DEBUG else False
     DEBUG_TEMPLATES = None  # <- True if APP_PROPAGATE_DEBUG else False

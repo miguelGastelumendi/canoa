@@ -36,8 +36,8 @@ from .py_helper import is_str_none_or_empty, strip_and_ignore_empty
 
 def send_email(
     email_to: str | dict,
-    ui_texts_section: str,
-    email_body_params: dict,
+    texts_or_section: dict | str,
+    email_body_params: dict = None,
     file_to_send_full_name: str = None,
     file_to_send_type: str = None,
 ) -> bool:
@@ -53,7 +53,18 @@ def send_email(
         email_to: (str or dict): The recipient information. If a string, it's assumed to be
             the "to" recipient. If a dictionary, it should have keys "to" (optional),
             "cc" (optional), and "bcc" (optional) for the recipient addresses.
-
+        texts_or_section: (dict or str)
+            if str, is an entry of .ui_texts_helper.get_section that returns a dict
+            if dict[str, str], it is used directly.
+            Expected dict Keys:
+                subject=texts["subject"],
+                html_content=texts["content"],
+        email_body_params: dict[key: str, value: str] | None
+            values to sSubstitute {key} in the content
+        file_to_send_full_name: str | None
+            full path and name of file to attach to the mail
+        file_to_send_type: str | None
+            MIME (Multipurpose Internet Mail Extensions) type for the file. See list below, based on the file extension
 
     Returns: (mgd 2024-06-05)
         » True if the message was or not `Delivered` (the receiving server accepted the message)
@@ -113,14 +124,22 @@ def send_email(
             error = f"Unknown MIME type for extension [{ext}], cannot send email."
             raise ValueError(error)
 
-        task = "preparing body"
-        if not is_str_none_or_empty(ui_texts_section):
-            texts = get_section(ui_texts_section)
+        task = "preparing texts"
+        if isinstance(texts_or_section, dict):
+            task = "coping texts"
+            texts = texts_or_section.copy()
+
+        elif isinstance(texts_or_section, str) and not is_str_none_or_empty(texts_or_section):
+            task = "preparing texts"
+            texts = get_section(texts_or_section)
             for key in texts.keys():
                 for toReplaceKey in email_body_params.keys():
                     texts[key] = texts[key].replace(
                         "{" + toReplaceKey + "}", email_body_params[toReplaceKey]
                     )
+        else:
+            error = f"Unknown `texts_or_section` datatype {type(texts_or_section)}, expected is [dict|str]. Cannot send email."
+            raise ValueError(error)
 
         task = "creating Mail data"
         mail = sendgrid.Mail(
@@ -165,12 +184,14 @@ def send_email(
             mail.add_attachment(attachment)
 
         task = f"sending email with subject [{mail.subject}]"
+        sidekick.app_log.info(task)
 
-        if False:
+        if True:  # if real
             response = sg.send(mail)
             # https://www.twilio.com/docs/sendgrid/api-reference/how-to-use-the-sendgrid-v3-api/responses#status-codes
             status_code = response.status_code
         else:
+            mail = None  # trying to find a
             status_code = 200
 
         sent = status_code in [200, 202]  # api docs says 200, but in practice it's 202
