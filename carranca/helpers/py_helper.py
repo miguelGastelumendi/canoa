@@ -26,18 +26,22 @@ def now() -> datetime:
     return datetime.now()
 
 
+def as_str_strip(s: str) -> str:
+    return (str(s) + "").strip()
+
+
 def is_str_none_or_empty(s: str) -> bool:
     """
     Returns True if the argument is None of an empty (only spaces, \t, \t, etc) string
     """
-    return (s is None) or ((str(s) + "").strip() == "")
+    return (s is None) or (as_str_strip(s) == "")
 
 
 def to_str(s: str) -> str:
     """
     Returns the argument as a string, striping spaces
     """
-    return "" if is_str_none_or_empty(s) else (s + "").strip()
+    return "" if is_str_none_or_empty(s) else as_str_strip(s)
 
 
 # initialize special attributes

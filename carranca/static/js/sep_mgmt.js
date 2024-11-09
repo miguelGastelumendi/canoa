@@ -90,7 +90,7 @@ const gridOptions = {
         {
             field: colNames[4]
             , headerName: colHeaders[4]
-            , valueFormatter: params => new Date(params.data[colNames[4]]).toLocaleDateString()
+            , valueFormatter: params => (params.data[colNames[4]] ? params.data[colNames[4]].toLocaleDateString(whenFormat) : '')
             , flex: 1
         }
     ]

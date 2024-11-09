@@ -35,6 +35,7 @@ instance/*
 carranca/static/assets/node_modules
 carranca/static/assets/yarn.lock
 carranca/static/assets/.temp
+carranca/log_files
 
 ## Canoa per git's user
 carranca/static/docs/

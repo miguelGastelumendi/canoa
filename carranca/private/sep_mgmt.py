@@ -11,6 +11,8 @@ import json
 from typing import Tuple
 from flask import render_template, request
 
+from ..helpers.db_helper import try_get_mgd_msg
+
 from .models import MgmtUserSep, SepRecords
 from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
@@ -215,7 +217,7 @@ def _save_data_to_db(
     except Exception as e:
         session.rollback()
         # uiTexts:
-        msg_error = f"Unable to commit data {task_code}: [{str(e)}]."
+        msg_error = try_get_mgd_msg(e, f"Unable to commit data {task_code}: [{e}].")
         sidekick.app_log.error(msg_error)
     finally:
         session.close()

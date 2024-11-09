@@ -53,14 +53,15 @@ mgd
 <script>
     const itemNone = '{{ itemNone }}';
     const itemRemove = '{{ itemRemove }}';
-    const usersSep = /** @type {JSON} */({{ usersSep | tojson }});
-    const usedList = /** @type {String[]} */(usersSep.map(item => item.sep))
-    const initialList =  /** @type {String[]} */({{ sepList | tojson }});
+    const usersSep = ({{ usersSep | tojson }}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
+    const usedList = usersSep.map(item => item.sep)
+    const initialList = {{ sepList | tojson }};
     const colSepCurr = 'scm_sep_curr';
     const colSepNew = 'scm_sep_new';
     const colHeaders = ['', 'Sectorista', 'Setor Estratégico Atual', 'Novo Setor Estratégico', 'Atribuído'];
     const colNames = ['user_id', 'user_name', colSepCurr, colSepNew, 'when'];
     const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmit_id}}'));
+    const whenFormat = '{{ whenFormat | default('pt-BR') }}';
 </script>
 <script src="/static/js/sep_mgmt.js"></script>
 {% endblock dlg_blc_javascript %}
