@@ -51,6 +51,9 @@ TODO:
 ------- 2024 - November ----------
 ----------------------------------
 
+2024-11-08 β 3.15 After demonstrating the app to the team (step1)
+
+
 2024-11-07 β 3.14
     - Log process to file
     - Database v5, enters correction fase

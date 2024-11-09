@@ -34,13 +34,15 @@ from datetime import datetime
 from .helpers.Display import Display
 from .DynamicConfig import DynamicConfig
 
+# Global
 sidekick = None
-# ---
+# ------
 
 
 def create_sidekick(config: DynamicConfig, display: Display):
     global sidekick
     sidekick = Sidekick(config, display)
+    # TODO sidekick.display.sk = sidekick
     return sidekick
 
 
@@ -50,6 +52,7 @@ def recreate_sidekick(config: DynamicConfig, app: Flask):
 
     display = Display()  # TODO: config
     sidekick = Sidekick(config, display, app)
+    sidekick.display.info("Sidekick was recreated.")
     return sidekick
 
 

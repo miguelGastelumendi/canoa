@@ -37,11 +37,13 @@ class ChangePassword(FlaskForm):
 
 class SepEdit(FlaskForm):
     name = StringField(
-        "", validators=[InputRequired(), Length(100)], render_kw={"class": "form-control", "id": "name"}
+        "",
+        validators=[InputRequired()],
+        render_kw={"class": "form-control", "id": "name", "readonly": True},
     )  # TODO **max_name.wtf_val())],
     description = StringField(
         "",
-        validators=[InputRequired(), Length(140)],
+        validators=[InputRequired(), Length(min=5, max=140)],
         render_kw={"class": "form-control", "id": "description"},
     )
     # TODO **max_desc.wtf_val())],

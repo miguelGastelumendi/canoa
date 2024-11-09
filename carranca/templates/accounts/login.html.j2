@@ -20,9 +20,8 @@ mgd
 <div class="form-group">
     <label class="form-label" inert for="user_name">{{ userLabel }}</label>
     <div class="input-group">
-        <!-- Font Awesome fas fa- ...-->
         <span class="input-group-text">
-            <span class="fas fa-user"></span>
+            <i class="fa fa-user"></i>
         </span>
         {{ form.username(class="form-control", id="user_name") }}
     </div>
@@ -34,7 +33,7 @@ mgd
     <label class="form-label" inert for="pwd_login">{{ passwordLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
-            <span class="fas fa-unlock-alt"></span>
+            <i class="fas fa-unlock-alt"></i>
         </span>
         {{ form.password(class="form-control", id="pwd_login") }}
     </div>
@@ -46,8 +45,9 @@ mgd
     <!-- { RememberMe -->
     <div class="">
         {{ form.remember_me(class="form-check-btn", id="rememberMe") }}
-        <label class="form-check-label form-label" class="form-check-label mb-0" for="rememberMe">{{ rememberMe
-            }}</label>
+        <label class="form-check-label form-label" class="form-check-label mb-0" for="rememberMe">
+            {{ rememberMe}}
+        </label>
     </div>
     <!-- RememberMe } -->
 </div>

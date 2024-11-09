@@ -38,6 +38,10 @@ def do_sep_mgmt() -> str:
         # Até criar ui_texts:
         uiTexts["itemNone"] = "(nenhum)"
         uiTexts["itemRemove"] = "(remover)"
+
+        uiTexts["formTitle"] = "Gestão de SEPs"
+        uiTexts["pageTitle"] = "Gestão de SEPs"
+
         # py/js communication
         uiTexts[js_grid_rsp] = js_grid_rsp
         uiTexts["gridSecValue"] = js_grid_sec_value
@@ -46,17 +50,17 @@ def do_sep_mgmt() -> str:
 
         def __get_grid_data():
             users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view(uiTexts["itemNone"])
-            sep_name_list = [sep["name"] for sep in sep_list]
-            return users_sep, sep_name_list, msg_error
+            sep_fullname_list = [sep["fullname"] for sep in sep_list]
+            return users_sep, sep_fullname_list, msg_error
 
         if is_get:
-            users_sep, sep_name_list, msg_error = __get_grid_data()
+            users_sep, sep_fullname_list, msg_error = __get_grid_data()
             if not is_str_none_or_empty(msg_error):
                 uiTexts["msgError"] = msg_error
             else:
                 uiTexts["msgInfo"] = (
                     """
-                    Para atribuir um SEP, selecione um da lista 'Novo SEP'.
+                    Para atribuir um SEP, selecione um da lista 'Novo Sector Estratégico'.
                     Use o item (Remover) para cancelar a atribuição.
                     Para criar um novo SEP, use o botão [Adicionar] e [Editar] para alterá-lo.
                     """
@@ -69,7 +73,7 @@ def do_sep_mgmt() -> str:
             txtGridResponse = request.form.get(js_grid_rsp)
             msg_success, msg_error, task_code = _save_and_email(txtGridResponse, uiTexts, task_code)
             task_code += 1
-            users_sep, sep_name_list, msg_error_read = __get_grid_data()
+            users_sep, sep_fullname_list, msg_error_read = __get_grid_data()
             if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
                 uiTexts["msgSuccess"] = msg_success
             elif is_str_none_or_empty(msg_error):
@@ -81,7 +85,7 @@ def do_sep_mgmt() -> str:
         # msg = add_msg_error("errorPasswordChange", uiTexts, task_code)
         sidekick.app_log.error(e)
 
-    tmpl = render_template(template, usersSep=users_sep, sepList=sep_name_list, **uiTexts)
+    tmpl = render_template(template, usersSep=users_sep, sepList=sep_fullname_list, **uiTexts)
     return tmpl
 
 
@@ -149,12 +153,12 @@ def _prepare_data_to_save(
         grid: SepRecords = grid_response["grid"]
         task_code += 1
         for item in grid:
-            sep_new = item["sep_new"]
+            sep_new = item["scm_sep_new"]
             if sep_new == str_none:
                 pass
             elif sep_new != str_remove:  # new sep
                 assign.append(item)
-            elif item["sep_name"] != str_none:  # ignore remove none
+            elif item["scm_sep_curr"] != str_none:  # ignore remove none
                 remove.append(item)
 
     except Exception as e:
@@ -189,7 +193,7 @@ def _save_data_to_db(
         def __set_user_sep_new(id: int, sep_new: str):
             user_sep = session.query(MgmtUserSep).filter_by(user_id=id).one_or_none()
             if user_sep:
-                user_sep.sep_new = sep_new
+                user_sep.scm_sep_new = sep_new
                 user_sep.assigned_by = assigned_by
                 user_sep.batch_code = batch_code
             else:
@@ -204,7 +208,7 @@ def _save_data_to_db(
 
         task_code += 1
         for user_sep_data in update:  # then update
-            __set_user_sep_new(user_sep_data[id], user_sep_data["sep_new"])
+            __set_user_sep_new(user_sep_data[id], user_sep_data["scm_sep_new"])
 
         task_code += 1
         session.commit()
@@ -243,7 +247,6 @@ def _send_email(batch_code: str, uiTexts: TextsUI, task_code: int) -> proc_retur
         invalid_state = []
         texts = {}
         texts["subject"] = "Novidades sobre o seu SEP em Canoa"
-        intro = "Prezado {0},<br>"
         uiTexts["sepSetNew"] = (
             "Prezado {0},<br><br>Nesta data, o SEP '{1}' foi atribuído para você.<br><br><i>Equipe Canoa</i>"
         )

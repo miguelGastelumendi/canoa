@@ -36,17 +36,19 @@ sidekick.display.info(
 
 # Keep shared alive within app
 sidekick.keep(app)
-sidekick.display.info("The session 'sidekick' variable is now ready for the current session.")
+sidekick.display.info("The session 'sidekick' variable is now available.")
 
 if sidekick.config.APP_DISPLAY_DEBUG_MSG:
-    print(repr(sidekick))
+    # print(repr(sidekick))
     from .public.debug_info import get_debug_info
 
     di = get_debug_info(app, sidekick.config)  # TODO, print
 
 # Tell everybody how quick we are
 elapsed = (time.perf_counter() - started) * 1000
-sidekick.display.info(f"{app_name} is now ready for the trip. It took {elapsed:,.0f}ms to create it.")
+sidekick.display.info(
+    f"{app_name} is now ready for the journey. It took {elapsed:,.0f}ms to create and initialize it."
+)
 
 if __name__ == "__main__":
     app.run()

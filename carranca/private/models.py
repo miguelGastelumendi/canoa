@@ -140,11 +140,11 @@ class MgmtUserSep(Base):
     user_id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
     user_name = Column(String(100))
     user_disabled = Column(Boolean)
-    sep_name = Column(String(100), unique=True)
-    sep_new = Column(String(100))
+    scm_sep_curr = Column(String(201))  # sep_name -> scm_sep_curr
+    scm_sep_new = Column(String(201))  # sep_new -> scm_sep_new
     assigned_at = Column(DateTime)
     assigned_by = Column(Integer)
-    batch_code = Column(String(10))
+    batch_code = Column(String(10))  # trace_code
 
     # Helpers
     def get_grid_view(item_none: str) -> Tuple[SepRecords, List[Tuple[str, str]], str]:
@@ -158,16 +158,16 @@ class MgmtUserSep(Base):
         try:
 
             sep_list = [
-                {"id": sep.id, "name": sep.name}
-                for sep in session.execute(text(f"SELECT id, name FROM sep ORDER BY name")).fetchall()
+                {"id": sep.sep_id, "fullname": sep.sep_fullname}
+                for sep in session.execute(text(f"SELECT sep_id, sep_fullname FROM vw_scm_sep")).fetchall()
             ]
             users_sep = [
                 {
                     "user_id": usr.user_id,
                     "user_name": usr.user_name,
                     "disabled": usr.user_disabled,
-                    "sep_name": item_none if usr.sep_name is None else usr.sep_name,
-                    "sep_new": item_none,
+                    "scm_sep_curr": item_none if usr.scm_sep_curr is None else usr.scm_sep_curr,
+                    "scm_sep_new": item_none,
                     "when": usr.assigned_at,
                 }
                 for usr in session.scalars(select(MgmtUserSep)).all()
@@ -214,6 +214,20 @@ class MgmtSep(Base):
     name = Column(String(100), unique=True)
     description = Column(String(140))
     icon_file_name = Column(String(120))
+
+    def get_sep(id: int):
+        """
+        Select a SEP  by id
+        """
+        sep = None
+        session = Session()
+        try:
+            stmt = select(MgmtSep).where(MgmtSep.id == id)
+            sep = session.execute(stmt).scalar_one_or_none()
+        finally:
+            session.close()
+
+        return sep
 
 
 # eof

@@ -18,17 +18,18 @@ _cls_ => CLaSs
 _blc_ => BLoCk
 _js_ => JScript
 
-- Configuration:
-dlg_cls_top | default('mt-6')
-dlg_cls_size
-dlg_cls_btnOk
+- Configuration (default is '', if not shown)
 dlg_cls_body
-dlg_cls_title | default('dialog-title')
-dlg_cls_header | default('dialog-header')
+dlg_cls_btnClose
+dlg_cls_btnOk
+dlg_cls_content
 dlg_cls_dialog
 dlg_cls_footer
-dlg_cls_content
-dlg_cls_btnClose
+dlg_cls_header | default('dialog-header')
+dlg_cls_size
+dlg_cls_title | default('dialog-title')
+dlg_cls_top | default('mt-6')
+
 
 dlg_var_style
 dlg_var_scroll
@@ -44,26 +45,27 @@ mgd
 
 {% block base_blc_content %}
 <section>
-    <div class="modal{%+ if not (dlg_var_vCentered|default(False)) %} {{dlg_cls_top| default('mt-6')}}{% endif %}"
+    <div class="modal{%+ if not (dlg_var_vCentered|default(False)) %} {{dlg_cls_top|default('mt-6')}}{% endif %}"
         style="{{(dlg_var_style|default('display: block;'))}}" tabindex="-1" id="dlg-id-main">
         <div
-            class="modal-dialog {{dlg_cls_size}} {%+ if (dlg_var_vCentered|default(False)) %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dialog}}">
-            <div class="modal-content {{ dlg_cls_content }}">
-                <div class="modal-header {{ dlg_cls_header | default('dialog-header') }}">
-                    <h5 class="modal-title {{ dlg_cls_title | default('dialog-title') }}" inert>
+            class="modal-dialog {{dlg_cls_size}} {%+ if (dlg_var_vCentered|default(False)) %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dialog|default('')}}">
+            <div class="modal-content {{dlg_cls_content|default('')}}">
+                <div class="modal-header {{dlg_cls_header|default('dialog-header')}}">
+                    <h5 class="modal-title {{dlg_cls_title|default('dialog-title')}}" inert>
                         {{ (formTitle | default(app_name())) }}
                     </h5>
                     <form action="{{ public_route('login') }}" method="GET">
-                        <button type="submit" class="btn-close {{ dlg_cls_btnClose }}" data-bs-dismiss="modal" {%+ if
-                            not (dlg_var_close|default(True)) %}style='display: none;' {% endif %} aria-label="Close">
+                        <button type="submit" class="btn-close {{dlg_cls_btnClose|default('')}}" data-bs-dismiss="modal"
+                            {%+ if not (dlg_var_close|default(True)) %}style='display: none;' {% endif %}
+                            aria-label="Close">
                         </button>
                     </form>
                 </div>
-                <div class="modal-body {{ dlg_cls_body }}">
+                <div class="modal-body {{dlg_cls_body|default('')}}">
                     {% block dlg_blc_body %}
                     {% endblock dlg_blc_body %}
                 </div>
-                <div class="modal-footer justify-content-center {{ dlg_cls_footer }}">
+                <div class="modal-footer justify-content-center {{dlg_cls_footer|default('')}}">
                     {% block dlg_blc_footer %}
                     {% endblock dlg_blc_footer %}
                 </div>

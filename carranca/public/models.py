@@ -6,7 +6,7 @@
     mgd
 """
 
-# cSpell:ignore nullable sqlalchemy psycopg2
+# cSpell:ignore nullable sqlalchemy psycopg2 mgmt
 from carranca import Session, db, login_manager
 
 from typing import Any
@@ -39,6 +39,7 @@ class Users(UserMixin, db.Model):
     recover_email_token_at = Column(DateTime, Computed(""))
     id_role = Column(Integer)
     disabled = Column(Boolean, default=False)
+    mgmt_sep_id = Column(Integer)
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():

@@ -8,9 +8,10 @@
 
 # cSpell:ignore sqlalchemy
 from typing import List, Tuple
+from ..DynamicConfig import DynamicConfig
 
 
-def get_debug_info(app, config) -> List[Tuple[str, str]]:
+def get_debug_info(app, config: DynamicConfig) -> List[Tuple[str, str]]:
     from ..helpers.py_helper import coalesce, is_str_none_or_empty
     from os import getcwd
     from flask import __version__ as flask_version
@@ -36,6 +37,7 @@ def get_debug_info(app, config) -> List[Tuple[str, str]]:
     _add("Mode", config.APP_MODE)
     _add("Debug", config.debugging)
     _add("Debug Messages", config.APP_DISPLAY_DEBUG_MSG)
+    _add("Logging to File", config.LOG_FILE_STATUS)
 
     _add("Page Compression", config.APP_MINIFIED)
     _add("App root folder", config.ROOT_FOLDER)

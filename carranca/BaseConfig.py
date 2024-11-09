@@ -79,11 +79,6 @@ class BaseConfig(Config):
         this must be set individually for each APP_MODE (see config.py)
         to send envvars directly to flask use the FLASK_ prefix
     """
-    LOG_TO_FILE = True  # Log
-    LOG_FILE_LEVEL = logging.INFO
-    # folder is log_files
-    LOG_FILE_FOLDER = None  # "log_files"
-    LOG_FILE_NAME = None  # defaults to APP_NAME.datetime.log
     DEBUG = None  # <- True if APP_PROPAGATE_DEBUG else False
     TESTING = None  # <- True if APP_PROPAGATE_DEBUG else False
     DEBUG_TEMPLATES = None  # <- True if APP_PROPAGATE_DEBUG else False
@@ -107,6 +102,16 @@ class BaseConfig(Config):
     SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX = r":[^@]+@"
     SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR = ":*******@"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    """ Log to file configuration
+        --------------------------
+    """
+    LOG_TO_FILE = True  # Log
+    LOG_FILE_LEVEL = logging.INFO
+    # folder is log_files
+    LOG_FILE_FOLDER = None  # "log_files"
+    LOG_FILE_NAME = None  # defaults to APP_NAME.datetime.log
+    LOG_FILE_STATUS = "?"  # internal set
 
 
 # eof

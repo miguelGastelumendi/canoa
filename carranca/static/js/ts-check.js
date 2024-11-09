@@ -15,12 +15,13 @@
 var agGrid = /** @type {Object} */ null;
 var initialList = /** @type {String[]} */[];
 var colHeaders = /** @type {String[]} */[];
+var colNames = /** @type {String[]} */[];
 var rowData = /** @type {JSON} */ '';
 var usersSep = /** @type {JSON} */ '';
 var itemNone = /** @type {string} */ '';
 var itemRemove = /** @type {string} */ '';
 var colSepNew = /** @type {string} */ '';
-var colSepOld = /** @type {string} */ '';
+var colSepCurr = /** @type {string} */ '';
 var btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById("myb"));
 
 

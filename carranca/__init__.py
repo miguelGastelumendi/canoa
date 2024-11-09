@@ -187,6 +187,9 @@ def create_app(app_name: str):
         info = f"file '{filename}' with level {level}"
         sidekick.display.info(f"Logging to {info}.")
         app.logger.log(sidekick.config.LOG_FILE_LEVEL, f"{sidekick.config.APP_NAME}'s log {info} is ready.")
+        sidekick.config.LOG_FILE_STATUS = "ready"
+    else:
+        sidekick.config.LOG_FILE_STATUS = "off"
 
     # -- Register modules
     _register_db(app)

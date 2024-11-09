@@ -286,11 +286,11 @@ def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
     _, error = _ignite_server_name(config)
     if error:
         _log_and_exit(error)
-    fuse.display.debug("Flask's Server Name is ready and 'config' configured.")
+    fuse.display.debug("Flask's Server Name is ready and configured.")
 
     # Create the session shared 'sidekick'
     sidekick = create_sidekick(config, fuse.display)
-    fuse.display.info("The session 'sidekick' was ignited.")
+    fuse.display.info("The 'sidekick' was ignited.")
 
     # ---------------------------------------------------------------------------- #
     # Give warnings of import configuration that may be missing

@@ -10,8 +10,9 @@
 import json
 from typing import Any, List, Tuple
 from flask import render_template, request
+from flask_login import current_user
 
-from .models import MgmtSep
+from .models import get_sep
 from .wtforms import SepEdit
 from ..Sidekick import sidekick
 from ..helpers.error_helper import ModuleErrorCode
@@ -23,7 +24,6 @@ from ..helpers.route_helper import (
     login_route,
     init_form_vars,
     get_input_text,
-    get_account_form_data,
 )
 
 
@@ -35,14 +35,26 @@ def do_sep_edit() -> str:
     try:
         template, is_get, uiTexts = get_private_form_data("sepEdit")
         # Até criar ui_texts:
-        uiTexts["itemNone"] = "(nenhum)"
-        uiTexts["itemRemove"] = "(remover)"
+        uiTexts["formTitle"] = "Edição de SEP"
+        uiTexts["pageTitle"] = "Edição de SEP"
+        uiTexts["nameLabel"] = "Identificação"
+        uiTexts["descriptionLabel"] = "Descrição"
+        uiTexts["submitButton"] = "Salvar"
+        uiTexts["fileLabel"] = "Imagem [60×60 pixel, formato: png, jpg]"
 
-        name = "" if is_get else get_input_text("name")
-        task_code += 1  # 2
-        description = "" if is_get else get_input_text("description")
-        task_code += 1  # 3
         tmpl_form = SepEdit(request.form)
+        if is_get:
+            user = current_user
+            sep = None if user.mgmt_sep_id is None else get_sep(user.mgmt_sep_id)
+            tmpl_form.name.data = sep.name
+            tmpl_form.description.data = sep.description
+        else:
+            name = "" if is_get else get_input_text("name")
+            description = "" if is_get else get_input_text("description")
+            # save
+
+        task_code += 1  # 2
+        task_code += 1  # 3
         # if is_get:
         #     pass
         # else:

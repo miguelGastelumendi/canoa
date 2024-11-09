@@ -34,11 +34,11 @@ const gridOptions = {
     onCellFocused: (event) => { activeRow = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex); }
     , rowData: usersSep
     , columnDefs: [
-        { field: "user_id", flex: 1, hide: true },
-        { field: "user_name", headerName: colHeaders[0], flex: 1 },
+        { field: colNames[0], flex: 1, hide: true },
+        { field: colNames[1], headerName: colHeaders[1], flex: 1 },
         {
-            field: colSepOld,
-            headerName: colHeaders[1],
+            field: colNames[2],
+            headerName: colHeaders[2],
             flex: 2,
             cellClassRules: {
                 'grd-item-none': params => params.value === itemNone,
@@ -46,8 +46,8 @@ const gridOptions = {
             },
         },
         {
-            field: colSepNew,
-            headerName: colHeaders[2],
+            field: colNames[3],
+            headerName: colHeaders[3],
             flex: 2,
             editable: true,
             cellClass: 'grd-col-sep_new',
@@ -58,7 +58,7 @@ const gridOptions = {
             },
             cellEditor: 'agSelectCellEditor',
             cellEditorParams: params => {
-                const sepOld = params.data[colSepOld]
+                const sepOld = params.data[colSepCurr]
                 let lst = [...selectList].filter(a => a != sepOld);
                 if (!lst.includes(params.value) && !ignoreList.includes(params.value)) { lst.push(params.value) }
                 lst = sortList(lst).concat((sepOld == itemNone) ? [itemNone] : ignoreList)
@@ -82,12 +82,17 @@ const gridOptions = {
                 }
                 if (oldValue === itemRemove) { removeCount--; }
                 if (newValue === itemRemove) { removeCount++; }
-                params.data.sep_new = newValue;
+                params.data[colSepNew] = newValue;
                 btnGridSubmit.disabled = (assignedList.length == 0) && (removeCount == 0)
                 return true;
             }
         },
-        { field: "when", headerName: colHeaders[3], flex: 1 }
+        {
+            field: colNames[4]
+            , headerName: colHeaders[4]
+            , valueFormatter: params => new Date(params.data[colNames[4]]).toLocaleDateString()
+            , flex: 1
+        }
     ]
 }; // gridOptions
 
@@ -163,7 +168,7 @@ const sortList = (lst, newItem) => {
 };
 const need_refresh = (api, value) => {
     if (assignedList.includes(value)) {
-        setTimeout(() => { api.refreshCells({ columns: [colSepOld], force: true }) }, 0)
+        setTimeout(() => { api.refreshCells({ columns: [colSepCurr], force: true }) }, 0)
     }
 };
 const getPrompt = (msg, _default) => {
@@ -182,7 +187,7 @@ const trim_it = (/** @type {string|null} */ item) => ((item == null) || (item.tr
 const getActiveCellValue = () => {
     const cellValue = trim_it(activeRow == null ? null : activeRow.data[colSepNew]);
     if (cellValue == '') {
-        alert('Clique na coluna [Novo SEP] na linha onde deseja adicionar ou editar.');
+        alert('Clique na coluna [SE Novo] na linha onde deseja adicionar ou editar.');
     }
     return cellValue;
 }
