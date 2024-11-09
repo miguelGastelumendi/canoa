@@ -248,15 +248,15 @@ def _send_email(batch_code: str, uiTexts: TextsUI, task_code: int) -> proc_retur
         email_error = 0
         invalid_state = []
         texts = {}
-        texts["subject"] = "Novidades sobre o seu SEP em Canoa"
+        texts["subject"] = "Novidades sobre o seu Setor Estratégico em Canoa"
         uiTexts["sepSetNew"] = (
-            "Prezado {0},<br><br>Nesta data, o SEP '{1}' foi atribuído para você.<br><br><i>Equipe Canoa</i>"
+            "Prezado {0},<br><br>Nesta data, o Setor Estratégico '{1}' foi atribuído para você.<br><br><i>Equipe Canoa</i>"
         )
         uiTexts["sepRemoved"] = (
-            "Prezado {0},<br><br>A partir desta data, o SEP '{2}' não estará mais a seu cuidado.<br><br><i>Equipe Canoa</i>"
+            "Prezado {0},<br><br>A partir desta data, o Setor Estratégico '{2}' não está mais a seu cuidado.<br><br><i>Equipe Canoa</i>"
         )
         uiTexts["sepChanged"] = (
-            "Prezado {0},<br><br>A partir desta data, O SEP '{1}' estará sob seus cuidados no lugar do SEP '{2}'.<br><br><i>Equipe Canoa</i>"
+            "Prezado {0},<br><br>A partir desta data, o Setor Estratégico '{1}' está sob seus cuidados no lugar do SE '{2}'.<br><br><i>Equipe Canoa</i>"
         )
         for user in user_emails:
             msg = None
