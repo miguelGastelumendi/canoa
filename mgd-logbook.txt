@@ -47,9 +47,10 @@ TODO:
 ------- 2024 - November ----------
 ----------------------------------
 
-    2024-11-11 β 3.17 Save Sep Attributes
+2024-11-12,13 β 3.17
+        - Update table 'sep' (image not ready)
+        - New add_msg_fatal
         - Image is svg
-        -
 
 2024-11-09 β 3.16 All requests made during the demo, done ;-)
     - Significantly improve custom database exceptions

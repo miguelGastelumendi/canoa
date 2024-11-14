@@ -9,20 +9,16 @@ Extends:
 mgd
 --------------------------------------- #}
 
+
+{# % set btnMsgOnly = successButton % #}
 {% extends "./layouts/form.html.j2" %}
 
-{% block frm_blc_above %}
-{% if msgSuccess %}
-<div class="d-grid">
-    <button type="button" class="btn form-main-btn" onclick="window.location.href='{{ private_route('home') }}'">
-        {{successButton }}</button>
-</div>
-{% endif %}
-{% endblock frm_blc_above %}
 
 {% block frm_blc_content %}
-{% if not msgSuccess %}
-<div class="form-group mb-3">
+{% if not msgOnly %}
+
+<!-- { Name -->
+<div class="form-group">
     <label class="form-label" inert for={{ form.name.id }}>{{ nameLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
@@ -31,7 +27,10 @@ mgd
         {{ form.name() }}
     </div>
 </div>
-<div class="form-group mb-3">
+<!-- Name } -->
+
+<!-- { Description -->
+<div class="form-group mt-3">
     <label class="form-label" inert for={{ form.description.id }}>{{ descriptionLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
@@ -40,8 +39,9 @@ mgd
         {{ form.description() }}
     </div>
 </div>
+<!-- Description } -->
 
-<div class="form-group mb-3">
+<div class="form-group mt-3">
     <label class="form-label" inert for={{ form.icon_filename.id }}>{{ fileLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">

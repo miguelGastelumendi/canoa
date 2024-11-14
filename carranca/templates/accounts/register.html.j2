@@ -11,27 +11,18 @@ Extends:
 mgd
 --------------------------------------- #}
 
+{% set btnMsgOnly = gotoLogin %}
 {% extends "./layouts/form.html.j2" %}
 
-{% block frm_blc_above %}
-{% if msgSuccess %}
-<div class="d-grid">
-    <form action="{{ public_route('login') }}" method="post">
-        <button type="submit" class="btn form-main-btn">{{ gotoLogin }}</button>
-    </form>
-</div>
-{% endif %}
-{% endblock frm_blc_above %}
-
 {% block frm_blc_content %}
-{% if not msgSuccess %}
+{% if not msgOnly %} {# `show msg error and` + `display this block` if (msgError or not msgSuccess) else #}
 
 <!-- { User Name -->
 <div class="form-group">
     <label class="form-label" inert for="userName">{{ userLabel }}</label>
     <div class="input-group">
-        <span class="input-group-text" id="basic-addon1">
-            <span class="fas fa-user"></span>
+        <span class="input-group-text">
+            <i class="fas fa-user"></i>
         </span>
         {{ form.username(class="form-control", id= "userName") }}
     </div>
@@ -42,7 +33,7 @@ mgd
 <div class="form-group mt-3">
     <label class="form-label" inert for="user_email">{{ emailLabel }}</label>
     <div class="input-group">
-        <span class="input-group-text" id="basic-addon3">
+        <span class="input-group-text">
             <span class="fas fa-envelope"></span>
         </span>
         {{ form.email(class="form-control", type="email", id="user_email") }}
@@ -54,7 +45,7 @@ mgd
 <div class="form-group mt-3">
     <label class="form-label" inert for="password">{{ passwordLabel }}</label>
     <div class="input-group">
-        <span class="input-group-text" id="basic-addon4">
+        <span class="input-group-text">
             <span class="fas fa-unlock-alt"></span>
         </span>
         {{ form.password(class="form-control", type="password", id="password") }}

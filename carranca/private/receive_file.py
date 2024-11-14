@@ -19,8 +19,8 @@ from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import path_remove_last_folder, folder_must_exist
 from ..helpers.user_helper import LoggedUser, now
 from ..helpers.error_helper import ModuleErrorCode
-from ..helpers.route_helper import get_private_form_data, get_input_text, is_method_get
-from ..helpers.ui_texts_helper import add_msg_success, add_msg_error
+from ..helpers.route_helper import get_private_form_data, get_input_text
+from ..helpers.ui_texts_helper import add_msg_success, add_msg_error, add_msg_fatal
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 from ..config_validate_process import ValidateProcessConfig
 
@@ -30,20 +30,25 @@ RECEIVE_FILE_DEFAULT_ERROR = "uploadFileError"
 
 
 def receive_file() -> str:
-    template, is_get, texts = get_private_form_data("receiveFile")
+    template, is_get, uiTexts = get_private_form_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
 
     def _result():
-        tmpl = render_template(template, form=tmpl_form, **texts)
+        tmpl = render_template(template, form=tmpl_form, **uiTexts)
         result = tmpl.strip()
         return result
 
     if is_get:
         return _result()
 
-    def _log_error(msg_id: str, code: int, msg: str = "") -> int:
+    def _log_error(msg_id: str, code: int, msg: str = "", fatal: bool = False) -> int:
         error_code = ModuleErrorCode.RECEIVE_FILE_ADMIT + code
-        log_error = add_msg_error(msg_id, texts, error_code, msg)
+
+        log_error = (
+            add_msg_fatal(msg_id, uiTexts, error_code, msg)
+            if fatal
+            else add_msg_error(msg_id, uiTexts, error_code, msg)
+        )
         sidekick.app_log.error(log_error)
         return error_code
 
@@ -123,7 +128,7 @@ def receive_file() -> str:
 
         pd.received_file_name = secure_filename(pd.received_original_name)
         task_code += 1
-        ve = texts["validExtensions"]
+        ve = uiTexts["validExtensions"]
         valid_extensions = ".zip" if is_str_none_or_empty(ve) else ve.lower().split(",")
 
         task_code += 1
@@ -133,17 +138,17 @@ def receive_file() -> str:
         error_code, msg_error, _ = process(logged_user, file_data, pd, received_at, valid_extensions)
 
         if error_code == 0:
-            log_msg = add_msg_success("uploadFileSuccess", texts, pd.user_receipt, logged_user.email)
+            log_msg = add_msg_success("uploadFileSuccess", uiTexts, pd.user_receipt, logged_user.email)
             sidekick.display.debug(log_msg)
         else:
-            _log_error(msg_error, error_code)
+            log_msg = _log_error(msg_error, error_code, "", True)
+            sidekick.display.error(log_msg)
 
     except Exception as e:
-        error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code)
+        error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code, "", True)
         sidekick.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
 
     tmpl = _result()
-    # sidekick.display.debug(tmpl)
     return tmpl
 
 

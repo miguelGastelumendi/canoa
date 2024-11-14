@@ -6,6 +6,7 @@
  mgd 2024-06-22
 
  """
+
 # cSpell:ignore wtforms
 
 
@@ -60,7 +61,7 @@ class LenValidate:
                 This way, the server side has to check and send a message.
                 (This is due to my own experience (mgd))
         """
-        return { 'min': self.min, 'max': -1 if self.max is None else self.max + 1 }
+        return {"min": self.min, "max": -1 if self.max is None else self.max + 1}
 
 
 # # Example usage
@@ -75,4 +76,44 @@ class LenValidate:
 # class MyForm(Form):
 #     password = StringField('Password', validators=[Length( **len_validate.wtf_val() ) ])
 
-#eof
+
+#####
+""" from wtforms import Label, StringField, PasswordField, Form
+
+class CustomLabel(Label):
+    def __init__(self, text="", **kwargs):
+        super().__init__(text)
+        self.attributes = kwargs
+
+    def __call__(self):
+        # Build the label HTML with dynamic attributes
+        attrs = " ".join(f'{key}="{value}"' for key, value in self.attributes.items())
+        return f'<label {attrs}>{self.text}</label>'
+
+class MyForm(Form):
+    password_label = CustomLabel("Confirm Password", for="pwdConfirm", class="custom-label")
+    password = PasswordField("", render_kw={"class": "form-control", "id": "pwdConfirm"})
+
+
+from wtforms import PasswordField, Form
+
+class DynamicLabelField(PasswordField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def render_label(self, text="", **kwargs):
+        # Generate dynamic attributes
+        attrs = " ".join(f'{key}="{value}"' for key, value in kwargs.items())
+        return f'<label {attrs}>{text}</label>'
+
+class MyForm(Form):
+    password = DynamicLabelField("", render_kw={"class": "form-control", "id": "pwdConfirm"})
+
+
+
+{{ form.password.render_label(text=labelText, for="pwdConfirm", class="custom-label") }}
+{{ form.password }}
+
+"""
+
+# eof

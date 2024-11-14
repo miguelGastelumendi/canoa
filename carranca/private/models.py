@@ -214,20 +214,45 @@ class MgmtSep(Base):
     name = Column(String(100), unique=True)
     description = Column(String(140))
     icon_file_name = Column(String(120))
+    icon_svg = Column(Text)
 
     def get_sep(id: int):
         """
         Select a SEP  by id
         """
         sep = None
+        sep_fullname = None
         session = Session()
         try:
             stmt = select(MgmtSep).where(MgmtSep.id == id)
             sep = session.execute(stmt).scalar_one_or_none()
+            stmt = text(f"SELECT sep_fullname FROM vw_scm_sep WHERE sep_id={sep.id}")
+            row = session.execute(stmt).one_or_none()
+            sep_fullname = None if row is None else row[0]
         finally:
             session.close()
 
-        return sep
+        return sep, sep_fullname
+
+    def set_sep(sep) -> bool:
+        """
+        Save a Sep
+        """
+        done = False
+        msg_error = ""
+        session = Session()
+        try:
+            session.add(sep)
+            session.commit()
+            done = True
+        except Exception as e:
+            session.rollback()
+            msg_error = f"Cannot update {MgmtSep.__tablename__}.id = {sep} | Error {e}."
+            sidekick.app_log.error(msg_error)
+        finally:
+            session.close()
+
+        return done
 
 
 # eof

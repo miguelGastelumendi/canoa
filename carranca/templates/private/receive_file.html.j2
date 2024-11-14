@@ -10,29 +10,26 @@ Extends:
 mgd
 --------------------------------------- #}
 
+{% set btnMsgOnly = successButton %}
 {% extends "./layouts/form.html.j2" %}
 
-{% block frm_blc_above %}
-{% if msgSuccess %}
-<div class="d-grid">
-    <button type="button" class="btn form-main-btn" onclick="window.location.href='{{ private_route('home') }}'">
-        {{successButton }}</button>
-</div>
-{% endif %}
-{% endblock frm_blc_above %}
-
 {% block frm_blc_content %}
-{% if not msgSuccess %}
-<div class="form-group mb-3">
+{% if not msgOnly %}
+
+<!-- { Load File -->
+<div class="form-group">
     <label class="form-label" inert for={{ form.filename.id }}>{{ fileLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
-            <span class="fa fa-upload fa-lg"></span>
+            <i class="fa fa-upload fa-lg"></i>
         </span>
         {{ form.filename() }}
     </div>
 </div>
-<div class="form-group mb-3">
+<!-- Load File } -->
+
+<!-- { Google File -->
+<div class="form-group mt-3">
     <label class="form-label" inert for={{ form.urlname.id }}>{{ urlLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
@@ -41,7 +38,8 @@ mgd
         {{ form.urlname(class="form-control") }}
     </div>
 </div>
+<!-- Google File } -->
+
 {% endif %}
 {% endblock frm_blc_content %}
-
 {# eof #}

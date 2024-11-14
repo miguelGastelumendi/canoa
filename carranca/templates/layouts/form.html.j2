@@ -13,6 +13,8 @@ Used by:
 - register.html.j2
 - password_recovery.html.j2
 - password_reset_or_change.html.j2
+
+./private
 - receive_file.html.js
 
 mgd
@@ -25,12 +27,21 @@ mgd
 
 {% block dlg_blc_body %}
 {% include "includes/backend-msg.html.j2" %}
+{% if msgOnly %}
+<div class="">
+    <form action="{{ public_route('login') }}" method="get">
+        <button type="submit" class="form-control mt-4 form-main-btn">
+            {{ btnMsgOnly | default("OK") }}
+        </button>
+    </form>
+</div>
+{% endif %}
 
 {% block frm_blc_above %}
 {% endblock frm_blc_above %}
 
-{# display the form always except when sucess (when normal display or with an error) #}
-{% if not msgSuccess %}
+{# display the if not Sucess or Exception (see carranca\helpers\ui_texts_helper.py[add_msg_success]) #}
+{% if not msgOnly %}
 <!-- { Form  -->
 <form method="post" action="" class="mt-2" onsubmit="document.getElementById('id-form-main-btn').disabled=true;" {{
     formAttribute|default("") }}>
@@ -54,7 +65,6 @@ mgd
 {% endblock dlg_blc_body %}
 
 {% block frm_blc_script %}
-
 {% endblock frm_blc_script %}
 
 {# eof #}

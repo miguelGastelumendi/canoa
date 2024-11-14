@@ -34,6 +34,7 @@ class LoginForm(FlaskForm):
     password = PasswordField(
         "",
         validators=[InputRequired(), Length(**sidekick.config.len_val_for_pw.wtf_val())],
+        render_kw={"class": "form-control", "id": "pwd_login"},
     )
     remember_me = BooleanField("Remember_me")
 

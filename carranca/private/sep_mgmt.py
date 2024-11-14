@@ -12,6 +12,7 @@ from typing import Tuple
 from flask import render_template, request
 
 from ..helpers.db_helper import try_get_mgd_msg
+from ..helpers.ui_texts_helper import msg_error as ui_msg_error
 
 from .models import MgmtUserSep, SepRecords
 from ..Sidekick import sidekick
@@ -58,7 +59,7 @@ def do_sep_mgmt() -> str:
         if is_get:
             users_sep, sep_fullname_list, msg_error = __get_grid_data()
             if not is_str_none_or_empty(msg_error):
-                uiTexts["msgError"] = msg_error
+                uiTexts[ui_msg_error] = msg_error
             else:
                 uiTexts["msgInfo"] = (
                     """
@@ -68,7 +69,7 @@ def do_sep_mgmt() -> str:
                     """
                 )
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
-            uiTexts["msgError"] = "A chave mudou."
+            uiTexts[ui_msg_error] = "A chave mudou."
             # TODO goto login
         else:
             task_code += 1
@@ -79,9 +80,9 @@ def do_sep_mgmt() -> str:
             if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
                 uiTexts["msgSuccess"] = msg_success
             elif is_str_none_or_empty(msg_error):
-                uiTexts["msgError"] = msg_error_read
+                uiTexts[ui_msg_error] = msg_error_read
             else:
-                uiTexts["msgError"] = msg_error
+                uiTexts[ui_msg_error] = msg_error
 
     except Exception as e:
         # msg = add_msg_error("errorPasswordChange", uiTexts, task_code)

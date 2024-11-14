@@ -81,6 +81,7 @@ def send_email(
     status_code = 0
     task = ""
     try:
+
         task = "getting recipients"
         recipients = None
         if isinstance(email_to, str):
@@ -98,7 +99,9 @@ def send_email(
         bcc_address = recipients.get("bcc", None)
 
         if is_str_none_or_empty(to_address) and not is_str_none_or_empty(cc_address):
-            print("Warning: Sending email with only BCC recipient might be rejected by some servers.")
+            sidekick.display.warn(
+                "Warning: Sending email with only BCC recipient might be rejected by some servers."
+            )
 
         task = "checking attachment type"
         ext = (
@@ -133,10 +136,11 @@ def send_email(
             task = "preparing texts"
             texts = get_section(texts_or_section)
             for key in texts.keys():
-                for toReplaceKey in email_body_params.keys():
-                    texts[key] = texts[key].replace(
-                        "{" + toReplaceKey + "}", email_body_params[toReplaceKey]
-                    )
+                if not is_str_none_or_empty(texts[key]):
+                    for toReplaceKey in email_body_params.keys():
+                        texts[key] = texts[key].replace(
+                            "{" + toReplaceKey + "}", email_body_params[toReplaceKey]
+                        )
         else:
             error = f"Unknown `texts_or_section` datatype {type(texts_or_section)}, expected is [dict|str]. Cannot send email."
             raise ValueError(error)

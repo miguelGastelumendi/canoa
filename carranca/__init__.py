@@ -195,6 +195,18 @@ def create_app(app_name: str):
     _register_db(app)
     sidekick.display.info("The db was registered.")
 
+    # # See gemini "Jinja2 Blueprint Route Event"
+    # # == Start Canoa helpers
+    # from flask import Blueprint
+
+    # main_bp = Blueprint("main", __name__)
+
+    # @main_bp.before_request
+    # def do_before_blueprint_request():
+    #     from .Sidekick import recreate_sidekick
+
+    #     recreate_sidekick(Config, app)
+
     _register_blueprints(app)
     sidekick.display.info("The blueprints were collected and registered within the app.")
 
@@ -223,10 +235,7 @@ def create_app(app_name: str):
     Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
     sidekick.display.info("A sharable scoped SQLAlchemy session was instantiated.")
 
-    # config sidekick.display
-    if display_mute_after_init:
-        sidekick.display.mute_all = True
-
+    # TODO change bt blueprint's
     @app.before_request
     def do_before_request():
         # TODO
@@ -236,10 +245,11 @@ def create_app(app_name: str):
 
         from .Sidekick import recreate_sidekick
 
-        sidekick = recreate_sidekick(Config, app)
+        recreate_sidekick(Config, app)
 
-    # run parameters host & port are taken from SERVER_NAME
-    # https://flask.palletsprojects.com/en/3.0.x/api/#flask.Flask.run
+    # config sidekick.display
+    if display_mute_after_init:
+        sidekick.display.mute_all = True
 
     return app
 

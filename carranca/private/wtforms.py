@@ -26,12 +26,16 @@ class ReceiveFileForm(FlaskForm):
 # Private & Public form
 class ChangePassword(FlaskForm):
     password = PasswordField(
-        "", validators=[InputRequired(), Length(**sidekick.config.len_val_for_pw.wtf_val())]
+        "",
+        validators=[InputRequired(), Length(**sidekick.config.len_val_for_pw.wtf_val())],
+        render_kw={"class": "form-control", "id": "pwdCreate"},
     )
     # , EqualTo('confirm_password', message="As senhas não são iguais.") é no servidor.
 
     confirm_password = PasswordField(
-        "", validators=[InputRequired(), Length(**sidekick.config.len_val_for_pw.wtf_val())]
+        "",
+        validators=[InputRequired(), Length(**sidekick.config.len_val_for_pw.wtf_val())],
+        render_kw={"class": "form-control", "id": "pwdConfirm", "for": "pwdConfirm"},
     )
 
 
@@ -48,7 +52,7 @@ class SepEdit(FlaskForm):
     )
     # TODO **max_desc.wtf_val())],
     icon_filename = FileField(
-        "", render_kw={"class": "form-control", "id": "iconfilename", "accept": ".png"}
+        "", render_kw={"class": "form-control", "id": "iconfilename", "accept": ".svg"}
     )
 
 

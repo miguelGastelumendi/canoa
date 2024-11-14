@@ -15,7 +15,7 @@ from ...Sidekick import sidekick
 from ...public.models import persist_user
 from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
-from ...helpers.ui_texts_helper import add_msg_error
+from ...helpers.ui_texts_helper import add_msg_error, add_msg_fatal
 from ...helpers.error_helper import ModuleErrorCode
 from ...helpers.route_helper import (
     home_route,
@@ -81,7 +81,7 @@ def login():
                 return redirect_to(home_route())
 
     except Exception as e:
-        msg = add_msg_error("errorLogin", uiTexts, task_code)
+        msg = add_msg_fatal("errorLogin", uiTexts, task_code)
         sidekick.app_log.error(e)
         sidekick.app_log.debug(msg)
         if logged_in:

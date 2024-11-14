@@ -30,11 +30,19 @@ def as_str_strip(s: str) -> str:
     return (str(s) + "").strip()
 
 
+# def is_not_empty_str(test: str) -> bool:
+#     """
+#     Returns True if the argument is not an empty 'str'
+#     """
+#     return False if test is None else isinstance(test, str) and not is_str_none_or_empty(test)
+
+
 def is_str_none_or_empty(s: str) -> bool:
     """
-    Returns True if the argument is None of an empty (only spaces, \t, \t, etc) string
+    Returns True if the argument is None or an empty (only spaces, \t, \t, etc) obj as string
     """
-    return (s is None) or (as_str_strip(s) == "")
+    # até 2024-11-13 (Boa sorte!) return (s is None) or (as_str_strip(s) == "")
+    return (s is None) or not isinstance(s, str) or (as_str_strip(s) == "")
 
 
 def to_str(s: str) -> str:

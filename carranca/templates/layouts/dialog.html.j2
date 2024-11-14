@@ -26,7 +26,7 @@ dlg_cls_content
 dlg_cls_dialog
 dlg_cls_footer
 dlg_cls_header | default('dialog-header')
-dlg_cls_size
+dlg_cls_size | 'Default = 500px ' modal-sm, modal-lg, modal-xl
 dlg_cls_title | default('dialog-title')
 dlg_cls_top | default('mt-6')
 
@@ -48,7 +48,7 @@ mgd
     <div class="modal{%+ if not (dlg_var_vCentered|default(False)) %} {{dlg_cls_top|default('mt-6')}}{% endif %}"
         style="{{(dlg_var_style|default('display: block;'))}}" tabindex="-1" id="dlg-id-main">
         <div
-            class="modal-dialog {{dlg_cls_size}} {%+ if (dlg_var_vCentered|default(False)) %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dialog|default('')}}">
+            class="modal-dialog {{dlg_cls_size|default('')}} {%+ if (dlg_var_vCentered|default(False)) %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dialog|default('')}}">
             <div class="modal-content {{dlg_cls_content|default('')}}">
                 <div class="modal-header {{dlg_cls_header|default('dialog-header')}}">
                     <h5 class="modal-title {{dlg_cls_title|default('dialog-title')}}" inert>
