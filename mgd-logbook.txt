@@ -37,7 +37,8 @@ TODO:
         - share jinja_cache templates + texts (see route_helper templates_found)
         - Fix get_Html()
         - Login Remember not always working
-        - Tmpl for error
+        - Tmpl for error Internal Error
+        - Display colors
 
 -----------------------------------------------------------
   Logbook
@@ -46,11 +47,17 @@ TODO:
 
 ------- 2024 - November ----------
 ----------------------------------
+2024-11-14,15 β 3.19
+    - Ícones de Sep:
+      - upload, save to db, save to hd, show as icon, default &
+
+2024-11-12,13 β 3.18
+    - Update image of table 'sep'
 
 2024-11-12,13 β 3.17
-        - Update table 'sep' (image not ready)
-        - New add_msg_fatal
-        - Image is svg
+    - Update table 'sep' (image not ready)
+    - New add_msg_fatal
+    - Image is svg
 
 2024-11-09 β 3.16 All requests made during the demo, done ;-)
     - Significantly improve custom database exceptions

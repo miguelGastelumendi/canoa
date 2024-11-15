@@ -161,7 +161,7 @@ def download_public_google_file(
 
         # TODO: Pass as param
         service_account_file = path.join(
-            path_remove_last_folder(sidekick.config.ROOT_FOLDER),
+            sidekick.config.COMMON_PATH,
             "LocalDrive",
             "canoa-download-key.json",
         )

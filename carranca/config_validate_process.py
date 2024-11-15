@@ -38,9 +38,9 @@ Email = NamedTuple("Email", cc=str, bcc=str)
 
 class ValidateProcessConfig:
     def __init__(self, debug=False):  #: BaseConfig):
-        # d_v `data_validate` app output file name and extension
+        # dv_app `data_validate` app output file name and extension
         self.output_file = OutputFile(name="data_report", ext=".pdf")
-        self.d_v = DataValidateApp(
+        self.dv_app = DataValidateApp(
             batch="run_validate." + ("bat" if OS_IS_WINDOWS else "sh"),  # TODO: OS_IS_LINUX
             folder="data_validate",  # ./<common_folder>/<folder>/python main.py
             ui_name="data_validate",

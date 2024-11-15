@@ -10,14 +10,18 @@
 #
 # cSpell:ignore: nullable psycopg2 sqlalchemy sessionmaker mgmt
 
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Any
 from psycopg2 import DatabaseError
 from sqlalchemy import select, text
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text
+from sqlalchemy.orm import defer
 from sqlalchemy.ext.declarative import declarative_base
 
 from carranca import Session
+from .sep_const import SCHEMA_ICON_DEFAULT as icon_default
+from ..helpers.py_helper import is_str_none_or_empty
 from ..Sidekick import sidekick
+
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
 Base = declarative_base()
@@ -156,7 +160,6 @@ class MgmtUserSep(Base):
         msg_error = None
         session = Session()
         try:
-
             sep_list = [
                 {"id": sep.sep_id, "fullname": sep.sep_fullname}
                 for sep in session.execute(text(f"SELECT sep_id, sep_fullname FROM vw_scm_sep")).fetchall()
@@ -211,20 +214,22 @@ class MgmtSep(Base):
     __tablename__ = "sep"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), unique=True)
-    description = Column(String(140))
-    icon_file_name = Column(String(120))
-    icon_svg = Column(Text)
+    name = Column(String(100), unique=True, nullable=False)
+    description = Column(String(140), nullable=False)
+    icon_file_name = Column(String(120), nullable=True)
+    icon_uploaded_at = Column(DateTime, nullable=True)
+    icon_original_name = Column(String(120), nullable=True)
+    icon_svg = Column(Text, nullable=True)
 
-    def get_sep(id: int):
+    def get_sep(id: int) -> Any:
         """
-        Select a SEP  by id
+        Select a SEP by id, with deferred Icon content (useful for edit)
         """
         sep = None
         sep_fullname = None
         session = Session()
         try:
-            stmt = select(MgmtSep).where(MgmtSep.id == id)
+            stmt = select(MgmtSep).options(defer(MgmtSep.icon_svg)).where(MgmtSep.id == id)
             sep = session.execute(stmt).scalar_one_or_none()
             stmt = text(f"SELECT sep_fullname FROM vw_scm_sep WHERE sep_id={sep.id}")
             row = session.execute(stmt).one_or_none()
@@ -233,6 +238,24 @@ class MgmtSep(Base):
             session.close()
 
         return sep, sep_fullname
+
+    def get_sep_icon_content(id: int) -> Any:
+        """
+        Returns the content of the icon_svg (useful for write a file)
+        """
+        sep = None
+        session = Session()
+        icon_content = None
+        try:
+            stmt = select(MgmtSep).where(MgmtSep.id == id)
+            sep = session.execute(stmt).scalar_one_or_none()
+            icon_content = sep.icon_svg
+        except Exception as e:
+            sidekick.app_log.error(f"Error retrieving icon content of SEP {sep.id}: [{e}].")
+        finally:
+            session.close()
+
+        return icon_default if is_str_none_or_empty(icon_content) else icon_content
 
     def set_sep(sep) -> bool:
         """

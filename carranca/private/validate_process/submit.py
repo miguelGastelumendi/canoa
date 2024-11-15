@@ -116,7 +116,7 @@ def submit(cargo: Cargo) -> Cargo:
         data_validate_path = cargo.pd.path.data_validate
         if not path.isfile(batch_full_name):  # TODO send to check module
             task_code += 1  # 2
-            raise Exception(f"The `{_cfg.d_v.ui_name}` module caller [{batch_full_name}] was not found.")
+            raise Exception(f"The `{_cfg.dv_app.ui_name}` module caller [{batch_full_name}] was not found.")
 
         result_ext = _cfg.output_file.ext
         final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
@@ -128,7 +128,7 @@ def submit(cargo: Cargo) -> Cargo:
                 _run_validator(
                     batch_full_name,
                     data_validate_path,
-                    _cfg.d_v,
+                    _cfg.dv_app,
                     _path_write,
                     _path_read,
                     cargo.in_debug_mode,
@@ -147,7 +147,7 @@ def submit(cargo: Cargo) -> Cargo:
         if not path.exists(final_report_full_name):
             task_code += 1  # 6
             raise Exception(
-                f"\n{sidekick.app_name}: Report was not found.\n » {_cfg.d_v.ui_name}.stderr:\n{std_err_str}\n » {_cfg.d_v.ui_name}.stdout:\n {std_out_str}\n » End."
+                f"\n{sidekick.app_name}: Report was not found.\n » {_cfg.dv_app.ui_name}.stderr:\n{std_err_str}\n » {_cfg.dv_app.ui_name}.stdout:\n {std_out_str}\n » End."
             )
         elif stat(final_report_full_name).st_size < 200:
             task_code += 2  # 7
@@ -179,11 +179,11 @@ def submit(cargo: Cargo) -> Cargo:
     error_code = 0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT
     if error_code == 0:
         sidekick.display.info(
-            f"submit: The unzipped files were submitted to '{_cfg.d_v.ui_name}' and a report was generated."
+            f"submit: The unzipped files were submitted to '{_cfg.dv_app.ui_name}' and a report was generated."
         )
     else:
         sidekick.app_log.error(
-            f"There was a problem submitting the files to '{_cfg.d_v.ui_name}'. Error code [{error_code}]."
+            f"There was a problem submitting the files to '{_cfg.dv_app.ui_name}'. Error code [{error_code}]."
         )
 
     return cargo.update(

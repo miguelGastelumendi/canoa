@@ -16,7 +16,7 @@ from .validate_process.ProcessData import ProcessData
 
 from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.file_helper import path_remove_last_folder, folder_must_exist
+from ..helpers.file_helper import folder_must_exist
 from ..helpers.user_helper import LoggedUser, now
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data, get_input_text
@@ -55,7 +55,7 @@ def receive_file() -> str:
     try:
         received_at = now()
         # Find out what was kind of data was sent: an uploaded file or an URL (download)
-        file_obj = request.files[tmpl_form.filename.id] if request.files else None
+        file_obj = request.files[tmpl_form.filename.id] if len(request.files) > 0 else None
         url_str = get_input_text(tmpl_form.urlname.name)
         has_file = (file_obj is not None) and not is_str_none_or_empty(file_obj.filename)
         has_url = not is_str_none_or_empty(url_str)
@@ -83,13 +83,15 @@ def receive_file() -> str:
 
         def doProcessData() -> tuple[bool, ProcessData]:
             receive_file_cfg = ValidateProcessConfig(sidekick.debugging)
-            common_folder = path_remove_last_folder(sidekick.config.ROOT_FOLDER)
+            common_folder = (
+                sidekick.config.COMMON_PATH
+            )  # path_remove_last_folder(sidekick.config.ROOT_FOLDER)
             pd = ProcessData(
                 logged_user.code,
                 logged_user.folder,
                 common_folder,
-                receive_file_cfg.d_v.folder,
-                receive_file_cfg.d_v.batch,
+                receive_file_cfg.dv_app.folder,
+                receive_file_cfg.dv_app.batch,
                 has_url,
             )
             return receive_file_cfg.debug_process, pd

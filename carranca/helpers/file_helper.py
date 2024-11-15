@@ -9,8 +9,6 @@ import os
 import shutil
 from os import path, makedirs
 
-from ..Sidekick import sidekick
-
 
 def file_full_name_parse(file_full_name: str) -> tuple[str, str, str]:
     # split full path into 3 components
@@ -45,9 +43,7 @@ def is_first_param_newer(newer_full_name: str, older_full_name: str) -> bool | N
         return newer_stat.st_mtime > older_stat.st_mtime
 
 
-def file_must_exist(
-    file_full_name: str, source_full_name: str, replace_if_newer: bool = False
-) -> bool:
+def file_must_exist(file_full_name: str, source_full_name: str, replace_if_newer: bool = False) -> bool:
     """
     Checks if a file exists and optionally replaces it if newer.
 
@@ -74,6 +70,8 @@ def file_must_exist(
             shutil.copystat(source_full_name, file_full_name)
 
     except OSError as e:
+        from ..Sidekick import sidekick
+
         sidekick.app_log.error(
             f"Error {('replacing' if done else 'copying file')} [{source_full_name}] to [{file_full_name}]: {e}')"
         )
@@ -89,8 +87,10 @@ def folder_must_exist(full_path: str) -> bool:
             makedirs(full_path)
             done = True
     except Exception as e:
+        from ..Sidekick import sidekick
+
         done = False
-        sidekick.app_log.warn(f"Error creating folder {full_path}, {e}")
+        sidekick.app_log.error(f"Error creating folder {full_path}, {e}")
 
     return done
 

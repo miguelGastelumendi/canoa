@@ -31,6 +31,7 @@ dlg_cls_title | default('dialog-title')
 dlg_cls_top | default('mt-6')
 
 
+dlg_var_icon // the path to an icon to set on the dialog header
 dlg_var_style
 dlg_var_scroll
 dlg_var_close | default(True) // display Close button
@@ -52,7 +53,11 @@ mgd
             <div class="modal-content {{dlg_cls_content|default('')}}">
                 <div class="modal-header {{dlg_cls_header|default('dialog-header')}}">
                     <h5 class="modal-title {{dlg_cls_title|default('dialog-title')}}" inert>
-                        {{ (formTitle | default(app_name())) }}
+                        {% if dlg_var_icon %}
+                        <img src="{{url_for('static',filename=dlg_var_icon)}}" heigth="32px" width="32px" alt="DI"
+                            id="dlg_icon">
+                        {% endif %}
+                        {{ formTitle | default(app_name()) }}
                     </h5>
                     <form action="{{ public_route('login') }}" method="GET">
                         <button type="submit" class="btn-close {{dlg_cls_btnClose|default('')}}" data-bs-dismiss="modal"
