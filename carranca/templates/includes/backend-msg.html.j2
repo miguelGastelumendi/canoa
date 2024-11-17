@@ -15,23 +15,23 @@ mgd
 {% if msgInfo or msgError or msgSuccess %}
 <!-- { BackendMessage -->
 <div class="text-center text-md-center mt-0 mb-3">
-    <span class="font-weight-normal">
+    <h6 class="font-weight-normal">
         {% if msgError %}
-        <div class="alert alert-danger mt-3">
+        <div class="alert alert-danger">
             {{ msgError | safe }}
         </div>
 
         {% elif msgSuccess %}
-        <div class="alert alert-success mt-3">
+        <div class="alert alert-success">
             {{ msgSuccess | safe }}
         </div>
 
         {% elif msgInfo %}
-        <div class="alert alert-info mt-3">
+        <div class="alert alert-info">
             {{ msgInfo | safe }}
         </div>
         {% endif %}
-    </span>
+    </h6>
 </div>
 <!-- BackendMessage } -->
 {% endif %}

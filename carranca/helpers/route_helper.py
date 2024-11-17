@@ -12,7 +12,7 @@ from typing import Tuple, Any
 from flask import redirect, request, url_for
 from ..Sidekick import sidekick
 from .py_helper import is_str_none_or_empty, camel_to_snake, to_str
-from .hints_helper import TextsUI
+from .hints_helper import UI_Texts
 
 base_route_private = "private"
 base_route_public = "public"
@@ -74,7 +74,7 @@ def get_input_text(name: str) -> str:
     return to_str(text)
 
 
-def _get_form_data(section: str, file: str, folder: str) -> Tuple[str, bool, TextsUI]:
+def _get_form_data(section: str, file: str, folder: str) -> Tuple[str, bool, UI_Texts]:
     from .ui_texts_helper import get_section
 
     file = camel_to_snake(section) if file is None else file
@@ -94,15 +94,15 @@ def _get_form_data(section: str, file: str, folder: str) -> Tuple[str, bool, Tex
     return template, is_get, texts
 
 
-def get_private_form_data(section: str, file: str = None) -> Tuple[str, bool, TextsUI]:
+def get_private_form_data(section: str, file: str = None) -> Tuple[str, bool, UI_Texts]:
     return _get_form_data(section, file, base_route_private)
 
 
-def get_account_form_data(section: str, file: str = None) -> Tuple[str, bool, TextsUI]:
+def get_account_form_data(section: str, file: str = None) -> Tuple[str, bool, UI_Texts]:
     return _get_form_data(section, file, "accounts")
 
 
-def init_form_vars() -> Tuple[Any, str, bool, TextsUI]:
+def init_form_vars() -> Tuple[Any, str, bool, UI_Texts]:
     return None, "", True, {}
 
 

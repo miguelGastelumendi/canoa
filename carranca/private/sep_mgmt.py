@@ -5,7 +5,7 @@
     mgd 2024-10-09
 """
 
-# cSpell: ignore mgmt tmpl
+# cSpell: ignore mgmt tmpl samp
 
 import json
 from typing import Tuple
@@ -20,7 +20,7 @@ from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_batch_code
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data
-from ..helpers.hints_helper import TextsUI
+from ..helpers.hints_helper import UI_Texts
 
 
 proc_return = Tuple[str, str, int]
@@ -62,11 +62,10 @@ def do_sep_mgmt() -> str:
                 uiTexts[ui_msg_error] = msg_error
             else:
                 uiTexts["msgInfo"] = (
-                    """
-                    Para atribuir um SEP, selecione um da lista 'Novo Sector Estratégico'.
-                    Use o item (Remover) para cancelar a atribuição.
-                    Para criar um novo SEP, use o botão [Adicionar] e [Editar] para alterá-lo.
-                    """
+                    "Para atribuir um SEP, selecione um da lista 'Novo Sector Estratégico'. "
+                    "Da lista, use o item (remover) para cancelar a atribuição. "
+                    "Para criar um novo SEP, use o botão [Adicionar] e insira o <kbd>esquema/sep</kbd></b> desejado. "
+                    "Para alterá-lo, use [Editar]."
                 )
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             uiTexts[ui_msg_error] = "A chave mudou."
@@ -92,7 +91,7 @@ def do_sep_mgmt() -> str:
     return tmpl
 
 
-def _save_and_email(txtGridResponse: str, uiTexts: TextsUI, task_code: int) -> proc_return:
+def _save_and_email(txtGridResponse: str, uiTexts: UI_Texts, task_code: int) -> proc_return:
     """Saves data & sends emails"""
     task_code += 1
     jsonGridResponse = json.loads(txtGridResponse)
@@ -112,7 +111,7 @@ def _save_and_email(txtGridResponse: str, uiTexts: TextsUI, task_code: int) -> p
 
 
 def _save_data(
-    grid_response: dict[str, any], batch_code: str, uiTexts: TextsUI, task_code: int
+    grid_response: dict[str, any], batch_code: str, uiTexts: UI_Texts, task_code: int
 ) -> proc_return:
     """saves user modifications to the DB via the view's trigger"""
     msg_success = None
@@ -139,7 +138,7 @@ def _save_data(
 
 
 def _prepare_data_to_save(
-    grid_response: dict[str, any], uiTexts: TextsUI, task_code: int
+    grid_response: dict[str, any], uiTexts: UI_Texts, task_code: int
 ) -> Tuple[str, SepRecords, SepRecords, int]:
     """Distributes the modifications in two groups: remove & assign"""
 
@@ -172,7 +171,7 @@ def _prepare_data_to_save(
 
 
 def _save_data_to_db(
-    remove: SepRecords, update: SepRecords, batch_code: str, uiTexts: TextsUI, task_code: int
+    remove: SepRecords, update: SepRecords, batch_code: str, uiTexts: UI_Texts, task_code: int
 ) -> proc_return:
     """
     Saves user-made changes to the UI grid to the database
@@ -226,7 +225,7 @@ def _save_data_to_db(
     return "", msg_error, task_code
 
 
-def _send_email(batch_code: str, uiTexts: TextsUI, task_code: int) -> proc_return:
+def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> proc_return:
     """
     Send an email for each user with a
     'new' SEP or if it was removed

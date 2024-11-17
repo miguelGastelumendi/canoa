@@ -18,7 +18,7 @@ from sqlalchemy.orm import defer
 from sqlalchemy.ext.declarative import declarative_base
 
 from carranca import Session
-from .sep_const import SCHEMA_ICON_DEFAULT as icon_default
+from .SepIconConfig import SepIconConfig
 from ..helpers.py_helper import is_str_none_or_empty
 from ..Sidekick import sidekick
 
@@ -221,7 +221,7 @@ class MgmtSep(Base):
     icon_original_name = Column(String(120), nullable=True)
     icon_svg = Column(Text, nullable=True)
 
-    def get_sep(id: int) -> Any:
+    def get_sep(id: int) -> Tuple[Any, str]:
         """
         Select a SEP by id, with deferred Icon content (useful for edit)
         """
@@ -255,7 +255,7 @@ class MgmtSep(Base):
         finally:
             session.close()
 
-        return icon_default if is_str_none_or_empty(icon_content) else icon_content
+        return SepIconConfig.empty_content() if is_str_none_or_empty(icon_content) else icon_content
 
     def set_sep(sep) -> bool:
         """

@@ -12,7 +12,7 @@
 
 from .db_helper import retrieve_data
 from .py_helper import is_str_none_or_empty
-from .hints_helper import TextsUI
+from .hints_helper import UI_Texts
 from .jinja_helper import process_pre_templates
 
 # === local var ===========================================
@@ -84,7 +84,7 @@ def _add_msg(item: str, section: str, name: str, texts=None, *args) -> str:
     except:
         value = s
 
-    if texts:  # from .ui_texts_helper import TextsUI
+    if texts:  # from .ui_texts_helper import UI_Texts
         texts[name] = value
 
     return value
@@ -100,9 +100,9 @@ def _texts_init():
 # === public ==============================================
 
 
-def get_html(section: str) -> TextsUI:
+def get_html(section: str) -> UI_Texts:
     """
-    returns a TextsUI with the HTML info
+    returns a UI_Texts with the HTML info
      TODO except for.. not ready, still working...
     """
     imgList = get_text("images", section)
@@ -112,9 +112,9 @@ def get_html(section: str) -> TextsUI:
     return _get_result_set(query)
 
 
-def get_section(section: str) -> TextsUI:
+def get_section(section: str) -> UI_Texts:
     """
-    returns a TextsUI of the 'section'
+    returns a UI_Texts of the 'section'
     """
     query = __get_query("item, text", section)
     section = _get_result_set(query)
@@ -137,7 +137,7 @@ def get_text(item: str, section: str, default: str = None) -> str:
     return text
 
 
-def add_msg_error(item: str, texts: TextsUI = None, *args) -> str:
+def add_msg_error(item: str, texts: UI_Texts = None, *args) -> str:
     """
     returns text for the [item/'sec_Error'] pair
     and adds pair to texts => texts.add( text, 'msgError')
@@ -145,7 +145,7 @@ def add_msg_error(item: str, texts: TextsUI = None, *args) -> str:
     return _add_msg(item, sec_Error, msg_error, texts, *args)
 
 
-def add_msg_fatal(item: str, texts: TextsUI = None, *args) -> str:
+def add_msg_fatal(item: str, texts: UI_Texts = None, *args) -> str:
     """
     Same as add_msg_error, but just displays the message (msg_only)
     """
@@ -154,7 +154,7 @@ def add_msg_fatal(item: str, texts: TextsUI = None, *args) -> str:
     return msg
 
 
-def add_msg_success(item: str, texts: TextsUI = None, *args) -> str:
+def add_msg_success(item: str, texts: UI_Texts = None, *args) -> str:
     """
     returns `text` for the [item, 'sec_Success'] pair
     (of the vw_ui_texts wonderful view)

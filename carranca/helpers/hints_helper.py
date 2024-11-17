@@ -6,6 +6,6 @@
     cSpell:ignore
 """
 
-TextsUI = dict[str, str]
+UI_Texts = dict[str, str]
 
 # eof

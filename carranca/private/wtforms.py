@@ -6,11 +6,12 @@
     mgd 2024-04-09,27; 06-22
 """
 
-# cSpell:ignore: wtforms urlname
+# cSpell:ignore: wtforms urlname iconfilename
 
-from flask_wtf import FlaskForm
 from wtforms import PasswordField, FileField, StringField
+from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired, Length, URL
+
 from ..Sidekick import sidekick
 
 # -------------------------------------------------------------

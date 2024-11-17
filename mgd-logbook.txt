@@ -1,6 +1,6 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
-#spell:ignore venv ccedil atilde receivefile datetime saude mgmt
+#spell:ignore venv ccedil atilde receivefile datetime saude mgmt uix
 TODO:
 
 
@@ -47,9 +47,17 @@ TODO:
 
 ------- 2024 - November ----------
 ----------------------------------
+2024-11- β 3.21
+    - Sep Icon display on [Gestão de SE] + Menu
+    - sep_mgmt texts to DB
+    - Menu to DB
+
+2024-11-16,17 β 3.20
+    - Sep Icon display on [Validar dados] & [Editar SE]
+
 2024-11-14,15 β 3.19
     - Ícones de Sep:
-      - upload, save to db, save to hd, show as icon, default &
+      . upload, save to db, save to hd, show as icon, defaults
 
 2024-11-12,13 β 3.18
     - Update image of table 'sep'

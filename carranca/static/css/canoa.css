@@ -5,7 +5,7 @@
  *  Miguel Gastelumendi -- mgd
  * ============================================ */
 
-/* cSpell:ignore unselectable searchpath callout Konqueror */
+/* cSpell:ignore unselectable callout Konqueror tmpl */
 
 :root {
     --project-name: 'Canoa';
@@ -84,10 +84,12 @@ body {
     background: coral;
 }
 
+/* if changed, see SepIconConfig.error_content() */
 .grd-item-remove {
     color: firebrick;
 }
 
+/* if changed, see SepIconConfig.empty_content() */
 .grd-item-none {
     color: darkgrey;
 }
