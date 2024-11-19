@@ -1,6 +1,7 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
 #spell:ignore venv ccedil atilde receivefile datetime saude mgmt uix
+#spell:ignore Setorista
 TODO:
 
 
@@ -39,6 +40,7 @@ TODO:
         - Login Remember not always working
         - Tmpl for error Internal Error
         - Display colors
+        - Smart menu (always, modified)
 
 -----------------------------------------------------------
   Logbook
@@ -47,10 +49,30 @@ TODO:
 
 ------- 2024 - November ----------
 ----------------------------------
-2024-11- β 3.21
+
+2024-11- β 3.22
+    - [Gestão de SE] (para usuários Setorista)
+        > Mostrar um grid com 3 colunas
+            [Arquivo Submetido], [Relatório], [Data], [Disponível] (se o arquivo ainda está disponível)
+            Permitir fazer download do arquivos submetidos e relatórios
+    - [Gestão de SE] (para usuários Adm)
+        > Mostrar o "ícone" do SE 'ativo', no cabeçalho
+
+
+    - fix display_html version
     - Sep Icon display on [Gestão de SE] + Menu
-    - sep_mgmt texts to DB
     - Menu to DB
+
+2024-11-18 β 3.21
+    - Implementations from today's meeting:
+        > [Validar Dados]: ok
+        > [Gestão de SEP] (para o Adm)
+            o Botão: "Gestão de SEPs" -> Gestão de SE
+            o Titulo: "Gestão de SEP" -> Gestão de Setores Estratégicos
+        > [Edição de SE] "Identificação" -> Identificação (Esquema/SE)
+            o Label de Nome:
+    - sep_mgmt texts to DB
+
 
 2024-11-16,17 β 3.20
     - Sep Icon display on [Validar dados] & [Editar SE]

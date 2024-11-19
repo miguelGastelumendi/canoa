@@ -12,7 +12,7 @@ from typing import Tuple
 from flask import render_template, request
 
 from ..helpers.db_helper import try_get_mgd_msg
-from ..helpers.ui_texts_helper import msg_error as ui_msg_error
+from ..helpers.ui_texts_helper import ui_msg_error, ui_msg_success
 
 from .models import MgmtUserSep, SepRecords
 from ..Sidekick import sidekick
@@ -28,7 +28,7 @@ proc_return = Tuple[str, str, int]
 
 def do_sep_mgmt() -> str:
 
-    task_code = 0  # ModuleErrorCode.SEP_MANAGEMENT.value
+    task_code = ModuleErrorCode.SEP_MANAGEMENT.value
     try:
         task_code += 1
         template, is_get, uiTexts = get_private_form_data("sepMgmt")
@@ -37,13 +37,6 @@ def do_sep_mgmt() -> str:
         js_grid_sec_key = "gridSecKey"
         js_grid_rsp = "gridRsp"
         js_grid_submit_id = "gridSubmitID"
-
-        # Até criar ui_texts:
-        uiTexts["itemNone"] = "(nenhum)"
-        uiTexts["itemRemove"] = "(remover)"
-
-        uiTexts["formTitle"] = "Gestão de SEPs"
-        uiTexts["pageTitle"] = "Gestão de SEPs"
 
         # py/js communication
         uiTexts[js_grid_rsp] = js_grid_rsp
@@ -57,16 +50,7 @@ def do_sep_mgmt() -> str:
             return users_sep, sep_fullname_list, msg_error
 
         if is_get:
-            users_sep, sep_fullname_list, msg_error = __get_grid_data()
-            if not is_str_none_or_empty(msg_error):
-                uiTexts[ui_msg_error] = msg_error
-            else:
-                uiTexts["msgInfo"] = (
-                    "Para atribuir um SEP, selecione um da lista 'Novo Sector Estratégico'. "
-                    "Da lista, use o item (remover) para cancelar a atribuição. "
-                    "Para criar um novo SEP, use o botão [Adicionar] e insira o <kbd>esquema/sep</kbd></b> desejado. "
-                    "Para alterá-lo, use [Editar]."
-                )
+            users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data()
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             uiTexts[ui_msg_error] = "A chave mudou."
             # TODO goto login
@@ -77,7 +61,7 @@ def do_sep_mgmt() -> str:
             task_code += 1
             users_sep, sep_fullname_list, msg_error_read = __get_grid_data()
             if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
-                uiTexts["msgSuccess"] = msg_success
+                uiTexts[ui_msg_success] = msg_success
             elif is_str_none_or_empty(msg_error):
                 uiTexts[ui_msg_error] = msg_error_read
             else:

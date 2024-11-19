@@ -45,6 +45,37 @@ def is_str_none_or_empty(s: str) -> bool:
     return (s is None) or not isinstance(s, str) or (as_str_strip(s) == "")
 
 
+def get_init_params(from_instance: Any, From_class=None) -> dict:
+    """
+    Copies parameters from an instance based on the __init__ method of its class.
+
+    Args:
+        from_instance: The instance to copy attribute values from.
+
+    Returns:
+        A dictionary containing parameters that match the __init__ method.
+    """
+    import inspect
+
+    # #
+    # if not isinstance(from_instance, From_class):
+    #     raise TypeError(f"Expected instance of {From_class} got {type(from_instance)}.")
+
+    From_Class = type(from_instance)
+    init_signature = inspect.signature(From_Class.__init__)
+
+    # Get parameter names, excluding 'self'
+    init_params = [param_name for param_name in init_signature.parameters if param_name != "self"]
+
+    params = {
+        param_name: getattr(from_instance, param_name)
+        for param_name in init_params
+        if hasattr(from_instance, param_name)
+    }
+
+    return params
+
+
 def to_str(s: str) -> str:
     """
     Returns the argument as a string, striping spaces

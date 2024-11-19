@@ -22,14 +22,14 @@ class Display:
         def __init__(
             self,
             prompt="",
-            mute=False,
+            mute_all=False,
             debug_output=False,
             icon_output=True,
             colors=None,
             icons=None,
         ):
             self.prompt = prompt
-            self.mute = mute
+            self.mute = mute_all
             self.debug_output = debug_output
             self.icon_output = icon_output
             self.colors = colors
@@ -110,8 +110,8 @@ class Display:
             os_color = not OS_IS_WINDOWS
 
         _d = Display.default  # value is None => use default
-        self.mute = True if mute_all else False
         self.prompt = _d.prompt if prompt is None else prompt
+        self.mute_all = True if mute_all else False
         self.debug_output = _d.debug_output if debug_output is None else debug_output
         self.icon_output = _d.icon_output if icon_output is None else icon_output
         self.elapsed_output = elapsed_from is not None
@@ -131,7 +131,7 @@ class Display:
     def print(
         self, kind_or_color: Kind | str, msg: str, prompt: str = None, icon_output: bool = None
     ) -> None:
-        if self.mute:
+        if self.mute_all:
             return
 
         start_color = Display.no_color

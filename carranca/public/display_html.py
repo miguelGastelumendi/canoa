@@ -80,7 +80,9 @@ def __prepare_img_files(
 def display_html(docName: str):
     from ..helpers.ui_texts_helper import get_msg_error, get_text, get_html
 
+    template = "./home/document.html.j2"
     section = docName
+
     ## TODO texts = get_html( section )
     pageTitle = get_text("pageTitle", section)
     formTitle = get_text("formTitle", section)
@@ -120,11 +122,11 @@ def display_html(docName: str):
     elif __prepare_img_files(html_images, db_images, img_local_path, section):
         img_folders.insert(0, os.sep)
         body = img_change_src_path(body, img_folders)
-        pass
 
     # DEBUG
     # temp = sidekick.app.jinja_env.from_string( '{{ app_version() }}  + {{ app_name()}}' )
     #  print(temp.render())
+    ##   tmpl = render_template(template, form=tmpl_form, **uiTexts)
 
     return render_template(
         "./home/document.html.j2",

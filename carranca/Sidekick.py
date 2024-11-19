@@ -31,18 +31,21 @@
 import json
 from flask import Flask
 from datetime import datetime
+
+from .helpers.py_helper import get_init_params
 from .helpers.Display import Display
 from .DynamicConfig import DynamicConfig
 
 # Global
 sidekick = None
+display_params = "DISPLAY_PARAMS"
 # ------
 
 
 def create_sidekick(config: DynamicConfig, display: Display):
     global sidekick
+    config[display_params] = get_init_params(display)
     sidekick = Sidekick(config, display)
-    # TODO sidekick.display.sk = sidekick
     return sidekick
 
 
@@ -50,9 +53,19 @@ def recreate_sidekick(config: DynamicConfig, app: Flask):
     # from .helpers.Display import Display
     global sidekick
 
-    display = Display()  # TODO: config
+    msg_error = None
+    try:
+        _params = config[display_params]
+        display = Display(**_params)
+    except Exception as e:
+        display = Display()  # use default
+        msg_error = str(e)
+
     sidekick = Sidekick(config, display, app)
     sidekick.display.info("Sidekick was recreated.")
+    if msg_error:
+        sidekick.display.error(f"But using default params: {msg_error}.")
+
     return sidekick
 
 

@@ -74,12 +74,56 @@ Config = None
 # ============================================================================ #
 # Private methods
 # ---------------------------------------------------------------------------- #
-def _register_blueprints(app):
+def _register_blueprint_events(app):
+    from .private.routes import bp_private
+    from .public.routes import bp_public
+
+    def do_before_blueprint_request():
+        from .Sidekick import recreate_sidekick, sidekick
+
+        if "sidekick" not in g:
+            global Config
+            g.sidekick = recreate_sidekick(Config, app)
+
+        sidekick = g.sidekick
+        return
+
+    bp_private.before_request(do_before_blueprint_request)
+    bp_public.before_request(do_before_blueprint_request)
+
+    return
+
+
+# ---------------------------------------------------------------------------- #
+def _register_blueprint_routes(app):
     from .private.routes import bp_private
     from .public.routes import bp_public
 
     app.register_blueprint(bp_private)
     app.register_blueprint(bp_public)
+
+    return
+
+
+# ---------------------------------------------------------------------------- #
+def _register_session_events(app):
+    """ChatGPT
+    During each request:
+        Flask receives the request.
+        Your view logic runs, interacting with the database through app_db.
+        Once the response is ready, the shutdown_session() is called,
+        which removes the session to prevent any lingering database connections or transactions.
+    """
+
+    @app.teardown_request
+    def shutdown_session(exception=None):
+        try:
+            global Session
+            Session.remove()
+        except Exception as e:
+            app.logger.error(f"An error occurred removing the current session [{Session}]. Error [{e}].")
+        return
+
     return
 
 
@@ -122,25 +166,7 @@ def _register_login_manager(app):
 def _register_db(app):
 
     db.init_app(app)
-    # @app.before_first_request
-    # def initialize_database():
-    #     db.create_all()
-
-    """ ChatGPT
-    During each request:
-        Flask receives the request.
-        Your view logic runs, interacting with the database through app_db.
-        Once the response is ready, the shutdown_session() is called,
-        which removes the session to prevent any lingering database connections or transactions.
-    """
-
-    @app.teardown_request
-    def shutdown_session(exception=None):
-        try:
-            Session.remove()
-        except Exception as e:
-            if app:
-                app.logger.error(f"An error ocurred removing the current session [{Session}]. Error [{e}].")
+    return
 
 
 # ---------------------------------------------------------------------------- #
@@ -174,15 +200,14 @@ def create_app(app_name: str):
     sidekick.display.info(f"The Flask App was created, named '{name}'.")
 
     # -- app config
-    from .helpers.py_helper import copy_attributes
-
-    # _config = copy_attributes(sidekick.config)  # only attributes needed
     app.config.from_object(sidekick.config)
-    app.config.from_prefixed_env(app_name)
     sidekick.display.info("App's config was successfully bound.")
+    app.config.from_prefixed_env(app_name)
+    sidekick.display.info("App's config updated with Environment Variables.")
 
     # -- Logfile
     if sidekick.config.LOG_TO_FILE:
+        # only returns if everything went well.
         filename, level = ignite_log_file(sidekick.config, app)
         info = f"file '{filename}' with level {level}"
         sidekick.display.info(f"Logging to {info}.")
@@ -193,22 +218,15 @@ def create_app(app_name: str):
 
     # -- Register modules
     _register_db(app)
-    sidekick.display.info("The db was registered.")
+    sidekick.display.info("The db database was registered.")
 
-    # # See gemini "Jinja2 Blueprint Route Event"
-    # # == Start Canoa helpers
-    # from flask import Blueprint
+    _register_session_events(app)
+    sidekick.display.info("The 'shutdown_session' event was added to the Session.")
 
-    # main_bp = Blueprint("main", __name__)
-
-    # @main_bp.before_request
-    # def do_before_blueprint_request():
-    #     from .Sidekick import recreate_sidekick
-
-    #     recreate_sidekick(Config, app)
-
-    _register_blueprints(app)
-    sidekick.display.info("The blueprints were collected and registered within the app.")
+    _register_blueprint_events(app)
+    sidekick.display.info("The 'before_blueprint_request' event was added for all blueprints routes.")
+    _register_blueprint_routes(app)
+    sidekick.display.info("The blueprints routes were collected and registered within the app.")
 
     _register_jinja(app, sidekick.config.DEBUG_TEMPLATES)
     sidekick.display.info(
@@ -234,18 +252,6 @@ def create_app(app_name: str):
     engine = create_engine(uri)
     Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
     sidekick.display.info("A sharable scoped SQLAlchemy session was instantiated.")
-
-    # TODO change bt blueprint's
-    @app.before_request
-    def do_before_request():
-        # TODO
-        # if "sidekick" not in g:
-        #     from .Sidekick import recreate_sidekick
-        #     g.sidekick = recreate_sidekick(Config, app_name)
-
-        from .Sidekick import recreate_sidekick
-
-        recreate_sidekick(Config, app)
 
     # config sidekick.display
     if display_mute_after_init:

@@ -29,7 +29,9 @@ class ModuleErrorCode(IntEnum):
     RECEIVE_FILE_EXCEPTION = 100  # this is added, as an exception, process.py
 
     NEXT_MODULE_ERROR = 400
+
     SEP_EDIT = 500
+    SEP_MANAGEMENT = 550
 
 
 # eof

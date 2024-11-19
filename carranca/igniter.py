@@ -233,17 +233,17 @@ def ignite_log_file(config: DynamicConfig, app) -> Tuple[str, str]:
 
         if not folder_must_exist(file_folder):
             msg_error = f"Cannot create log's files folder [{file_folder}]."
+        else:
+            task = "full_name"
+            full_name = path.join(".", config.LOG_FILE_FOLDER, file_name)
 
-        task = "full_name"
-        full_name = path.join(".", config.LOG_FILE_FOLDER, file_name)
+            task = "level"
+            s_level = logging._levelToName[config.LOG_FILE_LEVEL]
 
-        task = "level"
-        s_level = logging._levelToName[config.LOG_FILE_LEVEL]
-
-        task = "handler"
-        handler = RotatingFileHandler(full_name, maxBytes=10000, backupCount=1)
-        handler.setLevel(config.LOG_FILE_LEVEL)
-        app.logger.addHandler(handler)
+            task = "handler"
+            handler = RotatingFileHandler(full_name, maxBytes=10000, backupCount=1)
+            handler.setLevel(config.LOG_FILE_LEVEL)
+            app.logger.addHandler(handler)
     except Exception as e:
         msg_error = f"Cannot create log's {task}: [{e}]"
 
@@ -335,32 +335,32 @@ def ignite_sql_connection(sidekick, uri):
     return
 
 
-# - ---------------------------------------------------------------------------- #
-def __reignite_sidekick(app_name):
-    global fuse
+# # - ---------------------------------------------------------------------------- #
+# def __reignite_sidekick(app_name):
+#     global fuse
 
-    import time
-    from flask_sqlalchemy import SQLAlchemy
+#     import time
+#     from flask_sqlalchemy import SQLAlchemy
 
-    ###   from main import app_name
+#     ###   from main import app_name
 
-    start_at = time.perf_counter()
-    fuse, error = _start_fuse(app_name, start_at)
+#     start_at = time.perf_counter()
+#     fuse, error = _start_fuse(app_name, start_at)
 
-    # if error:
-    #     fuse.display.error(f"The `fuse` was not create created: [{error}].")
+#     # if error:
+#     #     fuse.display.error(f"The `fuse` was not create created: [{error}].")
 
-    # # Config
-    # config, error = _ignite_config(fuse.app_mode)
-    # if error:
-    #     fuse.display.error(f"The `config` was not create create: [{error}].")
+#     # # Config
+#     # config, error = _ignite_config(fuse.app_mode)
+#     # if error:
+#     #     fuse.display.error(f"The `config` was not create create: [{error}].")
 
-    # Create the global hub class 'shared'
-    shared = Shared(fuse.app_debug, fuse.display)
-    fuse.display.info("The session 'shared'variable was reignited.")
-    fuse = None  # not need it anymore
-    # elif not sidekick.config.APP_DISPLAY_DEBUG_MSG:
-    # sidekick.display.debug_output = False
+#     # Create the global hub class 'shared'
+#     shared = Shared(fuse.app_debug, fuse.display)
+#     fuse.display.info("The session 'shared'variable was reignited.")
+#     fuse = None  # not need it anymore
+#     # elif not sidekick.config.APP_DISPLAY_DEBUG_MSG:
+#     # sidekick.display.debug_output = False
 
 
 # eof

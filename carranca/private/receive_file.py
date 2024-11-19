@@ -18,7 +18,7 @@ from ..helpers.file_helper import folder_must_exist
 from ..helpers.user_helper import LoggedUser, now
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data, get_input_text
-from ..helpers.ui_texts_helper import add_msg_success, add_msg_error, add_msg_fatal
+from ..helpers.ui_texts_helper import ui_msg_info, add_msg_success, add_msg_error, add_msg_fatal
 from ..config_validate_process import ValidateProcessConfig
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 
@@ -35,14 +35,10 @@ def receive_file() -> str:
     template, is_get, uiTexts = get_private_form_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
 
-    try:
-        uiTexts["iconFileName"] = icon_prepare_for_html(current_user.mgmt_sep_id)
-    except:
-        pass
-
     def _result():
+        uiTexts["iconFileName"], sep_fullname = icon_prepare_for_html(current_user.mgmt_sep_id)
+        uiTexts[ui_msg_info] = uiTexts[ui_msg_info].format(sep_fullname)
         tmpl = render_template(template, form=tmpl_form, **uiTexts)
-
         return tmpl
 
     if is_get:

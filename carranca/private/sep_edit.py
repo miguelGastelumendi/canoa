@@ -22,7 +22,7 @@ from ..helpers.user_helper import get_user_code
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data
 from ..helpers.route_helper import init_form_vars, get_input_text
-from ..helpers.ui_texts_helper import add_msg_success, add_msg_error, add_msg_fatal
+from ..helpers.ui_texts_helper import ui_msg_info, add_msg_success, add_msg_error, add_msg_fatal
 
 from .SepIconConfig import SepIconConfig
 from .sep_icon import icon_prepare_for_html
@@ -34,7 +34,7 @@ def do_sep_edit() -> str:
     task_code = ModuleErrorCode.SEP_EDIT.value
     tmpl_form, template, is_get, uiTexts = init_form_vars()
 
-    sep_fullname = "(working)"
+    sep_fullname = "(preparando...)"
     try:
         task_code += 1  # 1
         user = current_user
@@ -45,8 +45,9 @@ def do_sep_edit() -> str:
                 if sep is None or user.mgmt_sep_id is None:
                     raise add_msg_fatal("sepEditNotFound", uiTexts)
                 task_code += 1  #
-                icon_file_fullname = icon_prepare_for_html(sep)
+                icon_file_fullname, _ = icon_prepare_for_html(sep)
                 uiTexts["iconFileName"] = icon_file_fullname
+                uiTexts[ui_msg_info] = uiTexts[ui_msg_info].format(sep_fullname)
             except Exception as e:
                 raise (add_msg_fatal("sepEditSelectError", uiTexts))
 
@@ -95,6 +96,7 @@ def do_sep_edit() -> str:
                 add_msg_fatal("sepEditFailed", uiTexts, sep_fullname, task_code)
 
     except Exception as e:
+        # Aqui
         msg = add_msg_fatal("sepEditException", uiTexts, sep_fullname, task_code)
         sidekick.display.error(msg)
         sidekick.app_log.error(e)

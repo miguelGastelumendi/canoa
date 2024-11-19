@@ -25,9 +25,9 @@ def icon_prepare_for_html(sep_or_id: MgmtSep | int) -> str:
     or to `SepIconConfig.empty_file` if None
 
     """
-    sep, _ = MgmtSep.get_sep(sep_or_id) if isinstance(sep_or_id, int) else (sep_or_id, "")
+    sep, sep_fullname = MgmtSep.get_sep(sep_or_id) if isinstance(sep_or_id, int) else (sep_or_id, "")
     if sep is None:
-        return None
+        return None, ""
 
     no_file = is_str_none_or_empty(sep.icon_file_name)
     file_name = SepIconConfig.empty_file if no_file else sep.icon_file_name
@@ -37,17 +37,15 @@ def icon_prepare_for_html(sep_or_id: MgmtSep | int) -> str:
     if not folder_must_exist(SepIconConfig.path):
         # TODO set content, not url SepIconConfig.error_content
         sidekick.display.error(f"Cannot create folder [{SepIconConfig.path}]")
-        return ""
+        return "", ""
     elif path.isfile(file_full_name):
-        # Keep this code, just in case
-        # with open(file_full_name, 'r', encoding='utf-8') as file:
-        #     content = file.read()
-        return url_file_name
+        pass
     else:
         content = SepIconConfig.empty_content() if no_file else MgmtSep.get_sep_icon_content(sep.id)
         with open(file_full_name, "w", encoding="utf-8") as file:
             file.write(content)
-        return url_file_name
+
+    return url_file_name, sep_fullname
 
 
 # eof

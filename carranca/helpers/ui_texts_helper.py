@@ -16,12 +16,13 @@ from .hints_helper import UI_Texts
 from .jinja_helper import process_pre_templates
 
 # === local var ===========================================
-msg_error = "msgError"
-msg_success = "msgSuccess"
-msg_exception = "msgException"
-msg_only = (
-    "msgOnly"  #  display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
-)
+ui_msg_info = "msgInfo"
+ui_msg_error = "msgError"
+ui_msg_success = "msgSuccess"
+ui_msg_exception = "msgException"
+# 'msgOnly' display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
+ui_msg_only = "msgOnly"
+
 user_locale = "pt-br"  # TODO:  browser || user property
 msg_not_found = "Message '{0}' (not registered §: {1})"
 
@@ -119,7 +120,7 @@ def get_section(section: str) -> UI_Texts:
     query = __get_query("item, text", section)
     section = _get_result_set(query)
     # texts = process_pre_templates(_texts) # TODO:
-    section[msg_only] = False
+    section[ui_msg_only] = False
     return section
 
 
@@ -142,7 +143,7 @@ def add_msg_error(item: str, texts: UI_Texts = None, *args) -> str:
     returns text for the [item/'sec_Error'] pair
     and adds pair to texts => texts.add( text, 'msgError')
     """
-    return _add_msg(item, sec_Error, msg_error, texts, *args)
+    return _add_msg(item, sec_Error, ui_msg_error, texts, *args)
 
 
 def add_msg_fatal(item: str, texts: UI_Texts = None, *args) -> str:
@@ -150,7 +151,7 @@ def add_msg_fatal(item: str, texts: UI_Texts = None, *args) -> str:
     Same as add_msg_error, but just displays the message (msg_only)
     """
     msg = add_msg_error(item, texts, *args)
-    texts[msg_only] = True
+    texts[ui_msg_only] = True
     return msg
 
 
@@ -160,12 +161,12 @@ def add_msg_success(item: str, texts: UI_Texts = None, *args) -> str:
     (of the vw_ui_texts wonderful view)
     and adds the pair to `texts` => texts.add(text, 'msgSuccess')
 
-    Finally sets texts[msg_only] = True, so the form only displays
+    Finally sets texts[ui_msg_only] = True, so the form only displays
     the message (no other form inputs)
 
     """
-    msg = _add_msg(item, sec_Success, msg_success, texts, *args)
-    texts[msg_only] = True
+    msg = _add_msg(item, sec_Success, ui_msg_success, texts, *args)
+    texts[ui_msg_only] = True
     return msg
 
 
