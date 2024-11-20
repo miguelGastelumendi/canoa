@@ -11,7 +11,7 @@
     mgd
 """
 
-# cSpell:ignore
+# cSpell:ignore tmpl
 
 import os
 import base64
@@ -78,19 +78,24 @@ def __prepare_img_files(
 
 
 def display_html(docName: str):
-    from ..helpers.ui_texts_helper import get_msg_error, get_text, get_html
+    from ..helpers.ui_texts_helper import get_msg_error, get_section, ui_pageTitle, ui_formTitle
 
     template = "./home/document.html.j2"
     section = docName
 
-    ## TODO texts = get_html( section )
-    pageTitle = get_text("pageTitle", section)
-    formTitle = get_text("formTitle", section)
-    body = get_text("body", section, "")
-    style = get_text("style", section, "")
+    uiTexts = get_section(section)
+    # must exist
+    uiTexts[ui_pageTitle] = uiTexts.get(ui_pageTitle, "Display Document")
+    uiTexts[ui_formTitle] = uiTexts.get(ui_formTitle, "Document")
+    uiTexts["documentStyle"] = uiTexts.get("documentStyle", "")
+
+    # shortcuts
+    body_key = "documentBody"
+    body = uiTexts.get(body_key, None)
+    images = uiTexts.get("images", None)
+
     # a comma separated list of images.ext names available on the db,
     # see below db_images & _prepare_img_files
-    images = get_text("images", section)
 
     db_images = (
         [] if is_str_none_or_empty(images) else [s.strip() for s in images.split(",")]
@@ -105,38 +110,32 @@ def display_html(docName: str):
     if is_str_none_or_empty(body):
         msg = get_msg_error("documentNotFound").format(docName)
         body = f"<h4>{msg}</h4>"
-        style = ""  # TODO:
-        pageTitle = "Exibir Documento"
-        formTitle = "Documento"
 
     elif len(html_images) == 0:
-        pass
         # html has no images
+        pass
 
     elif len(db_images) == 0:
-        pass
         # if any images are missing in the folder,
         # I can't help, no images found in db
         # TODO: have a not_found_image.img
+        pass
 
     elif __prepare_img_files(html_images, db_images, img_local_path, section):
         img_folders.insert(0, os.sep)
         body = img_change_src_path(body, img_folders)
 
-    # DEBUG
-    # temp = sidekick.app.jinja_env.from_string( '{{ app_version() }}  + {{ app_name()}}' )
-    #  print(temp.render())
-    ##   tmpl = render_template(template, form=tmpl_form, **uiTexts)
+    uiTexts[body_key] = body
 
-    return render_template(
-        "./home/document.html.j2",
-        **{
-            "pageTitle": pageTitle,
-            "formTitle": formTitle,
-            "documentStyle": style,
-            "documentBody": body,
-        },
-    )
+    # Test function
+    # temp = sidekick.app.jinja_env.from_string("{{ app_version() }}  + {{ app_name()}}")
+    # print(temp.render())
+
+    tmpl = render_template(template, **uiTexts)
+    return tmpl
+
+
+# )
 
 
 # eof

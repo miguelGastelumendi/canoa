@@ -31,6 +31,8 @@ TODO:
         F. β 2.17
         G. β 2.11
         H. try_get_mgd_msg -> create [^|f(msg_code, ar1, arg2)default msg^|] -> search 'msg_code' in uiTexts
+        I. One close button for: document.html.j2, dialog.html.j2, form.html.j2 (2024.11.19)
+        J. PrivateDocs for About (2024.11.19)
 
 
     ##Small Tasks##
@@ -50,7 +52,7 @@ TODO:
 ------- 2024 - November ----------
 ----------------------------------
 
-2024-11- β 3.22
+2024-11- β 3.2x
     - [Gestão de SE] (para usuários Setorista)
         > Mostrar um grid com 3 colunas
             [Arquivo Submetido], [Relatório], [Data], [Disponível] (se o arquivo ainda está disponível)
@@ -58,10 +60,14 @@ TODO:
     - [Gestão de SE] (para usuários Adm)
         > Mostrar o "ícone" do SE 'ativo', no cabeçalho
 
-
     - fix display_html version
     - Sep Icon display on [Gestão de SE] + Menu
     - Menu to DB
+
+
+2024-11-19 β 3.22 Ícone no grid 50%
+    - Mostrar o "ícone" do SE 'ativo', no cabeçalho do grid de Gestão de SE
+
 
 2024-11-18 β 3.21
     - Implementations from today's meeting:
@@ -69,8 +75,8 @@ TODO:
         > [Gestão de SEP] (para o Adm)
             o Botão: "Gestão de SEPs" -> Gestão de SE
             o Titulo: "Gestão de SEP" -> Gestão de Setores Estratégicos
-        > [Edição de SE] "Identificação" -> Identificação (Esquema/SE)
-            o Label de Nome:
+        > [Edição de SE]
+            o Label de Nome: "Identificação" -> Identificação (Esquema/SE)
     - sep_mgmt texts to DB
 
 

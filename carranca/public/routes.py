@@ -128,15 +128,18 @@ def password_recovery():
 
 
 @bp_public.route("/docs/<docName>")
-def docs(docName: str):
+def docs(publicDocName: str):
     from .display_html import display_html
 
-    return display_html(docName)
+    # TODO privateDocs for About
+    return display_html(publicDocName)
 
 
 # Errors --------------------------------------------------
 # TODO: fix check unauthorized_handler
 from carranca import login_manager
+
+
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return render_template("home/page-403.html"), 403

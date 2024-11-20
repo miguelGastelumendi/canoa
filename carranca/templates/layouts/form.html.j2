@@ -29,7 +29,7 @@ mgd
 {% include "includes/backend-msg.html.j2" %}
 {% if msgOnly %}
 <div class="">
-    <form action="{{ public_route('login') }}" method="get">
+    <form action="{{ public_route('login') }}" method="GET">
         <button type="submit" class="form-control mt-4 form-main-btn">
             {{ btnMsgOnly | default("OK") }}
         </button>

@@ -30,15 +30,15 @@ window.addEventListener('beforeunload', (event) => {
 //-------------
 // == Basic Grid
 const gridOptions = {
-    //rowSelection: 'single'
     onCellFocused: (event) => { activeRow = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex); }
     , rowData: usersSep
     , columnDefs: [
-        { field: colNames[0], flex: 1, hide: true },
-        { field: colNames[1], headerName: colHeaders[1], flex: 1 },
+        { field: colData[0].n, flex: 0, hide: true },
+        { field: colData[1].n, flex: 0, hide: true },
+        { field: colData[2].n, headerName: colData[2].h, flex: 1 },
         {
-            field: colNames[2],
-            headerName: colHeaders[2],
+            field: colData[3].n,
+            headerName: colData[3].h,
             flex: 2,
             cellClassRules: {
                 'grd-item-none': params => params.value === itemNone,
@@ -46,8 +46,8 @@ const gridOptions = {
             },
         },
         {
-            field: colNames[3],
-            headerName: colHeaders[3],
+            field: colData[4].n,
+            headerName: colData[4].h,
             flex: 2,
             editable: true,
             cellClass: 'grd-col-sep_new',
@@ -88,9 +88,9 @@ const gridOptions = {
             }
         },
         {
-            field: colNames[4]
-            , headerName: colHeaders[4]
-            , valueFormatter: params => (params.data[colNames[4]] ? params.data[colNames[4]].toLocaleDateString(whenFormat) : '')
+            field: colData[5].n
+            , headerName: colData[5].h
+            , valueFormatter: params => (params.data[colData[5].n] ? params.data[colData[5].n].toLocaleDateString(whenFormat) : '')
             , flex: 1
         }
     ]

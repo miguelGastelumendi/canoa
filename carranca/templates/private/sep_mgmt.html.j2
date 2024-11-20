@@ -14,6 +14,9 @@ mgd
 
 {% extends "./layouts/dialog.html.j2" %}
 
+{% if not msgOnly %}
+{#--- msgOnly --- #}
+
 {% block base_blc_head_js %}
 <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
 {% endblock base_blc_head_js %}
@@ -56,13 +59,16 @@ mgd
     const usersSep = ({{ usersSep | tojson }}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
     const usedList = usersSep.map(item => item.sep)
     const initialList = {{ sepList | tojson }};
-    const colSepCurr = 'scm_sep_curr';
-    const colSepNew = 'scm_sep_new';
-    const colHeaders = ['', 'Sectorista', 'Setor Estratégico Atual', 'Novo Setor Estratégico', 'Atribuído'];
-    const colNames = ['user_id', 'user_name', colSepCurr, colSepNew, 'when'];
+    const colData = {{ colData| tojson }};
+    const colSepCurr = colData[3].cn;
+    const colSepNew = colData[4].cn;
     const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmit_id}}'));
     const whenFormat = '{{ whenFormat | default('pt-BR') }}';
 </script>
 <script src="/static/js/sep_mgmt.js"></script>
 {% endblock dlg_blc_javascript %}
+
+{#--- msgOnly --- #}
+{% endif %}
+
 {# eof #}

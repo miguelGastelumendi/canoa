@@ -19,8 +19,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from carranca import Session
 from .SepIconConfig import SepIconConfig
-from ..helpers.py_helper import is_str_none_or_empty
 from ..Sidekick import sidekick
+from ..helpers.py_helper import is_str_none_or_empty
 
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
@@ -142,6 +142,7 @@ class MgmtUserSep(Base):
 
     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
     user_id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
+    sep_id = Column(Integer)
     user_name = Column(String(100))
     user_disabled = Column(Boolean)
     scm_sep_curr = Column(String(201))  # sep_name -> scm_sep_curr
@@ -157,9 +158,16 @@ class MgmtUserSep(Base):
         provide the user with a UI grid to assign or remove SEP
         to or from a user.
         """
+        from .sep_icon import icon_prepare_for_html
+
         msg_error = None
         session = Session()
         try:
+
+            def _file_url(sep_id: int) -> str:
+                url, _ = icon_prepare_for_html(sep_id)
+                return url
+
             sep_list = [
                 {"id": sep.sep_id, "fullname": sep.sep_fullname}
                 for sep in session.execute(text(f"SELECT sep_id, sep_fullname FROM vw_scm_sep")).fetchall()
@@ -167,6 +175,8 @@ class MgmtUserSep(Base):
             users_sep = [
                 {
                     "user_id": usr.user_id,
+                    "sep_id": usr.sep_id,
+                    "file_url": _file_url(usr.sep_id),
                     "user_name": usr.user_name,
                     "disabled": usr.user_disabled,
                     "scm_sep_curr": item_none if usr.scm_sep_curr is None else usr.scm_sep_curr,

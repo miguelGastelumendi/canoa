@@ -12,14 +12,14 @@ from typing import Tuple
 from flask import render_template, request
 
 from ..helpers.db_helper import try_get_mgd_msg
-from ..helpers.ui_texts_helper import ui_msg_error, ui_msg_success
+from ..helpers.ui_texts_helper import ui_msg_error, ui_msg_success, ui_msg_exception, add_msg_fatal
 
 from .models import MgmtUserSep, SepRecords
 from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_batch_code
 from ..helpers.error_helper import ModuleErrorCode
-from ..helpers.route_helper import get_private_form_data
+from ..helpers.route_helper import get_private_form_data, init_form_vars
 from ..helpers.hints_helper import UI_Texts
 
 
@@ -29,10 +29,16 @@ proc_return = Tuple[str, str, int]
 def do_sep_mgmt() -> str:
 
     task_code = ModuleErrorCode.SEP_MANAGEMENT.value
+    _, template, is_get, uiTexts = init_form_vars()
+
+    users_sep = []
+    sep_fullname_list = []
+
     try:
-        task_code += 1
+        task_code += 1  # 1
         template, is_get, uiTexts = get_private_form_data("sepMgmt")
 
+        task_code += 1  # 2
         js_grid_sec_value = "7298kaj0fk9dl-sd=)0x"
         js_grid_sec_key = "gridSecKey"
         js_grid_rsp = "gridRsp"
@@ -44,18 +50,29 @@ def do_sep_mgmt() -> str:
         uiTexts[js_grid_submit_id] = js_grid_submit_id
         uiTexts[js_grid_sec_key] = js_grid_sec_key
 
+        # grid columns
+        task_code += 1  # 3
+        colData = json.loads(uiTexts["colData"])
+        task_code += 1  # 3
+        uiTexts["colNames"] = ["user_id", "file_url", "user_name", "scm_sep_curr", "scm_sep_new", "when"]
+        task_code += 1  # 3
+        # Rewrite it in an  an easier way for js: colName: colHeader
+        uiTexts["colData"] = [{"n": key, "h": colData[key]} for key in uiTexts["colNames"]]
+
         def __get_grid_data():
             users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view(uiTexts["itemNone"])
             sep_fullname_list = [sep["fullname"] for sep in sep_list]
             return users_sep, sep_fullname_list, msg_error
 
         if is_get:
+            task_code += 1
             users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data()
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
-            uiTexts[ui_msg_error] = "A chave mudou."
+            task_code += 2
+            uiTexts[ui_msg_exception] = "A chave mudou."
             # TODO goto login
         else:
-            task_code += 1
+            task_code += 3
             txtGridResponse = request.form.get(js_grid_rsp)
             msg_success, msg_error, task_code = _save_and_email(txtGridResponse, uiTexts, task_code)
             task_code += 1
@@ -69,7 +86,10 @@ def do_sep_mgmt() -> str:
 
     except Exception as e:
         # msg = add_msg_error("errorPasswordChange", uiTexts, task_code)
+        msg = add_msg_fatal("gridException", uiTexts, task_code)
         sidekick.app_log.error(e)
+        sidekick.display.error(msg)
+        # Todo error with users_sep,,, not ready
 
     tmpl = render_template(template, usersSep=users_sep, sepList=sep_fullname_list, **uiTexts)
     return tmpl

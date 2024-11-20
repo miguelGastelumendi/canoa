@@ -103,6 +103,7 @@ def get_account_form_data(section: str, file: str = None) -> Tuple[str, bool, UI
 
 
 def init_form_vars() -> Tuple[Any, str, bool, UI_Texts]:
+    # tmpl_form, template, is_get, uiTexts
     return None, "", True, {}
 
 

@@ -15,11 +15,13 @@ from .py_helper import is_str_none_or_empty
 from .hints_helper import UI_Texts
 from .jinja_helper import process_pre_templates
 
-# === local var ===========================================
+# === Global var ===========================================
 ui_msg_info = "msgInfo"
 ui_msg_error = "msgError"
 ui_msg_success = "msgSuccess"
 ui_msg_exception = "msgException"
+ui_pageTitle = "pageTitle"
+ui_formTitle = "formTitle"
 # 'msgOnly' display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
 ui_msg_only = "msgOnly"
 
@@ -54,9 +56,9 @@ def __get_query(cols: str, section: str, item: str = None):
 def _get_result_set(query):
     from .db_helper import retrieve_dict
 
-    dict = retrieve_dict(query)
+    result = retrieve_dict(query)
     # TODO texts = process_pre_templates(_texts)
-    return dict
+    return result
 
 
 def _get_row(item: str, section: str) -> tuple[str, str]:

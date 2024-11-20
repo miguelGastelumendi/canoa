@@ -14,8 +14,7 @@
 
 var agGrid = /** @type {Object} */ null;
 var initialList = /** @type {String[]} */[];
-var colHeaders = /** @type {String[]} */[];
-var colNames = /** @type {String[]} */[];
+var colData = /** @type {Object[]} */[];
 var rowData = /** @type {JSON} */ '';
 var usersSep = /** @type {JSON} */ '';
 var itemNone = /** @type {string} */ '';

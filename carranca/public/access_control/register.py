@@ -30,7 +30,6 @@ def register():
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_REGISTER.value
     tmpl_form, template, is_get, texts = init_form_vars()
-    # TODO test, fake form?
 
     try:
         task_code += 1  # 1

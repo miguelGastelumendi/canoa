@@ -25,7 +25,6 @@ from ..helpers.route_helper import init_form_vars, get_input_text
 from ..helpers.ui_texts_helper import ui_msg_info, add_msg_success, add_msg_error, add_msg_fatal
 
 from .SepIconConfig import SepIconConfig
-from .sep_icon import icon_prepare_for_html
 
 
 def do_sep_edit() -> str:
@@ -40,13 +39,15 @@ def do_sep_edit() -> str:
         user = current_user
 
         def _get_sep(task_code: int) -> Tuple[MgmtSep, str, int]:
+            from .sep_icon import icon_prepare_for_html
+
             try:
                 sep, sep_fullname = MgmtSep.get_sep(user.mgmt_sep_id)
                 if sep is None or user.mgmt_sep_id is None:
                     raise add_msg_fatal("sepEditNotFound", uiTexts)
                 task_code += 1  #
-                icon_file_fullname, _ = icon_prepare_for_html(sep)
-                uiTexts["iconFileName"] = icon_file_fullname
+                url_file_name, _ = icon_prepare_for_html(sep)
+                uiTexts["iconFileName"] = url_file_name
                 uiTexts[ui_msg_info] = uiTexts[ui_msg_info].format(sep_fullname)
             except Exception as e:
                 raise (add_msg_fatal("sepEditSelectError", uiTexts))
