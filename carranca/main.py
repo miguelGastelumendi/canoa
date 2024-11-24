@@ -26,17 +26,11 @@ print(f"{'-' * len(the_aperture_msg)}\n{the_aperture_msg}")
 # Flask app
 from carranca import create_app, started  # see __init__.py
 
-app = create_app(app_name)
-
-from .Sidekick import sidekick
+app, sidekick = create_app(app_name)
 
 sidekick.display.info(
     "All mandatory information has been checked and is available. The app is ready to run."
 )
-
-# Keep shared alive within app
-sidekick.keep(app)
-sidekick.display.info("The session 'sidekick' variable is now available.")
 
 if sidekick.config.APP_DISPLAY_DEBUG_MSG:
     # print(repr(sidekick))

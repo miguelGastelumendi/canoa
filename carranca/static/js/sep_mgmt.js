@@ -1,8 +1,8 @@
 /**
  * @preserve
  * sep_mgmt.js
- * version 0.3
- * 2023.10.18 -- 31
+ * version 0.4
+ * 2024.10.18 -- 31
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -12,14 +12,13 @@
 
 /// <reference path="./ts-check.js" />
 
-/** @type {Object} */
-
 let activeRow = null;
 let addedList = [];
 let assignedList = [];
 let selectList = [...initialList];
 let removeCount = 0
 const ignoreList = [itemRemove, itemNone];
+const icon = /** @type {HTMLImageElement} */(document.getElementById("dlg_icon"))
 
 window.addEventListener('beforeunload', (event) => {
     if (assignedList.length > 0) {
@@ -30,11 +29,16 @@ window.addEventListener('beforeunload', (event) => {
 //-------------
 // == Basic Grid
 const gridOptions = {
-    onCellFocused: (event) => { activeRow = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex); }
+    onCellFocused: (event) => {
+        activeRow = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex);
+        if (activeRow) {
+            icon.src = activeRow.data[colIconSrc]
+        }
+    }
     , rowData: usersSep
     , columnDefs: [
         { field: colData[0].n, flex: 0, hide: true },
-        { field: colData[1].n, flex: 0, hide: true },
+        { field: colIconSrc, flex: 0, hide: true },
         { field: colData[2].n, headerName: colData[2].h, flex: 1 },
         {
             field: colData[3].n,
@@ -90,7 +94,7 @@ const gridOptions = {
         {
             field: colData[5].n
             , headerName: colData[5].h
-            , valueFormatter: params => (params.data[colData[5].n] ? params.data[colData[5].n].toLocaleDateString(whenFormat) : '')
+            , valueFormatter: params => (params.data[colData[5].n] ? params.data[colData[5].n].toLocaleDateString(dateFormat) : '')
             , flex: 1
         }
     ]

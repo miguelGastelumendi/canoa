@@ -57,13 +57,14 @@ mgd
 {% block frm_blc_below %}
 <div class="row no-gutters mt-3">
     <div class="col-6">
-        <a href="docs/privacyPolicy" class="form-link">{{ privacyPolicy }}</a>
+        <a href="{{ public_route('docs', publicDocName='privacyPolicy') }}" class="form-link">{{ privacyPolicy
+            }}</a>
     </div>
     <div class="col-6 text-right">
         <a href="{{ public_route('password_recovery') }}" class="form-link">{{ forgotPassword }}</a>
     </div>
     <div class="col-6">
-        <a href="docs/termsOfUse" class="form-link">{{ termsOfUse }}</a>
+        <a href="{{ public_route('docs', publicDocName='termsOfUse') }}" class="form-link">{{ termsOfUse }}</a>
     </div>
     <div class="col-6 text-right">
         <a href="{{ public_route('register') }}" class="form-link">{{ gotoRegister }}</a>

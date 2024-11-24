@@ -10,6 +10,20 @@ mgd
 from enum import IntEnum
 
 
+def did_I_stumbled(e: Exception):
+    """is it I who stumbled? ?"""
+    return isinstance(e, CanoeStumbled)
+
+
+class CanoeStumbled(Exception):
+    """A specialized Exception for Canoa"""
+
+    def __init__(self, msg: str, task_code: int = 0, is_fatal: bool = False):
+        super().__init__(msg)
+        self.task_code = task_code
+        self.is_fatal = is_fatal
+
+
 class ModuleErrorCode(IntEnum):
     # Public Access Control Processes
     ACCESS_CONTROL_LOGIN = 100  # 1-14

@@ -8,7 +8,8 @@
 
 # cSpell:ignore mgmt
 
-from os import path
+from os import path, remove
+from typing import Tuple
 
 from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
@@ -16,36 +17,70 @@ from ..helpers.file_helper import folder_must_exist
 
 from .models import MgmtSep
 from .SepIconConfig import SepIconConfig
+from .logged_user import UserSEP
 
 
-def icon_prepare_for_html(sep_or_id: MgmtSep | int) -> str:
+def icon_refresh(sep: UserSEP | MgmtSep) -> bool:
+
+    refreshed = False
+    if is_str_none_or_empty(sep.icon_file_name):
+        return refreshed
+
+    try:
+        if path.isfile(sep.icon_full_name):
+            remove(sep.icon_full_name)
+
+        icon_prepare_for_html(sep.id)
+        refreshed = True
+    except:
+        pass  # not a terrible bug, later will be refreshed
+
+    return refreshed
+
+
+def icon_prepare_for_html(sep_or_id: MgmtSep | int | None) -> Tuple[str, str, MgmtSep]:
     """
-    Creates a file with the SEP's file (if necessary) and
-    returns the full path of the sep icon
-    or to `SepIconConfig.empty_file` if None
-
+    Creates a file with the SEP's svg data (if necessary) and
+    returns
+        url of the icon_file (can be to 'no_file')
+        , full name of the sep (schema/sep)
+        , sep record
     """
-    sep, sep_fullname = MgmtSep.get_sep(sep_or_id) if isinstance(sep_or_id, int) else (sep_or_id, "")
-    if sep is None:
-        return None, ""
 
-    no_file = is_str_none_or_empty(sep.icon_file_name)
-    file_name = SepIconConfig.empty_file if no_file else sep.icon_file_name
-    file_full_name = path.join(SepIconConfig.path, file_name)
+    if sep_or_id is None:
+        sep, sep_fullname = (None, "")
+        icon_file_name = SepIconConfig.none_file
+    else:
+        sep, sep_fullname = MgmtSep.get_sep(sep_or_id) if isinstance(sep_or_id, int) else (sep_or_id, "")
+        icon_file_name = SepIconConfig.error_file if sep is None else sep.icon_file_name
+
+    no_file = is_str_none_or_empty(icon_file_name)
+    file_name = SepIconConfig.empty_file if no_file else icon_file_name
+
+    file_full_name = path.join(SepIconConfig.local_path, file_name)
     url_file_name = SepIconConfig.set_url(file_name)
 
-    if not folder_must_exist(SepIconConfig.path):
-        # TODO set content, not url SepIconConfig.error_content
-        sidekick.display.error(f"Cannot create folder [{SepIconConfig.path}]")
-        return "", ""
+    if not folder_must_exist(SepIconConfig.local_path):
+        # TODO: express this error more clearly
+        sidekick.display.error(f"Cannot create folder [{SepIconConfig.local_path}]")
+        return "", "", sep
     elif path.isfile(file_full_name):
         pass
     else:
-        content = SepIconConfig.empty_content() if no_file else MgmtSep.get_sep_icon_content(sep.id)
+        match icon_file_name:
+            case SepIconConfig.error_file:
+                content = SepIconConfig.error_content()
+            case SepIconConfig.empty_file:
+                content = SepIconConfig.empty_content()
+            case SepIconConfig.none_file:
+                content = SepIconConfig.none_content()
+            case _:
+                content = MgmtSep.db_content(sep.id)
+
         with open(file_full_name, "w", encoding="utf-8") as file:
             file.write(content)
 
-    return url_file_name, sep_fullname
+    return url_file_name, sep_fullname, sep
 
 
 # eof

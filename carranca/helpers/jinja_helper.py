@@ -4,22 +4,25 @@
 
 # cSpell:ignore
 
-#mark a string as a jinja text, a text that will be parsed before rendering
-_jinja_pre_template_mark = '^'
+# mark a string as a jinja text, a text that will be parsed before rendering
+_jinja_pre_template_mark = "^"
+
 
 def _jinja_pre_template(val: str) -> str:
     from ..Sidekick import sidekick
+
     text = val
     try:
         # Create a template from the value
         template = sidekick.app.jinja_env.from_string(val)
-        text= template.render()
+        text = template.render()
 
         return text
     except Exception as e:
         print(f"Error rendering template [{val}]: {e}")
 
     return text
+
 
 def process_pre_templates(texts: dict, mark: str = _jinja_pre_template_mark):
     """
@@ -44,4 +47,5 @@ def process_pre_templates(texts: dict, mark: str = _jinja_pre_template_mark):
             texts[key] = value
     return texts
 
-#eof
+
+# eof

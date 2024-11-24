@@ -40,10 +40,10 @@ mgd
 {% block frm_blc_above %}
 {% endblock frm_blc_above %}
 
-{# display the if not Sucess or Exception (see carranca\helpers\ui_texts_helper.py[add_msg_success]) #}
+{# display the if not Success or Exception (see carranca\helpers\ui_texts_helper.py[add_msg_success]) #}
 {% if not msgOnly %}
 <!-- { Form  -->
-<form method="post" action="" class="mt-2" onsubmit="document.getElementById('id-form-main-btn').disabled=true;" {{
+<form method="post" action="" class="mt-2" onSubmit="document.getElementById('id-form-main-btn').disabled=true;" {{
     formAttribute|default("") }}>
     {{ form.hidden_tag() }}
 

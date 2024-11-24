@@ -127,7 +127,8 @@ def password_recovery():
         return password_recovery()
 
 
-@bp_public.route("/docs/<docName>")
+# new comers: <name> is a dynamic name
+@bp_public.route("/docs/<publicDocName>")
 def docs(publicDocName: str):
     from .display_html import display_html
 

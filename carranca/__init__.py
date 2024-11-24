@@ -56,7 +56,7 @@ import time
 started = time.perf_counter()
 
 import jinja2
-from flask import Flask, g
+from flask import Flask
 from sqlalchemy import create_engine
 from flask_login import LoginManager
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -69,6 +69,7 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 Session = None
 Config = None
+app = None
 
 
 # ============================================================================ #
@@ -78,18 +79,23 @@ def _register_blueprint_events(app):
     from .private.routes import bp_private
     from .public.routes import bp_public
 
-    def do_before_blueprint_request():
-        from .Sidekick import recreate_sidekick, sidekick
+    def do_after_blueprint_request(r):
+        # @app.teardown_request
+        # def shutdown_session(exception=None):
+        # It is 'usually'define in teardown_request. but is to often, each time a
+        #   "GET /static/img/pages/canoa_fundo-w.jpeg HTTP/1.1" 304 -
+        # it shuts the session.
+        try:
+            global Session
+            app.logger.debug(f"Session is shuting down.")
+            Session.remove()
+        except Exception as e:
+            app.logger.error(f"An error occurred removing the current session [{Session}]. Error [{e}].")
 
-        if "sidekick" not in g:
-            global Config
-            g.sidekick = recreate_sidekick(Config, app)
+        return r
 
-        sidekick = g.sidekick
-        return
-
-    bp_private.before_request(do_before_blueprint_request)
-    bp_public.before_request(do_before_blueprint_request)
+    bp_private.after_request(do_after_blueprint_request)
+    bp_public.after_request(do_after_blueprint_request)
 
     return
 
@@ -114,39 +120,32 @@ def _register_session_events(app):
         Once the response is ready, the shutdown_session() is called,
         which removes the session to prevent any lingering database connections or transactions.
     """
+    # When to _register_blueprint_events
+    # ----------------------------------
+    # @app.teardown_request
+    # def shutdown_session(exception=None):
+    #     try:
+    #         global Session
+    #         app.logger.debug(f"Session is shuting down.")
+    #         Session.remove()
+    #     except Exception as e:
+    #         app.logger.error(f"An error occurred removing the current session [{Session}]. Error [{e}].")
+    #     return
 
-    @app.teardown_request
-    def shutdown_session(exception=None):
-        try:
-            global Session
-            Session.remove()
-        except Exception as e:
-            app.logger.error(f"An error occurred removing the current session [{Session}]. Error [{e}].")
-        return
-
-    return
+    # return
 
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app, debugUndefined):
     from .helpers.route_helper import private_route, public_route
-    from .helpers.pw_helper import is_someone_logged
-
-    def __get_name() -> str:
-        return app.config["APP_NAME"]
-
-    def __get_version() -> str:
-        return app.config["APP_VERSION"]
-
-    def __user_is_logged() -> bool:
-        return is_someone_logged()
+    from .private.logged_user import logged_user
 
     app.jinja_env.globals.update(
-        app_version=__get_version,
-        app_name=__get_name,
-        user_logged=__user_is_logged,
+        app_version=app.config["APP_VERSION"],
+        app_name=app.config["APP_NAME"],
         private_route=private_route,
         public_route=public_route,
+        logged_user=logged_user,
     )
 
     if debugUndefined:
@@ -196,8 +195,11 @@ def create_app(app_name: str):
 
     # === Create the Flask App  ===`#
     name = __name__ if __name__.find(".") < 0 else __name__.split(".")[0]
+    global app
     app = Flask(name)
     sidekick.display.info(f"The Flask App was created, named '{name}'.")
+    sidekick.keep(app)
+    sidekick.display.info(f"[{sidekick}] instance is now ready. Will be cached in during sessions.")
 
     # -- app config
     app.config.from_object(sidekick.config)
@@ -220,11 +222,11 @@ def create_app(app_name: str):
     _register_db(app)
     sidekick.display.info("The db database was registered.")
 
-    _register_session_events(app)
-    sidekick.display.info("The 'shutdown_session' event was added to the Session.")
+    # _register_session_events(app)
+    # sidekick.display.info("The 'shutdown_session' event was added to the Session.")
 
     _register_blueprint_events(app)
-    sidekick.display.info("The 'before_blueprint_request' event was added for all blueprints routes.")
+    sidekick.display.info("The 'after_request' event was added for all blueprints routes.")
     _register_blueprint_routes(app)
     sidekick.display.info("The blueprints routes were collected and registered within the app.")
 
@@ -236,7 +238,7 @@ def create_app(app_name: str):
     _register_login_manager(app)
     sidekick.display.info("The Login Manager was initialized with the app.")
 
-    # == Config
+    # == Config, save here (__init__.py) to recreate sidekick
     global Config
     uri = db_obfuscate(sidekick.config)
     Config = sidekick.config
@@ -250,14 +252,16 @@ def create_app(app_name: str):
     # == Database Session
     global Session
     engine = create_engine(uri)
+    # https://docs.sqlalchemy.org/en/20/orm/contextual.html
+    # https://flask.palletsprojects.com/en/stable/patterns/sqlalchemy/
     Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
-    sidekick.display.info("A sharable scoped SQLAlchemy session was instantiated.")
+    sidekick.display.info("A global scoped SQLAlchemy session was instantiated.")
 
     # config sidekick.display
     if display_mute_after_init:
         sidekick.display.mute_all = True
 
-    return app
+    return app, sidekick
 
 
 # eof

@@ -19,10 +19,22 @@ base_route_public = "public"
 public_route__password_reset = "password_reset"
 templates_found = []
 
+"""
+  ## Dynamic Route:
+  @bp_public.route("/docs/<publicDocName>")
+  can handle multiple URLs by capturing the part after /docs/ as a parameter.
+
+  ## Static Route:
+  bp_public = Blueprint('bp_public', __name__, url_prefix='/docs')
+  @bp_public.route('/privacyPolicy') handles a specific URL /docs/privacyPolicy.
+
+"""
+
 
 def _route(base: str, page: str, **params) -> str:
     address = f"{bp_name(base)}.{page}"
-    return url_for(address, **params)
+    url = url_for(address, **params)
+    return url
 
 
 def bp_name(base: str) -> str:

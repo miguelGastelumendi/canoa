@@ -27,12 +27,13 @@
 from datetime import datetime
 from typing import Tuple
 
-from ...helpers.py_helper import is_str_none_or_empty
-from ...config_validate_process import ValidateProcessConfig
-from ...helpers.user_helper import LoggedUser, now
-from ...helpers.error_helper import ModuleErrorCode
 from ..models import UserDataFiles
 
+from ..logged_user import LoggedUser
+from ...helpers.py_helper import is_str_none_or_empty
+from ...helpers.user_helper import now
+from ...helpers.error_helper import ModuleErrorCode
+from ...config_validate_process import ValidateProcessConfig
 
 from .Cargo import Cargo
 from .ProcessData import ProcessData
@@ -78,7 +79,7 @@ def process(
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
-        "2024.10.21",  # process version
+        "2024.10.22",  # process version, 22 new column user_files.sep_id
         sidekick.debugging,
         logged_user,
         ValidateProcessConfig(sidekick.debugging),
@@ -138,7 +139,7 @@ def process(
                 _updated(0)
             except Exception as e:
                 error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 1
-                fatal_msg = f"An error ocurred while updating the final process record: [{e}]."
+                fatal_msg = f"An error occurred while updating the final process record: [{e}]."
                 sidekick.display.error(fatal_msg)
                 sidekick.app_log.fatal(fatal_msg)
         else:

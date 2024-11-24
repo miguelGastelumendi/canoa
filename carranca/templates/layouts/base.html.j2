@@ -9,6 +9,8 @@ Used by:
 
 mgd
 --------------------------------------- #}
+{# cSpell:ignore endwith fontawesome stylesheet #}
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -46,7 +48,7 @@ mgd
 
 <body>
     <main>
-        {% if user_logged() %}
+        {% if logged_user %}
         {% set setNavButtonState= navButtonState | default('nav-button-disabled') %}
         {% with navButtonState = setNavButtonState %}
         {% include 'includes/navigator.html.j2' %}

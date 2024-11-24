@@ -18,7 +18,6 @@ from sqlalchemy.orm import defer
 from sqlalchemy.ext.declarative import declarative_base
 
 from carranca import Session
-from .SepIconConfig import SepIconConfig
 from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 
@@ -35,6 +34,7 @@ class UserDataFiles(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     ticket = Column(String(40), unique=True)
     user_receipt = Column(String(14))
+    id_sep = Column(Integer)
 
     # sys version (register..on_ins)
     app_version = Column(String(12))
@@ -165,7 +165,7 @@ class MgmtUserSep(Base):
         try:
 
             def _file_url(sep_id: int) -> str:
-                url, _ = icon_prepare_for_html(sep_id)
+                url, _, _ = icon_prepare_for_html(sep_id)  # this is foreach user (don't user logged_user)
                 return url
 
             sep_list = [
@@ -174,19 +174,20 @@ class MgmtUserSep(Base):
             ]
             users_sep = [
                 {
-                    "user_id": usr.user_id,
-                    "sep_id": usr.sep_id,
-                    "file_url": _file_url(usr.sep_id),
-                    "user_name": usr.user_name,
-                    "disabled": usr.user_disabled,
-                    "scm_sep_curr": item_none if usr.scm_sep_curr is None else usr.scm_sep_curr,
+                    "user_id": usr_sep.user_id,
+                    "sep_id": usr_sep.sep_id,
+                    "file_url": _file_url(usr_sep.sep_id),
+                    "user_name": usr_sep.user_name,
+                    "disabled": usr_sep.user_disabled,
+                    "scm_sep_curr": item_none if usr_sep.scm_sep_curr is None else usr_sep.scm_sep_curr,
                     "scm_sep_new": item_none,
-                    "when": usr.assigned_at,
+                    "when": usr_sep.assigned_at,
                 }
-                for usr in session.scalars(select(MgmtUserSep)).all()
+                for usr_sep in session.scalars(select(MgmtUserSep)).all()
             ]
         except Exception as e:
             msg_error = str(e)
+            sidekick.display.error(msg_error)
         finally:
             session.close()
 
@@ -235,6 +236,9 @@ class MgmtSep(Base):
         """
         Select a SEP by id, with deferred Icon content (useful for edit)
         """
+        if id is None:
+            return None, None
+
         sep = None
         sep_fullname = None
         session = Session()
@@ -249,28 +253,35 @@ class MgmtSep(Base):
 
         return sep, sep_fullname
 
-    def get_sep_icon_content(id: int) -> Any:
+    def db_content(id: int) -> Any:
         """
         Returns the content of the icon_svg (useful for write a file)
         """
+        from .SepIconConfig import SepIconConfig
+        from ..Sidekick import sidekick
+
         sep = None
         session = Session()
         icon_content = None
         try:
             stmt = select(MgmtSep).where(MgmtSep.id == id)
             sep = session.execute(stmt).scalar_one_or_none()
-            icon_content = sep.icon_svg
+            is_empty = is_str_none_or_empty(sep.icon_svg)
+            icon_content = SepIconConfig.empty_content() if is_empty else sep.icon_svg
         except Exception as e:
+            icon_content = SepIconConfig.error_content()
             sidekick.app_log.error(f"Error retrieving icon content of SEP {sep.id}: [{e}].")
         finally:
             session.close()
 
-        return SepIconConfig.empty_content() if is_str_none_or_empty(icon_content) else icon_content
+        return icon_content
 
     def set_sep(sep) -> bool:
         """
         Save a Sep
         """
+        from ..Sidekick import sidekick
+
         done = False
         msg_error = ""
         session = Session()

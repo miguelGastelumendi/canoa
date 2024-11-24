@@ -36,6 +36,7 @@ TODO:
 
 
     ##Small Tasks##
+        - init_form_vars ryrn a 'error tmpl'
         - check use o form-main-btn in *.j2
         - share jinja_cache templates + texts (see route_helper templates_found)
         - Fix get_Html()
@@ -61,12 +62,35 @@ TODO:
         > Mostrar o "ícone" do SE 'ativo', no cabeçalho
 
     - fix display_html version
-    - Sep Icon display on [Gestão de SE] + Menu
     - Menu to DB
+    - sep_edit detected if form's input changed (don't update)
+    - mudar erro 500
+    - [Sair:x] não fecha ok.
+    - Menu responsivo
+    - ren Session to db_session & check flask documentation
+
+2024-11-20..23 β 3.30 ----- mudou dezena!
+    - [Gestão de SE] (para usuários Adm) 100%
+    - Debug geral.
+    - Fix possible bug in db_helper.py Session() without close()
+    - Obsolete views/functions (deleted form db)
+       . sep__on_ins_upd_del.sql
+       . sep_on_ins_upd_del.sql
+       . generate_vw_sepcombined.sql
+         (This procedure will create or recreate the view  `vw_sepcombined` in `canoa` schema from vw_schema.)
 
 
 2024-11-19 β 3.22 Ícone no grid 50%
-    - Mostrar o "ícone" do SE 'ativo', no cabeçalho do grid de Gestão de SE
+    - New column user_data_files.sep_id
+      . atualizada no processo de validação:
+      . new process version "2024.10.22"
+
+    - Após mudar o svg do sep, apagar arquivo cache
+
+    - Mostrar o "ícone" do SE 'ativo':
+        . no menu principal
+        . nos formulários [Validar Dados], [Edição de SE]
+        . no cabeçalho do grid de [Gestão de SE]
 
 
 2024-11-18 β 3.21

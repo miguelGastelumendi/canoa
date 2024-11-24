@@ -1,0 +1,10 @@
+{
+    "version": "0.2",
+    "language": "en, pt",
+    "ignoreRegExpList": [
+        "&[a-zA-Z]+;" // Ignore HTML entities
+    ],
+    "words": [
+        "Gest&atilde;o"
+    ]
+}

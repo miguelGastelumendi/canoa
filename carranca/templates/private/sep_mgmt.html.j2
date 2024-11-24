@@ -9,8 +9,11 @@ Extends
 
 mgd
 --------------------------------------- #}
+{# cSpell:ignore mgmt onclick tojson onsubmit #}
+
 {# only specify if different from default #}
 {% set dlg_cls_size= 'modal-xl' %}
+{% set dlg_var_icon= iconFileUrl %}
 
 {% extends "./layouts/dialog.html.j2" %}
 
@@ -60,10 +63,11 @@ mgd
     const usedList = usersSep.map(item => item.sep)
     const initialList = {{ sepList | tojson }};
     const colData = {{ colData| tojson }};
-    const colSepCurr = colData[3].cn;
-    const colSepNew = colData[4].cn;
+    const colIconSrc = colData[1].n;
+    const colSepCurr = colData[3].n;
+    const colSepNew = colData[4].n;
     const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmit_id}}'));
-    const whenFormat = '{{ whenFormat | default('pt-BR') }}';
+    const dateFormat = '{{ dateFormat | default('pt-BR') }}';
 </script>
 <script src="/static/js/sep_mgmt.js"></script>
 {% endblock dlg_blc_javascript %}

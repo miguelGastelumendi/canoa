@@ -9,8 +9,6 @@
 """
 
 # cSpell:ignore getDictResultset connstr adaptabrasil
-
-from .db_helper import retrieve_data
 from .py_helper import is_str_none_or_empty
 from .hints_helper import UI_Texts
 from .jinja_helper import process_pre_templates
@@ -20,6 +18,7 @@ ui_msg_info = "msgInfo"
 ui_msg_error = "msgError"
 ui_msg_success = "msgSuccess"
 ui_msg_exception = "msgException"
+ui_DialogIcon = "iconFileUrl"
 ui_pageTitle = "pageTitle"
 ui_formTitle = "formTitle"
 # 'msgOnly' display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
@@ -63,6 +62,8 @@ def _get_result_set(query):
 
 def _get_row(item: str, section: str) -> tuple[str, str]:
     """returns tuple(text, title) for the item/section pair"""
+    from .db_helper import retrieve_data
+
     query = __get_query("text, title", section, item)
     result = retrieve_data(query)
     return ("", "") if result is None else result
@@ -101,6 +102,14 @@ def _texts_init():
 
 
 # === public ==============================================
+def format_ui_item(texts: UI_Texts, key: str, *args):
+    result = texts[key]
+    try:
+        result = texts[key].format(*args)
+    except:
+        pass
+
+    return result
 
 
 def get_html(section: str) -> UI_Texts:
@@ -115,13 +124,17 @@ def get_html(section: str) -> UI_Texts:
     return _get_result_set(query)
 
 
-def get_section(section: str) -> UI_Texts:
+def get_section(section_name: str) -> UI_Texts:
     """
     returns a UI_Texts of the 'section'
     """
-    query = __get_query("item, text", section)
-    section = _get_result_set(query)
-    # texts = process_pre_templates(_texts) # TODO:
+    if is_str_none_or_empty(section_name):
+        section = {}
+    else:
+        query = __get_query("item, text", section_name)
+        section = _get_result_set(query)
+        # texts = process_pre_templates(_texts) # TODO:
+
     section[ui_msg_only] = False
     return section
 

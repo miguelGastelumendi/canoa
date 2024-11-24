@@ -109,7 +109,7 @@ uritemplate==4.1.1
 urllib3==2.2.1
 wcwidth==0.2.13
 webencodings==0.5.1
-Werkzeug==3.0.4
+Werkzeug>=3.0.4
 WTForms==3.0.0
 xxhash==3.4.1
 yarg==0.1.9

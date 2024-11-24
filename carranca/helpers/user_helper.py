@@ -5,11 +5,9 @@
     Equipe da Canoa -- 2024
 """
 
-# cSpell:ignore cuser
+# cSpell:ignore cuser mgmt
 
 from os import environ
-from typing import Any
-from flask_login import current_user
 
 from .py_helper import ms_since_midnight, to_base, now, crc16
 
@@ -93,40 +91,6 @@ def get_batch_code() -> str:  # len 10
     dy = to_base(days, _base).zfill(3)  # max= kkk => 10140/365= até 2050 ;-O
     batch_code = f"{dy}.{ms}"
     return batch_code
-
-
-class LoggedUser:
-    """
-    LoggedUser is a documented option for flask_login' `current_user`
-
-    Args:
-        name (str): user's name.
-        code (str): Encrypted and unique user code derived from the user ID.
-        id (int): User's ID.
-        email (str): User's email address.
-
-    """
-
-    def __init__(self):
-        cuser = current_user
-        self.logged = cuser is not None
-        if self.logged:
-            self.name = cuser.username
-            self.code = get_user_code(cuser.id)
-            self.folder = get_user_folder(cuser.id)
-            self.id = cuser.id
-            self.email = cuser.email
-        else:
-            self.name = ""
-            self.code = "0"
-            self.folder = ""
-            self.id = -1
-            self.email = ""
-
-
-# TODO:
-# def user_id(code: str) -> int:
-#     return from_base(code, 12) - CarrancaConfig._shift_id
 
 
 # eof

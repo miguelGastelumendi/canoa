@@ -9,21 +9,27 @@
 # cSpell: ignore werkzeug wtforms tmpl urlname mgmt
 
 from flask import render_template, request
-from flask_login import current_user
 from werkzeug.utils import secure_filename
 
 from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
-from ..helpers.user_helper import LoggedUser, now
+from ..helpers.user_helper import now
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data, get_input_text
-from ..helpers.ui_texts_helper import ui_msg_info, add_msg_success, add_msg_error, add_msg_fatal
+from ..helpers.ui_texts_helper import (
+    ui_msg_info,
+    ui_DialogIcon,
+    add_msg_success,
+    add_msg_error,
+    add_msg_fatal,
+)
 from ..config_validate_process import ValidateProcessConfig
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 
 from .wtforms import ReceiveFileForm
-from .sep_icon import icon_prepare_for_html
+
+from .logged_user import logged_user
 from .validate_process.ProcessData import ProcessData
 
 RECEIVE_FILE_DEFAULT_ERROR = "uploadFileError"
@@ -36,7 +42,8 @@ def receive_file() -> str:
     tmpl_form = ReceiveFileForm(request.form)
 
     def _result():
-        uiTexts["iconFileName"], sep_fullname = icon_prepare_for_html(current_user.mgmt_sep_id)
+        uiTexts[ui_DialogIcon] = None if logged_user.sep is None else logged_user.sep.icon_url
+        sep_fullname = uiTexts["noSEassigned"] if logged_user.sep is None else logged_user.sep.full_name
         uiTexts[ui_msg_info] = uiTexts[ui_msg_info].format(sep_fullname)
         tmpl = render_template(template, form=tmpl_form, **uiTexts)
         return tmpl
@@ -86,13 +93,10 @@ def receive_file() -> str:
 
         # Instantiate Process Data helper
         task_code = 10
-        logged_user = LoggedUser()
 
         def doProcessData() -> tuple[bool, ProcessData]:
             receive_file_cfg = ValidateProcessConfig(sidekick.debugging)
-            common_folder = (
-                sidekick.config.COMMON_PATH
-            )  # path_remove_last_folder(sidekick.config.ROOT_FOLDER)
+            common_folder = sidekick.config.COMMON_PATH
             pd = ProcessData(
                 logged_user.code,
                 logged_user.folder,

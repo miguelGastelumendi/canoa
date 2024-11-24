@@ -13,10 +13,11 @@ from datetime import datetime
 from ...Sidekick import sidekick
 from ...config_validate_process import ValidateProcessConfig
 from ...helpers.py_helper import is_str_none_or_empty
-from ...helpers.user_helper import LoggedUser, now
+from ...helpers.user_helper import now
 
-from .ProcessData import ProcessData
 from ..receive_file import RECEIVE_FILE_DEFAULT_ERROR
+from ..logged_user import LoggedUser
+from .ProcessData import ProcessData
 
 
 class Cargo:

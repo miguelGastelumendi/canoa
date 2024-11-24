@@ -15,7 +15,7 @@ from .helpers.py_helper import coalesce, is_str_none_or_empty
 
 from .Args import Args
 
-_error_msg = "[{0}]: An error ocurred while {1}. Message `{2}`."
+_error_msg = "[{0}]: An error occurred while {1}. Message `{2}`."
 fuse = None
 
 
@@ -71,6 +71,8 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
     """
     Create the 'fuse' that will assists the initializations of classes
     """
+    import json
+
     msg_error = None
     fuse = None
     try:
@@ -87,7 +89,12 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
         fuse.display.info(
             f"The 'fuse' was started in {fuse.app_mode} mode (and now we have how to print pretty)."
         )
-        fuse.display.info(f"Current args: {fuse.args}.")
+        args = "Current args: {0}"
+        if fuse.debugging:
+            _args = f"\n{json.dumps(fuse.args.__dict__, indent=3, sort_keys=True)}"
+            fuse.display.debug(args.format(_args))
+        else:
+            fuse.display.info(args.format(fuse.args))
     except Exception as e:
         msg_error = _error_msg.format(__name__, "starting the fuse", str(e))
 

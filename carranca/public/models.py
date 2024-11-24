@@ -103,16 +103,6 @@ def persist_user(record: any, task_code: int = 1) -> None:
         raise DatabaseError(e)
     finally:
         session.close()
-    # try:
-    #     session.add(record)
-    #     task_code += 1
-    #     session.commit()
-    # except Exception as e:
-    #     session.rollback()
-    #     e.task_code = task_code
-    #     raise DatabaseError(e)
-    # finally:
-    #     session.close()
 
 
 @login_manager.user_loader

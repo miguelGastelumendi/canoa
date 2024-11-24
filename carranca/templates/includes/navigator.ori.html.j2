@@ -7,24 +7,13 @@ Used by:
 ./layouts/base.html.j2
 
 mgd
-
-cSpell:ignore nowrap unselectable noopener noreferrer termofuse onclick mgmt
 --------------------------------------- #}
 
 <header class="header-global">
     <nav id="navbar-main" aria-label="Primary menu"
         class="navbar navbar-expand-lg navbar-dark container-xxl flex-wrap flex-md-nowrap"
         style="height: 3em; padding: 0 !important; background-color:#ffffff7a;">
-
         <div class="container">
-            <span style="width: '3em'">
-                {% if logged_user and logged_user.sep and logged_user.sep.icon_url %}
-                <img src="{{ logged_user.sep.icon_url }}"
-                    title="Setor Estrat&eacute;gico At&iacute;vo [{{logged_user.sep.full_name}}]" height="50%"
-                    width="50%">
-                {% endif %}
-            </span>
-
             <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
                 href="{{ private_route('receive_file') }}"
                 title="Abre o formulário para submeter um arquivo ZIP o do Google Drive ao processo de valida&ccedil;&atilde;o">
@@ -46,8 +35,7 @@ cSpell:ignore nowrap unselectable noopener noreferrer termofuse onclick mgmt
                 title="Abre o documento 'Especifica&ccedil;&atilde;o de Requisitos e Formatos' em outra aba">
                 [Especifica&ccedil;&atilde;o]
             </a>
-            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
-                href="{{ public_route('docs', publicDocName='termsOfUse') }}"
+            <a class="unselectable-text nav-button {{ navButtonState }}" type="button" href="docs/termsofuse"
                 title="Exibe o documento de pol&iacute;tica de privacidade do aplicativo">
                 [Pol&iacute;tica de Privacidade]
             </a>
@@ -55,15 +43,14 @@ cSpell:ignore nowrap unselectable noopener noreferrer termofuse onclick mgmt
                 href="{{ private_route('change_password') }}" title="Abre o formul&aacute;rio para alterar sua senha">
                 [Mudar senha]
             </a>
-            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
-                href="{{ public_route('docs', publicDocName='aboutApp') }}"
+            <a class="unselectable-text nav-button {{ navButtonState }}" type="button" href="docs/aboutApp"
                 title="Mostra informaca&ccedil;&atilde;o sobre o aplicativo">
                 [Sobre]
             </a>
             <!-- a type="button" href="{{ private_route('test_route') }}">[testar arquivo]</a>  -->
             <button class="nav-button {{ navButtonState }}" onclick="logout()"
                 title="Fecha a sess&atilde;o e sai do aplicativo">
-                [Sair:&nbsp;&nbsp;{{logged_user.name}}]
+                [Sair:&nbsp;&nbsp;{{current_user.username}}]
             </button>
         </div>
     </nav>

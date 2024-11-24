@@ -37,9 +37,11 @@ dlg_var_scroll
 dlg_var_close | default(True) // display Close button
 dlg_var_vCentered | default(False) // from is Vertical Centered
 
-dlg_js_frm const onSumbmit = () => {}
+dlg_js_frm const onSubmit = () => {}
 
 mgd
+
+cSpell:ignore tabindex
 --------------------------------------- #}
 
 {% extends "./layouts/base.html.j2" %}
@@ -54,10 +56,9 @@ mgd
                 <div class="modal-header {{dlg_cls_header|default('dialog-header')}}">
                     <h5 class="modal-title {{dlg_cls_title|default('dialog-title')}}" inert>
                         {% if dlg_var_icon %}
-                        <img src="{{url_for('static',filename=dlg_var_icon)}}" heigth="32px" width="32px"
-                            alt="[!]&nbsp;" id="dlg_icon">
+                        <img src="{{dlg_var_icon}}" height="32px" width="32px" alt="[!]&nbsp;" id="dlg_icon">
                         {% endif %}
-                        {{ formTitle | default(app_name()) }}
+                        {{ formTitle | default(app_name) }}
                     </h5>
                     <form action="{{ public_route('login') }}" method="GET">
                         <button type="submit" class="btn-close {{dlg_cls_btnClose|default('')}}" data-bs-dismiss="modal"

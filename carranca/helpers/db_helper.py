@@ -43,13 +43,13 @@ def try_get_mgd_msg(error: object, default_msg: str = None) -> str:
         return mgd_message if is_mgd else default_msg
 
 
-def execute_sql(query: str):
+def _execute_sql(query: str):
     """Runs an SQL query and returns the result"""
     result = None
     if not is_str_none_or_empty(query):
         _text = text(query)
-        session = Session()
-        result = session.execute(_text)
+        with Session() as session:
+            result = session.execute(_text)
 
     return result
 
@@ -74,7 +74,7 @@ def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
     from ..Sidekick import sidekick
 
     try:
-        data_rows = execute_sql(query)
+        data_rows = _execute_sql(query)
         rows = data_rows.fetchall()
 
         if not rows:

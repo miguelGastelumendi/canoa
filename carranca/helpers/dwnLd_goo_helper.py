@@ -1,9 +1,12 @@
-# Equipe da Canoa -- 2024
-# Files Download: Google Drive (except zip) & others Publicly Shared Files
-#
-# inspired in
-# https://stackoverflow.com/questions/38511444/python-download-files-from-google-drive-using-url
-# mgd 2024-08-01
+"""
+    Equipe da Canoa -- 2024
+    Files Download: Google Drive (except zip) & others Publicly Shared Files
+
+    inspired in
+    https://stackoverflow.com/questions/38511444/python-download-files-from-google-drive-using-url
+
+    mgd 2024-08-01
+"""
 
 # cSpell:ignore puremagic surl googleapiclient gserviceaccount chunksize
 
@@ -228,10 +231,9 @@ def download_public_google_file(
         task_code = 0
         sidekick.display.info("download: The file was downloaded.")
     except Exception as e:
-        msg_error = f"An error ocurred while downloading the file. Task code {task_code}, message '{e}'.)"
+        msg_error = f"An error occurred while downloading the file. Task code {task_code}, message '{e}'.)"
         sidekick.display.error(msg_error)
         sidekick.app_log.error(msg_error)
-
     return task_code, gdFile_name, gdFile_md
 
 
