@@ -16,6 +16,7 @@ from .hints_helper import UI_Texts
 
 base_route_private = "private"
 base_route_public = "public"
+base_route_static = "static"
 public_route__password_reset = "password_reset"
 templates_found = []
 
@@ -47,6 +48,10 @@ def private_route(page: str, **params) -> str:
 
 def public_route(page: str, **params) -> str:
     return _route(base_route_public, page, **params)
+
+
+def static_route(filename: str) -> str:
+    return url_for(base_route_static, filename=filename)
 
 
 def login_route() -> str:

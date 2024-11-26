@@ -56,28 +56,35 @@ def login():
             task_code += 1  # 8
             user = get_user_where(email=search_for) if user is None else user  # or by email
             task_code += 1  # 9
-            if not user or not verify_pass(password, user.password):
+            if not user:
                 add_msg_error("userOrPwdIsWrong", uiTexts)
+            elif not verify_pass(password, user.password):
+                user.password_failed_at = now()
+                task_code += 1  # 10
+                user.password_failures = user.password_failures + 1
+                add_msg_error("userOrPwdIsWrong", uiTexts)
+                persist_user(user, task_code)
             elif user.disabled:
                 add_msg_error("userIsDisabled", uiTexts)
             else:
-                task_code += 1  # 10
-                task_code += 1  # 11
+                task_code += 1  # 12
                 user.recover_email_token = None
                 user.last_login_at = now()
-                task_code += 1  # 12
-                remember_me = not is_str_none_or_empty(request.form.get("remember_me"))
+                user.password_failures = 0
                 task_code += 1  # 13
+                remember_me = not is_str_none_or_empty(request.form.get("remember_me"))
+                task_code += 1  # 15
                 login_user(user, remember_me)
                 logged_in = True
-                task_code += 1  # 14
+                task_code += 1  # 16
                 msg = f"{user.username} (with id {user.id}) just logged in."
                 sidekick.display.info(msg)
                 sidekick.app_log.info(msg)
-                # user is lost here
+                # user obj is lost here
+                task_code += 1  # 17
                 persist_user(user, task_code)
                 # for this login work, User must inherited from SQLAlchemy.Model
-                task_code += 1  # 14
+                task_code += 1  # 18
                 return redirect_to(home_route())
 
     except Exception as e:

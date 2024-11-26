@@ -51,19 +51,17 @@ mgd
     <meta name="author" content="Equipe `Canoa`">
     <meta name="description" content="Canoa">
 
-    <link rel="icon" type="image/png" sizes="32x32"
-        href="{{ url_for('static', filename='img/favicon/favicon-32.png') }}">
-    <link rel="icon" type="image/png" sizes="64x64"
-        href="{{ url_for('static', filename='img/favicon/favicon-64.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ static_route('img/favicon/favicon-32.png') }}">
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ static_route('img/favicon/favicon-64.png') }}">
 
     <!-- Fontawesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
         integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Pixel CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/pixel.css') }}">
+    <link rel="stylesheet" href="{{ static_route('css/pixel.css') }}">
     <!-- Canoa CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/canoa.css') }}">
+    <link rel="stylesheet" href="{{ static_route('css/canoa.css') }}">
 
     <script>
         const logout = () => { if (confirm("Confirma sair de Canoa?")) window.location.href = "./logout" };

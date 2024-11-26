@@ -129,14 +129,14 @@ def get_section(section_name: str) -> UI_Texts:
     returns a UI_Texts of the 'section'
     """
     if is_str_none_or_empty(section_name):
-        section = {}
+        items = {}
     else:
         query = __get_query("item, text", section_name)
-        section = _get_result_set(query)
+        items = _get_result_set(query)
         # texts = process_pre_templates(_texts) # TODO:
 
-    section[ui_msg_only] = False
-    return section
+    items[ui_msg_only] = False
+    return items
 
 
 def get_text(item: str, section: str, default: str = None) -> str:

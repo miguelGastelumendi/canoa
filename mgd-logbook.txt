@@ -39,7 +39,6 @@ TODO:
         - init_form_vars ryrn a 'error tmpl'
         - check use o form-main-btn in *.j2
         - share jinja_cache templates + texts (see route_helper templates_found)
-        - Fix get_Html()
         - Login Remember not always working
         - Tmpl for error Internal Error
         - Display colors
@@ -54,22 +53,31 @@ TODO:
 ----------------------------------
 
 2024-11- β 3.3x
+
     - [Gestão de SE] (para usuários Setorista)
         > Mostrar um grid com 3 colunas
             [Arquivo Submetido], [Relatório], [Data], [Disponível] (se o arquivo ainda está disponível)
             Permitir fazer download do arquivos submetidos e relatórios
-    - [Gestão de SE] (para usuários Adm)
-        > Mostrar o "ícone" do SE 'ativo', no cabeçalho
 
-    - fix display_html version
     - Menu to DB
     - sep_edit detected if form's input changed (don't update)
     - mudar erro 500
     - [Sair:x] não fecha ok.
-    - Menu responsivo
-    - ren Session to db_session & check flask documentation
+    - Menu responsive
+    - remove pixel.css (simply css's)
+    -
 
-2024-11-20..23 β 3.31
+2024-11-26 β 3.32 several minor fixes
+    - Fixed templates bug (g, About {{ app_version }})
+    - Use same pallet form dialog/forms colors (based in sepia):
+      https://www.colorhexa.com/704214
+    - New columns users: password_failures, password_failed_at
+    - Set users.email_confirmed after reset pw (if user received token => confirmed)
+    - New static_route
+
+
+
+2024-11-24..25 β 3.31
     - Try to fix the 'big zip' file (se_saude_07_08)...
     - Start a 'on progress' msg for form submission
 

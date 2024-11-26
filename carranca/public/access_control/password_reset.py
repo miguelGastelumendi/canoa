@@ -72,6 +72,7 @@ def password_reset(token):
                 task_code += 1  # 5
                 record_to_update.password = hash_pass(password)
                 record_to_update.recover_email_token = None
+                record_to_update.email_confirmed = True
                 task_code += 1  # 6
                 persist_user(record_to_update, task_code)
                 add_msg_success("resetPwSuccess", texts)

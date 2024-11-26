@@ -19,15 +19,15 @@ _blc_ => BLoCk
 _js_ => JScript
 
 - Configuration (default is '', if not shown)
-dlg_cls_body
+dlg_cls_body | default('dlg-body')
 dlg_cls_btnClose
 dlg_cls_btnOk
 dlg_cls_content
 dlg_cls_dialog
-dlg_cls_footer
-dlg_cls_header | default('dialog-header')
+dlg_cls_footer | default('dlg-footer')
+dlg_cls_header | default('dlg-header')
 dlg_cls_size | 'Default = 500px ' modal-sm, modal-lg, modal-xl
-dlg_cls_title | default('dialog-title')
+dlg_cls_title | default('dlg-title')
 dlg_cls_top | default('mt-6')
 
 
@@ -51,8 +51,8 @@ mgd
         <div
             class="modal-dialog {{dlg_cls_size|default('')}} {%+ if (dlg_var_vCentered|default(False)) %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dialog|default('')}}">
             <div class="modal-content {{dlg_cls_content|default('')}}">
-                <div class="modal-header {{dlg_cls_header|default('dialog-header')}}">
-                    <h5 class="modal-title {{dlg_cls_title|default('dialog-title')}}" inert>
+                <div class="modal-header {{dlg_cls_header|default('dlg-header')}}">
+                    <h5 class="modal-title {{dlg_cls_title|default('dlg-title')}}" inert>
                         {% if dlg_var_icon %}
                         <img src="{{dlg_var_icon}}" height="32px" width="32px" alt="[!]&nbsp;" id="dlg_icon">
                         {% endif %}
@@ -65,11 +65,11 @@ mgd
                         </button>
                     </form>
                 </div>
-                <div class="modal-body {{dlg_cls_body|default('')}}">
+                <div class="modal-body {{dlg_cls_body|default('dlg-body')}}">
                     {% block dlg_blc_body %}
                     {% endblock dlg_blc_body %}
                 </div>
-                <div class="modal-footer justify-content-center {{dlg_cls_footer|default('')}}">
+                <div class="modal-footer justify-content-center {{dlg_cls_footer|default('dlg-footer')}}">
                     {% block dlg_blc_footer %}
                     {% endblock dlg_blc_footer %}
                 </div>

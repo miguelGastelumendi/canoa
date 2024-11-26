@@ -17,6 +17,8 @@ import os
 import base64
 
 from flask import render_template
+
+from ..helpers.jinja_helper import jinja_pre_template
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.html_helper import img_filenames, img_change_src_path
@@ -125,7 +127,8 @@ def display_html(docName: str):
         img_folders.insert(0, os.sep)
         body = img_change_src_path(body, img_folders)
 
-    uiTexts[body_key] = body
+    _body = jinja_pre_template(body)
+    uiTexts[body_key] = _body
 
     # Test function
     # temp = sidekick.app.jinja_env.from_string("{{ app_version() }}  + {{ app_name()}}")

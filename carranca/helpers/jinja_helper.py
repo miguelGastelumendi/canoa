@@ -8,7 +8,7 @@
 _jinja_pre_template_mark = "^"
 
 
-def _jinja_pre_template(val: str) -> str:
+def jinja_pre_template(val: str) -> str:
     from ..Sidekick import sidekick
 
     text = val
@@ -16,8 +16,6 @@ def _jinja_pre_template(val: str) -> str:
         # Create a template from the value
         template = sidekick.app.jinja_env.from_string(val)
         text = template.render()
-
-        return text
     except Exception as e:
         print(f"Error rendering template [{val}]: {e}")
 
@@ -35,7 +33,7 @@ def process_pre_templates(texts: dict, mark: str = _jinja_pre_template_mark):
         texts = {
             'fruit': 'lucuma'
             , 'stone': 'meteoric'
-            , 'about': '^About {{ app_name() }} version {{ app_ver() }}^'
+            , 'about': '^About {{ app_name }} version {{ app_ver }}^'
         }
         processed_texts = process_pre_templates(texts)
         print(processed_texts['about']) # -> "About Canoa version 21.8"
@@ -43,7 +41,7 @@ def process_pre_templates(texts: dict, mark: str = _jinja_pre_template_mark):
     for key, text in texts.items():
         if len(text) > 7 and text[0] == mark and text[0] == text[-1]:
             pre_template = text.strip(mark)
-            value = _jinja_pre_template(pre_template)
+            value = jinja_pre_template(pre_template)
             texts[key] = value
     return texts
 

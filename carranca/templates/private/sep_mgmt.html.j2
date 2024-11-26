@@ -69,7 +69,7 @@ mgd
     const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmit_id}}'));
     const dateFormat = '{{ dateFormat | default('pt-BR') }}';
 </script>
-<script src="/static/js/sep_mgmt.js"></script>
+<script src="{{static_route('js/sep_mgmt.js')}}"></script>
 {% endblock dlg_blc_javascript %}
 
 {#--- msgOnly --- #}

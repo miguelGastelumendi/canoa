@@ -82,12 +82,13 @@ def _register_blueprint_routes():
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(debugUndefined):
-    from .helpers.route_helper import private_route, public_route
+    from .helpers.route_helper import private_route, public_route, static_route
     from .private.logged_user import logged_user
 
     app.jinja_env.globals.update(
         app_version=app.config["APP_VERSION"],
         app_name=app.config["APP_NAME"],
+        static_route=static_route,
         private_route=private_route,
         public_route=public_route,
         logged_user=logged_user,

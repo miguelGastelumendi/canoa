@@ -10,12 +10,23 @@
 :root {
     --project-name: 'Canoa';
 
-    --buttonBackColor: #647663;
+    /* https://www.colorhexa.com/704214 */
+    /* complementary */
+    --buttonBackColor: #144270;
     --buttonTextColor: white;
-    --titleBackColor: #c4884c;
-    --titleTextColor: white;
+    /*
+    --buttonBackColor: #647663;
+     --titleBackColor: #c4884c;
     --labelTextColor: #c4884c;
     --linkTextColor: #60370e;
+    */
+    --titleBackColor: #b36920;
+    --titleTextColor: white;
+    --labelTextColor: #814c17;
+    --linkTextColor: #a25f1d;
+    --bodyBackColor: #fbf3ea;
+    --footerBackColor: #f8e9d9;
+    --controlBackColor: #fefcfa;
 }
 
 body {
@@ -56,7 +67,7 @@ body {
 }
 
 .nav-button-enabled {
-    color: var(--linkTextColor);
+    color: var(--buttonBackColor);
 }
 
 .nav-button-disabled {
@@ -68,13 +79,23 @@ body {
 /* ============================================
  *  carranca\templates\layouts\dialog.tmpl
  * ============================================ */
-.dialog-header {
+.dlg-header {
     background-color: var(--titleBackColor);
 }
 
-.dialog-title {
+.dlg-title {
     color: var(--titleTextColor);
     font-size: 1.5rem;
+}
+
+.dlg-body {
+    background-color: var(--bodyBackColor);
+
+}
+
+.dlg-footer {
+    background-color: var(--footerBackColor);
+
 }
 
 /* ============================================
@@ -127,6 +148,9 @@ body {
     text-decoration: underline;
 }
 
+.form-control {
+    background-color: var(--controlBackColor);
+}
 
 .form-check-btn {
     accent-color: var(--buttonBackColor);

@@ -10,6 +10,8 @@
 from os import path
 from flask import url_for
 
+from ..helpers.route_helper import static_route
+
 from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 
@@ -24,7 +26,7 @@ class SepIconConfig:
     none_file = "sep_icon-none.svg"
 
     def set_url(to: str) -> str:
-        return url_for(SepIconConfig.static_folder, filename=f"{SepIconConfig.folder}/{to}")
+        return static_route(f"{SepIconConfig.folder}/{to}")
 
     def content_for(fill_color: str, text: str = "", stroke_width: int = 1) -> str:
         return (

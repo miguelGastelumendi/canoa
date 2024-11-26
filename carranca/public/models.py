@@ -41,6 +41,9 @@ class Users(Base, UserMixin):
     last_login_at = Column(DateTime, nullable=True)
     recover_email_token = Column(String(100), nullable=True, unique=True)
     recover_email_token_at = Column(DateTime, Computed(""))
+    email_confirmed = Column(Boolean, default=False)
+    password_failures = Column(Integer, default=0)
+    password_failed_at = Column(DateTime)
     id_role = Column(Integer)
     disabled = Column(Boolean, default=False)
 
