@@ -195,7 +195,7 @@ def _save_data_to_db(
         3) logs the changes to the `log_user_sep` log.
     """
 
-    from carranca import Session
+    from carranca import SqlAlchemySession
     from .models import MgmtUserSep
     from .logged_user import logged_user
     from ..Sidekick import sidekick
@@ -204,38 +204,36 @@ def _save_data_to_db(
     assigned_by = logged_user.id
     user_not_found = []
     task_code += 1
-    session = Session()
-    try:
+    with SqlAlchemySession() as db_session:
+        try:
 
-        def __set_user_sep_new(id: int, sep_new: str):
-            user_sep = session.query(MgmtUserSep).filter_by(user_id=id).one_or_none()
-            if user_sep:
-                user_sep.scm_sep_new = sep_new
-                user_sep.assigned_by = assigned_by
-                user_sep.batch_code = batch_code
-            else:
-                sidekick.app_log.error(f"{__name__}: User with ID {id} not found, cannot update.")
-                user_not_found.append(id)
+            def __set_user_sep_new(id: int, sep_new: str):
+                user_sep = db_session.query(MgmtUserSep).filter_by(user_id=id).one_or_none()
+                if user_sep:
+                    user_sep.scm_sep_new = sep_new
+                    user_sep.assigned_by = assigned_by
+                    user_sep.batch_code = batch_code
+                else:
+                    sidekick.app_log.error(f"{__name__}: User with ID {id} not found, cannot update.")
+                    user_not_found.append(id)
 
-        id = "user_id"
-        # TODO auto remove reassignment
-        task_code += 1
-        for user_sep_data in remove:  # first remove
-            __set_user_sep_new(user_sep_data[id], None)
+            id = "user_id"
+            # TODO auto remove reassignment
+            task_code += 1
+            for user_sep_data in remove:  # first remove
+                __set_user_sep_new(user_sep_data[id], None)
 
-        task_code += 1
-        for user_sep_data in update:  # then update
-            __set_user_sep_new(user_sep_data[id], user_sep_data["scm_sep_new"])
+            task_code += 1
+            for user_sep_data in update:  # then update
+                __set_user_sep_new(user_sep_data[id], user_sep_data["scm_sep_new"])
 
-        task_code += 1
-        session.commit()
-    except Exception as e:
-        session.rollback()
-        # uiTexts:
-        msg_error = try_get_mgd_msg(e, f"Unable to commit data {task_code}: [{e}].")
-        sidekick.app_log.error(msg_error)
-    finally:
-        session.close()
+            task_code += 1
+            db_session.commit()
+        except Exception as e:
+            db_session.rollback()
+            # uiTexts:
+            msg_error = try_get_mgd_msg(e, f"Unable to commit data {task_code}: [{e}].")
+            sidekick.app_log.error(msg_error)
 
     return "", msg_error, task_code
 
@@ -245,7 +243,7 @@ def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> proc_retu
     Send an email for each user with a
     'new' SEP or if it was removed
     """
-    from carranca import Session
+    from carranca import SqlAlchemySession
     from .models import MgmtEmailSep
     from ..Sidekick import sidekick
     from ..helpers.py_helper import now
@@ -253,52 +251,48 @@ def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> proc_retu
 
     task_code += 1
     msg_error = None
-    session = Session()
-    try:
-        user_emails = session.query(MgmtEmailSep).filter_by(batch_code=batch_code).all()
-        if not user_emails:
-            return None, uiTexts["emailNone"], task_code
+    with SqlAlchemySession() as db_session:
+        try:
+            user_emails = db_session.query(MgmtEmailSep).filter_by(batch_code=batch_code).all()
+            if not user_emails:
+                return None, uiTexts["emailNone"], task_code
 
-        email_send = 0
-        email_error = 0
-        invalid_state = []
-        texts = {}
-        texts["subject"] = uiTexts["emailSubject"]
-        for user in user_emails:
-            msg = None
-            try:
-                if user.sep_name_old == None and user.sep_name_new == None:
-                    invalid_state.append(user)
-                elif user.sep_name_old == None:
-                    msg = format_ui_item(uiTexts, "emailSetNew", user.user_name, user.sep_name_new)
-                elif user.sep_name_new == None:
-                    msg = format_ui_item(
-                        uiTexts, "emailRemoved", user.user_name, user.sep_name_new, user.sep_name_old
-                    )
-                else:
-                    msg = format_ui_item(
-                        uiTexts, "emailChanged", user.user_name, user.sep_name_new, user.sep_name_old
-                    )
+            email_send = 0
+            email_error = 0
+            invalid_state = []
+            texts = {}
+            texts["subject"] = uiTexts["emailSubject"]
+            for user in user_emails:
+                msg = None
+                try:
+                    if user.sep_name_old == None and user.sep_name_new == None:
+                        invalid_state.append(user)
+                    elif user.sep_name_old == None:
+                        msg = format_ui_item(uiTexts, "emailSetNew", user.user_name, user.sep_name_new)
+                    elif user.sep_name_new == None:
+                        msg = format_ui_item(
+                            uiTexts, "emailRemoved", user.user_name, user.sep_name_new, user.sep_name_old
+                        )
+                    else:
+                        msg = format_ui_item(
+                            uiTexts, "emailChanged", user.user_name, user.sep_name_new, user.sep_name_old
+                        )
 
-                texts["content"] = msg
-                if send_email(user.user_email, texts):
-                    user.email_at = now()
-                    email_send += 1
-                else:
-                    raise Exception(uiTexts["emailError"])
-            except Exception as e:
-                user.email_error = str(e)
-                email_error += 1
+                    texts["content"] = msg
+                    if send_email(user.user_email, texts):
+                        user.email_at = now()
+                        email_send += 1
+                    else:
+                        raise Exception(uiTexts["emailError"])
+                except Exception as e:
+                    user.email_error = str(e)
+                    email_error += 1
 
-        session.commit()
-
-    # session.commit()
-    except Exception as e:
-        session.rollback()
-        msg_error = format_ui_item(uiTexts, "emailException", task_code, str(e))
-        sidekick.app_log.error(msg_error)
-    finally:
-        session.close()
+            db_session.commit()
+        except Exception as e:
+            db_session.rollback()
+            msg_error = format_ui_item(uiTexts, "emailException", task_code, str(e))
+            sidekick.app_log.error(msg_error)
 
     return uiTexts["emailSuccess"], msg_error, task_code
 

@@ -89,7 +89,7 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
         fuse.display.info(
             f"The 'fuse' was started in {fuse.app_mode} mode (and now we have how to print pretty)."
         )
-        args = "Current args: {0}"
+        args = f"{app_name}'s args: {{0}}"
         if fuse.debugging:
             _args = f"\n{json.dumps(fuse.args.__dict__, indent=3, sort_keys=True)}"
             fuse.display.debug(args.format(_args))
@@ -196,9 +196,7 @@ def _ignite_server_name(config) -> Tuple[any, str]:
             # Flask Config
             config.RUN_HOST = address.host
             config.RUN_PORT = address.port
-            fuse.display.info(
-                f"The Flask Server Address address will be '{scheme}{config.SERVER_ADDRESS}'."
-            )
+            fuse.display.info(f"The Flask Server Address was set to '{scheme}{config.SERVER_ADDRESS}'.")
 
     except Exception as e:
         fuse.display.error(f"`urlparse({try_url}) -> parsed: {address.host}:{address.port}`")
@@ -226,6 +224,7 @@ def ignite_log_file(config: DynamicConfig, app) -> Tuple[str, str]:
     msg_error = None
     full_name = ""
     task = "file_name"
+    # https://www.adventuresinmachinelearning.com/flask-logging-the-ultimate-guide-for-developers/
     try:
         file_name = config.LOG_FILE_NAME
         if is_str_none_or_empty(file_name):
@@ -317,7 +316,7 @@ def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
     # ---------------------------------------------------------------------------- #
     # Final message
 
-    fuse.display.info(f"{__name__} completed with 0 errors and {warns} warnings.")
+    fuse.display.info(f"{__name__} module completed with 0 errors and {warns} warnings.")
     display_mute_after_init = fuse.args.display_mute_after_init
 
     fuse = None  # not need it anymore

@@ -37,12 +37,10 @@ dlg_var_scroll
 dlg_var_close | default(True) // display Close button
 dlg_var_vCentered | default(False) // from is Vertical Centered
 
-dlg_js_frm const onSubmit = () => {}
-
 mgd
 
-cSpell:ignore tabindex
 --------------------------------------- #}
+{# cSpell:ignore tabindex endfor #}
 
 {% extends "./layouts/base.html.j2" %}
 
@@ -84,12 +82,5 @@ cSpell:ignore tabindex
 {% block base_blc_body_js %}
 {% block dlg_blc_javascript %}
 {% endblock dlg_blc_javascript %}
-
-{% if dlg_js_frm %}
-<script>
-    { { dlg_js_frm } }
-</script>
-{% endif %}
 {% endblock base_blc_body_js %}
-
 {# eof #}

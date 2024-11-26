@@ -7,9 +7,37 @@ Used by:
 ./layouts/dialog.html.j2
 ./private/home.html.j2
 
+
+
+TODO:
+structure:
+==========
+
+</html>
+
+<head>
+    <!-- standard -->
+    <!-- base links -->
+    {%-- base_blc_head_js %}
+    {%-- [base_js_head_list] %}
+    {%-- base_blc_head_css %}
+    {%-- [base_css_head_list] %}
+</head>
+
+<body>
+    :
+    :
+</body>
+
+
+
+= []'static/form_help.js', ...]
+
+
+
 mgd
 --------------------------------------- #}
-{# cSpell:ignore endwith fontawesome stylesheet #}
+{# cSpell:ignore endwith fontawesome stylesheet endfor #}
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -41,9 +69,24 @@ mgd
         const logout = () => { if (confirm("Confirma sair de Canoa?")) window.location.href = "./logout" };
     </script>
     <!-- Page Script -->
-    {% block base_blc_head_js %}{% endblock base_blc_head_js %}
-    <!-- Page Style -->
+    {% block base_blc_head_js %}
+    {% endblock base_blc_head_js %}
+
+    <!-- Page Scripts -->
+    {% if base_js_head_list %}
+    {% for script in base_js_head_list %}
+    <script src="{{script}}"></script>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Page Styles -->
     {% block base_blc_head_css %}{% endblock base_blc_head_css %}
+    {% if base_css_head_list %}
+    {% for ccs in base_css_head_list %}
+    <link rel="stylesheet" href="{{css}}">
+    {% endfor %}
+    {% endif %}
+
 </head>
 
 <body>

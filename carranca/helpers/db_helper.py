@@ -10,7 +10,7 @@
 from typing import Any, Union, Tuple, Optional
 from sqlalchemy import text
 
-from carranca import Session
+from carranca import SqlAlchemySession
 from .py_helper import is_str_none_or_empty, to_str
 
 
@@ -48,8 +48,8 @@ def _execute_sql(query: str):
     result = None
     if not is_str_none_or_empty(query):
         _text = text(query)
-        with Session() as session:
-            result = session.execute(_text)
+        with SqlAlchemySession() as db_session:
+            result = db_session.execute(_text)
 
     return result
 

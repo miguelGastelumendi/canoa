@@ -28,9 +28,9 @@ from carranca import create_app, started  # see __init__.py
 
 app, sidekick = create_app(app_name)
 
-sidekick.display.info(
-    "All mandatory information has been checked and is available. The app is ready to run."
-)
+sidekick.display.info("All mandatory information has been checked and is available.")
+sidekick.display.info("The app is ready to run!")
+
 
 if sidekick.config.APP_DISPLAY_DEBUG_MSG:
     # print(repr(sidekick))

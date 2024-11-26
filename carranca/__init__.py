@@ -1,81 +1,40 @@
-# Package/__init__.py
-# This file, is execute by the Python interpreter on startup once
-
 """
-    The main script ;-)
+    Package/__init__.py
+    `This file, is execute by the Python interpreter on startup once`
 
-    For newbies, remember:
-       Canoa/
-        ├── LocalDrive         # git ignored folder for project dev info
-        ├── user_files         # git ignored folder with all the users files downloaded for validation
-        ├── carranca/          # main application package
-        |    ├── __init__.py   # crucial (tells Python that tis folder is a package (carranca). Creates the app
-        │    ├── main.py       # <- You are here
-        │    ├── sidekick.py     # shared var with most used object (app, config, sa, etc)
-        │    ├── config.py     # configuration file
-        │    ├── config_..     # config_validate_process.py specific configurations for the validate process
-        │    ├── helpers
-        |    |    ├──:        # py files
-        │    ├── private
-        |    |    ├──:         # models, routes, forms py files
-        |    |    ├── access_control
-        |    |    |   └── password_change
-        |    |    └── validate_process
-        |    |         └──:     # py files required for the validation process
-        │    ├── public
-        |    |    ├──:          # models, routes, forms, etc py files
-        |    |    └── access_control
-        |    |         └──:     # login, password_recovery, password_reset, register
-        │    ├── static         # assets, css, docs, img, js
-        │    └── templates      # jinja templates
-        |         ├── accounts
-        |         ├── home
-        |         ├── includes
-        |         ├── layouts
-        |         └── private
-        |
-        ├── requirements.txt
-        ├── README.md
-        ├── .gitignore
-        ├── mgd-logbook.txt my log file
-        ├─: several bat/sh for to start data_validate
-        ├─: IIS (MS Internet Information Services) configuration files *web.config
-        └─: .env .git .vscode
-
-
-    see https://flask.palletsprojects.com/en/latest/tutorial/factory/
 
 
     Equipe da Canoa -- 2024
     mgd
+
 """
+
 # cSpell:ignore app_name sqlalchemy sessionmaker autoflush
 
+# ============================================================================ #
+# Public/Global variables
+login_manager = None
+SqlAlchemySession = None
+Config = None
+app = None
+
+# Module variable
 import time
 
 started = time.perf_counter()
 
+# Imports
 import jinja2
-from flask import Flask
+from flask import Flask, app
 from sqlalchemy import create_engine
-from flask_login import LoginManager
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 
 
 # ============================================================================ #
-# Public variables
-db = SQLAlchemy()
-login_manager = LoginManager()
-Session = None
-Config = None
-app = None
-
-
-# ============================================================================ #
 # Private methods
 # ---------------------------------------------------------------------------- #
-def _register_blueprint_events(app):
+def _register_blueprint_events():
     from .private.routes import bp_private
     from .public.routes import bp_public
 
@@ -86,11 +45,21 @@ def _register_blueprint_events(app):
         #   "GET /static/img/pages/canoa_fundo-w.jpeg HTTP/1.1" 304 -
         # it shuts the session.
         try:
-            global Session
-            app.logger.debug(f"Session is shuting down.")
-            Session.remove()
+            global SqlAlchemySession
+            if SqlAlchemySession.dirty:
+                app.logger.error(
+                    f"SqlAlchemySession is dirty. Modified instances: [{SqlAlchemySession.dirty}]."
+                )
+            else:
+                app.logger.debug(
+                    f"SqlAlchemySession is shuting down {('active' if SqlAlchemySession.is_active else 'inactive')} and clean."
+                )
+
+            SqlAlchemySession.remove()
         except Exception as e:
-            app.logger.error(f"An error occurred removing the current session [{Session}]. Error [{e}].")
+            app.logger.error(
+                f"An error occurred removing the current session [{SqlAlchemySession}]. Error [{e}]."
+            )
 
         return r
 
@@ -101,7 +70,7 @@ def _register_blueprint_events(app):
 
 
 # ---------------------------------------------------------------------------- #
-def _register_blueprint_routes(app):
+def _register_blueprint_routes():
     from .private.routes import bp_private
     from .public.routes import bp_public
 
@@ -112,31 +81,7 @@ def _register_blueprint_routes(app):
 
 
 # ---------------------------------------------------------------------------- #
-def _register_session_events(app):
-    """ChatGPT
-    During each request:
-        Flask receives the request.
-        Your view logic runs, interacting with the database through app_db.
-        Once the response is ready, the shutdown_session() is called,
-        which removes the session to prevent any lingering database connections or transactions.
-    """
-    # When to _register_blueprint_events
-    # ----------------------------------
-    # @app.teardown_request
-    # def shutdown_session(exception=None):
-    #     try:
-    #         global Session
-    #         app.logger.debug(f"Session is shuting down.")
-    #         Session.remove()
-    #     except Exception as e:
-    #         app.logger.error(f"An error occurred removing the current session [{Session}]. Error [{e}].")
-    #     return
-
-    # return
-
-
-# ---------------------------------------------------------------------------- #
-def _register_jinja(app, debugUndefined):
+def _register_jinja(debugUndefined):
     from .helpers.route_helper import private_route, public_route
     from .private.logged_user import logged_user
 
@@ -155,15 +100,20 @@ def _register_jinja(app, debugUndefined):
 
 
 # ---------------------------------------------------------------------------- #
-def _register_login_manager(app):
+def _register_login_manager():
+    from flask_login import LoginManager
 
+    global login_manager
+    login_manager = LoginManager()
     login_manager.init_app(app)
+
     return
 
 
 # ---------------------------------------------------------------------------- #
-def _register_db(app):
+def _register_db():
 
+    db = SQLAlchemy()
     db.init_app(app)
     return
 
@@ -193,13 +143,15 @@ def create_app(app_name: str):
 
     sidekick, display_mute_after_init = ignite_sidekick(app_name, started)
 
-    # === Create the Flask App  ===`#
-    name = __name__ if __name__.find(".") < 0 else __name__.split(".")[0]
+    # === Global app, Create the Flask App  ===`#
     global app
+    name = __name__ if __name__.find(".") < 0 else __name__.split(".")[0]
     app = Flask(name)
     sidekick.display.info(f"The Flask App was created, named '{name}'.")
     sidekick.keep(app)
-    sidekick.display.info(f"[{sidekick}] instance is now ready. Will be cached in during sessions.")
+    sidekick.display.info(
+        f"[{sidekick}] instance is now ready. It will be cached for use between requests."
+    )
 
     # -- app config
     app.config.from_object(sidekick.config)
@@ -218,30 +170,31 @@ def create_app(app_name: str):
     else:
         sidekick.config.LOG_FILE_STATUS = "off"
 
-    # -- Register modules
-    _register_db(app)
-    sidekick.display.info("The db database was registered.")
+    # -- Register SQLAlchemy
+    _register_db()
+    sidekick.display.info("The app was registered in SqlAlchemy.")
 
-    # _register_session_events(app)
-    # sidekick.display.info("The 'shutdown_session' event was added to the Session.")
-
-    _register_blueprint_events(app)
+    # -- Register BluePrint events & routes
+    _register_blueprint_events()
     sidekick.display.info("The 'after_request' event was added for all blueprints routes.")
-    _register_blueprint_routes(app)
+    _register_blueprint_routes()
     sidekick.display.info("The blueprints routes were collected and registered within the app.")
 
-    _register_jinja(app, sidekick.config.DEBUG_TEMPLATES)
+    # -- Jinja2
+    _register_jinja(sidekick.config.DEBUG_TEMPLATES)
     sidekick.display.info(
-        f"This app's functions were registered into Jinja (with debug_templates {sidekick.config.DEBUG_TEMPLATES})."
+        f"The Jinja functions of this app have been attached 'jinja_env.globals' (with debug_templates {sidekick.config.DEBUG_TEMPLATES})."
     )
 
-    _register_login_manager(app)
+    # -- Jinja Login Manager
+    _register_login_manager()
     sidekick.display.info("The Login Manager was initialized with the app.")
 
-    # == Config, save here (__init__.py) to recreate sidekick
+    # == Global Config, save here (__init__.py) to recreate sidekick
     global Config
     uri = db_obfuscate(sidekick.config)
     Config = sidekick.config
+    sidekick.display.info("The global Config is ready.")
 
     # -- Connect to Database
     from .igniter import ignite_sql_connection
@@ -249,13 +202,13 @@ def create_app(app_name: str):
     ignite_sql_connection(sidekick, uri)
     sidekick.display.info("SQLAlchemy was instantiated and the db connection was successfully tested.")
 
-    # == Database Session
-    global Session
+    # == Global Scoped SQLAlchemy Session
+    global SqlAlchemySession
     engine = create_engine(uri)
     # https://docs.sqlalchemy.org/en/20/orm/contextual.html
     # https://flask.palletsprojects.com/en/stable/patterns/sqlalchemy/
-    Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
-    sidekick.display.info("A global scoped SQLAlchemy session was instantiated.")
+    SqlAlchemySession = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+    sidekick.display.info("A scoped SQLAlchemy session was instantiated.")
 
     # config sidekick.display
     if display_mute_after_init:

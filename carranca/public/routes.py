@@ -136,26 +136,32 @@ def docs(publicDocName: str):
     return display_html(publicDocName)
 
 
-# Errors --------------------------------------------------
-# TODO: fix check unauthorized_handler
-from carranca import login_manager
+# Unauthorized Access -------------------------------------
+from flask_login import LoginManager
+
+login_manager = LoginManager()
 
 
+# 403 Forbidden
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return render_template("home/page-403.html"), 403
 
 
+# Common Errors -------------------------------------------
+# 403 Forbidden
 @bp_public.errorhandler(403)
 def access_forbidden(error):
     return render_template("home/page-403.html"), 403
 
 
+# 404 Not Found
 @bp_public.errorhandler(404)
 def not_found_error(error):
     return render_template("home/page-404.html"), 404
 
 
+# 500 Internal Server Error
 @bp_public.errorhandler(500)
 def internal_error(error):
     return render_template("home/page-500.html"), 500

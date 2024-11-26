@@ -17,7 +17,7 @@ from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Tex
 from sqlalchemy.orm import defer
 from sqlalchemy.ext.declarative import declarative_base
 
-from carranca import Session
+from carranca import SqlAlchemySession
 from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 
@@ -95,33 +95,33 @@ class UserDataFiles(Base):
 
     def _ins_or_upd(isInsert: bool, uTicket: str, **kwargs) -> None:
         isUpdate = not isInsert
-        session = Session()
-        try:
-            msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
-            # Fetch existing record if update, check if record already exists if insert
-            record_to_ins_or_upd = UserDataFiles._get_record(session, uTicket)
-            # check invalid conditions
-            if isUpdate and record_to_ins_or_upd is None:
-                raise KeyError(msg_exists.format("not"))
-            elif isInsert and record_to_ins_or_upd is not None:
-                raise KeyError(msg_exists.format("already"))
-            elif isInsert:
-                record_to_ins_or_upd = UserDataFiles(ticket=uTicket, **kwargs)
-                session.add(record_to_ins_or_upd)
-            else:
-                for attr, value in kwargs.items():
-                    if value is not None:
-                        setattr(record_to_ins_or_upd, attr, value)
+        with SqlAlchemySession() as db_session:
+            try:
+                msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
+                # Fetch existing record if update, check if record already exists if insert
+                record_to_ins_or_upd = UserDataFiles._get_record(db_session, uTicket)
+                # check invalid conditions
+                if isUpdate and record_to_ins_or_upd is None:
+                    raise KeyError(msg_exists.format("not"))
+                elif isInsert and record_to_ins_or_upd is not None:
+                    raise KeyError(msg_exists.format("already"))
+                elif isInsert:
+                    record_to_ins_or_upd = UserDataFiles(ticket=uTicket, **kwargs)
+                    db_session.add(record_to_ins_or_upd)
+                else:  # isUpdate
+                    for attr, value in kwargs.items():
+                        if value is not None:
+                            setattr(record_to_ins_or_upd, attr, value)
 
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            operation = "update" if isUpdate else "insert to"
-            msg_error = f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
-            sidekick.app_log.error(msg_error)
-            raise DatabaseError(msg_error)
-        finally:
-            session.close()
+                db_session.commit()
+            except Exception as e:
+                db_session.rollback()
+                operation = "update" if isUpdate else "insert to"
+                msg_error = (
+                    f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
+                )
+                sidekick.app_log.error(msg_error)
+                raise DatabaseError(msg_error)
 
     # Public insert/update
     def insert(uTicket: str, **kwargs) -> None:
@@ -161,35 +161,37 @@ class MgmtUserSep(Base):
         from .sep_icon import icon_prepare_for_html
 
         msg_error = None
-        session = Session()
-        try:
+        with SqlAlchemySession() as db_session:
+            try:
 
-            def _file_url(sep_id: int) -> str:
-                url, _, _ = icon_prepare_for_html(sep_id)  # this is foreach user (don't user logged_user)
-                return url
+                def _file_url(sep_id: int) -> str:
+                    url, _, _ = icon_prepare_for_html(
+                        sep_id
+                    )  # this is foreach user (don't user logged_user)
+                    return url
 
-            sep_list = [
-                {"id": sep.sep_id, "fullname": sep.sep_fullname}
-                for sep in session.execute(text(f"SELECT sep_id, sep_fullname FROM vw_scm_sep")).fetchall()
-            ]
-            users_sep = [
-                {
-                    "user_id": usr_sep.user_id,
-                    "sep_id": usr_sep.sep_id,
-                    "file_url": _file_url(usr_sep.sep_id),
-                    "user_name": usr_sep.user_name,
-                    "disabled": usr_sep.user_disabled,
-                    "scm_sep_curr": item_none if usr_sep.scm_sep_curr is None else usr_sep.scm_sep_curr,
-                    "scm_sep_new": item_none,
-                    "when": usr_sep.assigned_at,
-                }
-                for usr_sep in session.scalars(select(MgmtUserSep)).all()
-            ]
-        except Exception as e:
-            msg_error = str(e)
-            sidekick.display.error(msg_error)
-        finally:
-            session.close()
+                sep_list = [
+                    {"id": sep.sep_id, "fullname": sep.sep_fullname}
+                    for sep in db_session.execute(
+                        text(f"SELECT sep_id, sep_fullname FROM vw_scm_sep")
+                    ).fetchall()
+                ]
+                users_sep = [
+                    {
+                        "user_id": usr_sep.user_id,
+                        "sep_id": usr_sep.sep_id,
+                        "file_url": _file_url(usr_sep.sep_id),
+                        "user_name": usr_sep.user_name,
+                        "disabled": usr_sep.user_disabled,
+                        "scm_sep_curr": item_none if usr_sep.scm_sep_curr is None else usr_sep.scm_sep_curr,
+                        "scm_sep_new": item_none,
+                        "when": usr_sep.assigned_at,
+                    }
+                    for usr_sep in db_session.scalars(select(MgmtUserSep)).all()
+                ]
+            except Exception as e:
+                msg_error = str(e)
+                sidekick.display.error(msg_error)
 
         return users_sep, sep_list, msg_error
 
@@ -241,15 +243,16 @@ class MgmtSep(Base):
 
         sep = None
         sep_fullname = None
-        session = Session()
-        try:
-            stmt = select(MgmtSep).options(defer(MgmtSep.icon_svg)).where(MgmtSep.id == id)
-            sep = session.execute(stmt).scalar_one_or_none()
-            stmt = text(f"SELECT sep_fullname FROM vw_scm_sep WHERE sep_id={sep.id}")
-            row = session.execute(stmt).one_or_none()
-            sep_fullname = None if row is None else row[0]
-        finally:
-            session.close()
+        with SqlAlchemySession() as db_session:
+            try:
+                stmt = select(MgmtSep).options(defer(MgmtSep.icon_svg)).where(MgmtSep.id == id)
+                sep = db_session.execute(stmt).scalar_one_or_none()
+                stmt = text(f"SELECT sep_fullname FROM vw_scm_sep WHERE sep_id={sep.id}")
+                row = db_session.execute(stmt).one_or_none()
+                sep_fullname = None if row is None else row[0]
+            except DatabaseError as e:
+                sep = None
+                sidekick.app_log.error(e)
 
         return sep, sep_fullname
 
@@ -261,18 +264,16 @@ class MgmtSep(Base):
         from ..Sidekick import sidekick
 
         sep = None
-        session = Session()
-        icon_content = None
-        try:
-            stmt = select(MgmtSep).where(MgmtSep.id == id)
-            sep = session.execute(stmt).scalar_one_or_none()
-            is_empty = is_str_none_or_empty(sep.icon_svg)
-            icon_content = SepIconConfig.empty_content() if is_empty else sep.icon_svg
-        except Exception as e:
-            icon_content = SepIconConfig.error_content()
-            sidekick.app_log.error(f"Error retrieving icon content of SEP {sep.id}: [{e}].")
-        finally:
-            session.close()
+        with SqlAlchemySession() as db_session:
+            icon_content = None
+            try:
+                stmt = select(MgmtSep).where(MgmtSep.id == id)
+                sep = db_session.execute(stmt).scalar_one_or_none()
+                is_empty = is_str_none_or_empty(sep.icon_svg)
+                icon_content = SepIconConfig.empty_content() if is_empty else sep.icon_svg
+            except Exception as e:
+                icon_content = SepIconConfig.error_content()
+                sidekick.app_log.error(f"Error retrieving icon content of SEP {sep.id}: [{e}].")
 
         return icon_content
 
@@ -284,17 +285,15 @@ class MgmtSep(Base):
 
         done = False
         msg_error = ""
-        session = Session()
-        try:
-            session.add(sep)
-            session.commit()
-            done = True
-        except Exception as e:
-            session.rollback()
-            msg_error = f"Cannot update {MgmtSep.__tablename__}.id = {sep} | Error {e}."
-            sidekick.app_log.error(msg_error)
-        finally:
-            session.close()
+        with SqlAlchemySession() as db_session:
+            try:
+                db_session.add(sep)
+                db_session.commit()
+                done = True
+            except Exception as e:
+                db_session.rollback()
+                msg_error = f"Cannot update {MgmtSep.__tablename__}.id = {sep} | Error {e}."
+                sidekick.app_log.error(msg_error)
 
         return done
 

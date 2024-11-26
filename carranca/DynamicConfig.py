@@ -62,7 +62,7 @@ class DynamicConfig(BaseConfig):
         # flask has config.from_prefixed_env() that us used in create_app
         # but I need one now, and displaying some msg.
         _init_envvar_of_config(self, fuse)
-        fuse.display.info(f"Config {self.APP_MODE} was instantiated.")
+        fuse.display.info(f"The Config class was instantiated in {self.APP_MODE} mode.")
         self.TEMPLATES_FOLDER = _get_template_folder()
 
         # min & max text length for pw & user_name

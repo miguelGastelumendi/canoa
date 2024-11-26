@@ -22,10 +22,15 @@ mgd
 
 {# only specify if different from default #}
 {% set dlg_cls_footer= "collapse" %}
+{% set formID = "id-form-main"%}
+{% if not base_js_head_list %}{%set base_js_head_list = []%} {% endif %}
+{% set _ = base_js_head_list.append('./static/js/form_helper.js') %}
 
 {% extends "./layouts/dialog.html.j2" %}
 
+{# == Dialog Body == #}
 {% block dlg_blc_body %}
+
 {% include "includes/backend-msg.html.j2" %}
 {% if msgOnly %}
 <div class="">
@@ -42,27 +47,29 @@ mgd
 
 {# display the if not Success or Exception (see carranca\helpers\ui_texts_helper.py[add_msg_success]) #}
 {% if not msgOnly %}
-<!-- { Form  -->
-<form method="post" action="" class="mt-2" onSubmit="document.getElementById('id-form-main-btn').disabled=true;" {{
-    formAttribute|default("") }}>
+{# { Form --> #}
+<form method="post" action="" id={{formID}} class="mt-2" ) {{ formAttribute|default("") }}>
     {{ form.hidden_tag() }}
 
     {% block frm_blc_content %}
     {% endblock frm_blc_content %}
 
-    <!-- { Submit -->
+    {# { Submit --> #}
     <div class="d-grid mt-3">
-        <button class="form-control form-main-btn" id="id-form-main-btn" type="submit">{{ submitButton }}</button>
+        <button class="form-control form-main-btn" id='id_form_main_btn' type="submit">
+            {{ submitButton }}
+        </button>
     </div>
-    <!-- Submit } -->
+    {# <!-- Submit } --> #}
 </form>
-<!-- Form } -->
 {% endif %}
+
 
 {% block frm_blc_below %}
 {% endblock frm_blc_below %}
 
 {% endblock dlg_blc_body %}
+{# ==^ Dialog Body ^== #}
 
 {% block frm_blc_script %}
 {% endblock frm_blc_script %}

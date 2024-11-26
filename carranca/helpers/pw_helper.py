@@ -54,7 +54,6 @@ def verify_pass(provided_password: str, stored_password: str) -> bool:
 def is_someone_logged() -> bool:
     # mgd:
     # in some context, current_user is an 'invalid pointer'
-    # see models.py:request_loader
     from flask_login import current_user
 
     logged = False
