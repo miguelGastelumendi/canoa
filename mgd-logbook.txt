@@ -43,6 +43,7 @@ TODO:
         - Tmpl for error Internal Error
         - Display colors
         - Smart menu (always, modified)
+        - Share form..htm.j2 and document.htm.j2 main button
 
 -----------------------------------------------------------
   Logbook
@@ -53,7 +54,6 @@ TODO:
 ----------------------------------
 
 2024-11- β 3.3x
-
     - [Gestão de SE] (para usuários Setorista)
         > Mostrar um grid com 3 colunas
             [Arquivo Submetido], [Relatório], [Data], [Disponível] (se o arquivo ainda está disponível)
@@ -65,8 +65,16 @@ TODO:
     - [Sair:x] não fecha ok.
     - Menu responsive
     - remove pixel.css (simply css's)
-    -
 
+-- Published in Win
+2024-11-26 β 3.33 fix form/doc
+    - make form..htm.j2 and document.htm.j2
+        have equivalent button
+        TODO: make them the same button
+
+
+
+-- Published in Win
 2024-11-26 β 3.32 several minor fixes
     - Fixed templates bug (g, About {{ app_version }})
     - Use same pallet form dialog/forms colors (based in sepia):
@@ -76,12 +84,12 @@ TODO:
     - New static_route
 
 
-
 2024-11-24..25 β 3.31
     - Try to fix the 'big zip' file (se_saude_07_08)...
     - Start a 'on progress' msg for form submission
 
--- Published
+
+-- Published in Win
 2024-11-20..23 β 3.30 ----- mudou dezena!
     - [Gestão de SE] (para usuários Adm) 100%
     - Debug geral.

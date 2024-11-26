@@ -28,7 +28,8 @@ mgd 2024.03
 
 {% block dlg_blc_footer %}
 <form action="{{ public_route('login') }}" method="GET">
-    <button type="submit" class="btn btn-primary {{dlg_cls_btnOk}}" style="min-width: 8em;">
+    {# see ./layouts/form.html.j2 #}
+    <button type="submit" class="form-control form-main-btn">
         {{(doc_var_ok_text | default("OK"))}}
     </button>
 </form>
