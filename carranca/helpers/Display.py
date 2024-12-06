@@ -3,18 +3,18 @@
 
  Simple colored print to screen
 
- mgd 2024-09-27,10-11
+ mgd 2024-09-27,10-11,12-05
 
  """
 
-# cSpell:ignore
+# cSpell:ignore colorfy
 
 import time
 from math import log10, modf
 from enum import Enum
 from typing import List
 from platform import uname
-from .py_helper import is_str_none_or_empty, OS_IS_WINDOWS
+from py_helper import is_str_none_or_empty, OS_IS_WINDOWS
 
 
 class Display:
@@ -27,6 +27,7 @@ class Display:
             icon_output=True,
             colors=None,
             icons=None,
+            with_color=None,
         ):
             self.prompt = prompt
             self.mute = mute_all
@@ -34,6 +35,7 @@ class Display:
             self.icon_output = icon_output
             self.colors = colors
             self.icons = icons
+            self.with_color = with_color
 
     class Kind(Enum):
         PROMPT = 0
@@ -56,6 +58,14 @@ class Display:
     reset_color = code(0)
     ESC = code(None)
     elapsed_format = [f"{{:0{i}}}" for i in range(1, 6)]
+    with_color = True
+    try:
+        # https://en.wikipedia.org/wiki/ANSI_escape_code#DOS_and_Windows
+        # Since 2016! Windows 10 version 1511 -> Windows has colors
+        # Sommelier = Windows v 6.2.9200 on Sommelier
+        with_color = (int(uname().version.split(".")[0]) > 9) if OS_IS_WINDOWS else True
+    except:
+        with_color = not OS_IS_WINDOWS
 
     default = Default(
         # keep same order as Display.__init__
@@ -67,7 +77,7 @@ class Display:
             # https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
             code(36),  # Prompt gray
             code(90),  # elapsed 999:ss:mm
-            "",  # Simple, default color
+            no_color,  # Simple
             code(32),  # Info green
             code(33),  # Warn yellow
             code(31),  # Error red
@@ -82,6 +92,7 @@ class Display:
             "[!] ",  # Error
             "[¤] ",  # Debug
         ],
+        None,  # with_color
     )
 
     def debug_output() -> bool:
@@ -100,16 +111,8 @@ class Display:
         elapsed_from: float = None,
         colors: List[str] = None,
         icons: List[str] = None,
+        with_color: bool = None,
     ):
-        os_color = True
-        try:
-            # https://en.wikipedia.org/wiki/ANSI_escape_code#DOS_and_Windows
-            # Since 2016! Windows 10 version 1511
-            # Sommelier = Windows v 6.2.9200 on Sommelier
-            os_color = OS_IS_WINDOWS and int(uname().version.split(".")[0]) > 9
-        except:
-            os_color = not OS_IS_WINDOWS
-
         _d = Display.default  # value is None => use default
         self.prompt = _d.prompt if prompt is None else prompt
         self.mute_all = True if mute_all else False
@@ -117,8 +120,9 @@ class Display:
         self.icon_output = _d.icon_output if icon_output is None else icon_output
         self.elapsed_output = elapsed_from is not None
         self.elapsed_from = elapsed_from if self.elapsed_output else time.perf_counter()
-        self.colors = (_d.colors if colors is None else colors) if os_color else []
+        self.colors = _d.colors if colors is None else colors
         self.icons = _d.icons if icons is None else icons
+        self.with_color = Display.with_color if with_color is None else bool(with_color)
         k_error = "Parameter '{0}' must be a list of Display.Kind items."
         if colors is not None and not (len(colors) == len(Display.Kind) or len(colors) == 0):
             raise ValueError(k_error.format("colors"))
@@ -126,8 +130,8 @@ class Display:
         if icons is not None and len(icons) != len(Display.Kind):
             raise ValueError(k_error.format("icons"))
 
-    def color(self, kind: Kind) -> str:
-        return "" if len(self.colors) == 0 else self.colors[kind.value]
+    def color_for_kind(self, kind: Kind) -> str:
+        return self.colors[kind.value] if self.with_color else display.no_color
 
     def print(
         self, kind_or_color: Kind | str, msg: str, prompt: str = None, icon_output: bool = None
@@ -148,20 +152,26 @@ class Display:
         elif kind_or_color is None:
             start_color = Display.no_color
         elif is_kind:
-            start_color = self.color(kind)
+            start_color = self.color_for_kind(kind)
         else:
-            start_color = Display.no_color if is_str_none_or_empty(kind_or_color) else kind_or_color
+            start_color = (
+                Display.no_color
+                if is_str_none_or_empty(kind_or_color) or not self.with_color
+                else kind_or_color
+            )
+
+        # _finalize_color = Display.no_color if se
+        def _colorfy(kind: Display.Kind, text: str) -> str:
+            open_color = self.color_for_kind(kind)
+            if (open_color == Display.no_color) or not self.with_color:
+                return text
+            else:
+                return f"{open_color}{text}{Display.reset_color}"
 
         _prompt = self.prompt if prompt is None else str(prompt)
-        start_text = (
-            ""
-            if is_str_none_or_empty(_prompt)
-            else f"{self.color(Display.Kind.PROMPT)}{_prompt}{Display.reset_color}"
-        )
+        start_text = "" if is_str_none_or_empty(_prompt) else _colorfy(Display.Kind.PROMPT, _prompt)
         if self.elapsed_output:
-            start_text = (
-                f"{start_text}{self.color(Display.Kind.ELAPSED)}{self.elapsed()}{Display.reset_color} "
-            )
+            start_text = f"{start_text}{_colorfy(Display.Kind.ELAPSED, self.elapsed())} "
 
         _icon_output = self.icon_output if icon_output is None else bool(icon_output)
 
@@ -228,17 +238,10 @@ class Display:
 if __name__ == "__main__":
     from platform import uname
 
-    os_color = True
-    try:
-        os_color = False if OS_IS_WINDOWS and int(uname().version.split(".")[0]) < 7 else True
-    except:
-        os_color = not OS_IS_WINDOWS
-
-    print(os_color)
-
     import time
     import random
 
+    print(f"OS Color is `{Display().with_color}`")
     Display().simple("a")
     Display().simple("b")
 
@@ -254,6 +257,7 @@ if __name__ == "__main__":
     Display().debug("Debug")
     print(f"Display().debug_output is [{Display.debug_output()}].")
     print(f"Display().icon_output is [{Display.icon_output()}].")
+    print(f"Display().with_color is [{Display.with_color}].")
 
     print("\nInstance for `canoa` with 'debug_output` active:")
     display = Display("Canoa: ", False, True, True, time.perf_counter())  # - 580)
@@ -261,9 +265,12 @@ if __name__ == "__main__":
     print(f"display.elapsed_output is [{display.elapsed_output}].")
     print(f"display.debug_output is [{display.debug_output}].")
     print(f"display.icon_output is [{display.icon_output}].")
+    print(f"display().with_color is [{display.with_color}].")
+    display.with_color = False
     for i in range(1, 20):
         for e in Display.Kind:
             display.print(e, e.name)
+            display.with_color = i > 2
             time.sleep(random.randint(0, 3))
 
 #  eof

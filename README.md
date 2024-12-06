@@ -13,7 +13,11 @@ A validação do arquivo ```zip``` é realizado por um aplicativo externo, o
     e gerenciado por ```.private.upload_file.process.py```
     que consta dos seguintes módulos:
 
-1. ### _Admit_ ###
+
+> Ao lado do nome da unidade é mostrado [módulo python e o Código Base de Erro (```CBE```), ver ```.helpers.error_helper.py```]
+
+
+1. ### _Admit_ [```receive_file.py```, ```CBE```:```200```] ###
    #### Recebe arquivo ou link do usuário ####
     - Cria o formulário para o usuário informar:
         + Nome do arquivo
@@ -27,11 +31,9 @@ A validação do arquivo ```zip``` é realizado por um aplicativo externo, o
         + Valida o nome, tamanho
         + Revisa o tipo de conteúdo (que é salvo localmente durante o registro)
     - Inicia o process
-    - ```receive_file.py```
-    - Código Base de Erro (```CBE```) = ```.helpers.error_helper.py``` ```RECEIVE_FILE_ADMIT``` 200
 
 
-2. ### _Process_ ###
+2. ### _Process_ [```process.py```, ```CBE```:```270```] ###
     #### Gerencia o processo ####
     - Chama os módulos sequencialmente:
        + Revisar
@@ -49,10 +51,13 @@ A validação do arquivo ```zip``` é realizado por um aplicativo externo, o
     - Em caso de sucesso:
         + Fecha o registro do processo, anotando as mensagens recebidas
     - Atualiza o formulário do usuário com o resultado
-    - ```process.py```
-    - CBE = ```RECEIVE_FILE_PROCESS``` 210
+    - Se ocorrer excepção durante a execução de um módulos, é somado
+       ```RECEIVE_FILE_EXCEPTION``` 100 ao
+       código de erro.
+       Assim, os possíveis códigos de erro são:
+       ```RECEIVE_FILE_*``` => [200...270] + 100
 
-3. ### _Check_ ###
+3. ### _Check_  [```check.py```, ```CBE```:```210```] ###
     #### Revisa os requisitos do processo ####
     - Corrobora a presencia das configurações:
         + ```config.py``` configuração geral
@@ -62,34 +67,27 @@ A validação do arquivo ```zip``` é realizado por um aplicativo externo, o
     - Valida o nome, tamanho e extensão do arquivo
     - Verifica a disponibilidade dos _scripts_ de execução do ```Validator``` e se eles estão atualizados
     - Confirma se os dados do usuário estão completos, incluindo e-mail
-    - ```check.py```
-    - CBE = ```RECEIVE_FILE_CHECK``` 210
 
-4. ### _Register_ ###
+4. ### _Register_ [```register.py```, ```CBE```:```230```] ###
     #### Registra o processo  ####
     - Cria o ticket (chave única) e o número de protocolo do processo
     - Se enviou um arquivo  _(upload)_, salva o conteúdo localmente.
     - Coleta informações do arquivo como ```crc32``` e tamanho
     - Insere registro na tabela (```user_data_files```) com os dados do
       usuário e do arquivo submetido
-    - ```register.pt```
-    - CBE = ```RECEIVE_FILE_REGISTER``` 230
 
-5. ### _Unzip_  ###
+5. ### _Unzip_ [```unzip.py```, ```CBE```:```240```] ###
     #### Descompacta o arquivo  ####
     - Valida se é o arquivo está no formato ```zip```
     - Extrai o conteúdo na pasta do usuário que e compartilhada com
       o aplicativo validador.
-    - ```unzip.zip```
-    - CBE = ```RECEIVE_FILE_UNZIP``` 240
 
-6. ### _Submit_  ###
+6. ### _Submit_  [```submit.py```, ```CBE```:```250```] ###
     #### Chama ao aplicativo validador  ####
-    - CBE = ```RECEIVE_FILE_SUBMIT``` 250
 
-7. ### _E-Mail_  ###
+7. ### _E-Mail_  [```mail.py```, ```CBE```:```260```] ###
     #### Envia o email de resultado  ####
-    > ```CBE``` = ```RECEIVE_FILE_EMAIL``` 260
+
 
 ## Estrutura de Pastas ##
 

@@ -6,7 +6,7 @@
     mgd
 """
 
-# cSpell:ignore tmpl wtforms
+# cSpell:ignore tmpl wtforms passwordreset
 
 from flask import render_template, request
 
@@ -42,9 +42,7 @@ def password_reset(token):
 
     try:
         task_code += 1  # 1
-        template, is_get, texts = get_account_form_data(
-            public_route__password_reset, "password_reset_or_change"
-        )
+        template, is_get, texts = get_account_form_data("passwordreset", "password_reset_or_change")
         token_str = to_str(token)
         password = "" if is_get else get_input_text("password")
         task_code += 1  # 2

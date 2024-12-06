@@ -30,13 +30,13 @@ TODO:
         E. β 2.17
         F. β 2.17
         G. β 2.11
-        H. try_get_mgd_msg -> create [^|f(msg_code, ar1, arg2)default msg^|] -> search 'msg_code' in uiTexts
+        H. try_get_mgd_msg -> create [^|f(msg_code, ar1, arg2)default msg|^] -> search 'msg_code' in uiTexts
         I. One close button for: document.html.j2, dialog.html.j2, form.html.j2 (2024.11.19)
         J. PrivateDocs for About (2024.11.19)
 
 
     ##Small Tasks##
-        - init_form_vars ryrn a 'error tmpl'
+        - init_form_vars create a 'error tmpl'
         - check use o form-main-btn in *.j2
         - share jinja_cache templates + texts (see route_helper templates_found)
         - Login Remember not always working
@@ -47,7 +47,7 @@ TODO:
 
 -----------------------------------------------------------
   Logbook
-  Atualizar versão em: BaseConfig.py e db.ui_items.body[89]
+  Atualizar versão em: BaseConfig.py
 -----------------------------------------------------------
 
 ------- 2024 - November ----------
@@ -65,6 +65,12 @@ TODO:
     - [Sair:x] não fecha ok.
     - Menu responsive
     - remove pixel.css (simply css's)
+
+
+-- Published in Win
+2024-12-05 β 3.34 fix Windows bug in Display.py
+    - Fix a Windows pre v10 bug in Display.py
+
 
 -- Published in Win
 2024-11-26 β 3.33 fix form/doc

@@ -3,8 +3,9 @@
 
     mgd 2024-05-13
     Equipe da Canoa -- 2024
-    cSpell:ignore werkzeug tmpl
 """
+
+# cSpell:ignore werkzeug tmplt
 
 import requests
 from os import path
@@ -60,8 +61,9 @@ def login_route() -> str:
 
 def register_route() -> str:
     """
-    The `register` page can converts,
+    The `register` page can convert,
     a visitor into a user.
+    Anyone can be (requested)
     """
     return public_route("register")
 
@@ -91,36 +93,36 @@ def get_input_text(name: str) -> str:
     return to_str(text)
 
 
-def _get_form_data(section: str, file: str, folder: str) -> Tuple[str, bool, UI_Texts]:
+def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI_Texts]:
     from .ui_texts_helper import get_section
 
-    file = camel_to_snake(section) if file is None else file
-    file_name = f"{file}.html.j2"
+    tmplt = camel_to_snake(section) if tmplt is None else tmplt
+    tmplt_file_name = f"{tmplt}.html.j2"
     # template *must* be with '/':
-    template = f"./{folder}/{file_name}"
-    full_name = path.join(".", sidekick.config.TEMPLATES_FOLDER, folder, file_name)
-    if full_name in templates_found:
+    template = f"./{folder}/{tmplt_file_name}"
+    tmplt_full_name = path.join(".", sidekick.config.TEMPLATES_FOLDER, folder, tmplt_file_name)
+    if tmplt_full_name in templates_found:
         pass
-    elif path.isfile(full_name):
-        templates_found.append(full_name)
+    elif path.isfile(tmplt_full_name):
+        templates_found.append(tmplt_full_name)
     else:
-        raise FileNotFoundError(f"The requested template '{full_name}' was not found.")
+        raise FileNotFoundError(f"The requested template '{tmplt_full_name}' was not found.")
 
     is_get = is_method_get()
     texts = get_section(section)
     return template, is_get, texts
 
 
-def get_private_form_data(section: str, file: str = None) -> Tuple[str, bool, UI_Texts]:
-    return _get_form_data(section, file, base_route_private)
+def get_private_form_data(section: str, tmplt: str = None) -> Tuple[str, bool, UI_Texts]:
+    return _get_form_data(section, tmplt, base_route_private)
 
 
-def get_account_form_data(section: str, file: str = None) -> Tuple[str, bool, UI_Texts]:
-    return _get_form_data(section, file, "accounts")
+def get_account_form_data(section: str, tmplt: str = None) -> Tuple[str, bool, UI_Texts]:
+    return _get_form_data(section, tmplt, "accounts")
 
 
 def init_form_vars() -> Tuple[Any, str, bool, UI_Texts]:
-    # tmpl_form, template, is_get, uiTexts
+    # tmplt_form, template, is_get, uiTexts
     return None, "", True, {}
 
 

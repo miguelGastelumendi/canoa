@@ -5,13 +5,14 @@
 
 # cSpell:ignore
 
-import re
 from bs4 import BeautifulSoup
-from .file_helper import file_full_name_parse
 
 
 def img_change_src_path(html_content: str, new_img_folder: list) -> str:
     # Change img tag `src` path to a new_img_path & return the modified html
+    import os
+    import re
+
     soup = BeautifulSoup(html_content, "html.parser")
     img_tags = soup.find_all("img")
 
@@ -29,6 +30,8 @@ def img_change_src_path(html_content: str, new_img_folder: list) -> str:
 
 # Returns a list of all img tag `src` filename
 def img_filenames(html_content: str) -> str:
+    from .file_helper import file_full_name_parse
+
     soup = BeautifulSoup(html_content, "html.parser")
     img_tags = soup.find_all("img")
     images = []

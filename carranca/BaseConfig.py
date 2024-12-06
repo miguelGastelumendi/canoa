@@ -43,7 +43,7 @@ class BaseConfig(Config):
     APP_NAME = app_name
 
     # &beta; major.minor.patch
-    APP_VERSION = "β 3.33"
+    APP_VERSION = "β 3.34"
 
     """ Canoa Configurations
         --------------------------
@@ -73,9 +73,11 @@ class BaseConfig(Config):
     # storage area (user_files, schema_icons...)
     COMMON_PATH = path_remove_last_folder(root_folder)
 
-    # My address (used to send recovery email confirmation)
+    # My address service is SERVER_EXTERNAL_IP is empty
+    # (used to send recovery email confirmation, etc)
     EXTERNAL_IP_SERVICE = "https://checkip.amazonaws.com"
-    SERVER_EXTERNAL_IP = ""
+    # satelier.dev.br
+    SERVER_EXTERNAL_IP = "177.43.119.39"
     SERVER_EXTERNAL_PORT = ""
 
     """ Flask Configuration
