@@ -14,7 +14,17 @@ from math import log10, modf
 from enum import Enum
 from typing import List
 from platform import uname
-from py_helper import is_str_none_or_empty, OS_IS_WINDOWS
+from .py_helper import is_str_none_or_empty, OS_IS_WINDOWS
+
+# Alternative
+# def __init__(self, **kwargs):
+#     self.prompt = kwargs.get('prompt', "")
+#     self.mute = kwargs.get('mute_all', False)
+#     self.debug_output = kwargs.get('debug_output', False)
+#     self.icon_output = kwargs.get('icon_output', True)
+#     self.colors = kwargs.get('colors', [])
+#     self.icons = kwargs.get('icons', [])
+#     self.with_color = kwargs.get('with_color', None)
 
 
 class Display:
@@ -92,7 +102,7 @@ class Display:
             "[!] ",  # Error
             "[¤] ",  # Debug
         ],
-        None,  # with_color
+        None,  # with_color (bool, use color)
     )
 
     def debug_output() -> bool:
@@ -235,42 +245,42 @@ class Display:
         return result
 
 
-if __name__ == "__main__":
-    from platform import uname
+# if __name__ == "__main__":
+#     from platform import uname
 
-    import time
-    import random
+#     import time
+#     import random
 
-    print(f"OS Color is `{Display().with_color}`")
-    Display().simple("a")
-    Display().simple("b")
+#     print(f"OS Color is `{Display().with_color}`")
+#     Display().simple("a")
+#     Display().simple("b")
 
-    print("\nClass print:")
-    for e in Display.Kind:
-        Display().print(e, e.name)
+#     print("\nClass print:")
+#     for e in Display.Kind:
+#         Display().print(e, e.name)
 
-    print("\nPrint by function:")
-    Display().simple("simple")
-    Display().info("info")
-    Display().warn("warning")
-    Display().error("error")
-    Display().debug("Debug")
-    print(f"Display().debug_output is [{Display.debug_output()}].")
-    print(f"Display().icon_output is [{Display.icon_output()}].")
-    print(f"Display().with_color is [{Display.with_color}].")
+#     print("\nPrint by function:")
+#     Display().simple("simple")
+#     Display().info("info")
+#     Display().warn("warning")
+#     Display().error("error")
+#     Display().debug("Debug")
+#     print(f"Display.debug_output is [{Display.debug_output()}].")
+#     print(f"Display.icon_output is [{Display.icon_output()}].")
+#     print(f"Display.with_color is [{Display.with_color}].")
 
-    print("\nInstance for `canoa` with 'debug_output` active:")
-    display = Display("Canoa: ", False, True, True, time.perf_counter())  # - 580)
+#     print("\nInstance for `canoa` with 'debug_output` active:")
+#     display = Display("Canoa: ", False, True, True, time.perf_counter())  # - 580)
 
-    print(f"display.elapsed_output is [{display.elapsed_output}].")
-    print(f"display.debug_output is [{display.debug_output}].")
-    print(f"display.icon_output is [{display.icon_output}].")
-    print(f"display().with_color is [{display.with_color}].")
-    display.with_color = False
-    for i in range(1, 20):
-        for e in Display.Kind:
-            display.print(e, e.name)
-            display.with_color = i > 2
-            time.sleep(random.randint(0, 3))
+#     print(f"display.elapsed_output is [{display.elapsed_output}].")
+#     print(f"display.debug_output is [{display.debug_output}].")
+#     print(f"display.icon_output is [{display.icon_output}].")
+#     print(f"display.with_color is [{display.with_color}].")
+#     display.with_color = False
+#     for i in range(1, 20):
+#         for e in Display.Kind:
+#             display.print(e, e.name)
+#             display.with_color = i > 2
+#             time.sleep(random.randint(0, 3))
 
 #  eof

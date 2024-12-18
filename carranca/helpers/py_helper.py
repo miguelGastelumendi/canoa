@@ -30,11 +30,17 @@ def as_str_strip(s: str) -> str:
     return (str(s) + "").strip()
 
 
-# def is_not_empty_str(test: str) -> bool:
-#     """
-#     Returns True if the argument is not an empty 'str'
-#     """
-#     return False if test is None else isinstance(test, str) and not is_str_none_or_empty(test)
+def quote(s: str, always: bool = False) -> str:
+    """
+    Returns the str quoted if it has a space
+    """
+    s = to_str(s)
+    if not always and " " not in s:
+        return s
+
+    # Escape existing double quotes in the text
+    escaped_text = to_str(s).replace('"', '\\"')
+    return f'"{escaped_text}"'
 
 
 def is_str_none_or_empty(s: str) -> bool:

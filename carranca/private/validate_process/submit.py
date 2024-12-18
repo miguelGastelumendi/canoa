@@ -15,13 +15,14 @@ import shutil
 from os import path, stat
 
 from .Cargo import Cargo
+from ...private.logged_user import LoggedUser
 from ...config_validate_process import DataValidateApp
 from ...helpers.py_helper import (
     is_str_none_or_empty,
     decode_std_text,
+    quote,
     now,
 )
-from ...helpers.user_helper import now
 from ...helpers.file_helper import change_file_ext
 from ...helpers.error_helper import ModuleErrorCode
 from ...Sidekick import sidekick
@@ -33,17 +34,27 @@ async def _run_validator(
     d_v: DataValidateApp,
     input_folder: str,
     output_folder: str,
+    file_name: str,
+    user: LoggedUser,
     debug_validator: bool = False,
 ):
     #  This function knows quite a lot of how to run [data_validate]
 
+    sep_full_name = "?" if user.sep is None else user.sep.full_name
+
     run_command = [
         batch_full_name,
         data_validate_path,  # param 1: path do the data_validate main.py
-        d_v.na_in_folder,  # Named Argument
-        input_folder,  # param 2
-        d_v.na_out_folder,  # Named Argument
-        output_folder,  # param 3
+        d_v.na_in_folder,  # Named Argumentes:
+        input_folder,  # param 2 Don't use " "
+        d_v.na_out_folder,
+        output_folder,  # param 3   Don't use " "
+        d_v.na_user_name,
+        quote(user.name),  # param 4
+        d_v.na_file_name,
+        quote(file_name),  # param 5
+        d_v.na_schema_se,
+        quote(sep_full_name),  # param 6
     ]
 
     if not is_str_none_or_empty(d_v.flags):
@@ -131,6 +142,8 @@ def submit(cargo: Cargo) -> Cargo:
                     _cfg.dv_app,
                     _path_write,
                     _path_read,
+                    cargo.pd.received_original_name,
+                    cargo.user,
                     cargo.in_debug_mode,
                 )
             )

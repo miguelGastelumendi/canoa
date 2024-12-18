@@ -25,10 +25,13 @@ DataValidateApp = NamedTuple(
     "DataValidateApp",
     batch=str,
     folder=str,
-    ui_name=str,  # the name to display to user/log/etc
+    ui_name=str,  # the name of the app to display to user/log/etc
     flags=str,
     flag_debug=str,
     # named arguments
+    na_user_name=str,
+    na_file_name=str,
+    na_schema_se=str,
     na_in_folder=str,
     na_out_folder=str,
 )
@@ -46,7 +49,11 @@ class ValidateProcessConfig:
             ui_name="data_validate",
             flags="--no-spellchecker" if OS_IS_WINDOWS else "",
             flag_debug="",  # --debug
-            na_in_folder="--input_folder",  # named argument
+            # named argument
+            na_schema_se="--sector",
+            na_user_name="--user",
+            na_file_name="--file",
+            na_in_folder="--input_folder",
             na_out_folder="--output_folder",
         )
         self.email = Email(

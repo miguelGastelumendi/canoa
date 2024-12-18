@@ -68,6 +68,12 @@ TODO:
 
 
 -- Published in Win
+2024-12-05 β 3.35 args user, file & sector for data_validate
+    - Now data_validate is called with new arguments
+        user, file & sector for data_validate
+
+
+-- Published in Win
 2024-12-05 β 3.34 fix Windows bug in Display.py
     - Fix a Windows pre v10 bug in Display.py
 
