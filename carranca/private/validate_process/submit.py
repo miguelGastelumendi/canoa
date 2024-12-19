@@ -49,12 +49,12 @@ async def _run_validator(
         input_folder,  # param 2 Don't use " "
         d_v.na_out_folder,
         output_folder,  # param 3   Don't use " "
-        d_v.na_user_name,
-        quote(user.name),  # param 4
-        d_v.na_file_name,
-        quote(file_name),  # param 5
-        d_v.na_schema_se,
-        quote(sep_full_name),  # param 6
+        # d_v.na_user_name,
+        # quote(user.name),  # param 4
+        # d_v.na_file_name,
+        # quote(file_name),  # param 5
+        # d_v.na_schema_se,
+        # quote(sep_full_name),  # param 6
     ]
 
     if not is_str_none_or_empty(d_v.flags):

@@ -141,7 +141,7 @@ class Display:
             raise ValueError(k_error.format("icons"))
 
     def color_for_kind(self, kind: Kind) -> str:
-        return self.colors[kind.value] if self.with_color else display.no_color
+        return self.colors[kind.value] if self.with_color else Display.no_color
 
     def print(
         self, kind_or_color: Kind | str, msg: str, prompt: str = None, icon_output: bool = None

@@ -60,7 +60,7 @@ class ValidateProcessConfig:
             cc="",  # "pedro.andrade.inpe@gmail.com, Pedro Andrade;cassia.lemos@inpe.br, Cassia Lemos",
             bcc="",
         )
-        self.remove_report = True  # default is true
+        self.remove_report = False  # default is true
         self.debug_process = None  # None -> set by param debug
 
         if self.debug_process is None:
