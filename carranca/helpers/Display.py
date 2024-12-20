@@ -72,7 +72,7 @@ class Display:
     try:
         # https://en.wikipedia.org/wiki/ANSI_escape_code#DOS_and_Windows
         # Since 2016! Windows 10 version 1511 -> Windows has colors
-        # Sommelier = Windows v 6.2.9200 on Sommelier
+        # Sommelier > Windows v 6.2.9200
         with_color = (int(uname().version.split(".")[0]) > 9) if OS_IS_WINDOWS else True
     except:
         with_color = not OS_IS_WINDOWS

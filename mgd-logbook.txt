@@ -70,6 +70,10 @@ TODO:
 ------- 2024 - November ----------
 ----------------------------------
 -- For Linux
+2024-12-05 β 3.37 fixes for Linux
+
+
+-- For Linux
 2024-12-05 β 3.36 for linux-r.txt
     - Requirements for Linux (very short list)
       Not the same versions of Windows

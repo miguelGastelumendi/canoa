@@ -82,6 +82,11 @@ def send_email(
     task = ""
     try:
 
+        task = "setting email originator"
+        if is_str_none_or_empty(sidekick.config.EMAIL_ORIGINATOR):
+            error = f"Unknown `email originator`. Cannot send email."
+            raise ValueError(error)
+
         task = "getting recipients"
         recipients = None
         if isinstance(email_to, str):
@@ -190,13 +195,9 @@ def send_email(
         task = f"sending email with subject [{mail.subject}]"
         sidekick.app_log.info(task)
 
-        if True:  # if real
-            response = sg.send(mail)
-            # https://www.twilio.com/docs/sendgrid/api-reference/how-to-use-the-sendgrid-v3-api/responses#status-codes
-            status_code = response.status_code
-        else:
-            mail = None  # trying to find a
-            status_code = 200
+        response = sg.send(mail)
+        # https://www.twilio.com/docs/sendgrid/api-reference/how-to-use-the-sendgrid-v3-api/responses#status-codes
+        status_code = response.status_code
 
         sent = status_code in [200, 202]  # api docs says 200, but in practice it's 202
         if not sent:
@@ -207,7 +208,7 @@ def send_email(
         sc = status_code if status_code != 0 else getattr(e, "status_code", 0)
         error = f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
         msg = getattr(e, "body", str(e))
-        msg_error = f"{error} SendGrid: [{msg}]."
+        msg_error = f"{error} \nSendGrid: [{msg}]."
         sidekick.app_log.error(msg_error)
         raise RuntimeError(msg_error)
 

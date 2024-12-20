@@ -305,11 +305,11 @@ def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
     warns = 0
     if is_str_none_or_empty(config.EMAIL_API_KEY):
         warns += 1
-        fuse.display.warning(f"Sendgrid API key was not found, the app will not be able to send emails.")
+        fuse.display.warn(f"Sendgrid API key was not found, the app will not be able to send emails.")
 
     if is_str_none_or_empty(config.EMAIL_ORIGINATOR):
         warns += 1
-        fuse.display.warning(
+        fuse.display.warn(
             f"The app email originator is not defined, the app will not be able to send emails."
         )
 
