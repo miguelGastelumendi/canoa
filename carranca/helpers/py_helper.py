@@ -8,17 +8,29 @@
 
 # cSpell:ignore latin CCITT
 
-import time
-import platform
+import os, time, platform
 from sys import argv
 from datetime import datetime
 from typing import Any, Type, Tuple
+
+from app_constants import app_name
+
 
 # https://docs.python.org/3/library/platform.html#platform.system
 OS_NAME_IS = platform.system()
 OS_IS_WINDOWS = OS_NAME_IS == "Windows"
 OS_IS_LINUX = OS_NAME_IS == "Linux"
 OS_IS_MAC = OS_NAME_IS == "Darwin"
+
+
+def get_envvar_prefix() -> str:
+
+    return f"{app_name}_".upper()
+
+
+def get_envvar(name: str, default: str = "") -> str:
+    value = "" if is_str_none_or_empty(name) else os.getenv(f"{get_envvar_prefix()}{name}")
+    return default if is_str_none_or_empty(value) else value
 
 
 def now() -> datetime:

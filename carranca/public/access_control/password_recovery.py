@@ -12,7 +12,7 @@ from flask import render_template, request
 import secrets
 
 from ...public.models import persist_user
-from ...helpers.email_helper import send_email
+from ...helpers.sendgrid_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode
 from ...helpers.ui_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
 from ...helpers.route_helper import (

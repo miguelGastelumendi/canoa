@@ -18,6 +18,7 @@ from ...helpers.user_helper import now
 from ..receive_file import RECEIVE_FILE_DEFAULT_ERROR
 from ..logged_user import LoggedUser
 from .ProcessData import ProcessData
+from app_constants import app_version
 
 
 class Cargo:
@@ -54,7 +55,7 @@ class Cargo:
         self.step = 1
         self.final = {}  # the process.py return values
         """ When the process began """
-        self.app_version = sidekick.config.APP_VERSION
+        self.app_version = app_version
         self.process_version = process_version
         self.received_at = received_at
         self.process_started_at = now()

@@ -154,7 +154,6 @@ def download_public_google_file(file_id, file_folder):
         file_md = service.files().get(fileId=file_id).execute()
         return file_md
 
-    #    email: canoa-download@satelier-canoa.iam.gserviceaccount.com
     SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
     SERVICE_ACCOUNT_FILE = path.join(

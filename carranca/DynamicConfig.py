@@ -10,12 +10,12 @@
 
 # cSpell:ignore SQLALCHEMY searchpath
 
-from typing import Any
 from os import environ
 from hashlib import sha384
 
+from app_constants import app_name, app_version
 from .BaseConfig import BaseConfig, app_mode_development, app_mode_production
-from .helpers.py_helper import as_bool, is_str_none_or_empty
+from .helpers.py_helper import as_bool, is_str_none_or_empty, get_envvar_prefix
 from .helpers.wtf_helper import LenValidate
 
 
@@ -36,12 +36,12 @@ def _init_envvar_of_config(cfg, fuse):
     Initialize BaseConfig
     from environment variables
     """
-    envvars_prefix = f"{fuse.app_name}_".upper()
+    envvar_prefix = get_envvar_prefix()
     t = str(True).lower()
     f = str(False).lower()
     for key, value in environ.items():
-        attribute_name = key[len(envvars_prefix) :]
-        if not key.upper().startswith(envvars_prefix):
+        attribute_name = key[len(envvar_prefix) :]
+        if not key.upper().startswith(envvar_prefix):
             pass
         elif not hasattr(cfg, attribute_name):
             fuse.display.debug(
@@ -90,7 +90,7 @@ class DynamicConfig(BaseConfig):
             used for securely signing the session cookie (mgd: change every version)
             https://flask.palletsprojects.com/en/latest/config/#SECRET_KEY
             """
-            unique = f"{DynamicConfig.APP_NAME} v{DynamicConfig.APP_VERSION}".encode()
+            unique = f"{app_name} v{app_version}".encode()
             self.SECRET_KEY = sha384(unique).hexdigest()
 
 

@@ -13,8 +13,9 @@
 from .Cargo import Cargo
 from ..models import UserDataFiles
 from ...Sidekick import sidekick
+from ...helpers.email_helper import RecipientsDic, user_recipient
 from ...helpers.user_helper import now_as_text, now
-from ...helpers.email_helper import send_email
+from ...helpers.sendgrid_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode
 
 
@@ -29,17 +30,18 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
     try:
         cargo.email_started_at = now()
         task_code += 1  # 1
-        receipt = cargo.pd.user_receipt
         email_body_params = {
             "user_name": cargo.user.name,
-            "receipt": receipt,
+            "receipt": cargo.pd.user_receipt,
             "when": now_as_text(),
         }
         send_file = user_report_full_name
-        email_to = {"to": f"{cargo.user.email},{cargo.user.name}", "cc": cargo.receive_file_cfg.email.cc}
+        recipients = RecipientsDic(
+            to=user_recipient(cargo.user.email, cargo.user.name), cc=cargo.receive_file_cfg.cc_recipients.cc
+        )
 
         task_code += 1  # 2
-        send_email(email_to, "uploadedFile_email", email_body_params, send_file)
+        send_email(recipients, "uploadedFile_email", email_body_params, send_file)
         sidekick.display.info("email: An email was sent to the user with the result of the validation.")
 
         task_code += 2  # 3

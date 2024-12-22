@@ -79,7 +79,7 @@ def process(
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
-        "2024.10.22",  # process version, 22 new column user_files.sep_id
+        "2024.12.21",  # process version, 22 new column user_files.sep_id
         sidekick.debugging,
         logged_user,
         ValidateProcessConfig(sidekick.debugging),

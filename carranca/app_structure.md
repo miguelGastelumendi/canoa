@@ -25,7 +25,7 @@
         |    |    └── access_control
         |    |         └──:     # login, password_recovery, password_reset, register
         │    ├── static         # assets, css, docs, img, js
-        │    └── templates      # jinja templates
+        │    └── templates      # jinja2 templates
         |         ├── accounts
         |         ├── home
         |         ├── includes

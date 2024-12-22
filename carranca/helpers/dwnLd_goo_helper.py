@@ -159,7 +159,6 @@ def download_public_google_file(
         else:
             task_code = 6
 
-        #  email: canoa-download@satelier-canoa.iam.gserviceaccount.com
         scope = ["https://www.googleapis.com/auth/drive.readonly"]
 
         # TODO: Pass as param

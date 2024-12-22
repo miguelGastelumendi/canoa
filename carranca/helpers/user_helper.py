@@ -15,12 +15,6 @@ _code_shift_id = 903
 _ticket_receipt_sep = "_"
 
 
-# maybe is necessary later:
-def get_os_env(key: str, default=None, prefix: str = None) -> str:
-    _key = key if prefix is None else f"{prefix}_{key}"
-    return environ.get(_key, default)
-
-
 def now_as_text() -> str:
     # current date time for user
     ##- TODO: get config <- from ui_texts

@@ -20,6 +20,7 @@ from ..Sidekick import sidekick
 from ..helpers.db_helper import try_get_mgd_msg
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_batch_code
+from ..helpers.email_helper import user_recipient
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data, init_form_vars
 from ..helpers.hints_helper import UI_Texts
@@ -247,14 +248,15 @@ def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> proc_retu
     from .models import MgmtEmailSep
     from ..Sidekick import sidekick
     from ..helpers.py_helper import now
-    from ..helpers.email_helper import send_email
+    from ..helpers.sendgrid_helper import send_email
 
     task_code += 1
     msg_error = None
     with SqlAlchemySession() as db_session:
         try:
-            user_emails = db_session.query(MgmtEmailSep).filter_by(batch_code=batch_code).all()
-            if not user_emails:
+            # Users involved in the `batch_code` batch modification.
+            user_list = db_session.query(MgmtEmailSep).filter_by(batch_code=batch_code).all()
+            if not user_list:
                 return None, uiTexts["emailNone"], task_code
 
             email_send = 0
@@ -262,7 +264,7 @@ def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> proc_retu
             invalid_state = []
             texts = {}
             texts["subject"] = uiTexts["emailSubject"]
-            for user in user_emails:
+            for user in user_list:
                 msg = None
                 try:
                     if user.sep_name_old == None and user.sep_name_new == None:
@@ -279,7 +281,7 @@ def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> proc_retu
                         )
 
                     texts["content"] = msg
-                    if send_email(user.user_email, texts):
+                    if send_email(user_recipient(user.user_email, user.user_name), texts):
                         user.email_at = now()
                         email_send += 1
                     else:

@@ -71,7 +71,7 @@ class LoggedUser:
 
         if not self.ready:
             self.name = "?"
-            self.id = 0
+            self.id = -1
             self.email = ""
             self.code = "0"
             self.path = ""

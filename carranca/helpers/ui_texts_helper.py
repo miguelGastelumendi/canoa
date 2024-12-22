@@ -105,7 +105,7 @@ def _texts_init():
 def format_ui_item(texts: UI_Texts, key: str, *args):
     result = texts[key]
     try:
-        result = texts[key].format(*args)
+        result = result.format(*args)
     except:
         pass
 

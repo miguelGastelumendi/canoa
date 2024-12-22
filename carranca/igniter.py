@@ -11,7 +11,7 @@
 
 from typing import Tuple, Any
 
-from .helpers.py_helper import coalesce, is_str_none_or_empty
+from .helpers.py_helper import is_str_none_or_empty
 
 from .Args import Args
 
@@ -58,11 +58,11 @@ def _get_debug_2(app_name: str) -> bool:
     #    the 'app_mode' argument (: 'D', 'P', etc, see config.py).
     #    Taking this inb consideration, we skip 3. Config
     #
-    from .helpers.user_helper import get_os_env
+    from .helpers.py_helper import get_envvar
 
     debug_4 = False
     debug_3 = debug_4  # Read above 'Considerations'
-    debug_2 = bool(get_os_env("debug", debug_3, app_name))
+    debug_2 = bool(get_envvar("debug", debug_3))
     return debug_2
 
 
@@ -244,11 +244,11 @@ def ignite_log_file(config: DynamicConfig, app) -> Tuple[str, str]:
             full_name = path.join(".", config.LOG_FILE_FOLDER, file_name)
 
             task = "level"
-            s_level = logging._levelToName[config.LOG_FILE_LEVEL]
+            s_level = logging._levelToName[config.LOG_MIN_LEVEL]
 
             task = "handler"
             handler = RotatingFileHandler(full_name, maxBytes=10000, backupCount=1)
-            handler.setLevel(config.LOG_FILE_LEVEL)
+            handler.setLevel(config.LOG_MIN_LEVEL)
             app.logger.addHandler(handler)
     except Exception as e:
         msg_error = f"Cannot create log's {task}: [{e}]"
@@ -339,34 +339,6 @@ def ignite_sql_connection(sidekick, uri):
         _log_and_exit(f"Unable to connect to the database. Error details: [{e}].")
 
     return
-
-
-# # - ---------------------------------------------------------------------------- #
-# def __reignite_sidekick(app_name):
-#     global fuse
-
-#     import time
-#     from flask_sqlalchemy import SQLAlchemy
-
-#     ###   from main import app_name
-
-#     start_at = time.perf_counter()
-#     fuse, error = _start_fuse(app_name, start_at)
-
-#     # if error:
-#     #     fuse.display.error(f"The `fuse` was not create created: [{error}].")
-
-#     # # Config
-#     # config, error = _ignite_config(fuse.app_mode)
-#     # if error:
-#     #     fuse.display.error(f"The `config` was not create create: [{error}].")
-
-#     # Create the global hub class 'shared'
-#     shared = Shared(fuse.app_debug, fuse.display)
-#     fuse.display.info("The session 'shared'variable was reignited.")
-#     fuse = None  # not need it anymore
-#     # elif not sidekick.config.APP_DISPLAY_DEBUG_MSG:
-#     # sidekick.display.debug_output = False
 
 
 # eof

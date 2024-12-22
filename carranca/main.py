@@ -1,5 +1,5 @@
 """
-#main.py
+ main.py
    Main Module following the Application Factory Pattern
 
    Equipe da Canoa -- 2024
@@ -9,15 +9,11 @@
 # cSpell:ignore sqlalchemy keepalives psycopg2
 
 import time
-
+from app_constants import app_name
 
 # -------------------------------------------------------
 # Main --------------------------------------------------
 # -------------------------------------------------------
-
-# Here and only here: the app_name
-app_name = "Canoa"
-
 # This should be the first message of this package
 the_aperture_msg = f"{app_name} is starting in {__name__}."
 print(f"{'-' * len(the_aperture_msg)}\n{the_aperture_msg}")

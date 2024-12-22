@@ -1,7 +1,7 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
 #spell:ignore venv ccedil atilde receivefile datetime saude mgmt uix
-#spell:ignore Setorista
+#spell:ignore Setorista sendgrid linux
 TODO:
 
 
@@ -50,10 +50,7 @@ TODO:
   Atualizar versão em: BaseConfig.py
 -----------------------------------------------------------
 
-------- 2024 - November ----------
-----------------------------------
-
-2024-11- β 4.x
+2025-01- β 4.x
     - [Gestão de SE] (para usuários Setorista)
         > Mostrar um grid com 3 colunas
             [Arquivo Submetido], [Relatório], [Data], [Disponível] (se o arquivo ainda está disponível)
@@ -67,16 +64,37 @@ TODO:
     - remove pixel.css (simply css's)
 
 
-------- 2024 - November ----------
+------- 2025 - January-- ---------
 ----------------------------------
--- For Linux
-2024-12-05 β 3.37 fixes for Linux
 
 
+
+
+------- 2024 - December ----------
+----------------------------------
+
+    create class RecipientsListStr
+
+-- For Windows
+2024-12-21 β 3.38 fixes for Windows
+    - Fix bug in Linux (works in Windows!) in carranca\templates\private\sep_mgmt.html.j2 {{gridSubmitID}}
+    - Sending e-mail in Windows (a general fix to work with Linux also)
+    - email_helper.py -> sendgrid_helper.py (sendgrid functions)
+    - new file: email_helper.py  with generic email functions
+    - new file: app_constants.py (finally a good solution)
+    - new envvar EMAIL_REPORT_CC  (hide emails)
+    - envvars went to launch.json file (remove from Windows' envvars)
+    - create class RecipientsListDic & type RecipientsListStr
+    - 12 minor fixes
+
 -- For Linux
-2024-12-05 β 3.36 for linux-r.txt
-    - Requirements for Linux (very short list)
-      Not the same versions of Windows
+2024-12-20 β 3.37 fixes for Linux
+    - Sending e-mail in Linux, not in Windows
+
+-- For Linux
+2024-12-19 β 3.36 for linux-r.txt
+    - Requirements for Linux
+      Not the same versions as for Windows
 
 -- Published in Win
 2024-12-05 β 3.35 args user, file & sector for data_validate

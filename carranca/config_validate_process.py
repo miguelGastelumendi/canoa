@@ -17,7 +17,8 @@
 # cSpell:ignore
 
 from typing import NamedTuple
-from .helpers.py_helper import OS_IS_LINUX, OS_IS_WINDOWS
+from .helpers.py_helper import OS_IS_WINDOWS, get_envvar
+from .helpers.email_helper import RecipientsDic
 
 OutputFile = NamedTuple("OutputFile", name=str, ext=str)
 
@@ -36,11 +37,9 @@ DataValidateApp = NamedTuple(
     na_out_folder=str,
 )
 
-Email = NamedTuple("Email", cc=str, bcc=str)
-
 
 class ValidateProcessConfig:
-    def __init__(self, debug=False):  #: BaseConfig):
+    def __init__(self, debug=False):  #: BaseConfig
         # dv_app `data_validate` app output file name and extension
         self.output_file = OutputFile(name="data_report", ext=".pdf")
         self.dv_app = DataValidateApp(
@@ -56,11 +55,8 @@ class ValidateProcessConfig:
             na_in_folder="--input_folder",
             na_out_folder="--output_folder",
         )
-        self.email = Email(
-            cc="",  # "pedro.andrade.inpe@gmail.com, Pedro Andrade;cassia.lemos@inpe.br, Cassia Lemos",
-            bcc="",
-        )
-        self.remove_report = False  # default is true
+        self.cc_recipients = RecipientsDic(cc=get_envvar("EMAIL_REPORT_CC"))
+        self.remove_report = True  # default is true
         self.debug_process = None  # None -> set by param debug
 
         if self.debug_process is None:

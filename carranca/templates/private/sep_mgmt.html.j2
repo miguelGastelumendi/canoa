@@ -48,7 +48,7 @@ mgd
             <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
             <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
             <input type="submit" style="display:none;">
-            <button type="submit" class="form-main-btn" disabled id="{{gridSubmit_id}}">
+            <button type="submit" class="form-main-btn" disabled id="{{gridSubmitID}}">
                 {{(grdBtnSave |default("Salvar"))}}
             </button>
         </form>
@@ -66,7 +66,7 @@ mgd
     const colIconSrc = colData[1].n;
     const colSepCurr = colData[3].n;
     const colSepNew = colData[4].n;
-    const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmit_id}}'));
+    const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmitID}}'));
     const dateFormat = '{{ dateFormat | default('pt-BR') }}';
 </script>
 <script src="{{static_route('js/sep_mgmt.js')}}"></script>

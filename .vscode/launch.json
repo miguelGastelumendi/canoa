@@ -12,6 +12,10 @@
             "module": "flask",
             "env": {
                 "CANOA_DEBUG": "T",
+                "CANOA_SQLALCHEMY_DATABASE_URI": "postgresql://canoa_connstr:******",
+                "CANOA_EMAIL_API_KEY": "do NOT write here",
+                "CANOA_EMAIL_ORIGINATOR": "",
+                "CANOA_EMAIL_REPORT_CC": ""
                 // https://flask.palletsprojects.com/en/latest/config/#SERVER_NAME
                 // PREFERRED_URL_SCHEME
                 // https://flask.palletsprojects.com/en/latest/cli/  Command Line I
@@ -20,10 +24,10 @@
                 "FLASK_DEBUG": "T",
             },
             "args": [
-                "run"
-                , "--no-reload"
-                , "--no-debugger"
-              ],
+                "run",
+                "--no-reload",
+                "--no-debugger"
+            ],
             "jinja": true,
             "justMyCode": true,
             "cwd": "${workspaceFolder}/carranca",

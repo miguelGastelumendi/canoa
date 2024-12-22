@@ -82,12 +82,13 @@ def _register_blueprint_routes():
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(debugUndefined):
-    from .helpers.route_helper import private_route, public_route, static_route
+    from .app_constants import app_name, app_version
     from .private.logged_user import logged_user
+    from .helpers.route_helper import private_route, public_route, static_route
 
     app.jinja_env.globals.update(
-        app_version=app.config["APP_VERSION"],
-        app_name=app.config["APP_NAME"],
+        app_name=app_name,
+        app_version=app_version,
         static_route=static_route,
         private_route=private_route,
         public_route=public_route,
@@ -164,9 +165,11 @@ def create_app(app_name: str):
     if sidekick.config.LOG_TO_FILE:
         # only returns if everything went well.
         filename, level = ignite_log_file(sidekick.config, app)
-        info = f"file '{filename}' with level {level}"
+        info = f"file '{filename}' levels '{level}' and above"
         sidekick.display.info(f"Logging to {info}.")
-        app.logger.log(sidekick.config.LOG_FILE_LEVEL, f"{sidekick.config.APP_NAME}'s log {info} is ready.")
+        # TODO: displayed_levels = [name for level, name in levels.items() if level >=\
+
+        app.logger.log(sidekick.config.LOG_MIN_LEVEL, f"{sidekick.config.APP_NAME}'s log {info} is ready.")
         sidekick.config.LOG_FILE_STATUS = "ready"
     else:
         sidekick.config.LOG_FILE_STATUS = "off"
