@@ -50,30 +50,19 @@ TODO:
   Atualizar versão em: BaseConfig.py
 -----------------------------------------------------------
 
-2025-01- β 4.x
-    - [Gestão de SE] (para usuários Setorista)
-        > Mostrar um grid com 3 colunas
-            [Arquivo Submetido], [Relatório], [Data], [Disponível] (se o arquivo ainda está disponível)
-            Permitir fazer download do arquivos submetidos e relatórios
-
-    - Menu to DB
-    - sep_edit detected if form's input changed (don't update)
-    - mudar erro 500
-    - [Sair:x] não fecha ok.
-    - Menu responsive
-    - remove pixel.css (simply css's)
-
 
 ------- 2025 - January-- ---------
 ----------------------------------
 
 
 
+2025-01-09 fixes for git
+    - `launch.json` file that was *locally* committed with a secret.
+       Hard work to fix.
+
 
 ------- 2024 - December ----------
 ----------------------------------
-
-    create class RecipientsListStr
 
 -- For Windows
 2024-12-21 β 3.38 fixes for Windows
