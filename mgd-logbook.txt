@@ -45,18 +45,56 @@ TODO:
         - Smart menu (always, modified)
         - Share form..htm.j2 and document.htm.j2 main button
 
+
+
 -----------------------------------------------------------
   Logbook
   Atualizar versão em: BaseConfig.py
 -----------------------------------------------------------
 
+TODO:
+2025-0- β 4.x
+    - [Gestão de SE] (para usuários Setorista)
+        > Mostrar um grid com 3 colunas
+            [Arquivo Submetido], [Relatório], [Data], [Disponível] (se o arquivo ainda está disponível)
+            Permitir fazer download do arquivos submetidos e relatórios
+
+    - Menu to DB
+    - sep_edit detected if form's input changed (don't update)
+    - mudar erro 500
+    - [Sair:x] não fecha ok.
+    - Menu responsive
+    - remove pixel.css (simply css's)
+
+
 
 ------- 2025 - January-- ---------
 ----------------------------------
 
+2025-01-09 β 3.4 Windows stable version
 
 
-2025-01-09 fixes for git
+2025-01-09 Fixing file loss from last repair
+    - tasks.json
+    - email_helper.py
+    - sendgrid_helper.py
+    - sep_mgmt.py
+
+    This commit was lost:
+    -- For Windows & Linux -b
+    2024-12-23 β 3.39 fixes for Win & Linux
+        - `launch.json` file that was committed with a secret,
+        difficult do fix.
+        - new file tasks.json (win)
+        - new file with envvars .Canoa\..\..\prepareEnviron.bat
+        - new class RecipientsListStr
+        - new class RecipientsDic
+        - del settings.json
+        - new envvar EMAIL_REPORT_CC
+        - ~8 minor fixes
+
+
+2025-01-09 Fixes for git
     - `launch.json` file that was *locally* committed with a secret.
        Hard work to fix.
 

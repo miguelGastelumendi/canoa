@@ -45,7 +45,7 @@ class Fuse:
 
 
 # ---------------------------------------------------------------------------- #
-def _get_debug_2(app_name: str) -> bool:
+def _get_debug_2() -> bool:
 
     # Configuration priority (debug as am example):
     # 1. Command-line argument (sys.argv): --debug
@@ -158,7 +158,7 @@ def _check_mandatory_keys(config) -> str:
             else _error_msg.format(
                 __name__,
                 f"confirming the existence of the mandatory configuration keys {CONFIG_MANDATORY_KEYS}",
-                empty_keys,
+                f"Missing: {empty_keys.strip(',')}.",
             )
         )
 
@@ -268,7 +268,7 @@ from .Sidekick import Sidekick, create_sidekick
 def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
     global fuse
 
-    debug_2 = _get_debug_2(app_name)
+    debug_2 = _get_debug_2()
     args = Args(debug_2).from_arguments()
 
     fuse, error = _start_fuse(app_name, args, start_at)

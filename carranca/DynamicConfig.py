@@ -36,6 +36,8 @@ def _init_envvar_of_config(cfg, fuse):
     Initialize BaseConfig
     from environment variables
     """
+    from .BaseConfig import CONFIG_MANDATORY_KEYS
+
     envvar_prefix = get_envvar_prefix()
     t = str(True).lower()
     f = str(False).lower()
@@ -45,13 +47,21 @@ def _init_envvar_of_config(cfg, fuse):
             pass
         elif not hasattr(cfg, attribute_name):
             fuse.display.debug(
-                f"[{attribute_name}] is not an attribute of `Config`, will not set envvar value."
+                f"Environment variable [{attribute_name}] is not a recognized attribute of `Config`, skipping."
             )
-        elif is_str_none_or_empty(value):
-            fuse.display.warn(f"Ignoring empty envvar value for key [{key}], keeping original.")
-        else:
+        elif not is_str_none_or_empty(value):
             _value = as_bool(value) if value.lower() in [t, f, "t", "1"] else value
             setattr(cfg, attribute_name, _value)
+        elif is_str_none_or_empty(getattr(cfg, attribute_name, None)):
+            msg = f"Config.{attribute_name} has no default value, and no value was provided."
+            if attribute_name in CONFIG_MANDATORY_KEYS:
+                fuse.display.error(msg)
+            else:
+                fuse.display.warn(msg)
+        else:
+            fuse.display.warn(
+                f"Empty value for environment variable [{attribute_name}] ignored, retaining original value."
+            )
 
 
 class DynamicConfig(BaseConfig):

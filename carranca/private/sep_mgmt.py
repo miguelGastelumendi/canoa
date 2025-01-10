@@ -2,7 +2,7 @@
     User Profile's Management and SEP assignment
 
     Equipe da Canoa -- 2024
-    mgd 2024-10-09
+    mgd 2024-10-09, 2025-01-09
 """
 
 # cSpell: ignore mgmt tmpl samp
@@ -20,8 +20,9 @@ from ..Sidekick import sidekick
 from ..helpers.db_helper import try_get_mgd_msg
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_batch_code
-from ..helpers.email_helper import user_recipient
+
 from ..helpers.error_helper import ModuleErrorCode
+from ..helpers.email_helper import RecipientsListStr
 from ..helpers.route_helper import get_private_form_data, init_form_vars
 from ..helpers.hints_helper import UI_Texts
 from ..helpers.ui_texts_helper import (
@@ -281,7 +282,7 @@ def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> proc_retu
                         )
 
                     texts["content"] = msg
-                    if send_email(user_recipient(user.user_email, user.user_name), texts):
+                    if send_email(RecipientsListStr(user.user_email, user.user_name), texts):
                         user.email_at = now()
                         email_send += 1
                     else:

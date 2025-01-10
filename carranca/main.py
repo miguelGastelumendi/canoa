@@ -22,7 +22,7 @@ print(f"{'-' * len(the_aperture_msg)}\n{the_aperture_msg}")
 # Flask app
 from carranca import create_app, started  # see __init__.py
 
-app, sidekick = create_app(app_name)
+app, sidekick = create_app()
 
 sidekick.display.info("All mandatory information has been checked and is available.")
 sidekick.display.info("The app is ready to run!")

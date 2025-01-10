@@ -1,34 +1,78 @@
-# Equipe da Canoa -- 2024
-#
-# Email Helpers
-# mgd
+"""
+ Equipe da Canoa -- 2024
+
+ Email Helpers
+
+ mgd
+ 2024-12-23, 2025-01-09
+
+
+"""
 
 # cSpell:ignore
-from typing import NewType
-from .py_helper import as_str_strip
 
-# -> "email[, name] ; email2[, name2];..."
-# eg -> "mjohn.doe@example.com,John Doe;r2r2@example.com"
-RecipientsListStr = NewType("RecipientsListStr", str)
+from .py_helper import as_str_strip, is_str_none_or_empty, strip_and_ignore_empty
 
-# TODO
-# class RecipientsListStr:
-#     def __init__(self, value: str):
-#         self.value = RecipientsListStr(value)
-#     def __str__(self):
-#          return str(self.value)
-# @staticmethod def is_instance(value): return isinstance(value, str)
+# MIME _types
+mime_types = {
+    ".csv": "text/csv",
+    ".htm": "text/html",
+    ".html": "text/html",
+    ".json": "application/json",
+    ".pdf": "application/pdf",
+    ".txt": "text/plain",
+    ".xls": "Microsoft Excel 2007+",
+    ".xlsx": "Microsoft Excel 2007+",
+}
+
+
+class RecipientsListStr:
+    """
+    email_or_recipients_list_items:
+        email:
+            email address to be used with second param 'name'
+        email_or_recipients_list:
+            a list of ; separated of RecipientsListItems
+
+    """
+
+    def __init__(self, email_or_recipients_list_items: str, name: str = None):
+        # TODO check if value has, at least, one e@mail.c
+        param = ""
+        if name is None:
+            items = email_or_recipients_list_items
+            param = items
+        else:
+            email = email_or_recipients_list_items
+            param = f"{as_str_strip(email)},{as_str_strip(name)}"
+
+        self.as_str = param
+
+    def list(self):
+        return [] if is_str_none_or_empty(self.as_str) else strip_and_ignore_empty(self.as_str, ";")
+
+    def parse(self, item: str):
+        email, name = (item + ", ").split(",")[:2]
+        return as_str_strip(email), as_str_strip(name)
+
+    def __str__(self):
+        return str(self.as_str)
 
 
 class RecipientsDic:
-    def __init__(self, to: RecipientsListStr = "", cc: RecipientsListStr = "", bcc: RecipientsListStr = ""):
-        self.to = to
-        self.cc = cc
-        self.bcc = bcc
+    """
+    Recipients to, cc, bcc as RecipientsListStr
+    """
 
+    def __init__(
+        self, to: RecipientsListStr = None, cc: RecipientsListStr = None, bcc: RecipientsListStr = None
+    ):
+        def _set(rls: RecipientsListStr):
+            return RecipientsListStr("") if rls is None else rls
 
-def user_recipient(mail: str, name: str) -> RecipientsListStr:
-    return f"{as_str_strip(mail)},{as_str_strip(name)}"
+        self.to = _set(to)
+        self.cc = _set(cc)
+        self.bcc = _set(bcc)
 
 
 # eof

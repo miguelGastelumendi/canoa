@@ -11,17 +11,14 @@
             "console": "integratedTerminal",
             "module": "flask",
             "env": {
-                "CANOA_DEBUG": "T",
-                "CANOA_SQLALCHEMY_DATABASE_URI": "postgresql://canoa_connstr:******",
-                "CANOA_EMAIL_API_KEY": "do NOT write here",
-                "CANOA_EMAIL_ORIGINATOR": "",
-                "CANOA_EMAIL_REPORT_CC": ""
-                // https://flask.palletsprojects.com/en/latest/config/#SERVER_NAME
-                // PREFERRED_URL_SCHEME
-                // https://flask.palletsprojects.com/en/latest/cli/  Command Line I
                 "FLASK_APP": "main",
                 "FLASK_ENV": "development",
-                "FLASK_DEBUG": "T",
+                "FLASK_DEBUG": "true",
+                "CANOA_DEBUG": "true",
+                "CANOA_EMAIL_API_KEY": "${env:CANOA_EMAIL_API_KEY}",
+                "CANOA_EMAIL_REPORT_CC": "${env:CANOA_EMAIL_REPORT_CC}",
+                "CANOA_EMAIL_ORIGINATOR": "${env:CANOA_EMAIL_ORIGINATOR}",
+                "CANOA_SQLALCHEMY_DATABASE_URI": "${env:CANOA_SQLALCHEMY_DATABASE_URI}",
             },
             "args": [
                 "run",

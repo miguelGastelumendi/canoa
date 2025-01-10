@@ -81,8 +81,7 @@ def _register_blueprint_routes():
 
 
 # ---------------------------------------------------------------------------- #
-def _register_jinja(debugUndefined):
-    from .app_constants import app_name, app_version
+def _register_jinja(debugUndefined: bool, app_name: str, app_version: str):
     from .private.logged_user import logged_user
     from .helpers.route_helper import private_route, public_route, static_route
 
@@ -137,7 +136,8 @@ def db_obfuscate(config):
 
 # ============================================================================ #
 # App + helpers
-def create_app(app_name: str):
+def create_app():
+    from .app_constants import app_name, app_version
 
     # === Check if all mandatory information is ready === #
     from .igniter import ignite_sidekick
@@ -169,7 +169,7 @@ def create_app(app_name: str):
         sidekick.display.info(f"Logging to {info}.")
         # TODO: displayed_levels = [name for level, name in levels.items() if level >=\
 
-        app.logger.log(sidekick.config.LOG_MIN_LEVEL, f"{sidekick.config.APP_NAME}'s log {info} is ready.")
+        app.logger.log(sidekick.config.LOG_MIN_LEVEL, f"{app_name}'s log {info} is ready.")
         sidekick.config.LOG_FILE_STATUS = "ready"
     else:
         sidekick.config.LOG_FILE_STATUS = "off"
@@ -180,12 +180,12 @@ def create_app(app_name: str):
 
     # -- Register BluePrint events & routes
     _register_blueprint_events()
-    sidekick.display.info("The 'after_request' event was added for all blueprints routes.")
+    sidekick.display.info("Added 'after_request' event for all blueprints.")
     _register_blueprint_routes()
-    sidekick.display.info("The blueprints routes were collected and registered within the app.")
+    sidekick.display.info("The blueprint routes were collected and registered within the app.")
 
     # -- Jinja2
-    _register_jinja(sidekick.config.DEBUG_TEMPLATES)
+    _register_jinja(sidekick.config.DEBUG_TEMPLATES, app_name, app_version)
     sidekick.display.info(
         f"The Jinja functions of this app have been attached 'jinja_env.globals' (with debug_templates {sidekick.config.DEBUG_TEMPLATES})."
     )

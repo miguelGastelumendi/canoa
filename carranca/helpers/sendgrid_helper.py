@@ -1,9 +1,10 @@
 """
     Email helper, based in sendgrid API
 
-
     Equipe da Canoa -- 2024
+
     mgd
+    2024-05-10... 2025-01-09
 """
 
 # pylint: disable=E1101
@@ -17,7 +18,7 @@ from typing import Callable, Type
 from base64 import b64encode
 
 from .py_helper import is_str_none_or_empty, strip_and_ignore_empty
-from .email_helper import RecipientsDic, RecipientsListStr
+from .email_helper import RecipientsDic, RecipientsListStr, mime_types
 from .ui_texts_helper import get_section, format_ui_item
 
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started
@@ -44,7 +45,8 @@ def send_email(
     file_to_send_full_name: str = None,
     file_to_send_type: str = None,
 ) -> bool:
-    """» Sends an email, handling both string and dictionary formats for the recipient.
+    """
+        » Sends an email, handling both: string and dictionary formats for the recipient.
 
         » Takes the body text from the `vw_ui_texts` (view ui_texts_section) and
           replace it with email_body_params dictionary.
@@ -100,8 +102,8 @@ def send_email(
         # Get a RecipientsDic from `send_to_or_dic` param
         task = "getting recipients"
         recipients: RecipientsDic = None
-        if isinstance(send_to_or_dic, str):  # RecipientsListStr
-            recipients = RecipientsDic(to=send_to_or_dic)
+        if isinstance(send_to_or_dic, RecipientsListStr):  # RecipientsListStr
+            recipients = RecipientsDic(to=send_to_or_dic.as_str)
         elif isinstance(send_to_or_dic, RecipientsDic):
             recipients = send_to_or_dic
         else:
@@ -109,29 +111,21 @@ def send_email(
             raise ValueError(error)
 
         # Attachment type
-        task = "checking attachment type"
+        task = "getting file extension"
         ext = (
             None
             if is_str_none_or_empty(file_to_send_full_name) or not is_str_none_or_empty(file_to_send_type)
             else path.splitext(file_to_send_full_name)[1].lower()
         )
+
+        task = "checking attachment type"
         if ext is None:
             pass
-        elif ext == ".pdf":
-            file_to_send_type = "application/pdf"
-        elif ext == ".json":
-            file_to_send_type = "application/json"
-        elif ext in [".xls", ".xlsx"]:
-            file_to_send_type = "Microsoft Excel 2007+"
-        elif ext in [".htm", ".html"]:
-            file_to_send_type = "text/html"
-        elif ext == ".txt":
-            file_to_send_type = "text/plain"
-        elif ext == ".csv":
-            file_to_send_type = "text/csv"
-        else:
+        elif mime_types.get(ext) is None:
             error = f"Unknown MIME type for extension [{ext}], cannot send email."
             raise ValueError(error)
+        else:
+            file_to_send_type = mime_types[ext]
 
         # Body Text
         task = "preparing texts"
@@ -139,11 +133,14 @@ def send_email(
             task = "coping texts"
             texts = texts_or_section.copy()
         elif not is_str_none_or_empty(texts_or_section):
-            task = "preparing texts"
+            task = "reading texts"
             texts = get_section(texts_or_section)
-            for key in [k for k in texts.keys() if not is_str_none_or_empty(texts[k])]:
-                todo: check
-                texts[key] = format_ui_item(texts, key, **email_body_params)
+            for key, value in texts.items():
+                if not is_str_none_or_empty(value):
+                    try:
+                        texts[key] = value.format(**email_body_params)
+                    except KeyError as e:
+                        sidekick.app_log.error("Missing placeholder {e} in params.")
         else:
             error = f"Unknown `texts_or_section` datatype {type(texts_or_section)}, expected is [dict|str]. Cannot send email."
             raise ValueError(error)
@@ -167,9 +164,9 @@ def send_email(
             recipientsStr: RecipientsListStr, fAdd: Callable[[str, str], None], recipient_class: Type
         ) -> int:
             result = 0
-            recipients_list = strip_and_ignore_empty(recipientsStr, ";")
-            for item in recipients_list:
-                email, name = (item + ", ").split(",")[:2]
+
+            for item in recipientsStr.list():
+                email, name = recipientsStr.parse(item)
                 fAdd(recipient_class(email, name))
                 result += 1
             return result

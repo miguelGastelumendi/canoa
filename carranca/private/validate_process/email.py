@@ -13,7 +13,7 @@
 from .Cargo import Cargo
 from ..models import UserDataFiles
 from ...Sidekick import sidekick
-from ...helpers.email_helper import RecipientsDic, user_recipient
+from ...helpers.email_helper import RecipientsDic, RecipientsListStr
 from ...helpers.user_helper import now_as_text, now
 from ...helpers.sendgrid_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode
@@ -37,7 +37,8 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
         }
         send_file = user_report_full_name
         recipients = RecipientsDic(
-            to=user_recipient(cargo.user.email, cargo.user.name), cc=cargo.receive_file_cfg.cc_recipients.cc
+            to=RecipientsListStr(cargo.user.email, cargo.user.name),
+            cc=RecipientsListStr(cargo.receive_file_cfg.cc_recipients.cc),
         )
 
         task_code += 1  # 2

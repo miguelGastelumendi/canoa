@@ -2,7 +2,4 @@
     "python.analysis.extraPaths": [
         "./carranca"
     ],
-    "cSpell.words": [
-        "etriving"
-    ],
 }

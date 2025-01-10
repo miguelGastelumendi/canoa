@@ -5,6 +5,6 @@
         "&[a-zA-Z]+;" // Ignore HTML entities
     ],
     "words": [
-        "Gest&atilde;o"
+        "Gest&atilde;o",
     ]
 }
