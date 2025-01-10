@@ -13,7 +13,7 @@ from sys import argv
 from datetime import datetime
 from typing import Any, Type, Tuple
 
-from app_constants import app_name
+from ..app_constants import app_name
 
 
 # https://docs.python.org/3/library/platform.html#platform.system

@@ -9,7 +9,7 @@
 # cSpell:ignore sqlalchemy keepalives psycopg2
 
 import time
-from app_constants import app_name
+from .app_constants import app_name
 
 # -------------------------------------------------------
 # Main --------------------------------------------------
