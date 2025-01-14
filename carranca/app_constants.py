@@ -16,6 +16,6 @@
 app_name = "Canoa"
 
 # &beta; major.minor.patch
-app_version = "β 3.5"  # 2025.01.10
+app_version = "β 3.42"  # 2025-01-14
 
 # eof
