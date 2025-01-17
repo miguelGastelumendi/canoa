@@ -31,6 +31,12 @@ cSpell:ignore nowrap unselectable noopener noreferrer termofuse onclick mgmt
                 [Validar dados]
             </a>
             <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
+                href="{{ private_route('received_files_get') }}"
+                title="Abre o grid dos arquivos submetidos ao processo de valida&ccedil;&atilde;o">
+                [Arquivos Validados]
+            </a>
+
+            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
                 href="{{ private_route('sep_mgmt') }}"
                 title="Abre o grid de Gest&atilde;o de Setores Estrat&eacute;gicos">
                 [Gest&atilde;o de SE]

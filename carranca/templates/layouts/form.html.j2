@@ -24,7 +24,7 @@ mgd
 {% set dlg_cls_footer= "collapse" %}
 {% set formID = "id-form-main"%}
 {% if not base_js_head_list %}{%set base_js_head_list = []%} {% endif %}
-{% set _ = base_js_head_list.append(static_route("js/form_helper.js")) %}
+{# {% set _ = base_js_head_list.append(static_route("js/form_helper.js")) %} #}
 
 {% extends "./layouts/dialog.html.j2" %}
 

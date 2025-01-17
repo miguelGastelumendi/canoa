@@ -46,30 +46,31 @@ mgd
 
 {% block base_blc_content %}
 <section>
-    <div class="modal{%+ if not (dlg_var_vCentered|default(False)) %} {{dlg_cls_top|default('mt-6')}}{% endif %}"
+    <div class="modal{%+ if not (dlg_var_vCentered | default(False)) %} {{ dlg_cls_top|default('mt-6') }}{% endif %}"
         style="{{(dlg_var_style|default('display: block;'))}}" tabindex="-1" id="dlg-id-main">
         <div
-            class="modal-dialog {{dlg_cls_size|default('')}} {%+ if (dlg_var_vCentered|default(False)) %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{dlg_cls_dialog|default('')}}">
-            <div class="modal-content {{dlg_cls_content|default('')}}">
-                <div class="modal-header {{dlg_cls_header|default('dlg-header')}}">
-                    <h5 class="modal-title {{dlg_cls_title|default('dlg-title')}}" inert>
+            class="modal-dialog {{ dlg_cls_size|default('') }} {%+ if (dlg_var_vCentered|default(False)) %}modal-dialog-centered{% endif %} {%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %} {{ dlg_cls_dialog|default('') }}">
+            <div class="modal-content {{ dlg_cls_content|default('') }}">
+                <div class="modal-header {{ dlg_cls_header|default('dlg-header') }}">
+                    <h5 class="modal-title {{ dlg_cls_title|default('dlg-title') }}" inert>
                         {% if dlg_var_icon %}
-                        <img src="{{dlg_var_icon}}" height="32px" width="32px" alt="[!]&nbsp;" id="dlg_icon">
+                        <img src="{{ dlg_var_icon | default('') }}" height="32px" width="32px" alt="[!]&nbsp;"
+                            id="dlg_icon">
                         {% endif %}
                         {{ formTitle | default(app_name) }}
                     </h5>
                     <form action="{{ public_route('login') }}" method="GET">
-                        <button type="submit" class="btn-close {{dlg_cls_btnClose|default('')}}" data-bs-dismiss="modal"
-                            {%+ if not (dlg_var_close|default(True)) %}style='display: none;' {% endif %}
-                            aria-label="Close">
+                        <button type="submit" class="btn-close {{ dlg_cls_btnClose | default('') }}"
+                            data-bs-dismiss="modal" {%+ if not (dlg_var_close|default(True)) %}style='display: none;'
+                            {%endif%} aria-label="Close">
                         </button>
                     </form>
                 </div>
-                <div class="modal-body {{dlg_cls_body|default('dlg-body')}}">
+                <div class="modal-body {{ dlg_cls_body|default('dlg-body') }}">
                     {% block dlg_blc_body %}
                     {% endblock dlg_blc_body %}
                 </div>
-                <div class="modal-footer justify-content-center {{dlg_cls_footer|default('dlg-footer')}}">
+                <div class="modal-footer justify-content-center {{ dlg_cls_footer|default('dlg-footer') }}">
                     {% block dlg_blc_footer %}
                     {% endblock dlg_blc_footer %}
                 </div>

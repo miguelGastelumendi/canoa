@@ -7,11 +7,17 @@
 
 # cSpell:ignore psycopg2 sqlalchemy
 
-from typing import Any, Union, Tuple, Optional
+from typing import Any, Union, Tuple, Optional, TypeAlias, List
 from sqlalchemy import text
 
-from carranca import SqlAlchemySession
+from carranca import SqlAlchemyScopedSession
 from .py_helper import is_str_none_or_empty, to_str
+
+# Array of objects in js/JSON -> Array of table's rows -> TableRecords
+TableRecords: TypeAlias = List[dict[str, Any]]
+
+# An empty table
+TableEmpty: TableRecords = []
 
 
 def try_get_mgd_msg(error: object, default_msg: str = None) -> str:
@@ -48,7 +54,7 @@ def _execute_sql(query: str):
     result = None
     if not is_str_none_or_empty(query):
         _text = text(query)
-        with SqlAlchemySession() as db_session:
+        with SqlAlchemyScopedSession() as db_session:
             result = db_session.execute(_text)
 
     return result

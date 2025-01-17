@@ -35,7 +35,7 @@ TODO:
         J. PrivateDocs for About (2024.11.19)
 
 
-    ##Small Tasks##
+    ## Small Tasks ##
         - init_form_vars create a 'error tmpl'
         - check use o form-main-btn in *.j2
         - share jinja_cache templates + texts (see route_helper templates_found)
@@ -45,6 +45,9 @@ TODO:
         - Smart menu (always, modified)
         - Share form..htm.j2 and document.htm.j2 main button
 
+    ## Possible Bugs ##
+        - Check if logged_user.sep is None (occurring now 2025.06.01)
+
 
 
 -----------------------------------------------------------
@@ -53,7 +56,7 @@ TODO:
 -----------------------------------------------------------
 
 TODO:
-2025-0- β 4.x
+2025-01- β 4.x
     - [Gestão de SE] (para usuários Setorista)
         > Mostrar um grid com 3 colunas
             [Arquivo Submetido], [Relatório], [Data], [Disponível] (se o arquivo ainda está disponível)
@@ -70,6 +73,7 @@ TODO:
 
 ------- 2025 - January-- ---------
 ----------------------------------
+2025-01-14--16 β 3.43 New `vw_user_data_files`, get json rows
 
 2025-01-14 β 3.42 Fix vers bug (3.4->3.40, 4.5->3.4)
 

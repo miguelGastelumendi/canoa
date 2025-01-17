@@ -5,13 +5,13 @@ Equipe da Canoa -- 2024
 mgd
 """
 
-# cSpell:ignore
+# cSpell:ignore mgmt
 
 from enum import IntEnum
 
 
 def did_I_stumbled(e: Exception):
-    """is it I who stumbled? ?"""
+    """Is it I who stumbled?"""
     return isinstance(e, CanoeStumbled)
 
 
@@ -46,6 +46,8 @@ class ModuleErrorCode(IntEnum):
 
     SEP_EDIT = 500
     SEP_MANAGEMENT = 550
+
+    RECEIVED_FILES_MGMT = 600
 
 
 # eof

@@ -1,6 +1,10 @@
 """
     User Profile's Management and SEP assignment
 
+    NB: SEP is an old acronym for
+        "Setor Estratégico de Planejamento" (Strategic Planning Sector)
+        so it was kept here
+
     Equipe da Canoa -- 2024
     mgd 2024-10-09, 2025-01-09
 """
@@ -8,17 +12,17 @@
 # cSpell: ignore mgmt tmpl samp
 
 import json
-from typing import Tuple
+from typing import Tuple, TypeAlias
 from flask import render_template, request
 
 from ..helpers.pw_helper import internal_logout
 
-from .models import MgmtUserSep, SepRecords
+from .models import MgmtUserSep
 from .SepIconConfig import SepIconConfig
 
 from ..Sidekick import sidekick
-from ..helpers.db_helper import try_get_mgd_msg
 from ..helpers.py_helper import is_str_none_or_empty
+from ..helpers.db_helper import try_get_mgd_msg, TableRecords, TableEmpty
 from ..helpers.user_helper import get_batch_code
 
 from ..helpers.error_helper import ModuleErrorCode
@@ -34,7 +38,8 @@ from ..helpers.ui_texts_helper import (
     ui_msg_exception,
 )
 
-proc_return = Tuple[str, str, int]
+# def returns
+def_return: TypeAlias = Tuple[str, str, int]
 
 
 def do_sep_mgmt() -> str:
@@ -42,7 +47,7 @@ def do_sep_mgmt() -> str:
     task_code = ModuleErrorCode.SEP_MANAGEMENT.value
     _, template, is_get, uiTexts = init_form_vars()
 
-    users_sep = []
+    users_sep = TableEmpty
     sep_fullname_list = []
 
     try:
@@ -109,7 +114,7 @@ def do_sep_mgmt() -> str:
     return tmpl
 
 
-def _save_and_email(txtGridResponse: str, uiTexts: UI_Texts, task_code: int) -> proc_return:
+def _save_and_email(txtGridResponse: str, uiTexts: UI_Texts, task_code: int) -> def_return:
     """Saves data & sends emails"""
     task_code += 1
     jsonGridResponse = json.loads(txtGridResponse)
@@ -130,7 +135,7 @@ def _save_and_email(txtGridResponse: str, uiTexts: UI_Texts, task_code: int) -> 
 
 def _save_data(
     grid_response: dict[str, any], batch_code: str, uiTexts: UI_Texts, task_code: int
-) -> proc_return:
+) -> def_return:
     """saves user modifications to the DB via the view's trigger"""
     msg_success = None
     msg_error = None
@@ -155,7 +160,7 @@ def _save_data(
 
 def _prepare_data_to_save(
     grid_response: dict[str, any], uiTexts: UI_Texts, task_code: int
-) -> Tuple[str, SepRecords, SepRecords, int]:
+) -> Tuple[str, TableRecords, TableRecords, int]:
     """Distributes the modifications in two groups: remove & assign"""
 
     msg_error = None
@@ -166,9 +171,9 @@ def _prepare_data_to_save(
         task_code += 1
         str_none: str = actions["none"]
         task_code += 1
-        remove: SepRecords = []
-        assign: SepRecords = []
-        grid: SepRecords = grid_response["grid"]
+        remove: TableEmpty
+        assign: TableEmpty
+        grid: TableRecords = grid_response["grid"]
         task_code += 1
         for item in grid:
             sep_new = item["scm_sep_new"]
@@ -187,8 +192,8 @@ def _prepare_data_to_save(
 
 
 def _save_data_to_db(
-    remove: SepRecords, update: SepRecords, batch_code: str, uiTexts: UI_Texts, task_code: int
-) -> proc_return:
+    remove: TableRecords, update: TableRecords, batch_code: str, uiTexts: UI_Texts, task_code: int
+) -> def_return:
     """
     Saves user-made changes to the UI grid to the database
     via an 'instead-of' trigger that:
@@ -197,7 +202,7 @@ def _save_data_to_db(
         3) logs the changes to the `log_user_sep` log.
     """
 
-    from carranca import SqlAlchemySession
+    from carranca import SqlAlchemyScopedSession
     from .models import MgmtUserSep
     from .logged_user import logged_user
     from ..Sidekick import sidekick
@@ -206,7 +211,7 @@ def _save_data_to_db(
     assigned_by = logged_user.id
     user_not_found = []
     task_code += 1
-    with SqlAlchemySession() as db_session:
+    with SqlAlchemyScopedSession() as db_session:
         try:
 
             def __set_user_sep_new(id: int, sep_new: str):
@@ -240,12 +245,12 @@ def _save_data_to_db(
     return "", msg_error, task_code
 
 
-def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> proc_return:
+def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> def_return:
     """
     Send an email for each user with a
     'new' SEP or if it was removed
     """
-    from carranca import SqlAlchemySession
+    from carranca import SqlAlchemyScopedSession
     from .models import MgmtEmailSep
     from ..Sidekick import sidekick
     from ..helpers.py_helper import now
@@ -253,7 +258,7 @@ def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> proc_retu
 
     task_code += 1
     msg_error = None
-    with SqlAlchemySession() as db_session:
+    with SqlAlchemyScopedSession() as db_session:
         try:
             # Users involved in the `batch_code` batch modification.
             user_list = db_session.query(MgmtEmailSep).filter_by(batch_code=batch_code).all()

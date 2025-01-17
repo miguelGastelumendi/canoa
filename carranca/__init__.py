@@ -14,7 +14,7 @@
 # ============================================================================ #
 # Public/Global variables
 login_manager = None
-SqlAlchemySession = None
+SqlAlchemyScopedSession = None
 Config = None
 app = None
 
@@ -45,20 +45,20 @@ def _register_blueprint_events():
         #   "GET /static/img/pages/canoa_fundo-w.jpeg HTTP/1.1" 304 -
         # it shuts the session.
         try:
-            global SqlAlchemySession
-            if SqlAlchemySession.dirty:
+            global SqlAlchemyScopedSession
+            if SqlAlchemyScopedSession.dirty:
                 app.logger.error(
-                    f"SqlAlchemySession is dirty. Modified instances: [{SqlAlchemySession.dirty}]."
+                    f"SqlAlchemySession is dirty. Modified instances: [{SqlAlchemyScopedSession.dirty}]."
                 )
             else:
                 app.logger.debug(
-                    f"SqlAlchemySession is shuting down {('active' if SqlAlchemySession.is_active else 'inactive')} and clean."
+                    f"SqlAlchemySession is shuting down {('active' if SqlAlchemyScopedSession.is_active else 'inactive')} and clean."
                 )
 
-            SqlAlchemySession.remove()
+            SqlAlchemyScopedSession.remove()
         except Exception as e:
             app.logger.error(
-                f"An error occurred removing the current session [{SqlAlchemySession}]. Error [{e}]."
+                f"An error occurred removing the current session [{SqlAlchemyScopedSession}]. Error [{e}]."
             )
 
         return r
@@ -207,11 +207,11 @@ def create_app():
     sidekick.display.info("SQLAlchemy was instantiated and the db connection was successfully tested.")
 
     # == Global Scoped SQLAlchemy Session
-    global SqlAlchemySession
+    global SqlAlchemyScopedSession
     engine = create_engine(uri)
     # https://docs.sqlalchemy.org/en/20/orm/contextual.html
     # https://flask.palletsprojects.com/en/stable/patterns/sqlalchemy/
-    SqlAlchemySession = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+    SqlAlchemyScopedSession = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
     sidekick.display.info("A scoped SQLAlchemy session was instantiated.")
 
     # config sidekick.display

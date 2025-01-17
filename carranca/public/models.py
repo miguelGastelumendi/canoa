@@ -7,7 +7,7 @@
 """
 
 # cSpell:ignore nullable sqlalchemy psycopg2 mgmt
-from carranca import SqlAlchemySession, login_manager
+from carranca import SqlAlchemyScopedSession, login_manager
 
 from typing import Any
 from psycopg2 import DatabaseError
@@ -71,7 +71,7 @@ def get_user_where(**filter: Any) -> Users:
     Select a user by a unique filter
     """
     user = None
-    with SqlAlchemySession() as db_session:
+    with SqlAlchemyScopedSession() as db_session:
         stmt = select(Users).filter_by(**filter)
         try:
             user = db_session.execute(stmt).scalar_one_or_none()
@@ -85,7 +85,7 @@ def persist_user(record: any, task_code: int = 1) -> None:
     """
     Updates a user's record
     """
-    with SqlAlchemySession() as db_session:
+    with SqlAlchemyScopedSession() as db_session:
         task_code = 0
         try:
             task_code += 1

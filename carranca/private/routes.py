@@ -11,6 +11,7 @@
 
 from flask import Blueprint, render_template
 from flask_login import login_required
+from typing import Union
 
 from ..helpers.pw_helper import internal_logout, nobody_is_logged
 from ..helpers.route_helper import (
@@ -101,6 +102,41 @@ def receive_file():
         from .receive_file import receive_file
 
         html = receive_file()
+        return html
+
+
+@login_required
+@bp_private.route("/received_files_get", methods=["GET"])
+def received_files_get() -> str:
+    """
+    Through this route, the user obtains a list of the files
+    received so that they can examine them and download them.
+    """
+    if nobody_is_logged():
+        return redirect_to(login_route())
+    else:
+        from .received_files_mgmt import received_files_get
+
+        json = received_files_get()
+
+        return json
+
+
+@login_required
+@bp_private.route("/received_files_mgmt", methods=["GET"])
+def received_files_mgmt():
+    """
+    Through this route, the user gets a grid that allows
+    they to manage and download the files he has sent for
+    validation.
+    """
+
+    if nobody_is_logged():
+        return redirect_to(login_route())
+    else:
+        from .received_files_mgmt import received_files_grid
+
+        html = received_files_grid()
         return html
 
 

@@ -3,28 +3,30 @@
 
     mgd
     Equipe da Canoa -- 2024
-    cSpell:ignore cuser Setorista
 """
+
+# cSpell:ignore cuser Setorista
 
 # Equipe da Canoa -- 2024
 #
 # cSpell:ignore: nullable psycopg2 sqlalchemy sessionmaker mgmt
 
-from typing import Any, List, Tuple, Any
-from psycopg2 import DatabaseError
+from typing import Any, List, Tuple
+from psycopg2 import DatabaseError, OperationalError
 from sqlalchemy import select, text
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text
-from sqlalchemy.orm import defer
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import defer, Session as SQLAlchemySession
 
-from carranca import SqlAlchemySession
+from sqlalchemy.ext.declarative import declarative_base
+from carranca import SqlAlchemyScopedSession
+
 from ..Sidekick import sidekick
+from ..helpers.db_helper import TableRecords, TableEmpty
 from ..helpers.py_helper import is_str_none_or_empty
 
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
 Base = declarative_base()
-SepRecords = List[dict[str, Any]]
 
 
 class UserDataFiles(Base):
@@ -82,10 +84,10 @@ class UserDataFiles(Base):
     success_text = Column(Text, nullable=True)
 
     # Helpers
-    def _get_record(session, uTicket):
+    def _get_record(session: SQLAlchemySession, uTicket):
         """gets the record with unique Key uTicket"""
-        statement = select(UserDataFiles).where(UserDataFiles.ticket == uTicket)
-        rows = session.scalars(statement).all()
+        stmt = select(UserDataFiles).where(UserDataFiles.ticket == uTicket)
+        rows = session.scalars(stmt).all()
         if not rows:
             return None
         elif len(rows) == 1:
@@ -95,7 +97,7 @@ class UserDataFiles(Base):
 
     def _ins_or_upd(isInsert: bool, uTicket: str, **kwargs) -> None:
         isUpdate = not isInsert
-        with SqlAlchemySession() as db_session:
+        with SqlAlchemyScopedSession() as db_session:
             try:
                 msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
                 # Fetch existing record if update, check if record already exists if insert
@@ -152,7 +154,7 @@ class MgmtUserSep(Base):
     batch_code = Column(String(10))  # trace_code
 
     # Helpers
-    def get_grid_view(item_none: str) -> Tuple[SepRecords, List[Tuple[str, str]], str]:
+    def get_grid_view(item_none: str) -> Tuple[TableRecords, List[Tuple[str, str]], str]:
         """
         Returns the `vw_mgmt_user_sep` view with the necessary columns to
         provide the user with a UI grid to assign or remove SEP
@@ -161,7 +163,8 @@ class MgmtUserSep(Base):
         from .sep_icon import icon_prepare_for_html
 
         msg_error = None
-        with SqlAlchemySession() as db_session:
+        with SqlAlchemyScopedSession() as db_session:
+            users_sep = TableEmpty
             try:
 
                 def _file_url(sep_id: int) -> str:
@@ -243,16 +246,18 @@ class MgmtSep(Base):
 
         sep = None
         sep_fullname = None
-        with SqlAlchemySession() as db_session:
+        with SqlAlchemyScopedSession() as db_session:
             try:
                 stmt = select(MgmtSep).options(defer(MgmtSep.icon_svg)).where(MgmtSep.id == id)
-                sep = db_session.execute(stmt).scalar_one_or_none()
-                stmt = text(f"SELECT sep_fullname FROM vw_scm_sep WHERE sep_id={sep.id}")
+                _sep = db_session.execute(stmt).scalar_one_or_none()
+                stmt = text(f"SELECT sep_fullname FROM vw_scm_sep WHERE sep_id={_sep.id}")
                 row = db_session.execute(stmt).one_or_none()
                 sep_fullname = None if row is None else row[0]
-            except DatabaseError as e:
-                sep = None
-                sidekick.app_log.error(e)
+                sep = _sep
+            except (OperationalError, DatabaseError) as e:
+                sidekick.app_log.error(f"Database connection error: {e}")
+            except Exception as e:
+                sidekick.app_log.error(f"Error fetching user SEP info: {e}")
 
         return sep, sep_fullname
 
@@ -264,7 +269,7 @@ class MgmtSep(Base):
         from ..Sidekick import sidekick
 
         sep = None
-        with SqlAlchemySession() as db_session:
+        with SqlAlchemyScopedSession() as db_session:
             icon_content = None
             try:
                 stmt = select(MgmtSep).where(MgmtSep.id == id)
@@ -285,7 +290,7 @@ class MgmtSep(Base):
 
         done = False
         msg_error = ""
-        with SqlAlchemySession() as db_session:
+        with SqlAlchemyScopedSession() as db_session:
             try:
                 db_session.add(sep)
                 db_session.commit()
@@ -296,6 +301,70 @@ class MgmtSep(Base):
                 sidekick.app_log.error(msg_error)
 
         return done
+
+
+class ReceivedFiles(Base):
+    __tablename__ = "vw_user_data_files"
+
+    id = Column(Integer, primary_key=True)
+    id_users = Column(Integer)
+    username = Column(String(100))
+    email = Column(String(100))
+
+    # file sep, when registered*
+    id_sep = Column(Integer)
+    # current user sep id*
+    mgmt_sep_id = Column(Integer)
+
+    registered_at = Column(DateTime)
+    stored_file_name = Column(String(180))
+    file_name = Column(String(80))
+
+    file_size = Column(Integer)
+    file_crc32 = Column(Integer)
+
+    email_sent = Column(Boolean)
+    reception_error = Column(Boolean)
+
+    def get_user_records(
+        user_id: int = None, if_email_sent: bool = True, if_has_reception_error: bool = False
+    ) -> TableRecords:
+        received_files: TableRecords = None
+        with SqlAlchemyScopedSession() as db_session:
+            try:
+                stmt = select(ReceivedFiles).where(
+                    ReceivedFiles.email_sent == if_email_sent,
+                    ReceivedFiles.reception_error == if_has_reception_error,
+                )
+                if user_id is not None:
+                    stmt = stmt.where(ReceivedFiles.id_users == user_id)
+
+                received_files = [
+                    {
+                        "id": record.id,
+                        "user_id": record.id_users,
+                        "user_name": record.username,
+                        "user_email": record.email,
+                        "user_sep_id": record.mgmt_sep_id,
+                        "file_sep_id": record.id_sep,
+                        "received_at": record.registered_at,
+                        "stored_file_name": record.stored_file_name,
+                        "file_name": record.file_name,
+                        "file_size": record.file_size,
+                        "file_crc32": record.file_crc32,
+                        "email_sent": record.email_sent,
+                        "reception_error": record.reception_error,
+                        "file_found": False,
+                    }
+                    for record in db_session.scalars(stmt).all()
+                ]
+            except Exception as e:
+                msg_error = (
+                    f"Cannot load records from {ReceivedFiles.__tablename__}.where = {stmt} | Error {e}."
+                )
+                sidekick.app_log.error(msg_error)
+
+        return received_files
 
 
 # eof

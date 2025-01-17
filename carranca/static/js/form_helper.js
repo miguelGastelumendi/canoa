@@ -12,7 +12,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const formID = "id-form-main";//"{{ formID }}";
     const form = document.getElementById(formID);
-    const form = document.getElementById(formID);
     const formOnSubmit = (event) => {
         event.preventDefault(); // Prevents form submission
         alert(form.id); // Shows the form element ID
@@ -36,5 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
 
 // eof

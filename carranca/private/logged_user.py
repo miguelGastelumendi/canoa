@@ -66,10 +66,10 @@ class LoggedUser:
         from ..helpers.user_helper import get_user_code, get_user_folder
         from ..Sidekick import sidekick
 
-        sidekick.display.debug(f"{self.__class__.__name__} was created.")
         self.ready = c_user is not None
 
         if not self.ready:
+            sidekick.display.debug(f"{self.__class__.__name__} was reset.")
             self.name = "?"
             self.id = -1
             self.email = ""
@@ -77,6 +77,7 @@ class LoggedUser:
             self.path = ""
             self.sep = None
         else:
+            sidekick.display.debug(f"{self.__class__.__name__} was created.")
             self.name = c_user.username
             self.id = c_user.id
             self.email = c_user.email
