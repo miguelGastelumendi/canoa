@@ -71,9 +71,15 @@ TODO:
 
 
 
-------- 2025 - January-- ---------
+------- 2025 - January -----------
 ----------------------------------
-2025-01-14--16 β 3.43 New `vw_user_data_files`, get json rows
+2025-01- next
+    - join UserFolders with ProcessData._User
+    - define ListOfRecords <-> ListOfDict
+
+2025-01-17 β 3.44 [Arquivos Validados] Prepare records for ui grid
+
+2025-01-14--16 β 3.43 [Arquivos Validados] New `vw_user_data_files`, get json rows
 
 2025-01-14 β 3.42 Fix vers bug (3.4->3.40, 4.5->3.4)
 
@@ -104,7 +110,7 @@ TODO:
 
 2025-01-09 Fixes for git
     - `launch.json` file that was *locally* committed with a secret.
-       Hard work to fix.
+       Very hard work to fix.
 
 
 ------- 2024 - December ----------

@@ -286,8 +286,7 @@ class EmptyClass:
 def copy_attributes(class_instance: Any, this_types: Tuple[Type] | Type = None) -> EmptyClass:
     """
     Copies the specified simple type attributes from a class_instance,
-        of the ones specified in the second argument
-        or the defaults
+    of the ones specified in the second argument or the defaults
 
     Args:
         class_instance: The instance object copy attributes from.
@@ -298,7 +297,7 @@ def copy_attributes(class_instance: Any, this_types: Tuple[Type] | Type = None) 
         A dictionary containing the copied attributes.
     """
 
-    default_types = (str, int, float, bool)
+    default_types = (str, int, float, bool, datetime)
 
     if this_types is None:
         valid_types = default_types

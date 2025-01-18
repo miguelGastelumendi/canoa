@@ -7,12 +7,40 @@
 
 # cSpell:ignore cuser mgmt
 
-from os import environ
+from os import path
 
 from .py_helper import ms_since_midnight, to_base, now, crc16
 
 _code_shift_id = 903
 _ticket_receipt_sep = "_"
+
+
+class UserFolders:
+    common_folder = None
+    downloaded = None
+    uploaded = None
+
+    def __init__(self):
+        from ..Sidekick import sidekick
+
+        UserFolders.common_folder = sidekick.config.COMMON_PATH
+
+        def _common_user_folder(folder: str) -> str:
+            return path.join(
+                ("." if UserFolders.common_folder is None else UserFolders.common_folder),
+                UserFolders.base_user_files,
+                folder,
+            )
+
+        UserFolders.downloaded = _common_user_folder(UserFolders.base_downloaded)
+        UserFolders.uploaded = _common_user_folder(UserFolders.base_uploaded)
+
+    # this is a local folder to keep all uploaded files
+    base_uploaded = "uploaded"
+    # this is a local folder to keep all downloaded files
+    base_downloaded = "downloaded"
+    # this is a local for uploaded, downloaded & others users files
+    base_user_files = "user_files"
 
 
 def now_as_text() -> str:

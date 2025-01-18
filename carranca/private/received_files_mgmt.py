@@ -8,11 +8,14 @@
 # cSpell: ignore mgmt tmpl samp
 
 import json
+from os import path
 from flask import render_template
 
 from ..Sidekick import sidekick
-from ..helpers.db_helper import TableEmpty, TableRecords
+from ..helpers.db_helper import ListOfDictEmpty, ListOfDict
 from ..helpers.py_helper import is_str_none_or_empty
+from ..helpers.user_helper import UserFolders
+from ..helpers.file_helper import change_file_ext
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data, init_form_vars
 from ..helpers.hints_helper import UI_Texts
@@ -28,12 +31,25 @@ from .models import ReceivedFiles
 from .logged_user import logged_user
 
 
-def received_files_get() -> TableRecords:
+def received_files_get() -> ListOfDict:
 
     user_id = None if logged_user is None else logged_user.id
     # todo user c//if user.
 
-    received_files: TableRecords = ReceivedFiles.get_user_records(user_id)
+    received_files = ReceivedFiles.get_user_records(user_id)
+    if received_files is None or len(received_files) == 0:
+        return ListOfDictEmpty
+    else:
+        files = 0
+        uf = UserFolders()
+        for record in received_files:
+            folder = uf.uploaded if record.file_origin == "L" else uf.downloaded
+            full_name = path.join(folder, logged_user.folder, record.stored_file_name)
+            record.file_found = path.isfile(full_name)
+            record.report_found = path.isfile(change_file_ext(full_name, "pdf"))
+            if record.file_found:
+                files += 1
+
     return received_files
 
 
@@ -42,7 +58,7 @@ def received_files_grid() -> str:
     task_code = ModuleErrorCode.RECEIVED_FILES_MGMT.value
     _, template, is_get, uiTexts = init_form_vars()
 
-    users_sep = TableEmpty
+    users_sep = ListOfDictEmpty
     sep_fullname_list = []
 
     try:
@@ -107,3 +123,6 @@ def received_files_grid() -> str:
 
     tmpl = render_template(template, usersSep=users_sep, sepList=sep_fullname_list, **uiTexts)
     return tmpl
+
+
+# eof

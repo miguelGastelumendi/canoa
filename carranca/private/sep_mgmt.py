@@ -22,7 +22,7 @@ from .SepIconConfig import SepIconConfig
 
 from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.db_helper import try_get_mgd_msg, TableRecords, TableEmpty
+from ..helpers.db_helper import try_get_mgd_msg, ListOfDict, ListOfDictEmpty
 from ..helpers.user_helper import get_batch_code
 
 from ..helpers.error_helper import ModuleErrorCode
@@ -47,7 +47,7 @@ def do_sep_mgmt() -> str:
     task_code = ModuleErrorCode.SEP_MANAGEMENT.value
     _, template, is_get, uiTexts = init_form_vars()
 
-    users_sep = TableEmpty
+    users_sep = ListOfDictEmpty
     sep_fullname_list = []
 
     try:
@@ -160,7 +160,7 @@ def _save_data(
 
 def _prepare_data_to_save(
     grid_response: dict[str, any], uiTexts: UI_Texts, task_code: int
-) -> Tuple[str, TableRecords, TableRecords, int]:
+) -> Tuple[str, ListOfDict, ListOfDict, int]:
     """Distributes the modifications in two groups: remove & assign"""
 
     msg_error = None
@@ -171,9 +171,9 @@ def _prepare_data_to_save(
         task_code += 1
         str_none: str = actions["none"]
         task_code += 1
-        remove: TableEmpty
-        assign: TableEmpty
-        grid: TableRecords = grid_response["grid"]
+        remove: ListOfDictEmpty
+        assign: ListOfDictEmpty
+        grid: ListOfDict = grid_response["grid"]
         task_code += 1
         for item in grid:
             sep_new = item["scm_sep_new"]
@@ -192,7 +192,7 @@ def _prepare_data_to_save(
 
 
 def _save_data_to_db(
-    remove: TableRecords, update: TableRecords, batch_code: str, uiTexts: UI_Texts, task_code: int
+    remove: ListOfDict, update: ListOfDict, batch_code: str, uiTexts: UI_Texts, task_code: int
 ) -> def_return:
     """
     Saves user-made changes to the UI grid to the database

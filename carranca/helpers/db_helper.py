@@ -7,17 +7,39 @@
 
 # cSpell:ignore psycopg2 sqlalchemy
 
+import json
 from typing import Any, Union, Tuple, Optional, TypeAlias, List
 from sqlalchemy import text
 
 from carranca import SqlAlchemyScopedSession
 from .py_helper import is_str_none_or_empty, to_str
 
-# Array of objects in js/JSON -> Array of table's rows -> TableRecords
-TableRecords: TypeAlias = List[dict[str, Any]]
+# Array of table's rows as classes -> ListOfDict
+ListOfDict: TypeAlias = List[dict[str, Any]]
 
-# An empty table
-TableEmpty: TableRecords = []
+ListOfDictAsJsonStr: TypeAlias = str
+
+""" An empty ListOfDict = [] """
+ListOfDictEmpty: ListOfDict = []
+
+
+def list_of_dict_to_json(list: ListOfDict) -> ListOfDictAsJsonStr:
+    """
+    Converts a ListOfDict to a JSON string.
+    """
+    json_str: ListOfDictAsJsonStr = json.dumps(list)
+    return json_str
+
+
+def json_to_list_of_dict(json_str: ListOfDictAsJsonStr) -> ListOfDict:
+    """
+    Converts a JSON string to a list of dictionaries.
+    """
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+        return []  # Return an empty list on decoding error
 
 
 def try_get_mgd_msg(error: object, default_msg: str = None) -> str:

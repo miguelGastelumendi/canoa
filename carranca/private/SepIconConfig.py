@@ -8,12 +8,13 @@
 # cSpell: ignore mgmt tmpl lightgray darkgrey
 
 from os import path
-from flask import url_for
+from typing import TypeAlias
 
 from ..helpers.route_helper import static_route
-
 from ..Sidekick import sidekick
-from ..helpers.py_helper import is_str_none_or_empty
+
+
+SvgContent: TypeAlias = str
 
 
 class SepIconConfig:
@@ -28,7 +29,7 @@ class SepIconConfig:
     def set_url(to: str) -> str:
         return static_route(f"{SepIconConfig.folder}/{to}")
 
-    def content_for(fill_color: str, text: str = "", stroke_width: int = 1) -> str:
+    def content_for(fill_color: str, text: str = "", stroke_width: int = 1) -> SvgContent:
         return (
             "<svg width='62' height='62' xmlns='http://www.w3.org/2000/svg'>"
             f"<rect width='100%' height='100%' fill='{fill_color}' stroke='black' stroke-width='{stroke_width}' />"
@@ -36,15 +37,15 @@ class SepIconConfig:
             "</svg>"
         )
 
-    def empty_content():
+    def empty_content() -> SvgContent:
         # see canoa.css[.grd-item-none]
         return SepIconConfig.content_for("darkgrey", "Falta")
 
-    def error_content():
+    def error_content() -> SvgContent:
         # see canoa.css[.grd-item-remove]
         return SepIconConfig.content_for("firebrick", "Erro")
 
-    def none_content():
+    def none_content() -> SvgContent:
         # when user has no sep assigned
         return SepIconConfig.content_for("none", "", 2)
 

@@ -11,25 +11,37 @@
 #
 # cSpell:ignore: nullable psycopg2 sqlalchemy sessionmaker mgmt
 
-from typing import Any, List, Tuple
+from typing import Optional, Tuple
 from psycopg2 import DatabaseError, OperationalError
-from sqlalchemy import select, text
+from sqlalchemy import and_, select, text
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text
 from sqlalchemy.orm import defer, Session as SQLAlchemySession
 
 from sqlalchemy.ext.declarative import declarative_base
 from carranca import SqlAlchemyScopedSession
 
+from .SepIconConfig import SepIconConfig, SvgContent
 from ..Sidekick import sidekick
-from ..helpers.db_helper import TableRecords, TableEmpty
-from ..helpers.py_helper import is_str_none_or_empty
-
+from ..helpers.db_helper import ListOfDict, ListOfDictEmpty
+from ..helpers.py_helper import is_str_none_or_empty, DictToClass
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
 Base = declarative_base()
 
 
+# --- Table ---
 class UserDataFiles(Base):
+    """
+    UserDataFiles is app's interface for the
+    DB table `user_data_files` that works as a
+    log of the validation process. Every step
+    of the process (that starts with
+    uploading a file and ends with sending an
+    email with the validation report attached
+    or displaying a error message)
+    is recorded in one row.
+    """
+
     __tablename__ = "user_data_files"
 
     # keys (register..on_ins)
@@ -84,8 +96,9 @@ class UserDataFiles(Base):
     success_text = Column(Text, nullable=True)
 
     # Helpers
-    def _get_record(session: SQLAlchemySession, uTicket):
-        """gets the record with unique Key uTicket"""
+    @staticmethod
+    def _get_record(session: SQLAlchemySession, uTicket: str):
+        """gets the record with unique key: uTicket"""
         stmt = select(UserDataFiles).where(UserDataFiles.ticket == uTicket)
         rows = session.scalars(stmt).all()
         if not rows:
@@ -95,14 +108,18 @@ class UserDataFiles(Base):
         else:
             raise KeyError(f"The ticket {uTicket} return several records, expecting only one.")
 
+    @staticmethod
     def _ins_or_upd(isInsert: bool, uTicket: str, **kwargs) -> None:
+        """insert or update a record with unique key: uTicket"""
+        # action: insert/update
         isUpdate = not isInsert
         with SqlAlchemyScopedSession() as db_session:
             try:
-                msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
-                # Fetch existing record if update, check if record already exists if insert
+                # if update, fetch existing record
+                # if insert, check if record already exists
                 record_to_ins_or_upd = UserDataFiles._get_record(db_session, uTicket)
                 # check invalid conditions
+                msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
                 if isUpdate and record_to_ins_or_upd is None:
                     raise KeyError(msg_exists.format("not"))
                 elif isInsert and record_to_ins_or_upd is not None:
@@ -124,20 +141,26 @@ class UserDataFiles(Base):
                 )
                 sidekick.app_log.error(msg_error)
                 raise DatabaseError(msg_error)
+        return None
 
     # Public insert/update
     def insert(uTicket: str, **kwargs) -> None:
         UserDataFiles._ins_or_upd(True, uTicket, **kwargs)
+        return None
 
     def update(uTicket: str, **kwargs) -> None:
         UserDataFiles._ins_or_upd(False, uTicket, **kwargs)
+        return None
 
 
 class MgmtUserSep(Base):
     """
-    `vw_mgmt_user_sep` is view that provide the user
-    with a UI grid to assign or remove SEP
-    to or from a user.
+    `vw_mgmt_user_sep` is DB view which holds the necessary information
+    to provide the app's admin a UI grid so the admin can assign or remove
+    SEP to or from a user.
+
+    The view has a trigger that saves the information on `users` table and
+    logs the action on `log_user_sep` table.
     """
 
     __tablename__ = "vw_mgmt_user_sep"
@@ -153,18 +176,22 @@ class MgmtUserSep(Base):
     assigned_by = Column(Integer)
     batch_code = Column(String(10))  # trace_code
 
-    # Helpers
-    def get_grid_view(item_none: str) -> Tuple[TableRecords, List[Tuple[str, str]], str]:
+    @staticmethod
+    def get_grid_view(item_none: str) -> Tuple[ListOfDict, ListOfDict, str]:
         """
-        Returns the `vw_mgmt_user_sep` view with the necessary columns to
-        provide the user with a UI grid to assign or remove SEP
-        to or from a user.
+        Returns
+        1) `vw_mgmt_user_sep` DB view that has the necessary columns to
+            provide the user with a UI grid to assign or remove SEP
+            to or from a user.
+        2) `vw_scm_sep` SEP list.
+        3) Error message if any action fails.
         """
         from .sep_icon import icon_prepare_for_html
 
         msg_error = None
         with SqlAlchemyScopedSession() as db_session:
-            users_sep = TableEmpty
+            users_sep = ListOfDictEmpty
+            sep_list = ListOfDictEmpty
             try:
 
                 def _file_url(sep_id: int) -> str:
@@ -173,25 +200,29 @@ class MgmtUserSep(Base):
                     )  # this is foreach user (don't user logged_user)
                     return url
 
-                sep_list = [
+                sep_list: ListOfDict = [
                     {"id": sep.sep_id, "fullname": sep.sep_fullname}
                     for sep in db_session.execute(
-                        text(f"SELECT sep_id, sep_fullname FROM vw_scm_sep")
+                        text("SELECT sep_id, sep_fullname FROM vw_scm_sep")
                     ).fetchall()
                 ]
-                users_sep = [
+
+                users_sep: ListOfDict = [
                     {
                         "user_id": usr_sep.user_id,
                         "sep_id": usr_sep.sep_id,
                         "file_url": _file_url(usr_sep.sep_id),
                         "user_name": usr_sep.user_name,
                         "disabled": usr_sep.user_disabled,
-                        "scm_sep_curr": item_none if usr_sep.scm_sep_curr is None else usr_sep.scm_sep_curr,
+                        "scm_sep_curr": (
+                            item_none if usr_sep.scm_sep_curr is None else usr_sep.scm_sep_curr
+                        ),
                         "scm_sep_new": item_none,
                         "when": usr_sep.assigned_at,
                     }
                     for usr_sep in db_session.scalars(select(MgmtUserSep)).all()
                 ]
+
             except Exception as e:
                 msg_error = str(e)
                 sidekick.display.error(msg_error)
@@ -199,13 +230,12 @@ class MgmtUserSep(Base):
         return users_sep, sep_list, msg_error
 
 
+# --- Table ---
 class MgmtEmailSep(Base):
     """
-    Table `log_user_sep` logs the actions done
-    on the UI grid by the adm.
-
-    This `view vw_mgmt_email_sep` exposes columns
-    to assist sending emails.
+    This read only DB view `view vw_mgmt_email_sep` exposes
+    columns to assist sending emails to users when their SEP
+    attribute is changed by an admin.
     """
 
     __tablename__ = "vw_mgmt_email_sep"
@@ -221,6 +251,7 @@ class MgmtEmailSep(Base):
     batch_code = Column(String(10), Computed(""))
 
 
+# --- Table ---
 class MgmtSep(Base):
     """
     Table `sep` keeps the basic information of
@@ -237,15 +268,22 @@ class MgmtSep(Base):
     icon_original_name = Column(String(120), nullable=True)
     icon_svg = Column(Text, nullable=True)
 
-    def get_sep(id: int) -> Tuple[Any, str]:
+    @staticmethod
+    def get_sep(id: int) -> Tuple[Optional["MgmtSep"], str]:
         """
-        Select a SEP by id, with deferred Icon content (useful for edit)
+        Select a SEP by id, with deferred Icon content (useful for edition). It also
+        returns the SEP's full name (schema + SEP) from the view `vw_scm_sep`.
+
+        NB:
+            Forward Reference
+            Optional['MgmtSep']
+            using quotes around a type in type hints is known as a forward reference.
         """
         if id is None:
             return None, None
 
-        sep = None
-        sep_fullname = None
+        sep: Optional[MgmtSep] = None
+        sep_fullname: Optional[str] = None
         with SqlAlchemyScopedSession() as db_session:
             try:
                 stmt = select(MgmtSep).options(defer(MgmtSep.icon_svg)).where(MgmtSep.id == id)
@@ -261,16 +299,15 @@ class MgmtSep(Base):
 
         return sep, sep_fullname
 
-    def db_content(id: int) -> Any:
+    @staticmethod
+    def db_content(id: int) -> Optional[SvgContent]:
         """
-        Returns the content of the icon_svg (useful for write a file)
+        Returns the content of the icon_svg (useful for creating a file)
         """
-        from .SepIconConfig import SepIconConfig
-        from ..Sidekick import sidekick
 
         sep = None
+        icon_content: SvgContent = None
         with SqlAlchemyScopedSession() as db_session:
-            icon_content = None
             try:
                 stmt = select(MgmtSep).where(MgmtSep.id == id)
                 sep = db_session.execute(stmt).scalar_one_or_none()
@@ -278,18 +315,18 @@ class MgmtSep(Base):
                 icon_content = SepIconConfig.empty_content() if is_empty else sep.icon_svg
             except Exception as e:
                 icon_content = SepIconConfig.error_content()
-                sidekick.app_log.error(f"Error retrieving icon content of SEP {sep.id}: [{e}].")
+                sidekick.app_log.error(f"Error retrieving icon content of SEP {id}: [{e}].")
 
         return icon_content
 
-    def set_sep(sep) -> bool:
+    @staticmethod
+    def set_sep(sep: "MgmtSep") -> bool:
         """
-        Save a Sep
+        Saves a Sep record
         """
         from ..Sidekick import sidekick
 
         done = False
-        msg_error = ""
         with SqlAlchemyScopedSession() as db_session:
             try:
                 db_session.add(sep)
@@ -303,7 +340,14 @@ class MgmtSep(Base):
         return done
 
 
+# --- Table ---
 class ReceivedFiles(Base):
+    """
+    ReceivedFiles is app's interface for the
+    DB view `vw_user_data_files` that provides the needed
+    information to manage the files uploaded by users.
+    """
+
     __tablename__ = "vw_user_data_files"
 
     id = Column(Integer, primary_key=True)
@@ -319,45 +363,53 @@ class ReceivedFiles(Base):
     registered_at = Column(DateTime)
     stored_file_name = Column(String(180))
     file_name = Column(String(80))
-
+    file_origin = Column(String(1))
     file_size = Column(Integer)
     file_crc32 = Column(Integer)
 
     email_sent = Column(Boolean)
-    reception_error = Column(Boolean)
+    had_reception_error = Column(Boolean)
 
     def get_user_records(
-        user_id: int = None, if_email_sent: bool = True, if_has_reception_error: bool = False
-    ) -> TableRecords:
-        received_files: TableRecords = None
+        user_id: int, email_sent: bool = True, had_reception_error: bool = False
+    ) -> ListOfDict:
+        received_files: ListOfDict = ListOfDictEmpty
+        msg_error = ""
         with SqlAlchemyScopedSession() as db_session:
             try:
                 stmt = select(ReceivedFiles).where(
-                    ReceivedFiles.email_sent == if_email_sent,
-                    ReceivedFiles.reception_error == if_has_reception_error,
+                    and_(
+                        ReceivedFiles.email_sent == email_sent,
+                        ReceivedFiles.had_reception_error == had_reception_error,
+                    )
                 )
                 if user_id is not None:
                     stmt = stmt.where(ReceivedFiles.id_users == user_id)
 
-                received_files = [
-                    {
-                        "id": record.id,
-                        "user_id": record.id_users,
-                        "user_name": record.username,
-                        "user_email": record.email,
-                        "user_sep_id": record.mgmt_sep_id,
-                        "file_sep_id": record.id_sep,
-                        "received_at": record.registered_at,
-                        "stored_file_name": record.stored_file_name,
-                        "file_name": record.file_name,
-                        "file_size": record.file_size,
-                        "file_crc32": record.file_crc32,
-                        "email_sent": record.email_sent,
-                        "reception_error": record.reception_error,
-                        "file_found": False,
-                    }
+                received_files: ListOfDict = [
+                    DictToClass(
+                        {
+                            "id": record.id,
+                            "user_id": record.id_users,
+                            "user_name": record.username,
+                            "user_email": record.email,
+                            "user_sep_id": record.mgmt_sep_id,
+                            "file_sep_id": record.id_sep,
+                            "received_at": record.registered_at,
+                            "stored_file_name": record.stored_file_name,
+                            "file_name": record.file_name,
+                            "file_origin": record.file_origin,
+                            "file_size": record.file_size,
+                            "file_crc32": record.file_crc32,
+                            "email_sent": record.email_sent,
+                            "had_reception_error": record.had_reception_error,
+                            "file_found": False,
+                            "report_found": False,
+                        }
+                    )
                     for record in db_session.scalars(stmt).all()
                 ]
+
             except Exception as e:
                 msg_error = (
                     f"Cannot load records from {ReceivedFiles.__tablename__}.where = {stmt} | Error {e}."
