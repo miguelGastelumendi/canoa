@@ -14,6 +14,7 @@ import secrets
 from ...public.models import persist_user
 from ...helpers.sendgrid_helper import send_email
 from ...helpers.error_helper import ModuleErrorCode
+from ...helpers.email_helper import RecipientsListStr
 from ...helpers.ui_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
 from ...helpers.route_helper import (
     public_route,
@@ -28,7 +29,7 @@ from ..wtforms import PasswordRecoveryForm
 
 
 def password_recovery():
-    from ...Sidekick import sidekick
+    from ...app_request_scoped_vars import sidekick
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_RECOVERY.value
     tmpl_form, template, tmpl_form, texts = init_form_vars()
@@ -38,9 +39,9 @@ def password_recovery():
         task_code += 1  # 2
         template, is_get, texts = get_account_form_data("passwordRecovery")
         task_code += 1  # 3
-        send_to = "" if is_get else get_input_text("user_email").lower()
+        requested_email = "" if is_get else get_input_text("user_email").lower()
         task_code += 1  # 4
-        record_to_update = None if is_get else get_user_where(email=send_to)
+        record_to_update = None if is_get else get_user_where(email=requested_email)
 
         if is_get:
             pass
@@ -54,7 +55,8 @@ def password_recovery():
             task_code += 1  # 6
             url = f"http://{sidekick.config.SERVER_EXTERNAL_IP}{sidekick.config.SERVER_EXTERNAL_PORT}{public_route(public_route__password_reset, token= token)}"
             task_code += 1  # 7
-            send_email(send_to, "passwordRecovery_email", {"url": url})
+            sent_to = RecipientsListStr(requested_email, record_to_update.username)
+            send_email(sent_to, "passwordRecovery_email", {"url": url})
             task_code += 1  # 8
             record_to_update.recover_email_token = token
             task_code += 1  # 9

@@ -10,7 +10,7 @@
 """
 
 # cSpell:ignore
-
+from typing import Optional
 from .py_helper import as_str_strip, is_str_none_or_empty, strip_and_ignore_empty
 
 # MIME _types
@@ -67,8 +67,13 @@ class RecipientsDic:
     def __init__(
         self, to: RecipientsListStr = None, cc: RecipientsListStr = None, bcc: RecipientsListStr = None
     ):
-        def _set(rls: RecipientsListStr):
-            return RecipientsListStr("") if rls is None else rls
+        def _set(rls: Optional[RecipientsListStr | str]):
+            if isinstance(rls, RecipientsListStr):
+                return rls
+            elif isinstance(rls, str):
+                return RecipientsListStr(rls)
+            else:
+                return RecipientsListStr("")
 
         self.to = _set(to)
         self.cc = _set(cc)

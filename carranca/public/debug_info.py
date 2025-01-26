@@ -35,7 +35,7 @@ def get_debug_info(app, config: DynamicConfig) -> List[Tuple[str, str]]:
     _add(f"{config.APP_NAME} Configuration", "")
     _add("Version", config.APP_VERSION)
     _add("Mode", config.APP_MODE)
-    _add("Debug", config.debugging)
+    _add("Debug", config.APP_DEBUGGING)
     _add("Debug Messages", config.APP_DISPLAY_DEBUG_MSG)
     _add("Logging to File", config.LOG_FILE_STATUS)
 
@@ -64,16 +64,14 @@ def get_debug_info(app, config: DynamicConfig) -> List[Tuple[str, str]]:
     _add("Static Folder", app.static_folder)
     _add("Current working dir", getcwd())
 
-    if True:
-        from ..Sidekick import sidekick
-
-        for name, value in result:
-            kind, v = (
-                (sidekick.display.Kind.SIMPLE, ": " + value)
-                if value
-                else (sidekick.display.Kind.INFO, "_" * vl)
-            )
-            sidekick.display.print(kind, f"{name.rjust(ml)}{v}", "", False)
+    # urgente
+    # for name, value in result:
+    #     kind, v = (
+    #         (sidekick.display.Kind.SIMPLE, ": " + value)
+    #         if value
+    #         else (sidekick.display.Kind.INFO, "_" * vl)
+    #     )
+    #     sidekick.display.print(kind, f"{name.rjust(ml)}{v}", "", False)
 
     # max_len_first = max(len(first) for first, _ in tuples)
     # max_len_second = max(len(second) for _, second in tuples)

@@ -5,41 +5,87 @@
     Equipe da Canoa -- 2024
 """
 
-# cSpell:ignore psycopg2 sqlalchemy
+# cSpell:ignore psycopg2 sqlalchemy slqaRecords
 
+from datetime import datetime
 import json
-from typing import Any, Union, Tuple, Optional, TypeAlias, List
-from sqlalchemy import text
+from typing import Optional, TypeAlias, Union, Tuple, List, Any
+from sqlalchemy import text, Sequence
 
 from carranca import SqlAlchemyScopedSession
 from .py_helper import is_str_none_or_empty, to_str
 
-# Array of table's rows as classes -> ListOfDict
-ListOfDict: TypeAlias = List[dict[str, Any]]
+# Array of table's rows as classes -> ListOfRecords
+ListOfRecords: TypeAlias = List["DBRecord"]
 
-ListOfDictAsJsonStr: TypeAlias = str
+JsonStrOfRecords: TypeAlias = str
 
-""" An empty ListOfDict = [] """
-ListOfDictEmpty: ListOfDict = []
+""" An empty ListOfRecords = [] """
+ListOfRecordsEmpty: ListOfRecords = []
 
 
-def list_of_dict_to_json(list: ListOfDict) -> ListOfDictAsJsonStr:
+class DBRecord:
     """
-    Converts a ListOfDict to a JSON string.
+    A class that initializes an instance with attributes from a dictionary.
     """
-    json_str: ListOfDictAsJsonStr = json.dumps(list)
-    return json_str
+
+    def __init__(self, rec_dict: dict, field_types_filter: Optional[List[type]], rec_name: Optional[str]):
+        """
+        Args:
+            rec_dict (dict): A dictionary containing the attributes to set on the instance.
+            field_types_filter (Optional[List[type]]): If provided, only sets attributes that match the types in this list.
+            rec_name (Optional[str]): The name of the class. Defaults to None.
+
+        Note:
+            If `field_types_filter` is provided, only keys with values matching the specified types will be set as attributes.
+        """
+        if not is_str_none_or_empty(rec_name):
+            self.__class__.__name__ = rec_name
+
+        for key, value in rec_dict.items():
+            if isinstance(value, field_types_filter) if field_types_filter else True:
+                setattr(self, key, value)
+
+    def __repr__(self):
+        attrs = ", ".join(f"{key}={value}" for key, value in self.__dict__.items())
+        return f"<{self.__class__.__name__}({attrs})>"
 
 
-def json_to_list_of_dict(json_str: ListOfDictAsJsonStr) -> ListOfDict:
+class DBRecords:
     """
-    Converts a JSON string to a list of dictionaries.
+    A class that converts a SQLAlchemy query result into a list of DBRecord instances.
     """
-    try:
-        return json.loads(json_str)
-    except json.JSONDecodeError as e:
-        print(f"Error decoding JSON: {e}")
-        return []  # Return an empty list on decoding error
+
+    field_types_filter = (str, int, float, bool, datetime)
+    records = ListOfRecordsEmpty
+
+    def __init__(
+        self,
+        table_name: Optional[str],
+        slqaRecords: Sequence,
+        simple: bool = True,
+        includeNone: bool = True,
+    ):
+        self.table_name = self.__class__.__name__ if is_str_none_or_empty(table_name) else table_name
+
+        only_types = None if not simple else self.field_types_filter + (type(None),) if includeNone else ()
+
+        (self.field_types_filter if simple else None) + ((type(None),) if simple and includeNone else ())
+        self.count = len(slqaRecords)
+        self.records: ListOfRecords = [
+            DBRecord(record.__dict__, only_types, "db_record") for record in slqaRecords
+        ]
+
+    def to_json(self, exclude_fields: Optional[List[str]] = None):
+        exclude_fields = (exclude_fields or []) + ["__class__.__name__"]
+        return [
+            {key: value for key, value in record.__dict__.items() if key not in exclude_fields}
+            for record in self.records
+        ]
+
+    def __repr__(self):
+        attrs = ", ".join(f"{key}={value}" for key, value in self.__dict__.items())
+        return f"<{self.table_name}({attrs})>"
 
 
 def try_get_mgd_msg(error: object, default_msg: str = None) -> str:
@@ -84,11 +130,11 @@ def _execute_sql(query: str):
 
 def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
     """
-    Executes the given SQL query and returns the result in 3 modes:
+    Executes the given SQL query and returns the result in 4 modes:
       1.  N rows c column
-      1.  N rows 1 column
-      2.  1 row N columns
-      3.  1 row 1 column
+      2.  N rows 1 column
+      3.  1 row N columns
+      4.  1 row 1 column
 
     Args:
       sql: The SQL query to execute.
@@ -99,7 +145,7 @@ def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
       - A single value if the query returns a single row with a single column.
       - None if an error occurs or the query returns no results.
     """
-    from ..Sidekick import sidekick
+    from ..app_request_scoped_vars import sidekick
 
     try:
         data_rows = _execute_sql(query)
@@ -136,7 +182,7 @@ def retrieve_dict(query: str):
       - A dictionary where the first column is the key and the second column is the value.
       - An empty dictionary if the query returns no data or an error occurs.
     """
-    from ..Sidekick import sidekick
+    from ..app_request_scoped_vars import sidekick
 
     data = retrieve_data(query)
 

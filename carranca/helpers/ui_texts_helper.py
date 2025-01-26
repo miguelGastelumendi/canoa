@@ -13,7 +13,7 @@ from .py_helper import is_str_none_or_empty
 from .hints_helper import UI_Texts
 from .jinja_helper import process_pre_templates
 
-# === Global var ===========================================
+# === Global variables=========================================
 ui_msg_info = "msgInfo"
 ui_msg_error = "msgError"
 ui_msg_success = "msgSuccess"

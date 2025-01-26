@@ -5,7 +5,7 @@
     Equipe da Canoa -- 2024
 """
 
-# cSpell:ignore cuser Setorista
+# cSpell:ignore ssep
 
 # Equipe da Canoa -- 2024
 #
@@ -21,9 +21,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from carranca import SqlAlchemyScopedSession
 
 from .SepIconConfig import SepIconConfig, SvgContent
-from ..Sidekick import sidekick
-from ..helpers.db_helper import ListOfDict, ListOfDictEmpty
-from ..helpers.py_helper import is_str_none_or_empty, DictToClass
+from ..app_request_scoped_vars import sidekick
+from ..helpers.db_helper import DBRecords, ListOfRecordsEmpty
+from ..helpers.py_helper import is_str_none_or_empty
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
 Base = declarative_base()
@@ -62,6 +62,7 @@ class UserDataFiles(Base):
     file_size = Column(Integer)
     from_os = Column(String(1))
     original_name = Column(String(80), nullable=True, default=None)
+    email_confirmed = Column(Boolean, default=False)
 
     # Process module
     ## (register..on_ins)
@@ -169,15 +170,15 @@ class MgmtUserSep(Base):
     user_id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
     sep_id = Column(Integer)
     user_name = Column(String(100))
-    user_disabled = Column(Boolean)
+    disabled = Column("user_disabled", Boolean)
     scm_sep_curr = Column(String(201))  # sep_name -> scm_sep_curr
     scm_sep_new = Column(String(201))  # sep_new -> scm_sep_new
-    assigned_at = Column(DateTime)
+    when = Column("assigned_at", DateTime)
     assigned_by = Column(Integer)
     batch_code = Column(String(10))  # trace_code
 
     @staticmethod
-    def get_grid_view(item_none: str) -> Tuple[ListOfDict, ListOfDict, str]:
+    def get_grid_view() -> Tuple[DBRecords, DBRecords, str]:
         """
         Returns
         1) `vw_mgmt_user_sep` DB view that has the necessary columns to
@@ -186,42 +187,47 @@ class MgmtUserSep(Base):
         2) `vw_scm_sep` SEP list.
         3) Error message if any action fails.
         """
-        from .sep_icon import icon_prepare_for_html
 
         msg_error = None
         with SqlAlchemyScopedSession() as db_session:
-            users_sep = ListOfDictEmpty
-            sep_list = ListOfDictEmpty
+            users_sep = ListOfRecordsEmpty
+            sep_list = ListOfRecordsEmpty
             try:
 
-                def _file_url(sep_id: int) -> str:
-                    url, _, _ = icon_prepare_for_html(
-                        sep_id
-                    )  # this is foreach user (don't user logged_user)
-                    return url
+                # def _file_url(sep_id: int) -> str:
+                #     url, _, _ = icon_prepare_for_html(
+                #         sep_id
+                #     )  # this is foreach user (don't user logged_user)
+                #     return url
 
-                sep_list: ListOfDict = [
-                    {"id": sep.sep_id, "fullname": sep.sep_fullname}
-                    for sep in db_session.execute(
-                        text("SELECT sep_id, sep_fullname FROM vw_scm_sep")
-                    ).fetchall()
-                ]
+                # sep_list: ListOfRecords = [
+                #     {"id": sep.sep_id, "fullname": sep.sep_fullname}
+                #     for sep in db_session.execute(
+                #         text("SELECT sep_id, sep_fullname FROM vw_scm_sep")
+                #     ).fetchall()
+                # ]
+                # sep_qry = f"SELECT sep_id, sep_fullname FROM {VIEW_SCHEMA_SEP}"
+                # sep_recs = db_session.execute(text(sep_qry)).fetchall()
+                ssep_recs = db_session.scalars(select(SchemaSEP)).all()
+                sep_list = DBRecords(SchemaSEP.__tablename__, ssep_recs)
 
-                users_sep: ListOfDict = [
-                    {
-                        "user_id": usr_sep.user_id,
-                        "sep_id": usr_sep.sep_id,
-                        "file_url": _file_url(usr_sep.sep_id),
-                        "user_name": usr_sep.user_name,
-                        "disabled": usr_sep.user_disabled,
-                        "scm_sep_curr": (
-                            item_none if usr_sep.scm_sep_curr is None else usr_sep.scm_sep_curr
-                        ),
-                        "scm_sep_new": item_none,
-                        "when": usr_sep.assigned_at,
-                    }
-                    for usr_sep in db_session.scalars(select(MgmtUserSep)).all()
-                ]
+                mus_recs = db_session.scalars(select(MgmtUserSep)).all()
+                users_sep = DBRecords(MgmtUserSep.__tablename__, mus_recs)
+                # users_sep: ListOfRecords = [
+                #     {
+                #         "user_id": usr_sep.user_id,
+                #         "sep_id": usr_sep.sep_id,
+                #         "file_url": _file_url(usr_sep.sep_id),
+                #         "user_name": usr_sep.user_name,
+                #         "disabled": usr_sep.user_disabled,
+                #         "scm_sep_curr": (
+                #             item_none if usr_sep.scm_sep_curr is None else usr_sep.scm_sep_curr
+                #         ),
+                #         "scm_sep_new": item_none,
+                #         "when": usr_sep.assigned_at,
+                #     }
+                #     for usr_sep in db_session.scalars(select(MgmtUserSep)).all()
+                # ]
 
             except Exception as e:
                 msg_error = str(e)
@@ -249,6 +255,19 @@ class MgmtEmailSep(Base):
     email_at = Column(DateTime)
     email_error = Column(String(400))
     batch_code = Column(String(10), Computed(""))
+
+
+# --- Table ---
+class SchemaSEP(Base):
+    """
+    SchemaSEP is app's interface for the
+    DB view `vw_scm_sep` that provides a couple of
+    columns .
+    """
+
+    __tablename__ = "vw_scm_sep"
+    id = Column("sep_id", Integer, primary_key=True)
+    full_name = Column("sep_fullname", Text)
 
 
 # --- Table ---
@@ -288,7 +307,7 @@ class MgmtSep(Base):
             try:
                 stmt = select(MgmtSep).options(defer(MgmtSep.icon_svg)).where(MgmtSep.id == id)
                 _sep = db_session.execute(stmt).scalar_one_or_none()
-                stmt = text(f"SELECT sep_fullname FROM vw_scm_sep WHERE sep_id={_sep.id}")
+                stmt = select(SchemaSEP).where(SchemaSEP.id == _sep.id)
                 row = db_session.execute(stmt).one_or_none()
                 sep_fullname = None if row is None else row[0]
                 sep = _sep
@@ -324,7 +343,7 @@ class MgmtSep(Base):
         """
         Saves a Sep record
         """
-        from ..Sidekick import sidekick
+        from ..app_request_scoped_vars import sidekick
 
         done = False
         with SqlAlchemyScopedSession() as db_session:
@@ -351,12 +370,12 @@ class ReceivedFiles(Base):
     __tablename__ = "vw_user_data_files"
 
     id = Column(Integer, primary_key=True)
-    id_users = Column(Integer)
-    username = Column(String(100))
-    email = Column(String(100))
+    user_id = Column("id_users", Integer)
+    user_name = Column("username", String(100))
+    user_email = Column("email", String(100))
 
     # file sep, when registered*
-    id_sep = Column(Integer)
+    file_sep_id = Column("id_sep", Integer)
     # current user sep id*
     mgmt_sep_id = Column(Integer)
 
@@ -370,10 +389,22 @@ class ReceivedFiles(Base):
     email_sent = Column(Boolean)
     had_reception_error = Column(Boolean)
 
+    # auxiliary unbound columns
+    file_found = Column(Boolean, default=False)
+    report_found = Column(Boolean, default=False)
+
+    @property
+    def file_found(self):
+        return False
+
+    @property
+    def report_found(self):
+        return False
+
     def get_user_records(
         user_id: int, email_sent: bool = True, had_reception_error: bool = False
-    ) -> ListOfDict:
-        received_files: ListOfDict = ListOfDictEmpty
+    ) -> DBRecords:
+        received_files = None
         msg_error = ""
         with SqlAlchemyScopedSession() as db_session:
             try:
@@ -384,32 +415,10 @@ class ReceivedFiles(Base):
                     )
                 )
                 if user_id is not None:
-                    stmt = stmt.where(ReceivedFiles.id_users == user_id)
+                    stmt = stmt.where(ReceivedFiles.user_id == user_id)
 
-                received_files: ListOfDict = [
-                    DictToClass(
-                        {
-                            "id": record.id,
-                            "user_id": record.id_users,
-                            "user_name": record.username,
-                            "user_email": record.email,
-                            "user_sep_id": record.mgmt_sep_id,
-                            "file_sep_id": record.id_sep,
-                            "received_at": record.registered_at,
-                            "stored_file_name": record.stored_file_name,
-                            "file_name": record.file_name,
-                            "file_origin": record.file_origin,
-                            "file_size": record.file_size,
-                            "file_crc32": record.file_crc32,
-                            "email_sent": record.email_sent,
-                            "had_reception_error": record.had_reception_error,
-                            "file_found": False,
-                            "report_found": False,
-                        }
-                    )
-                    for record in db_session.scalars(stmt).all()
-                ]
-
+                rows = db_session.scalars(stmt).all()
+                received_files = DBRecords(ReceivedFiles.__tablename__, rows)
             except Exception as e:
                 msg_error = (
                     f"Cannot load records from {ReceivedFiles.__tablename__}.where = {stmt} | Error {e}."

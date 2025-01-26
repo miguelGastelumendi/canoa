@@ -53,7 +53,7 @@ def process(
     valid_ext: list[str],
 ) -> Tuple[int, str, str]:
 
-    from ...Sidekick import sidekick
+    from ...app_request_scoped_vars import sidekick
 
     current_module_name = __name__.split(".")[-1]
 

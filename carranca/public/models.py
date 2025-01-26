@@ -20,7 +20,6 @@ from flask_login import UserMixin
 # from sqlalchemy.orm import Session
 # from flask_sqlalchemy import SQLAlchemy
 
-from ..Sidekick import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
 
@@ -41,7 +40,6 @@ class Users(Base, UserMixin):
     last_login_at = Column(DateTime, nullable=True)
     recover_email_token = Column(String(100), nullable=True, unique=True)
     recover_email_token_at = Column(DateTime, Computed(""))
-    email_confirmed = Column(Boolean, default=False)
     password_failures = Column(Integer, default=0)
     password_failed_at = Column(DateTime)
     id_role = Column(Integer)
@@ -70,6 +68,8 @@ def get_user_where(**filter: Any) -> Users:
     """
     Select a user by a unique filter
     """
+    from ..app_request_scoped_vars import sidekick
+
     user = None
     with SqlAlchemyScopedSession() as db_session:
         stmt = select(Users).filter_by(**filter)
@@ -85,6 +85,8 @@ def persist_user(record: any, task_code: int = 1) -> None:
     """
     Updates a user's record
     """
+    from ..app_request_scoped_vars import sidekick
+
     with SqlAlchemyScopedSession() as db_session:
         task_code = 0
         try:

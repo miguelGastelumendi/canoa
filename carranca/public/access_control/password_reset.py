@@ -19,14 +19,13 @@ from ...helpers.route_helper import (
     init_form_vars,
     get_input_text,
     get_account_form_data,
-    public_route__password_reset,
 )
 from ...private.wtforms import ChangePassword
 from ..models import get_user_where
 
 
 def password_reset(token):
-    from ...Sidekick import sidekick
+    from ...app_request_scoped_vars import sidekick
 
     def __is_token_valid(time_stamp, max: int) -> bool:
         """
@@ -55,7 +54,7 @@ def password_reset(token):
             add_msg_error("invalidToken", texts)
         elif is_get:
             pass
-        elif not sidekick.config.len_val_for_pw.check(password):
+        elif not sidekick.config.DB_len_val_for_pw.check(password):
             add_msg_error("invalidPassword", texts)
         elif password != confirm_password:
             add_msg_error("passwordsAreDifferent", texts)
@@ -70,7 +69,6 @@ def password_reset(token):
                 task_code += 1  # 5
                 record_to_update.password = hash_pass(password)
                 record_to_update.recover_email_token = None
-                record_to_update.email_confirmed = True
                 task_code += 1  # 6
                 persist_user(record_to_update, task_code)
                 add_msg_success("resetPwSuccess", texts)

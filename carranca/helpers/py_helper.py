@@ -314,17 +314,4 @@ def copy_attributes(class_instance: Any, this_types: Tuple[Type] | Type = None) 
     return copy_instance
 
 
-class DictToClass:
-    def __init__(self, from_dict: dict):
-        for key, value in from_dict.items():
-            setattr(self, key, value)
-
-    def __repr__(self):
-        return f"<{__name__}({', '.join(f'{key}={value}' for key, value in self.__dict__.items())})>"
-
-
-# # Usage:
-# my_dict = MyCustomDict({'key1': 'value1', 'key2': 'value2'})
-
-
 # eof

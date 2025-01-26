@@ -12,7 +12,7 @@ from wtforms import PasswordField, FileField, StringField
 from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired, Length, URL
 
-from ..Sidekick import sidekick
+from ..app_request_scoped_vars import sidekick
 
 # -------------------------------------------------------------
 # Text here ha no relevance, the ui_text table is actually used.
@@ -28,14 +28,14 @@ class ReceiveFileForm(FlaskForm):
 class ChangePassword(FlaskForm):
     password = PasswordField(
         "",
-        validators=[InputRequired(), Length(**sidekick.config.len_val_for_pw.wtf_val())],
+        validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_pw.wtf_val())],
         render_kw={"class": "form-control", "id": "pwdCreate"},
     )
     # , EqualTo('confirm_password', message="As senhas não são iguais.") é no servidor.
 
     confirm_password = PasswordField(
         "",
-        validators=[InputRequired(), Length(**sidekick.config.len_val_for_pw.wtf_val())],
+        validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_pw.wtf_val())],
         render_kw={"class": "form-control", "id": "pwdConfirm", "for": "pwdConfirm"},
     )
 

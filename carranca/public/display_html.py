@@ -22,7 +22,7 @@ from ..helpers.jinja_helper import jinja_pre_template
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.html_helper import img_filenames, img_change_src_path
-from ..Sidekick import sidekick
+from ..app_request_scoped_vars import sidekick
 
 
 def __prepare_img_files(

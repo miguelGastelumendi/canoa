@@ -11,7 +11,8 @@
 from flask import render_template, request
 from werkzeug.utils import secure_filename
 
-from ..Sidekick import sidekick
+from ..app_request_scoped_vars import sidekick
+from ..app_request_scoped_vars import logged_user
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.user_helper import now
@@ -29,7 +30,6 @@ from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_f
 
 from .wtforms import ReceiveFileForm
 
-from .logged_user import logged_user
 from .validate_process.ProcessData import ProcessData
 
 RECEIVE_FILE_DEFAULT_ERROR = "uploadFileError"

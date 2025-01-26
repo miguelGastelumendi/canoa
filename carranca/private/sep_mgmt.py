@@ -20,9 +20,9 @@ from ..helpers.pw_helper import internal_logout
 from .models import MgmtUserSep
 from .SepIconConfig import SepIconConfig
 
-from ..Sidekick import sidekick
+from ..app_request_scoped_vars import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.db_helper import try_get_mgd_msg, ListOfDict, ListOfDictEmpty
+from ..helpers.db_helper import try_get_mgd_msg, ListOfRecords, ListOfRecordsEmpty
 from ..helpers.user_helper import get_batch_code
 
 from ..helpers.error_helper import ModuleErrorCode
@@ -43,11 +43,12 @@ def_return: TypeAlias = Tuple[str, str, int]
 
 
 def do_sep_mgmt() -> str:
+    from .sep_icon import icon_prepare_for_html
 
     task_code = ModuleErrorCode.SEP_MANAGEMENT.value
     _, template, is_get, uiTexts = init_form_vars()
 
-    users_sep = ListOfDictEmpty
+    users_sep = ListOfRecordsEmpty
     sep_fullname_list = []
 
     try:
@@ -79,14 +80,20 @@ def do_sep_mgmt() -> str:
         # Rewrite it in an easier way to express it in js: colName: colHeader
         uiTexts["colData"] = [{"n": key, "h": colData[key]} for key in colNames]
 
-        def __get_grid_data():
-            users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view(uiTexts["itemNone"])
-            sep_fullname_list = [sep["fullname"] for sep in sep_list]
+        def __get_grid_data(item_none):
+            users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view()
+            for record in users_sep.records:
+                record.scm_sep_new = item_none
+                record.scm_sep_curr = item_none if record.scm_sep_curr is None else record.scm_sep_curr
+                record.file_url = icon_prepare_for_html(record.sep_id)[0]  # url
+
+            sep_fullname_list = [sep.full_name for sep in sep_list.records]
+
             return users_sep, sep_fullname_list, msg_error
 
         if is_get:
             task_code += 1  # 6
-            users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data()
+            users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data(uiTexts["itemNone"])
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 7
             uiTexts[ui_msg_exception] = uiTexts["secKeyViolation"]
@@ -110,7 +117,7 @@ def do_sep_mgmt() -> str:
         sidekick.display.error(msg)
         # Todo error with users_sep,,, not ready
 
-    tmpl = render_template(template, usersSep=users_sep, sepList=sep_fullname_list, **uiTexts)
+    tmpl = render_template(template, usersSep=users_sep.to_json(), sepList=sep_fullname_list, **uiTexts)
     return tmpl
 
 
@@ -160,7 +167,7 @@ def _save_data(
 
 def _prepare_data_to_save(
     grid_response: dict[str, any], uiTexts: UI_Texts, task_code: int
-) -> Tuple[str, ListOfDict, ListOfDict, int]:
+) -> Tuple[str, ListOfRecords, ListOfRecords, int]:
     """Distributes the modifications in two groups: remove & assign"""
 
     msg_error = None
@@ -171,9 +178,9 @@ def _prepare_data_to_save(
         task_code += 1
         str_none: str = actions["none"]
         task_code += 1
-        remove: ListOfDictEmpty
-        assign: ListOfDictEmpty
-        grid: ListOfDict = grid_response["grid"]
+        remove: ListOfRecordsEmpty
+        assign: ListOfRecordsEmpty
+        grid: ListOfRecords = grid_response["grid"]
         task_code += 1
         for item in grid:
             sep_new = item["scm_sep_new"]
@@ -192,7 +199,7 @@ def _prepare_data_to_save(
 
 
 def _save_data_to_db(
-    remove: ListOfDict, update: ListOfDict, batch_code: str, uiTexts: UI_Texts, task_code: int
+    remove: ListOfRecords, update: ListOfRecords, batch_code: str, uiTexts: UI_Texts, task_code: int
 ) -> def_return:
     """
     Saves user-made changes to the UI grid to the database
@@ -204,8 +211,8 @@ def _save_data_to_db(
 
     from carranca import SqlAlchemyScopedSession
     from .models import MgmtUserSep
-    from .logged_user import logged_user
-    from ..Sidekick import sidekick
+
+    from ..app_request_scoped_vars import logged_user, sidekick
 
     msg_error = None
     assigned_by = logged_user.id
@@ -252,7 +259,7 @@ def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> def_retur
     """
     from carranca import SqlAlchemyScopedSession
     from .models import MgmtEmailSep
-    from ..Sidekick import sidekick
+    from ..app_request_scoped_vars import sidekick
     from ..helpers.py_helper import now
     from ..helpers.sendgrid_helper import send_email
 

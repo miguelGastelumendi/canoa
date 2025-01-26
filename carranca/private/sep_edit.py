@@ -13,7 +13,6 @@ from werkzeug.utils import secure_filename
 
 from .models import MgmtSep
 from .wtforms import SepEdit
-from .logged_user import logged_user
 
 from ..helpers.py_helper import now
 from ..helpers.route_helper import get_private_form_data
@@ -26,6 +25,7 @@ from ..helpers.ui_texts_helper import (
     add_msg_error,
     add_msg_fatal,
 )
+from ..app_request_scoped_vars import logged_user
 
 
 def do_sep_edit() -> str:
@@ -106,7 +106,7 @@ def do_sep_edit() -> str:
                     icon_refresh(logged_user.sep)  # refresh this form icon
 
     except Exception as e:
-        from ..Sidekick import sidekick
+        from ..app_request_scoped_vars import sidekick
 
         msg = (
             str(e)

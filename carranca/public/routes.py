@@ -11,7 +11,6 @@
 # cSpell:ignore werkzeug tmpl sqlalchemy lastpasswordchange errorhandler assis
 
 from flask import Blueprint, render_template
-from ..Sidekick import sidekick
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.route_helper import (
     bp_name,

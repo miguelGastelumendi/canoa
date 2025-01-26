@@ -22,7 +22,7 @@ from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 
 
-from ..Sidekick import sidekick
+from ..app_request_scoped_vars import sidekick
 from .py_helper import is_str_none_or_empty, to_str
 from .file_helper import is_same_file_name, change_file_ext, path_remove_last_folder
 
@@ -164,7 +164,7 @@ def download_public_google_file(
         # TODO: Pass as param
         service_account_file = path.join(
             sidekick.config.COMMON_PATH,
-            "LocalDrive",
+            "LocalStorage",
             "canoa-download-key.json",
         )
 
@@ -225,7 +225,7 @@ def download_public_google_file(
                 status, done = downloader.next_chunk()
                 # TODO find how: file_crc32 = crc32(status, file_crc32)
                 if status:
-                    sidekick.display.info.debug("download: progress %d%%." % int(status.progress() * 100))
+                    sidekick.display.debug("download: progress %d%%." % int(status.progress() * 100))
 
         task_code = 0
         sidekick.display.info("download: The file was downloaded.")

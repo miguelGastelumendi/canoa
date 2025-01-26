@@ -11,7 +11,6 @@ import requests
 from os import path
 from typing import Tuple, Any
 from flask import redirect, request, url_for
-from ..Sidekick import sidekick
 from .py_helper import is_str_none_or_empty, camel_to_snake, to_str
 from .hints_helper import UI_Texts
 
@@ -94,6 +93,7 @@ def get_input_text(name: str) -> str:
 
 
 def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI_Texts]:
+    from ..app_request_scoped_vars import sidekick
     from .ui_texts_helper import get_section
 
     tmplt = camel_to_snake(section) if tmplt is None else tmplt

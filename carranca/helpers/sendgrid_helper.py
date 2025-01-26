@@ -56,7 +56,7 @@ def send_email(
 
     Args:
         send_to_or_dic: (RecipientsListStr or RecipientsDic): The recipient information.
-            If a RecipientsListStr, it's assumed to be the "to" recipient.
+            If a RecipientsListStr is used, it's assumed to be the "to" recipient.
         texts_or_section: (dict or str)
             if str, is an entry of .ui_texts_helper.get_section that returns a dict
             if dict[str, str], it is used directly.
@@ -80,7 +80,7 @@ def send_email(
         ValueError: if the attachment file (file_to_send) has an extension with unknown type.
         RuntimeError: error within the send_mail API
     """
-    from ..Sidekick import sidekick
+    from ..app_request_scoped_vars import sidekick
 
     status_code = 0
     task = ""

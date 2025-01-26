@@ -11,8 +11,9 @@ import json
 from os import path
 from flask import render_template
 
-from ..Sidekick import sidekick
-from ..helpers.db_helper import ListOfDictEmpty, ListOfDict
+from ..app_request_scoped_vars import sidekick
+from ..app_request_scoped_vars import logged_user
+from ..helpers.db_helper import ListOfRecordsEmpty, ListOfRecords
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import UserFolders
 from ..helpers.file_helper import change_file_ext
@@ -28,25 +29,25 @@ from ..helpers.ui_texts_helper import (
     ui_msg_exception,
 )
 from .models import ReceivedFiles
-from .logged_user import logged_user
 
 
-def received_files_get() -> ListOfDict:
+def received_files_fetch() -> ListOfRecords:
 
     user_id = None if logged_user is None else logged_user.id
     # todo user c//if user.
 
     received_files = ReceivedFiles.get_user_records(user_id)
-    if received_files is None or len(received_files) == 0:
-        return ListOfDictEmpty
+    if received_files is None or len(received_files.records) == 0:
+        return ListOfRecordsEmpty
     else:
         files = 0
         uf = UserFolders()
-        for record in received_files:
+        for record in received_files.records:
             folder = uf.uploaded if record.file_origin == "L" else uf.downloaded
-            full_name = path.join(folder, logged_user.folder, record.stored_file_name)
-            record.file_found = path.isfile(full_name)
-            record.report_found = path.isfile(change_file_ext(full_name, "pdf"))
+            #TODO best way to create an aux local column
+            record.file_full_name = path.join(folder, logged_user.folder, record.stored_file_name)
+            record.file_found = path.isfile(record.file_full_name)
+            record.report_found = path.isfile(change_file_ext(record.file_full_name, "pdf"))
             if record.file_found:
                 files += 1
 
@@ -58,7 +59,7 @@ def received_files_grid() -> str:
     task_code = ModuleErrorCode.RECEIVED_FILES_MGMT.value
     _, template, is_get, uiTexts = init_form_vars()
 
-    users_sep = ListOfDictEmpty
+    users_sep = ListOfRecordsEmpty
     sep_fullname_list = []
 
     try:

@@ -19,13 +19,14 @@ from ...private.logged_user import LoggedUser
 from ...config_validate_process import DataValidateApp
 from ...helpers.py_helper import (
     is_str_none_or_empty,
+    OS_IS_LINUX,
     decode_std_text,
     quote,
     now,
 )
 from ...helpers.file_helper import change_file_ext
 from ...helpers.error_helper import ModuleErrorCode
-from ...Sidekick import sidekick
+from ...app_request_scoped_vars import sidekick
 
 
 async def _run_validator(
@@ -49,22 +50,18 @@ async def _run_validator(
         input_folder,  # param 2 Don't use " "
         d_v.na_out_folder,
         output_folder,  # param 3   Don't use " "
-        # d_v.na_user_name,
-        # quote(user.name),  # param 4
-        # d_v.na_file_name,
-        # quote(file_name),  # param 5
-        # d_v.na_schema_se,
-        # quote(sep_full_name),  # param 6
     ]
-
-    if not is_str_none_or_empty(d_v.flags):
-        run_command.append(d_v.flags)
+    if OS_IS_LINUX:  # data_validate's Windows version bug (so don't use this args in Windows)
+        run_command.extend([d_v.na_user_name, quote(user.name)])
+        run_command.extend([d_v.na_file_name, quote(file_name)])
+        if not is_str_none_or_empty(sep_full_name):
+            run_command.extend([d_v.na_schema_se.sep_full_name])
 
     if debug_validator and not is_str_none_or_empty(d_v.flag_debug):
         run_command.append(d_v.flag_debug)
-        sidekick.app_log.info(" ".join(run_command))
+        sidekick.app_log.info(" ".join(run_command))  # LOG
     else:
-        sidekick.app_log.debug(" ".join(run_command))
+        sidekick.app_log.debug(" ".join(run_command))  # DEBUG
 
     # Run the script command asynchronously
     stdout = None

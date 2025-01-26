@@ -75,12 +75,17 @@ class DynamicConfig(BaseConfig):
         fuse.display.info(f"The Config class was instantiated in {self.APP_MODE} mode.")
         self.TEMPLATES_FOLDER = _get_template_folder()
 
+        # Functions to help DB/Forms TODO: send to models
         # min & max text length for pw & user_name
-        self.len_val_for_pw = LenValidate(6, 22)
-        self.len_val_for_uname = LenValidate(3, 22)
-        self.len_val_for_email = LenValidate(8, 60)
+        self.DB_len_val_for_pw = LenValidate(6, 22)
+        self.DB_len_val_for_uname = LenValidate(3, 22)
+        self.DB_len_val_for_email = LenValidate(8, 60)
 
         # initialize special attributes
+        self.APP_ARGS = None  # set on startup
+        self.APP_DEBUGGING = (
+            None  # keeps the final result of params, APP_DEBUG, MODE, etc. Set just after app started
+        )
         self.APP_DEBUG = as_bool(self.APP_DEBUG, False)
         self.DEBUG = as_bool(self.DEBUG, self.APP_DEBUG)
 
@@ -103,6 +108,10 @@ class DynamicConfig(BaseConfig):
             unique = f"{app_name} v{app_version}".encode()
             self.SECRET_KEY = sha384(unique).hexdigest()
 
+    @property
+    def DB_HELPER(self):
+        return self._db_helper
+
 
 # === Development Config
 class DevelopmentConfig(DynamicConfig):
@@ -113,7 +122,7 @@ class DevelopmentConfig(DynamicConfig):
     APP_MODE = app_mode_development
     APP_DEBUG = True
     APP_PROPAGATE_DEBUG = True
-
+    DB_HELPER = {}
     SERVER_ADDRESS = "127.0.0.1:5000"
 
 
@@ -126,6 +135,7 @@ class ProductionConfig(DynamicConfig):
     APP_MODE = app_mode_production
     APP_DEBUG = False
     APP_PROPAGATE_DEBUG = False
+    DB_HELPER = {}
     SERVER_ADDRESS = "192.168.0.1:54754"
 
 

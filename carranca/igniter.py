@@ -30,7 +30,9 @@ def _log_and_exit(ups: str):
 # ---------------------------------------------------------------------------- #
 # Fuse a igniter helper
 class Fuse:
-    def __init__(self, app_name, display: Any, args: Args):
+    from .helpers.Display import Display
+
+    def __init__(self, app_name, display: Display, args: Args):
         from .BaseConfig import app_mode_production, app_mode_development
 
         self.app_name = app_name
@@ -74,7 +76,7 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
     import json
 
     msg_error = None
-    fuse = None
+    new_fuse = None
     try:
         from .helpers.Display import Display
 
@@ -85,20 +87,21 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
             args.display_icons,
             started_from,
         )
-        fuse = Fuse(app_name, display, args)
-        fuse.display.info(
-            f"The 'fuse' was started in {fuse.app_mode} mode (and now we have how to print pretty)."
+        new_fuse = Fuse(app_name, display, args)
+        new_fuse.display.info(
+            f"The 'fuse' was started in {new_fuse.app_mode} mode (and now we have how to print pretty)."
         )
         args = f"{app_name}'s args: {{0}}"
-        if fuse.debugging:
-            _args = f"\n{json.dumps(fuse.args.__dict__, indent=3, sort_keys=True)}"
-            fuse.display.debug(args.format(_args))
+        if new_fuse.debugging:
+            _args = f"\n{json.dumps(new_fuse.args.__dict__, indent=3, sort_keys=True)}"
+            new_fuse.display.debug(args.format(_args))
         else:
-            fuse.display.info(args.format(fuse.args))
+            new_fuse.display.info(args.format(new_fuse.args))
     except Exception as e:
+        new_fuse = None
         msg_error = _error_msg.format(__name__, "starting the fuse", str(e))
 
-    return fuse, msg_error
+    return new_fuse, msg_error
 
 
 # ---------------------------------------------------------------------------- #
@@ -110,28 +113,28 @@ def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
     Select the config, based in the app_mode (production or debug)
     WARNING: Don't run with debug turned on in production!
     """
-    config = None  # this config will later be shared by sidekick
+    Config = None  # this config will later be shared by sidekick
     msg_error = None
     try:
         from .DynamicConfig import get_config_for_mode
 
-        config = get_config_for_mode(fuse.app_mode)  # Todo send app_debug from parameters
-        if config is None:
+        Config = get_config_for_mode(fuse.app_mode)  # Todo send app_debug from parameters
+        if Config is None:
             raise Exception(f"Unknown config mode '{fuse.app_mode}'.")
 
-        config.debugging = fuse.debugging if fuse.debugging else config.APP_DEBUG
-        config.args = fuse.args
+        Config.APP_DEBUGGING = fuse.debugging if fuse.debugging else Config.APP_DEBUG
+        Config.APP_ARGS = fuse.args
         fuse.display.info(f"The app config, in '{fuse.app_mode}' mode, was ignited.")
     except Exception as e:
         msg_error = _error_msg.format(
             __name__, f"initializing the app config in mode '{fuse.app_mode}'.", str(e)
         )
 
-    return config, msg_error
+    return Config, msg_error
 
 
 # ---------------------------------------------------------------------------- #
-def _check_mandatory_keys(config) -> str:
+def _check_mandatory_keys(config, fDisplay) -> str:
     """Check if the mandatories environment variables are set."""
 
     msg_error = None
@@ -142,7 +145,7 @@ def _check_mandatory_keys(config) -> str:
             value = getattr(config, key, "")
             empty = value is None or value.strip() == ""
             if empty:
-                fuse.display.error(f"[{__name__}]: Config[{config.APP_MODE}].{key} has no value.")
+                fDisplay.error(f"[{__name__}]: Config[{config.APP_MODE}].{key} has no value.")
             return empty
 
         has_empty = False
@@ -280,10 +283,10 @@ def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
     config, error = _ignite_config(fuse)
     if error:
         _log_and_exit(error)
-    fuse.display.debug(f"Config was ignited, debugging is {config.debugging}.")
+    fuse.display.debug(f"Config was ignited, debugging is {config.APP_DEBUGGING}.")
 
     # Mandatory Configuration keys
-    error = _check_mandatory_keys(config)
+    error = _check_mandatory_keys(config, fuse.display)
     if error:
         _log_and_exit(error)
     fuse.display.debug("All mandatory configuration keys were informed.")
@@ -319,7 +322,7 @@ def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
     fuse.display.info(f"{__name__} module completed with 0 errors and {warns} warnings.")
     display_mute_after_init = fuse.args.display_mute_after_init
 
-    fuse = None  # not need it anymore
+    del fuse  # clean up fuse to prevent memory leaks
 
     return sidekick, display_mute_after_init
 

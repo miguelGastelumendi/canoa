@@ -12,7 +12,7 @@
 
 import zipfile
 from .Cargo import Cargo
-from ...Sidekick import sidekick
+from ...app_request_scoped_vars import sidekick
 from ...helpers.user_helper import now
 from ...helpers.error_helper import ModuleErrorCode
 

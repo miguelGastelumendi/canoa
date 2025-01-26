@@ -1,6 +1,6 @@
 """
     Package/__init__.py
-    `This file, is execute by the Python interpreter on startup once`
+    `This file is executed by the Python interpreter on startup once`
 
 
 
@@ -25,7 +25,7 @@ started = time.perf_counter()
 
 # Imports
 import jinja2
-from flask import Flask, app
+from flask import Flask
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
@@ -52,7 +52,7 @@ def _register_blueprint_events():
                 )
             else:
                 app.logger.debug(
-                    f"SqlAlchemySession is shuting down {('active' if SqlAlchemyScopedSession.is_active else 'inactive')} and clean."
+                    f"SqlAlchemySession is shutting down {('active' if SqlAlchemyScopedSession.is_active else 'inactive')} and clean."
                 )
 
             SqlAlchemyScopedSession.remove()
@@ -82,7 +82,7 @@ def _register_blueprint_routes():
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(debugUndefined: bool, app_name: str, app_version: str):
-    from .private.logged_user import logged_user
+    from .app_request_scoped_vars import logged_user
     from .helpers.route_helper import private_route, public_route, static_route
 
     app.jinja_env.globals.update(
@@ -121,7 +121,7 @@ def _register_db():
 
 # ---------------------------------------------------------------------------- #
 def db_obfuscate(config):
-    """Hide any confidencial info before is displayed in debug mode"""
+    """Hide any confidential info before it is displayed in debug mode"""
     import re
 
     db_uri = str(config.SQLALCHEMY_DATABASE_URI)
@@ -208,10 +208,10 @@ def create_app():
 
     # == Global Scoped SQLAlchemy Session
     global SqlAlchemyScopedSession
-    engine = create_engine(uri)
+    engine = create_engine(uri, future=True)
     # https://docs.sqlalchemy.org/en/20/orm/contextual.html
-    # https://flask.palletsprojects.com/en/stable/patterns/sqlalchemy/
-    SqlAlchemyScopedSession = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+    # https://flask.palletsprojects.com/en/2.3.x/patterns/sqlalchemy/
+    SqlAlchemyScopedSession = scoped_session(sessionmaker(autocommit=False, autoflush=True, bind=engine))
     sidekick.display.info("A scoped SQLAlchemy session was instantiated.")
 
     # config sidekick.display

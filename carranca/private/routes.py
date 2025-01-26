@@ -11,7 +11,6 @@
 
 from flask import Blueprint, render_template
 from flask_login import login_required
-from typing import Union
 
 from ..helpers.pw_helper import internal_logout, nobody_is_logged
 from ..helpers.route_helper import (
@@ -115,9 +114,10 @@ def received_files_get() -> str:
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .received_files_mgmt import received_files_get
+        from .received_files_mgmt import received_files_fetch
 
-        json = received_files_get()
+        records = received_files_fetch()
+        json = records.to_json()
 
         return json
 

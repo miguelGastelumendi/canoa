@@ -11,7 +11,7 @@
 from typing import Any
 from flask import render_template, request
 
-from ...Sidekick import sidekick
+from ...app_request_scoped_vars import sidekick
 from ...public.models import persist_user
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...helpers.error_helper import ModuleErrorCode
@@ -47,19 +47,19 @@ def register():
             add_msg_error("userAlreadyRegistered", texts)
         elif __exists_user_where(email=get_input_text("email").lower()):
             add_msg_error("emailAlreadyRegistered", texts)
-        elif not sidekick.config.len_val_for_pw.check(get_input_text("password")):
+        elif not sidekick.config.DB_len_val_for_pw.check(get_input_text("password")):
             add_msg_error(
                 "invalidPassword",
                 texts,
-                sidekick.config.len_val_for_pw.min,
-                sidekick.config.len_val_for_pw.max,
+                sidekick.config.DB_len_val_for_pw.min,
+                sidekick.config.DB_len_val_for_pw.max,
             )
-        elif not sidekick.config.len_val_for_uname.check(user_name):
+        elif not sidekick.config.DB_len_val_for_uname.check(user_name):
             add_msg_error(
                 "invalidUserName",
                 texts,
-                sidekick.config.len_val_for_uname.min,
-                sidekick.config.len_val_for_uname.max,
+                sidekick.config.DB_len_val_for_uname.min,
+                sidekick.config.DB_len_val_for_uname.max,
             )
         else:
             task_code += 1  # 4

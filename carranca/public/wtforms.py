@@ -14,15 +14,15 @@ from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import Email, InputRequired, Length
 
 from ..helpers.wtf_helper import LenValidate
-from ..Sidekick import sidekick
+from ..app_request_scoped_vars import sidekick
 
 # Public forms
 # -------------------------------------------------------------
 # Text here ha no relevance, the ui_text table is actually used.
 
 max_name = LenValidate(
-    min(sidekick.config.len_val_for_uname.min, sidekick.config.len_val_for_email.min),
-    max(sidekick.config.len_val_for_uname.max, sidekick.config.len_val_for_email.max),
+    min(sidekick.config.DB_len_val_for_uname.min, sidekick.config.DB_len_val_for_email.min),
+    max(sidekick.config.DB_len_val_for_uname.max, sidekick.config.DB_len_val_for_email.max),
 )
 
 
@@ -33,7 +33,7 @@ class LoginForm(FlaskForm):
     )
     password = PasswordField(
         "",
-        validators=[InputRequired(), Length(**sidekick.config.len_val_for_pw.wtf_val())],
+        validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_pw.wtf_val())],
         render_kw={"class": "form-control", "id": "pwd_login"},
     )
     remember_me = BooleanField("Remember_me")
@@ -42,19 +42,19 @@ class LoginForm(FlaskForm):
 class RegisterForm(FlaskForm):
     username = StringField(
         "",
-        validators=[InputRequired(), Length(**sidekick.config.len_val_for_uname.wtf_val())],
+        validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_uname.wtf_val())],
     )
     email = StringField(
         "",
         validators=[
             InputRequired(),
             Email(),
-            Length(**sidekick.config.len_val_for_email.wtf_val()),
+            Length(**sidekick.config.DB_len_val_for_email.wtf_val()),
         ],
     )
     password = PasswordField(
         "",
-        validators=[InputRequired(), Length(**sidekick.config.len_val_for_pw.wtf_val())],
+        validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_pw.wtf_val())],
     )
     disabled = BooleanField("Disabled")
 

@@ -54,37 +54,9 @@
 
 from flask import Flask
 from datetime import datetime
-from werkzeug.local import LocalProxy
 
-from .helpers.py_helper import get_init_params
 from .helpers.Display import Display
 from .DynamicConfig import DynamicConfig
-
-_module_sidekick = None
-sidekick = LocalProxy(lambda: _get_sidekick())
-
-
-def _get_sidekick():
-    from flask import has_request_context, g
-
-    global _module_sidekick
-
-    def _bring_it():
-        global _module_sidekick
-        if _module_sidekick is None:
-            _module_sidekick = _recreate_sidekick()
-        return _module_sidekick
-
-    if not has_request_context():
-        _bring_it()
-
-    elif "_sidekick" not in g:
-        g._sidekick = _bring_it()
-
-    else:
-        _module_sidekick = g._sidekick
-
-    return _module_sidekick
 
 
 # Local
@@ -93,13 +65,15 @@ _display_params = "DISPLAY_PARAMS"
 
 # this is called once, on __init__.py:create_app->igniter::ignite_sidekick
 # where it 'saves' config in a global var: Config
-def create_sidekick(config: DynamicConfig, display: Display):
-    config[_display_params] = get_init_params(display)
-    sidekick = Sidekick(config, display)
+def create_sidekick(Config: DynamicConfig, display: Display):
+    from .helpers.py_helper import get_init_params
+
+    Config[_display_params] = get_init_params(display)
+    sidekick = Sidekick(Config, display)
     return sidekick
 
 
-def _recreate_sidekick():
+def recreate_sidekick():
     from carranca import Config, app
     from .helpers.Display import Display
 
@@ -112,7 +86,7 @@ def _recreate_sidekick():
         msg_error = str(e)
 
     sidekick = Sidekick(Config, display, app)
-    # this helps to check Sidekick Lifetime
+    # this helps to monitor Sidekick Lifetime
     sidekick.display.debug(f"{sidekick.__class__.__name__} was recreated.")
     if msg_error:
         sidekick.display.error(f"But using default params: {msg_error}.")
@@ -126,7 +100,7 @@ class Sidekick:
     """
 
     def __init__(self, config: DynamicConfig, display: Display, app: Flask = None):
-        self.debugging = config.debugging
+        self.debugging = config.APP_DEBUGGING
         self.app_name = config.APP_NAME
         self.config = config
         self.display = display

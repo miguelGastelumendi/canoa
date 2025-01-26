@@ -14,7 +14,7 @@
 import os
 from zlib import crc32
 
-from ...Sidekick import sidekick
+from ...app_request_scoped_vars import sidekick
 from ...helpers.py_helper import OS_IS_WINDOWS
 from ...helpers.user_helper import now
 from ...helpers.error_helper import ModuleErrorCode

@@ -9,7 +9,7 @@
 # cSpell:ignore sqlalchemy keepalives psycopg2
 
 import time
-from .app_constants import app_name
+from carranca.app_constants import app_name
 
 # -------------------------------------------------------
 # Main --------------------------------------------------
@@ -30,7 +30,7 @@ sidekick.display.info("The app is ready to run!")
 
 if sidekick.config.APP_DISPLAY_DEBUG_MSG:
     # print(repr(sidekick))
-    from .public.debug_info import get_debug_info
+    from carranca.public.debug_info import get_debug_info
 
     di = get_debug_info(app, sidekick.config)  # TODO, print
 
@@ -42,5 +42,9 @@ sidekick.display.info(
 
 if __name__ == "__main__":
     app.run()
+    # TODO
+    # from werkzeug.serving import run_simple
+    # run_simple('localhost', 5000, app)
+    # #
 
 # eof
