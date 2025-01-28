@@ -9,11 +9,11 @@
 
 # cSpell:ignore sqlalchemy app_name cssless sendgrid ENDC psycopg2 mandatories
 
-from typing import Tuple, Any
-
+from typing import Tuple
+from flask import Flask
+from .Args import Args
 from .helpers.py_helper import is_str_none_or_empty
 
-from .Args import Args
 
 _error_msg = "[{0}]: An error occurred while {1}. Message `{2}`."
 fuse = None
@@ -118,7 +118,7 @@ def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
     try:
         from .DynamicConfig import get_config_for_mode
 
-        Config = get_config_for_mode(fuse.app_mode)  # Todo send app_debug from parameters
+        Config = get_config_for_mode(fuse.app_mode, fuse)
         if Config is None:
             raise Exception(f"Unknown config mode '{fuse.app_mode}'.")
 
@@ -213,7 +213,7 @@ def _ignite_server_name(config) -> Tuple[any, str]:
 
 
 # ---------------------------------------------------------------------------- #
-def ignite_log_file(config: DynamicConfig, app) -> Tuple[str, str]:
+def ignite_log_file(config: DynamicConfig, app: Flask) -> Tuple[str, str]:
     import logging
 
     if not config.LOG_TO_FILE:

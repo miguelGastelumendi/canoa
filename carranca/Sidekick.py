@@ -74,7 +74,8 @@ def create_sidekick(Config: DynamicConfig, display: Display):
 
 
 def recreate_sidekick():
-    from carranca import Config, app
+    from flask import current_app
+    from carranca import Config
     from .helpers.Display import Display
 
     msg_error = None
@@ -85,7 +86,7 @@ def recreate_sidekick():
         display = Display()  # use default
         msg_error = str(e)
 
-    sidekick = Sidekick(Config, display, app)
+    sidekick = Sidekick(Config, display, current_app)
     # this helps to monitor Sidekick Lifetime
     sidekick.display.debug(f"{sidekick.__class__.__name__} was recreated.")
     if msg_error:

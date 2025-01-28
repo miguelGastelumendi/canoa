@@ -14,6 +14,7 @@ from os import environ
 from hashlib import sha384
 
 from .app_constants import app_name, app_version
+from .igniter import Fuse
 from .BaseConfig import BaseConfig, app_mode_development, app_mode_production
 from .helpers.py_helper import as_bool, is_str_none_or_empty, get_envvar_prefix
 from .helpers.wtf_helper import LenValidate
@@ -31,7 +32,7 @@ def _get_template_folder():
 
 
 # Environment Variables for the config
-def _init_envvar_of_config(cfg, fuse):
+def _init_envvar_of_config(cfg: "DynamicConfig", fuse: Fuse):
     """
     Initialize BaseConfig
     from environment variables
@@ -65,9 +66,12 @@ def _init_envvar_of_config(cfg, fuse):
 
 
 class DynamicConfig(BaseConfig):
+    APP_MODE = None
 
-    def __init__(self):
-        from .igniter import fuse
+    def __init__(self, fuse: Fuse, app_debug: bool, app_propagate_debug: bool, server_address: str):
+        self.APP_DEBUG = app_debug
+        self.APP_PROPAGATE_DEBUG = app_propagate_debug
+        self.SERVER_ADDRESS = server_address
 
         # flask has config.from_prefixed_env() that us used in create_app
         # but I need one now, and displaying some msg.
@@ -75,19 +79,12 @@ class DynamicConfig(BaseConfig):
         fuse.display.info(f"The Config class was instantiated in {self.APP_MODE} mode.")
         self.TEMPLATES_FOLDER = _get_template_folder()
 
+        # self.DB_HELPER = {} tying to group vars for db, eg DB_len_val
         # Functions to help DB/Forms TODO: send to models
         # min & max text length for pw & user_name
         self.DB_len_val_for_pw = LenValidate(6, 22)
         self.DB_len_val_for_uname = LenValidate(3, 22)
         self.DB_len_val_for_email = LenValidate(8, 60)
-
-        # initialize special attributes
-        self.APP_ARGS = None  # set on startup
-        self.APP_DEBUGGING = (
-            None  # keeps the final result of params, APP_DEBUG, MODE, etc. Set just after app started
-        )
-        self.APP_DEBUG = as_bool(self.APP_DEBUG, False)
-        self.DEBUG = as_bool(self.DEBUG, self.APP_DEBUG)
 
         # propagate APP_DEBUG
         def _if_debug(attrib, default=self.APP_DEBUG):
@@ -108,9 +105,9 @@ class DynamicConfig(BaseConfig):
             unique = f"{app_name} v{app_version}".encode()
             self.SECRET_KEY = sha384(unique).hexdigest()
 
-    @property
-    def DB_HELPER(self):
-        return self._db_helper
+    # @property
+    # def DB_HELPER(self):
+    #     return self._db_helper
 
 
 # === Development Config
@@ -120,10 +117,9 @@ class DevelopmentConfig(DynamicConfig):
     """
 
     APP_MODE = app_mode_development
-    APP_DEBUG = True
-    APP_PROPAGATE_DEBUG = True
-    DB_HELPER = {}
-    SERVER_ADDRESS = "127.0.0.1:5000"
+
+    def __init__(self, fuse: Fuse):
+        super().__init__(fuse, True, True, "127.0.0.1:5000")
 
 
 # Production Config
@@ -133,22 +129,21 @@ class ProductionConfig(DynamicConfig):
     """
 
     APP_MODE = app_mode_production
-    APP_DEBUG = False
-    APP_PROPAGATE_DEBUG = False
-    DB_HELPER = {}
-    SERVER_ADDRESS = "192.168.0.1:54754"
+
+    def __init__(self, fuse: Fuse):
+        super().__init__(fuse, False, False, "192.168.0.1:54754")
 
 
 # Config factory by mode, add others
-def get_config_for_mode(app_mode: str) -> DynamicConfig:
+def get_config_for_mode(app_mode: str, fuse: Fuse) -> DynamicConfig:
     """
-    Return the appropriated cOnfiguration
+    Return the appropriated Configuration
     """
     config = None
-    if app_mode == app_mode_production:
-        config = ProductionConfig()
-    elif app_mode == app_mode_development:
-        config = DevelopmentConfig()
+    if app_mode == ProductionConfig.APP_MODE:
+        config = ProductionConfig(fuse)
+    elif app_mode == DevelopmentConfig.APP_MODE:
+        config = DevelopmentConfig(fuse)
 
     return config
 

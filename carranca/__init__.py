@@ -16,7 +16,6 @@
 login_manager = None
 SqlAlchemyScopedSession = None
 Config = None
-app = None
 
 # Module variable
 import time
@@ -34,7 +33,7 @@ from flask_sqlalchemy import SQLAlchemy
 # ============================================================================ #
 # Private methods
 # ---------------------------------------------------------------------------- #
-def _register_blueprint_events():
+def _register_blueprint_events(app: Flask):
     from .private.routes import bp_private
     from .public.routes import bp_public
 
@@ -70,7 +69,7 @@ def _register_blueprint_events():
 
 
 # ---------------------------------------------------------------------------- #
-def _register_blueprint_routes():
+def _register_blueprint_routes(app: Flask):
     from .private.routes import bp_private
     from .public.routes import bp_public
 
@@ -81,7 +80,7 @@ def _register_blueprint_routes():
 
 
 # ---------------------------------------------------------------------------- #
-def _register_jinja(debugUndefined: bool, app_name: str, app_version: str):
+def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
     from .app_request_scoped_vars import logged_user
     from .helpers.route_helper import private_route, public_route, static_route
 
@@ -101,7 +100,7 @@ def _register_jinja(debugUndefined: bool, app_name: str, app_version: str):
 
 
 # ---------------------------------------------------------------------------- #
-def _register_login_manager():
+def _register_login_manager(app: Flask):
     from flask_login import LoginManager
 
     global login_manager
@@ -112,7 +111,7 @@ def _register_login_manager():
 
 
 # ---------------------------------------------------------------------------- #
-def _register_db():
+def _register_db(app: Flask):
 
     db = SQLAlchemy()
     db.init_app(app)
@@ -146,7 +145,6 @@ def create_app():
     sidekick, display_mute_after_init = ignite_sidekick(app_name, started)
 
     # === Global app, Create the Flask App  ===`#
-    global app
     name = __name__ if __name__.find(".") < 0 else __name__.split(".")[0]
     app = Flask(name)
     sidekick.display.info(f"The Flask App was created, named '{name}'.")
@@ -175,23 +173,23 @@ def create_app():
         sidekick.config.LOG_FILE_STATUS = "off"
 
     # -- Register SQLAlchemy
-    _register_db()
+    _register_db(app)
     sidekick.display.info("The app was registered in SqlAlchemy.")
 
     # -- Register BluePrint events & routes
-    _register_blueprint_events()
+    _register_blueprint_events(app)
     sidekick.display.info("Added 'after_request' event for all blueprints.")
-    _register_blueprint_routes()
+    _register_blueprint_routes(app)
     sidekick.display.info("The blueprint routes were collected and registered within the app.")
 
     # -- Jinja2
-    _register_jinja(sidekick.config.DEBUG_TEMPLATES, app_name, app_version)
+    _register_jinja(app, sidekick.config.DEBUG_TEMPLATES, app_name, app_version)
     sidekick.display.info(
         f"The Jinja functions of this app have been attached 'jinja_env.globals' (with debug_templates {sidekick.config.DEBUG_TEMPLATES})."
     )
 
     # -- Jinja Login Manager
-    _register_login_manager()
+    _register_login_manager(app)
     sidekick.display.info("The Login Manager was initialized with the app.")
 
     # == Global Config, save here (__init__.py) to recreate sidekick
