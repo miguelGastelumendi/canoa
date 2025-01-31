@@ -11,7 +11,7 @@
 from os import path, remove
 from typing import Tuple
 
-from ..app_request_scoped_vars import sidekick
+from ..app_context_vars import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
 

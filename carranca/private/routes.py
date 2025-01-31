@@ -29,7 +29,6 @@ bp_private = Blueprint(bp_name(base_route_private), base_route_private, url_pref
 # === Test _ route ========================================
 @bp_private.route("/test_route")
 def test_route():
-
     return
 
 
@@ -138,6 +137,26 @@ def received_files_mgmt():
 
         html = received_files_grid()
         return html
+
+
+@login_required
+@bp_private.route("/received_file_get/<file_name>", methods=["GET"])
+def received_file_download(file_name: str):
+    """
+    Through this route, the user request to download one of the files
+    he has send for validation or it's generated report.
+    """
+    if nobody_is_logged():
+        return redirect_to(login_route())
+    else:
+        from flask import send_file
+
+        try:
+            F = send_file(file_name)
+        except Exception as e:
+            print(e)
+
+        return F
 
 
 @login_required

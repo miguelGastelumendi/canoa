@@ -9,7 +9,7 @@
 # cSpell:ignore sqlalchemy keepalives psycopg2
 
 import time
-from carranca.app_constants import app_name
+from .app_constants import app_name
 
 # -------------------------------------------------------
 # Main --------------------------------------------------
@@ -20,7 +20,7 @@ print(f"{'-' * len(the_aperture_msg)}\n{the_aperture_msg}")
 
 
 # Flask app
-from carranca import create_app, started  # see __init__.py
+from . import create_app, started  # see __init__.py
 
 app, sidekick = create_app()
 
@@ -30,7 +30,7 @@ sidekick.display.info("The app is ready to run!")
 
 if sidekick.config.APP_DISPLAY_DEBUG_MSG:
     # print(repr(sidekick))
-    from carranca.public.debug_info import get_debug_info
+    from .public.debug_info import get_debug_info
 
     di = get_debug_info(app, sidekick.config)  # TODO, print
 

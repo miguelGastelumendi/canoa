@@ -1,11 +1,10 @@
 """
-    Fourth step:
-    - Submit to validation
+Fourth step: Submit to validation
 
-    Part of Canoa `File Validation` Processes
+Part of Canoa `File Validation` Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore nobuild
@@ -26,7 +25,7 @@ from ...helpers.py_helper import (
 )
 from ...helpers.file_helper import change_file_ext
 from ...helpers.error_helper import ModuleErrorCode
-from ...app_request_scoped_vars import sidekick
+from ...app_context_vars import sidekick
 
 
 async def _run_validator(
@@ -55,7 +54,10 @@ async def _run_validator(
         run_command.extend([d_v.na_user_name, quote(user.name)])
         run_command.extend([d_v.na_file_name, quote(file_name)])
         if not is_str_none_or_empty(sep_full_name):
-            run_command.extend([d_v.na_schema_se.sep_full_name])
+            run_command.extend([d_v.na_schema_se, sep_full_name])
+
+    if not is_str_none_or_empty(d_v.flags):
+        run_command.append(d_v.flags)
 
     if debug_validator and not is_str_none_or_empty(d_v.flag_debug):
         run_command.append(d_v.flag_debug)
@@ -183,7 +185,7 @@ def submit(cargo: Cargo) -> Cargo:
                 pass  # rename and move?
 
         except:
-            sidekick.app_log.warn("The communication folders between apps were *not* deleted.")
+            sidekick.app_log.warning("The communication folders between apps were *not* deleted.")
 
     # goto email.py
     error_code = 0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT

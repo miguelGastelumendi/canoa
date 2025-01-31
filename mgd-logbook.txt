@@ -56,12 +56,14 @@ TODO:
 -----------------------------------------------------------
 
 TODO:
-2025-01- β 4.x
+2025-02- β 4.x
     - [Gestão de SE] (para usuários Setorista)
         > Mostrar um grid com 3 colunas
-            [Arquivo Submetido], [Relatório], [Data], [Disponível] (se o arquivo ainda está disponível)
+            [Arquivo Submetido], [Relatório], [Data], [Disponível] [# Error] [# Warn ]
+            (se o arquivo ainda está disponível)
             Permitir fazer download do arquivos submetidos e relatórios
 
+    # TODO do a Proxy func for sep
     - Menu to DB
     - sep_edit detected if form's input changed (don't update)
     - mudar erro 500
@@ -73,6 +75,12 @@ TODO:
 
 ------- 2025 - January -----------
 ----------------------------------
+
+2025-01-27-31 β 3.48
+    - remove global config, add global sidekick
+    - refactored  app_context_vars.py (request + app)
+    - received_file_mgmt:received_files_fetch ready
+    - new route /received_file_get/<file_name>
 
 2025-01-20--25 β 3.47 remove global app, use current_app
 

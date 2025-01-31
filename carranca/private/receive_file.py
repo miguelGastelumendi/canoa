@@ -11,8 +11,8 @@
 from flask import render_template, request
 from werkzeug.utils import secure_filename
 
-from ..app_request_scoped_vars import sidekick
-from ..app_request_scoped_vars import logged_user
+from ..app_context_vars import sidekick
+from ..app_context_vars import logged_user
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.user_helper import now

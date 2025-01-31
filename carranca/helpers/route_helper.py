@@ -93,7 +93,7 @@ def get_input_text(name: str) -> str:
 
 
 def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI_Texts]:
-    from ..app_request_scoped_vars import sidekick
+    from ..app_context_vars import sidekick
     from .ui_texts_helper import get_section
 
     tmplt = camel_to_snake(section) if tmplt is None else tmplt

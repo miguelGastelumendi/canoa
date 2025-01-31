@@ -14,7 +14,8 @@ from ...public.models import persist_user
 from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
 from ...helpers.error_helper import ModuleErrorCode
-from ...app_request_scoped_vars import sidekick
+from ...app_context_vars import sidekick
+
 from ...helpers.ui_texts_helper import add_msg_error, add_msg_fatal
 from ...helpers.route_helper import (
     home_route,

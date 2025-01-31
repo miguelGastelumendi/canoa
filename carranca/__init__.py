@@ -13,9 +13,11 @@
 
 # ============================================================================ #
 # Public/Global variables
+# from .Sidekick import Sidekick
+
+sidekick = None
 login_manager = None
 SqlAlchemyScopedSession = None
-Config = None
 
 # Module variable
 import time
@@ -81,7 +83,7 @@ def _register_blueprint_routes(app: Flask):
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
-    from .app_request_scoped_vars import logged_user
+    from .app_context_vars import logged_user
     from .helpers.route_helper import private_route, public_route, static_route
 
     app.jinja_env.globals.update(
@@ -142,16 +144,15 @@ def create_app():
     from .igniter import ignite_sidekick
     from .igniter import ignite_log_file
 
+    # === Global sidekick  === #
+    global sidekick
     sidekick, display_mute_after_init = ignite_sidekick(app_name, started)
 
     # === Global app, Create the Flask App  ===`#
     name = __name__ if __name__.find(".") < 0 else __name__.split(".")[0]
     app = Flask(name)
     sidekick.display.info(f"The Flask App was created, named '{name}'.")
-    sidekick.keep(app)
-    sidekick.display.info(
-        f"[{sidekick}] instance is now ready. It will be cached for use between requests."
-    )
+    sidekick.display.info(f"[{sidekick}] instance is now ready. It will kept available.")
 
     # -- app config
     app.config.from_object(sidekick.config)
@@ -192,15 +193,10 @@ def create_app():
     _register_login_manager(app)
     sidekick.display.info("The Login Manager was initialized with the app.")
 
-    # == Global Config, save here (__init__.py) to recreate sidekick
-    global Config
-    uri = db_obfuscate(sidekick.config)
-    Config = sidekick.config
-    sidekick.display.info("The global Config is ready.")
-
     # -- Connect to Database
     from .igniter import ignite_sql_connection
 
+    uri = db_obfuscate(sidekick.config)
     ignite_sql_connection(sidekick, uri)
     sidekick.display.info("SQLAlchemy was instantiated and the db connection was successfully tested.")
 

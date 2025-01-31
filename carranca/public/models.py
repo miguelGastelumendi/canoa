@@ -44,6 +44,7 @@ class Users(Base, UserMixin):
     password_failed_at = Column(DateTime)
     id_role = Column(Integer)
     disabled = Column(Boolean, default=False)
+    email_confirmed = Column(Boolean, Computed("email_confirmed", persisted=True))
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():
@@ -68,7 +69,7 @@ def get_user_where(**filter: Any) -> Users:
     """
     Select a user by a unique filter
     """
-    from ..app_request_scoped_vars import sidekick
+    from ..app_context_vars import sidekick
 
     user = None
     with SqlAlchemyScopedSession() as db_session:
@@ -85,7 +86,7 @@ def persist_user(record: any, task_code: int = 1) -> None:
     """
     Updates a user's record
     """
-    from ..app_request_scoped_vars import sidekick
+    from ..app_context_vars import sidekick
 
     with SqlAlchemyScopedSession() as db_session:
         task_code = 0

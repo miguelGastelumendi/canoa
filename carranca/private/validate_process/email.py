@@ -12,7 +12,7 @@
 
 from .Cargo import Cargo
 from ..models import UserDataFiles
-from ...app_request_scoped_vars import sidekick
+from ...app_context_vars import sidekick
 from ...helpers.email_helper import RecipientsDic, RecipientsListStr
 from ...helpers.user_helper import now_as_text, now
 from ...helpers.sendgrid_helper import send_email

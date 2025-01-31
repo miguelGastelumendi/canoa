@@ -12,7 +12,7 @@ from wtforms import PasswordField, FileField, StringField
 from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired, Length, URL
 
-from ..app_request_scoped_vars import sidekick
+from ..app_context_vars import sidekick
 
 # -------------------------------------------------------------
 # Text here ha no relevance, the ui_text table is actually used.

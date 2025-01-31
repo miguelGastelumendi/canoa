@@ -48,14 +48,15 @@ class BaseConfig(Config):
     """
     # This is the final debug state of the app.
     #  See _get_debug_2 & Fuse
-    debugging = None
+    APP_DEBUGGING: bool = None
     # see initialize:
     #  several keys are set to APP_PROPAGATE_DEBUG
     #  when it's config value is None
     APP_PROPAGATE_DEBUG = False
-    APP_DEBUG = None
-    APP_MINIFIED = None  # <- True if APP_PROPAGATE_DEBUG else False
-    APP_DISPLAY_DEBUG_MSG = None  # <- True if APP_PROPAGATE_DEBUG else False
+    # set in derived classes
+    APP_DEBUG: bool = None
+    APP_MINIFIED: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
+    APP_DISPLAY_DEBUG_MSG: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
     APP_MODE = "None"  # see below (enum)
 
     """ Helpers Configuration
@@ -85,9 +86,9 @@ class BaseConfig(Config):
         this must be set individually for each APP_MODE (see config.py)
         to send envvars directly to flask use the FLASK_ prefix
     """
-    DEBUG = None  # <- True if APP_PROPAGATE_DEBUG else False
-    TESTING = None  # <- True if APP_PROPAGATE_DEBUG else False
-    DEBUG_TEMPLATES = None  # <- True if APP_PROPAGATE_DEBUG else False
+    DEBUG: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
+    TESTING: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
+    DEBUG_TEMPLATES: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
     # this does'nt work (spend a day to find out), is SERVER_NAME: SERVER_ADDRESS = ""
     # https://flask.palletsprojects.com/en/latest/config/#SERVER_NAME
     # Inform the application what host and port it is bound to (NO Scheme).
@@ -95,11 +96,6 @@ class BaseConfig(Config):
     PREFERRED_URL_SCHEME = ""
     SECRET_KEY = ""
     SESSION_COOKIE_NAME = f"{app_name.lower()}"
-    # TODO
-    # # Flask helper: will be divided into
-    # SERVER_ADDRESS = ""
-    # FLASK_RUN_HOST = "127.0.0.4"
-    # FLASK_RUN_PORT = "1235"
 
     """ SQLAlchemy
         --------------------------
@@ -115,8 +111,8 @@ class BaseConfig(Config):
     LOG_TO_FILE = True  # Log
     LOG_MIN_LEVEL = logging.INFO
     # folder is log_files
-    LOG_FILE_FOLDER = None  # "log_files"
-    LOG_FILE_NAME = None  # defaults to APP_NAME.datetime.log
+    LOG_FILE_FOLDER: str = None  # "log_files"
+    LOG_FILE_NAME: str = None  # defaults to APP_NAME.datetime.log
     LOG_FILE_STATUS = "?"  # internal set
 
 

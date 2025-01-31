@@ -1,5 +1,7 @@
-""" *app_request_scoped_vars*
+""" *app_context_vars*
 
+    Request Context
+    ---------------
     Contains the mechanisms to store and retrieve variables from Flask's g object.
 
     The `g` object is a global namespace for holding any data you want during the
@@ -10,10 +12,15 @@
     request functions, and other request handlers.
 
 
+    Application Context
+    -------------------
+    Contains a shortcut to the global sidekick object.
+
+
     -- [/!\] -------
         Avoid calling any of this functions on main.py or carranca.__init__.py
         there is no has_request_context and there is a
-        sidekick running create in )
+        sidekick running create in.
 
 
 
@@ -30,10 +37,16 @@ from typing import Callable, Any
 from threading import Lock
 from werkzeug.local import LocalProxy
 
+from . import sidekick as global_sidekick
+from .Sidekick import Sidekick
 from .private.logged_user import LoggedUser
-from .Sidekick import Sidekick, recreate_sidekick
 
 
+# share global sidekick
+sidekick: Sidekick = global_sidekick
+
+
+# local lock control
 _locks = {}
 
 
@@ -67,18 +80,9 @@ def _get_logged_user() -> LoggedUser | None:
         return None
 
 
-def _get_sidekick() -> Sidekick | None:
-    """
-    A companion object to the app, with all the necessary information to run it.
-    """
-    return _get_scoped_var("_sidekick", recreate_sidekick)
-
-
 # Proxies
 
 logged_user: LoggedUser | None = LocalProxy(_get_logged_user)
-
-sidekick: Sidekick | None = LocalProxy(_get_sidekick)
 
 
 # eof

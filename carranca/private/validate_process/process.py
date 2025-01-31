@@ -53,7 +53,7 @@ def process(
     valid_ext: list[str],
 ) -> Tuple[int, str, str]:
 
-    from ...app_request_scoped_vars import sidekick
+    from ...app_context_vars import sidekick
 
     current_module_name = __name__.split(".")[-1]
 
@@ -74,7 +74,9 @@ def process(
         return
 
     def _updated(code):
-        _display(f"The record was updated successfully with process error_code= {code}")
+        msg_ok = "The process ended without error and t" if code == 0 else "T"
+        msg_error = "." if code == 0 else f" although the process ended with error_code= [{code}]."
+        _display(f"{msg_ok}he DB record was updated successfully{msg_error}")
         return
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process

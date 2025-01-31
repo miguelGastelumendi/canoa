@@ -1,8 +1,8 @@
 {# ------------------------------------
 
-sep_mgmt.html.j2
------------------
-Managed & Displays a grid with sep «—» user
+received_file_mgmt.html.j2
+--------------------------
+Managed & Displays a grid received files
 
 Extends
 ./layouts/dialog.html.j2
@@ -61,7 +61,7 @@ mgd
     const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmitID}}'));
     const dateFormat = '{{ dateFormat | default('pt-BR') }}';
 </script>
-<script src="{{static_route('js/sep_mgmt.js')}}"></script>
+<script src="{{static_route('js/rec_file_mgmt.js')}}"></script>
 {% endblock dlg_blc_javascript %}
 
 {#--- msgOnly --- #}

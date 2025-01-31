@@ -11,7 +11,7 @@ from os import path
 from typing import TypeAlias
 
 from ..helpers.route_helper import static_route
-from ..app_request_scoped_vars import sidekick
+from ..app_context_vars import sidekick
 
 
 SvgContent: TypeAlias = str

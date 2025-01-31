@@ -11,8 +11,9 @@ import json
 from os import path
 from flask import render_template
 
-from ..app_request_scoped_vars import sidekick
-from ..app_request_scoped_vars import logged_user
+from .models import ReceivedFiles
+from ..app_context_vars import sidekick
+from ..app_context_vars import logged_user
 from ..helpers.db_helper import ListOfRecordsEmpty, ListOfRecords
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import UserFolders
@@ -22,13 +23,11 @@ from ..helpers.route_helper import get_private_form_data, init_form_vars
 from ..helpers.hints_helper import UI_Texts
 from ..helpers.ui_texts_helper import (
     add_msg_fatal,
-    format_ui_item,
-    ui_DialogIcon,
     ui_msg_error,
     ui_msg_success,
     ui_msg_exception,
 )
-from .models import ReceivedFiles
+from ..config_validate_process import ValidateProcessConfig
 
 
 def received_files_fetch() -> ListOfRecords:
@@ -42,12 +41,13 @@ def received_files_fetch() -> ListOfRecords:
     else:
         files = 0
         uf = UserFolders()
+        report_ext = ValidateProcessConfig(False).output_file.ext
         for record in received_files.records:
             folder = uf.uploaded if record.file_origin == "L" else uf.downloaded
-            #TODO best way to create an aux local column
+            # create auxiliary fields
             record.file_full_name = path.join(folder, logged_user.folder, record.stored_file_name)
             record.file_found = path.isfile(record.file_full_name)
-            record.report_found = path.isfile(change_file_ext(record.file_full_name, "pdf"))
+            record.report_found = path.isfile(change_file_ext(record.file_full_name, report_ext))
             if record.file_found:
                 files += 1
 
@@ -68,7 +68,7 @@ def received_files_grid() -> str:
 
         task_code += 1  # 2
         # TODO: create a real key with user_id and datetime
-        js_grid_sec_value = "7298kaj0fk9dl-sd=)0x"
+        js_grid_sec_value = "7298kaj0fk9dl-sd=)0y"
         # uiTexts keys used in JavaScript
         js_grid_sec_key = "gridSecKey"
         js_grid_rsp = "gridRsp"
@@ -80,13 +80,11 @@ def received_files_grid() -> str:
         uiTexts[js_grid_submit_id] = js_grid_submit_id
         uiTexts[js_grid_sec_key] = js_grid_sec_key
 
-        uiTexts[ui_DialogIcon] = SepIconConfig.set_url(SepIconConfig.none_file)
-
         task_code += 1  # 3
         colData = json.loads(uiTexts["colData"])
         task_code += 1  # 4
         # grid columns, colData & colNames *must* match in length.
-        colNames = ["user_id", "file_url", "user_name", "scm_sep_curr", "scm_sep_new", "when"]
+        colNames = ["id", "file_name", "report_name", "submitted_at"]
         task_code += 1  # 5
         # Rewrite it in an easier way to express it in js: colName: colHeader
         uiTexts["colData"] = [{"n": key, "h": colData[key]} for key in colNames]
@@ -101,6 +99,7 @@ def received_files_grid() -> str:
             users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data()
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 7
+            #TODO: create ann error page
             uiTexts[ui_msg_exception] = uiTexts["secKeyViolation"]
             internal_logout()
         else:

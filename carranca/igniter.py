@@ -122,7 +122,7 @@ def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
         if Config is None:
             raise Exception(f"Unknown config mode '{fuse.app_mode}'.")
 
-        Config.APP_DEBUGGING = fuse.debugging if fuse.debugging else Config.APP_DEBUG
+        Config.APP_DEBUGGING = True if fuse.debugging else Config.APP_DEBUG
         Config.APP_ARGS = fuse.args
         fuse.display.info(f"The app config, in '{fuse.app_mode}' mode, was ignited.")
     except Exception as e:
@@ -265,7 +265,7 @@ def ignite_log_file(config: DynamicConfig, app: Flask) -> Tuple[str, str]:
 # - ---------------------------------------------------------------------------- #
 # - Public --------------------------------------------------------------------- #
 # - ---------------------------------------------------------------------------- #
-from .Sidekick import Sidekick, create_sidekick
+from .Sidekick import Sidekick
 
 
 def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
@@ -298,7 +298,7 @@ def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
     fuse.display.debug("Flask's Server Name is ready and configured.")
 
     # Create the session shared 'sidekick'
-    sidekick = create_sidekick(config, fuse.display)
+    sidekick = Sidekick(config, fuse.display)
     fuse.display.info("The 'sidekick' was ignited.")
 
     # ---------------------------------------------------------------------------- #

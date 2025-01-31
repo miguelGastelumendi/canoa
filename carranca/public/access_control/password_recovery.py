@@ -29,7 +29,7 @@ from ..wtforms import PasswordRecoveryForm
 
 
 def password_recovery():
-    from ...app_request_scoped_vars import sidekick
+    from ...app_context_vars import sidekick
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_RECOVERY.value
     tmpl_form, template, tmpl_form, texts = init_form_vars()

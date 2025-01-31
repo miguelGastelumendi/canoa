@@ -20,7 +20,7 @@ from ..helpers.pw_helper import internal_logout
 from .models import MgmtUserSep
 from .SepIconConfig import SepIconConfig
 
-from ..app_request_scoped_vars import sidekick
+from ..app_context_vars import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.db_helper import try_get_mgd_msg, ListOfRecords, ListOfRecordsEmpty
 from ..helpers.user_helper import get_batch_code
@@ -87,7 +87,7 @@ def do_sep_mgmt() -> str:
                 record.scm_sep_curr = item_none if record.scm_sep_curr is None else record.scm_sep_curr
                 record.file_url = icon_prepare_for_html(record.sep_id)[0]  # url
 
-            sep_fullname_list = [sep.full_name for sep in sep_list.records]
+            sep_fullname_list = [sep.sep_fullname for sep in sep_list.records]
 
             return users_sep, sep_fullname_list, msg_error
 
@@ -97,7 +97,7 @@ def do_sep_mgmt() -> str:
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 7
             uiTexts[ui_msg_exception] = uiTexts["secKeyViolation"]
-            internal_logout()
+        # TODO internal_logout()
         else:
             task_code += 3
             txtGridResponse = request.form.get(js_grid_rsp)
@@ -212,7 +212,7 @@ def _save_data_to_db(
     from carranca import SqlAlchemyScopedSession
     from .models import MgmtUserSep
 
-    from ..app_request_scoped_vars import logged_user, sidekick
+    from ..app_context_vars import logged_user, sidekick
 
     msg_error = None
     assigned_by = logged_user.id
@@ -259,7 +259,7 @@ def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> def_retur
     """
     from carranca import SqlAlchemyScopedSession
     from .models import MgmtEmailSep
-    from ..app_request_scoped_vars import sidekick
+    from ..app_context_vars import sidekick
     from ..helpers.py_helper import now
     from ..helpers.sendgrid_helper import send_email
 

@@ -145,7 +145,7 @@ def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
       - A single value if the query returns a single row with a single column.
       - None if an error occurs or the query returns no results.
     """
-    from ..app_request_scoped_vars import sidekick
+    from ..app_context_vars import sidekick
 
     try:
         data_rows = _execute_sql(query)
@@ -182,7 +182,7 @@ def retrieve_dict(query: str):
       - A dictionary where the first column is the key and the second column is the value.
       - An empty dictionary if the query returns no data or an error occurs.
     """
-    from ..app_request_scoped_vars import sidekick
+    from ..app_context_vars import sidekick
 
     data = retrieve_data(query)
 

@@ -22,20 +22,19 @@ from .helpers.email_helper import RecipientsDic
 
 OutputFile = NamedTuple("OutputFile", name=str, ext=str)
 
-DataValidateApp = NamedTuple(
-    "DataValidateApp",
-    batch=str,
-    folder=str,
-    ui_name=str,  # the name of the app to display to user/log/etc
-    flags=str,
-    flag_debug=str,
+class DataValidateApp(NamedTuple):
+    batch: str           # batch file name
+    folder: str          # folder name
+    ui_name: str         # the name of the app to display to user/log/etc
+    flags: str           # flags for the app
+    flag_debug: str      # debug flag
     # named arguments
-    na_user_name=str,
-    na_file_name=str,
-    na_schema_se=str,
-    na_in_folder=str,
-    na_out_folder=str,
-)
+    na_user_name: str    # user name argument
+    na_file_name: str    # file name argument
+    na_schema_se: str    # schema sector argument
+    na_in_folder: str    # input folder argument
+    na_out_folder: str   # output folder argument
+
 
 
 class ValidateProcessConfig:

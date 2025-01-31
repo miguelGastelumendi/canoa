@@ -1,0 +1,21 @@
+{# ------------------------------------
+.\includes\grid-header.html.j2
+---------------------------------
+
+Common header for ag-grid
+
+mgd
+--------------------------------------- #}
+{# cSpell:ignore elif mgmt #}
+
+
+{% block base_blc_head_js %}
+<script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+{% endblock base_blc_head_js %}
+
+{% block dlg_blc_body %}
+{% include "includes/backend-msg.html.j2" %}
+<div id="grid_container" class="ag-theme-quartz" style="height: 400px"></div>
+{% endblock dlg_blc_body %}
+
+{# eof #}

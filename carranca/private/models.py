@@ -13,7 +13,7 @@
 
 from typing import Optional, Tuple
 from psycopg2 import DatabaseError, OperationalError
-from sqlalchemy import and_, select, text
+from sqlalchemy import and_, select
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text
 from sqlalchemy.orm import defer, Session as SQLAlchemySession
 
@@ -21,7 +21,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from carranca import SqlAlchemyScopedSession
 
 from .SepIconConfig import SepIconConfig, SvgContent
-from ..app_request_scoped_vars import sidekick
+from ..app_context_vars import sidekick
 from ..helpers.db_helper import DBRecords, ListOfRecordsEmpty
 from ..helpers.py_helper import is_str_none_or_empty
 
@@ -62,7 +62,6 @@ class UserDataFiles(Base):
     file_size = Column(Integer)
     from_os = Column(String(1))
     original_name = Column(String(80), nullable=True, default=None)
-    email_confirmed = Column(Boolean, default=False)
 
     # Process module
     ## (register..on_ins)
@@ -193,42 +192,11 @@ class MgmtUserSep(Base):
             users_sep = ListOfRecordsEmpty
             sep_list = ListOfRecordsEmpty
             try:
-
-                # def _file_url(sep_id: int) -> str:
-                #     url, _, _ = icon_prepare_for_html(
-                #         sep_id
-                #     )  # this is foreach user (don't user logged_user)
-                #     return url
-
-                # sep_list: ListOfRecords = [
-                #     {"id": sep.sep_id, "fullname": sep.sep_fullname}
-                #     for sep in db_session.execute(
-                #         text("SELECT sep_id, sep_fullname FROM vw_scm_sep")
-                #     ).fetchall()
-                # ]
-                # sep_qry = f"SELECT sep_id, sep_fullname FROM {VIEW_SCHEMA_SEP}"
-                # sep_recs = db_session.execute(text(sep_qry)).fetchall()
                 ssep_recs = db_session.scalars(select(SchemaSEP)).all()
                 sep_list = DBRecords(SchemaSEP.__tablename__, ssep_recs)
 
                 mus_recs = db_session.scalars(select(MgmtUserSep)).all()
                 users_sep = DBRecords(MgmtUserSep.__tablename__, mus_recs)
-                # users_sep: ListOfRecords = [
-                #     {
-                #         "user_id": usr_sep.user_id,
-                #         "sep_id": usr_sep.sep_id,
-                #         "file_url": _file_url(usr_sep.sep_id),
-                #         "user_name": usr_sep.user_name,
-                #         "disabled": usr_sep.user_disabled,
-                #         "scm_sep_curr": (
-                #             item_none if usr_sep.scm_sep_curr is None else usr_sep.scm_sep_curr
-                #         ),
-                #         "scm_sep_new": item_none,
-                #         "when": usr_sep.assigned_at,
-                #     }
-                #     for usr_sep in db_session.scalars(select(MgmtUserSep)).all()
-                # ]
-
             except Exception as e:
                 msg_error = str(e)
                 sidekick.display.error(msg_error)
@@ -267,7 +235,7 @@ class SchemaSEP(Base):
 
     __tablename__ = "vw_scm_sep"
     id = Column("sep_id", Integer, primary_key=True)
-    full_name = Column("sep_fullname", Text)
+    sep_fullname = Column(Text)
 
 
 # --- Table ---
@@ -309,7 +277,7 @@ class MgmtSep(Base):
                 _sep = db_session.execute(stmt).scalar_one_or_none()
                 stmt = select(SchemaSEP).where(SchemaSEP.id == _sep.id)
                 row = db_session.execute(stmt).one_or_none()
-                sep_fullname = None if row is None else row[0]
+                sep_fullname = None if row is None else row[0].sep_fullname
                 sep = _sep
             except (OperationalError, DatabaseError) as e:
                 sidekick.app_log.error(f"Database connection error: {e}")
@@ -343,7 +311,7 @@ class MgmtSep(Base):
         """
         Saves a Sep record
         """
-        from ..app_request_scoped_vars import sidekick
+        from ..app_context_vars import sidekick
 
         done = False
         with SqlAlchemyScopedSession() as db_session:
@@ -379,27 +347,15 @@ class ReceivedFiles(Base):
     # current user sep id*
     mgmt_sep_id = Column(Integer)
 
-    registered_at = Column(DateTime)
+    submitted_at = Column("registered_at", DateTime)
     stored_file_name = Column(String(180))
-    file_name = Column(String(80))
+    file_name = Column("original_name", String(80))
     file_origin = Column(String(1))
     file_size = Column(Integer)
     file_crc32 = Column(Integer)
 
     email_sent = Column(Boolean)
     had_reception_error = Column(Boolean)
-
-    # auxiliary unbound columns
-    file_found = Column(Boolean, default=False)
-    report_found = Column(Boolean, default=False)
-
-    @property
-    def file_found(self):
-        return False
-
-    @property
-    def report_found(self):
-        return False
 
     def get_user_records(
         user_id: int, email_sent: bool = True, had_reception_error: bool = False
