@@ -3,6 +3,7 @@
 
  Some functions I miss. I brought to Py
  mgd 2024-04-09--27
+ mgd 2025-02-04
 
  """
 
@@ -42,17 +43,27 @@ def as_str_strip(s: str) -> str:
     return (str(s) + "").strip()
 
 
-def quote(s: str, always: bool = False) -> str:
+def quote(s: str, always: bool = True) -> str:
     """
-    Returns the str quoted if it has a space
+    Args:
+        s: The string to be quoted.
+        always: If True, always enclose the string in double quotes (not only if it contains spaces).
+    Returns:
+        - s, with escaped double quotes (\"),
+          and
+        - enclosed in double quotes if:
+            - it contains one or more spaces
+              or
+            - if always is True.
     """
-    s = to_str(s)
-    if not always and " " not in s:
+    quoted = to_str(s)
+    if '"' in quoted:
+        quoted = quoted.replace('"', '\\"')
+
+    if not always and " " not in quoted:
         return s
 
-    # Escape existing double quotes in the text
-    escaped_text = to_str(s).replace('"', '\\"')
-    return f'"{escaped_text}"'
+    return f'"{quoted}"'
 
 
 def is_str_none_or_empty(s: str) -> bool:

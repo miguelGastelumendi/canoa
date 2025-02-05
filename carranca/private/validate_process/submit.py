@@ -3,7 +3,7 @@ Fourth step: Submit to validation
 
 Part of Canoa `File Validation` Processes
 
-Equipe da Canoa -- 2024
+Equipe da Canoa -- 2024—2025
 mgd
 """
 
@@ -18,7 +18,6 @@ from ...private.logged_user import LoggedUser
 from ...config_validate_process import DataValidateApp
 from ...helpers.py_helper import (
     is_str_none_or_empty,
-    OS_IS_LINUX,
     decode_std_text,
     quote,
     now,
@@ -40,21 +39,23 @@ async def _run_validator(
 ):
     #  This function knows quite a lot of how to run [data_validate]
 
-    sep_full_name = "?" if user.sep is None else user.sep.full_name
+    sep_full_name = "??" if user.sep is None else user.sep.full_name
 
     run_command = [
         batch_full_name,
         data_validate_path,  # param 1: path do the data_validate main.py
-        d_v.na_in_folder,  # Named Argumentes:
+        d_v.na_in_folder,
+        # Named Argumentes:
         input_folder,  # param 2 Don't use " "
         d_v.na_out_folder,
         output_folder,  # param 3   Don't use " "
+        d_v.na_user_name,
+        quote(user.name),  # param 4
+        d_v.na_file_name,
+        quote(file_name),  # param 5
+        d_v.na_schema_se,
+        quote(sep_full_name),  # param 6
     ]
-    if OS_IS_LINUX:  # data_validate's Windows version bug (so don't use this args in Windows)
-        run_command.extend([d_v.na_user_name, quote(user.name)])
-        run_command.extend([d_v.na_file_name, quote(file_name)])
-        if not is_str_none_or_empty(sep_full_name):
-            run_command.extend([d_v.na_schema_se, sep_full_name])
 
     if not is_str_none_or_empty(d_v.flags):
         run_command.append(d_v.flags)
@@ -68,7 +69,7 @@ async def _run_validator(
     # Run the script command asynchronously
     stdout = None
     stderr = None
-
+    exit_code = 0
     try:
         process = await asyncio.create_subprocess_exec(
             *run_command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
@@ -77,15 +78,18 @@ async def _run_validator(
         # Wait for the process to complete
         stdout, stderr = await process.communicate()
 
+        # Get the exit code of the process
+        exit_code = process.returncode
+
     except Exception as e:
-        err_msg = f"{d_v.ui_name}.running: {e}"
+        err_msg = f"{d_v.ui_name}.running: {e}, Code [{exit_code}]."
         sidekick.app_log.critical(err_msg)
-        return "", err_msg
+        return "", err_msg, exit_code
 
     # Decode the output from bytes to string
     stdout_str = decode_std_text(stdout)
     stderr_str = decode_std_text(stderr)
-    return stdout_str, stderr_str
+    return stdout_str, stderr_str, exit_code
 
 
 def submit(cargo: Cargo) -> Cargo:
@@ -105,6 +109,7 @@ def submit(cargo: Cargo) -> Cargo:
     task_code = 0
     std_out_str = None
     std_err_str = None
+    exit_code = 0
     cargo.submit_started_at = now()
 
     # return cargo.update(
@@ -134,7 +139,7 @@ def submit(cargo: Cargo) -> Cargo:
 
         try:
             task_code += 2  # 3
-            std_out_str, std_err_str = asyncio.run(
+            std_out_str, std_err_str, exit_code = asyncio.run(
                 _run_validator(
                     batch_full_name,
                     data_validate_path,
@@ -159,7 +164,7 @@ def submit(cargo: Cargo) -> Cargo:
         if not path.exists(final_report_full_name):
             task_code += 1  # 6
             raise Exception(
-                f"\n{sidekick.app_name}: Report was not found.\n » {_cfg.dv_app.ui_name}.stderr:\n{std_err_str}\n » {_cfg.dv_app.ui_name}.stdout:\n {std_out_str}\n » End."
+                f"\n{sidekick.app_name}: Report was not found.\n » {_cfg.dv_app.ui_name}.stderr:\n{std_err_str}\n » {_cfg.dv_app.ui_name}.stdout:\n {std_out_str}\n ExitCode {exit_code}\n » End."
             )
         elif stat(final_report_full_name).st_size < 200:
             task_code += 2  # 7
@@ -195,7 +200,7 @@ def submit(cargo: Cargo) -> Cargo:
         )
     else:
         sidekick.app_log.error(
-            f"There was a problem submitting the files to '{_cfg.dv_app.ui_name}'. Error code [{error_code}]."
+            f"There was a problem submitting the files to '{_cfg.dv_app.ui_name}'. Error code [{error_code}] and Exit code [{exit_code}]."
         )
 
     return cargo.update(

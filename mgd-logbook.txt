@@ -75,6 +75,12 @@ TODO:
 
 ------- 2025 - January -----------
 ----------------------------------
+2025-02-03--05 β 3.49
+    - dv: fix run_validate.bat parameters (error when more than 9)
+    - dv: new columns in user_data_files, read from data_validate's stdout
+    - dv: set --sector arg only if user has sep
+    - db: new columns, user_data_files.[report_errors,report_warns,report_tests,validator_version,db_version, exit_code]
+    - fix py_helper.quote
 
 2025-01-27-31 β 3.48
     - remove global config, add global sidekick
@@ -82,8 +88,8 @@ TODO:
     - received_file_mgmt:received_files_fetch ready
     - new route /received_file_get/<file_name>
 
-2025-01-20--25 β 3.47 remove global app, use current_app
 
+2025-01-20--25 β 3.47 remove global app, use current_app
 
 2025-01-20--25 β 3.46
     - join UserFolders with ProcessData._User
