@@ -80,7 +80,7 @@ def send_email(
         ValueError: if the attachment file (file_to_send) has an extension with unknown type.
         RuntimeError: error within the send_mail API
     """
-    from ..app_context_vars import sidekick
+    from ..common.app_context_vars import sidekick
 
     status_code = 0
     task = ""

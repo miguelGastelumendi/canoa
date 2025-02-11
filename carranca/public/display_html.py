@@ -18,11 +18,11 @@ import base64
 
 from flask import render_template
 
-from ..helpers.jinja_helper import jinja_pre_template
-from ..helpers.file_helper import folder_must_exist
 from ..helpers.py_helper import is_str_none_or_empty
+from ..helpers.file_helper import folder_must_exist
 from ..helpers.html_helper import img_filenames, img_change_src_path
-from ..app_context_vars import sidekick
+from ..helpers.jinja_helper import jinja_pre_template
+from ..common.app_context_vars import sidekick
 
 
 def __prepare_img_files(
@@ -108,7 +108,7 @@ def display_html(docName: str):
     )  # list of img tags in HTML
 
     img_folders = ["static", "docs", section, "images"]
-    img_local_path = os.path.join(sidekick.config.ROOT_FOLDER, *img_folders)
+    img_local_path = os.path.join(sidekick.config.APP_FOLDER, *img_folders)
     if is_str_none_or_empty(body):
         msg = get_msg_error("documentNotFound").format(docName)
         body = f"<h4>{msg}</h4>"

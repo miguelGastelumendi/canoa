@@ -11,11 +11,13 @@
 
 from typing import Tuple
 from flask import Flask
+from os import path
+
 from .Args import Args
-from .helpers.py_helper import is_str_none_or_empty
+from ..helpers.py_helper import is_str_none_or_empty
 
 
-_error_msg = "[{0}]: An error occurred while {1}. Message `{2}`."
+_error_msg = "[{0}]: An error occurred while {1}. Message: `{2}`."
 fuse = None
 
 
@@ -30,10 +32,10 @@ def _log_and_exit(ups: str):
 # ---------------------------------------------------------------------------- #
 # Fuse a igniter helper
 class Fuse:
-    from .helpers.Display import Display
+    from .Display import Display
 
     def __init__(self, app_name, display: Display, args: Args):
-        from .BaseConfig import app_mode_production, app_mode_development
+        from ..config.BaseConfig import app_mode_production, app_mode_development
 
         self.app_name = app_name
         self.debugging = args.app_debug
@@ -60,7 +62,7 @@ def _get_debug_2() -> bool:
     #    the 'app_mode' argument (: 'D', 'P', etc, see config.py).
     #    Taking this inb consideration, we skip 3. Config
     #
-    from .helpers.py_helper import get_envvar
+    from ..helpers.py_helper import get_envvar
 
     debug_4 = False
     debug_3 = debug_4  # Read above 'Considerations'
@@ -78,7 +80,7 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
     msg_error = None
     new_fuse = None
     try:
-        from .helpers.Display import Display
+        from .Display import Display
 
         display = Display(
             f"{app_name}: ",
@@ -105,7 +107,7 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
 
 
 # ---------------------------------------------------------------------------- #
-from .DynamicConfig import DynamicConfig
+from ..config.DynamicConfig import DynamicConfig
 
 
 def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
@@ -116,18 +118,21 @@ def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
     Config = None  # this config will later be shared by sidekick
     msg_error = None
     try:
-        from .DynamicConfig import get_config_for_mode
+        from ..config.DynamicConfig import get_config_for_mode
 
         Config = get_config_for_mode(fuse.app_mode, fuse)
         if Config is None:
             raise Exception(f"Unknown config mode '{fuse.app_mode}'.")
+
+        if not path.isfile(path.join(Config.APP_FOLDER, "main.py")):
+            raise Exception("main.py file not found in the app folder. Check BaseConfig.APP_FOLDER.")
 
         Config.APP_DEBUGGING = True if fuse.debugging else Config.APP_DEBUG
         Config.APP_ARGS = fuse.args
         fuse.display.info(f"The app config, in '{fuse.app_mode}' mode, was ignited.")
     except Exception as e:
         msg_error = _error_msg.format(
-            __name__, f"initializing the app config in mode '{fuse.app_mode}'.", str(e)
+            __name__, f"initializing the app config in mode '{fuse.app_mode}'", str(e)
         )
 
     return Config, msg_error
@@ -139,7 +144,7 @@ def _check_mandatory_keys(config, fDisplay) -> str:
 
     msg_error = None
     try:
-        from .BaseConfig import CONFIG_MANDATORY_KEYS
+        from ..config.BaseConfig import CONFIG_MANDATORY_KEYS
 
         def __is_empty(key: str) -> bool:
             value = getattr(config, key, "")
@@ -167,7 +172,7 @@ def _check_mandatory_keys(config, fDisplay) -> str:
 
     except Exception as e:
         msg_error = _error_msg.format(
-            __name__, f"checking mandatory keys of config[`{config.APP_MODE}`].", e
+            __name__, f"checking mandatory keys of config[`{config.APP_MODE}`]", e
         )
 
     return msg_error
@@ -220,9 +225,9 @@ def ignite_log_file(config: DynamicConfig, app: Flask) -> Tuple[str, str]:
         return "", logging.NOTSET
 
     from os import path
-    from .helpers.user_helper import get_unique_filename
+    from ..helpers.user_helper import get_unique_filename
     from logging.handlers import RotatingFileHandler
-    from .helpers.file_helper import folder_must_exist
+    from ..helpers.file_helper import folder_must_exist
 
     msg_error = None
     full_name = ""
@@ -303,7 +308,7 @@ def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
 
     # ---------------------------------------------------------------------------- #
     # Give warnings of import configuration that may be missing
-    from .helpers.py_helper import is_str_none_or_empty
+    from ..helpers.py_helper import is_str_none_or_empty
 
     warns = 0
     if is_str_none_or_empty(config.EMAIL_API_KEY):

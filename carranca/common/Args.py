@@ -7,7 +7,7 @@
  """
 
 import json
-from .helpers.py_helper import set_flags_from_argv
+from ..helpers.py_helper import set_flags_from_argv
 
 class Args:
     def __init__(self, as_debug):

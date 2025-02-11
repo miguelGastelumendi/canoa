@@ -5,7 +5,7 @@ sep_mgmt.html.j2
 Managed & Displays a grid with sep «—» user
 
 Extends
-./layouts/dialog.html.j2
+"./layouts/dialog.html.j2"
 
 mgd
 --------------------------------------- #}
@@ -20,7 +20,15 @@ mgd
 {% if not msgOnly %}
 {#--- msgOnly --- #}
 
-{% include "includes/grid-header.html.j2" %}
+{% block base_blc_head_js %}
+{% include "./includes/grid-header.html.j2" %}
+{% endblock base_blc_head_js %}
+
+{% block dlg_blc_body %}
+{% include "./includes/grid-body.html.j2" %}
+{% endblock dlg_blc_body %}
+
+
 
 {% block dlg_blc_footer %}
 <div class="mb-3 row">
@@ -51,9 +59,14 @@ mgd
 <script>
     const itemNone = '{{ itemNone }}';
     const itemRemove = '{{ itemRemove }}';
-    const usersSep = ({{ usersSep | tojson }}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
+    const usersSep = ({{ usersSep | tojson }}).map(item => {
+        if (item.when) {
+            item.when = new Date(item.when);
+        }
+        return item;
+    });
     const usedList = usersSep.map(item => item.sep)
-    const initialList = {{ sepList | tojson }};
+    const initialList = {{ (sepList if sepList else '[]') | tojson }};
     const colData = {{ colData| tojson }};
     const colIconSrc = colData[1].n;
     const colSepCurr = colData[3].n;

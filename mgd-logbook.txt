@@ -57,8 +57,8 @@ TODO:
 
 TODO:
 2025-02- β 4.x
-    - [Gestão de SE] (para usuários Setorista)
-        > Mostrar um grid com 3 colunas
+    - [Arquivos enviados] (para usuários Setorista)
+        > Mostrar um grid com 6\3 colunas
             [Arquivo Submetido], [Relatório], [Data], [Disponível] [# Error] [# Warn ]
             (se o arquivo ainda está disponível)
             Permitir fazer download do arquivos submetidos e relatórios
@@ -75,12 +75,20 @@ TODO:
 
 ------- 2025 - January -----------
 ----------------------------------
+2025-02-06,10 β 3.50
+    - dv: set --sector arg always sent. [Nenhum] if empty
+    - new folder common
+    - fix bug Gestão de SEP ()
+    - fix bug : x= ListOfRecords = []
+
+
 2025-02-03--05 β 3.49
     - dv: fix run_validate.bat parameters (error when more than 9)
     - dv: new columns in user_data_files, read from data_validate's stdout
     - dv: set --sector arg only if user has sep
-    - db: new columns, user_data_files.[report_errors,report_warns,report_tests,validator_version,db_version, exit_code]
+    - db: new columns, user_data_files.[report_errors,report_warns,report_tests,validator_version,db_version,exit_code]
     - fix py_helper.quote
+
 
 2025-01-27-31 β 3.48
     - remove global config, add global sidekick

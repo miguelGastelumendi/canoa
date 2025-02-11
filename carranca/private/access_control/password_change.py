@@ -22,7 +22,7 @@ from ...helpers.route_helper import (
     get_input_text,
     get_account_form_data,
 )
-from ...app_context_vars import sidekick
+from ...common.app_context_vars import sidekick
 from ...public.models import get_user_where
 from ..wtforms import ChangePassword
 

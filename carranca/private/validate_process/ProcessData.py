@@ -84,10 +84,10 @@ class ProcessData:
             self.data_tunnel_user_read = path.join(
                 data_tunnel, user_folder, ProcessData._Folder.validate_output
             )
-            # External batch origin (copy from here if not exists or is newer)
+            # An external batch file source (copy from here to 'data_tunnel' if not exists there or this is newer)
             self.batch_source_name = path.join(common_folder, batch_name)
 
-            # External batch that calls `data_validate` with arguments (see submit.py)
+            # An external batch file, that calls `data_validate` with arguments (see submit.py)
             self.batch_full_name = path.join(data_tunnel, batch_name)
 
             # External batch origin (copy from here if not exists or newer)

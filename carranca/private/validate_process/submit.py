@@ -15,16 +15,16 @@ from os import path, stat
 
 from .Cargo import Cargo
 from ...private.logged_user import LoggedUser
-from ...config_validate_process import DataValidateApp
+from ...helpers.file_helper import change_file_ext
+from ...helpers.error_helper import ModuleErrorCode
+from ...config.config_validate_process import DataValidateApp
+from ...common.app_context_vars import sidekick
 from ...helpers.py_helper import (
     is_str_none_or_empty,
     decode_std_text,
     quote,
     now,
 )
-from ...helpers.file_helper import change_file_ext
-from ...helpers.error_helper import ModuleErrorCode
-from ...app_context_vars import sidekick
 
 
 async def _run_validator(
@@ -39,7 +39,7 @@ async def _run_validator(
 ):
     #  This function knows quite a lot of how to run [data_validate]
 
-    sep_full_name = "??" if user.sep is None else user.sep.full_name
+    sep_full_name = "[Nenhum]" if user.sep is None else user.sep.full_name
 
     run_command = [
         batch_full_name,
@@ -183,7 +183,7 @@ def submit(cargo: Cargo) -> Cargo:
         sidekick.app_log.fatal(msg_exception, exc_info=error_code)
     finally:
         try:
-            if cargo.receive_file_cfg.remove_report:
+            if cargo.receive_file_cfg.remove_tmp_files:
                 shutil.rmtree(_path_read)
                 shutil.rmtree(_path_write)
             else:

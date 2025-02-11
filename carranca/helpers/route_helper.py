@@ -13,6 +13,7 @@ from typing import Tuple, Any
 from flask import redirect, request, url_for
 from .py_helper import is_str_none_or_empty, camel_to_snake, to_str
 from .hints_helper import UI_Texts
+from ..config import BaseConfig
 
 base_route_private = "private"
 base_route_public = "public"
@@ -93,7 +94,7 @@ def get_input_text(name: str) -> str:
 
 
 def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI_Texts]:
-    from ..app_context_vars import sidekick
+    from ..common.app_context_vars import sidekick
     from .ui_texts_helper import get_section
 
     tmplt = camel_to_snake(section) if tmplt is None else tmplt
@@ -131,10 +132,8 @@ def redirect_to(route: str, message: str = None) -> str:
     return redirect(route)
 
 
-from ..BaseConfig import BaseConfig
-
-
 def is_external_ip_ready(config: BaseConfig) -> bool:
+
     if is_str_none_or_empty(config.SERVER_EXTERNAL_IP):
         try:
             config.SERVER_EXTERNAL_IP = requests.get(config.EXTERNAL_IP_SERVICE).text.strip()

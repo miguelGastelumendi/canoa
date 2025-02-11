@@ -2,10 +2,20 @@
  Equipe da Canoa -- 2024
 
  Configuration Files for the Application
+----------------------------------------
+ /!\ Attention
+ ---------------------------------------
+    This file position is VERY important
+    `app_folder` must point to the folder
+    where main.py is located
+
+
 
  mgd 2024-05-06
  mgd 2024-05-21: Base, Debug, Production
  mgd 2024-10-11: new file for BaseConfig, simplify imports
+
+
 """
 
 # cSpell:ignore SQLALCHEMY searchpath
@@ -14,15 +24,18 @@ from os import path
 from flask import Config
 import logging
 
-from .app_constants import app_name, app_version
-from .helpers.file_helper import path_remove_last_folder
+from ..common.app_constants import app_name, app_version
+from ..helpers.file_helper import path_remove_last_folder
+import sys
 
 CONFIG_MANDATORY_KEYS = ["SQLALCHEMY_DATABASE_URI", "SERVER_ADDRESS", "SECRET_KEY", "APP_MODE"]
 
 # === Available app/config modes, add yours own mode here (extend)
 app_mode_production: str = "Production"  # capital P
 app_mode_development: str = "Development"  # capital D
-root_folder = path.abspath(path.dirname(__file__))
+# ---------------------------
+# Get the folder from main.py
+app_folder = path.abspath(path_remove_last_folder(path.dirname(__file__)))
 
 
 # Base Class for App Config
@@ -68,10 +81,9 @@ class BaseConfig(Config):
     # "  with key
     EMAIL_API_KEY = ""  # from os_environment
     # Folders
-    # Where am i
-    ROOT_FOLDER = root_folder
+    APP_FOLDER = app_folder
     # storage area (user_files, schema_icons...)
-    COMMON_PATH = path_remove_last_folder(root_folder)
+    COMMON_PATH = path_remove_last_folder(app_folder)
 
     # My address service is SERVER_EXTERNAL_IP is empty
     # (used to send recovery email confirmation, etc)

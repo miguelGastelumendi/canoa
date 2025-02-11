@@ -14,7 +14,7 @@ from math import log10, modf
 from enum import Enum
 from typing import List
 from platform import uname
-from .py_helper import is_str_none_or_empty, OS_IS_WINDOWS
+from ..helpers.py_helper import is_str_none_or_empty, OS_IS_WINDOWS
 
 # Alternative
 # def __init__(self, **kwargs):

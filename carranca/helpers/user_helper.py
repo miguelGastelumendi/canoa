@@ -21,7 +21,7 @@ class UserFolders:
     uploaded = None
 
     def __init__(self):
-        from ..app_context_vars import sidekick
+        from ..common.app_context_vars import sidekick
 
         UserFolders.common_folder = sidekick.config.COMMON_PATH
 

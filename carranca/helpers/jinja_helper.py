@@ -9,7 +9,7 @@ _jinja_pre_template_mark = "^"
 
 
 def jinja_pre_template(val: str) -> str:
-    from ..app_context_vars import sidekick
+    from ..common.app_context_vars import sidekick
 
     text = val
     try:

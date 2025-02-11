@@ -40,8 +40,8 @@ from flask import Flask
 from logging import Logger
 from datetime import datetime
 
-from .helpers.Display import Display
-from .DynamicConfig import DynamicConfig
+from .Display import Display
+from ..config.DynamicConfig import DynamicConfig
 
 
 class Sidekick:

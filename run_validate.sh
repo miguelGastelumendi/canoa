@@ -9,7 +9,7 @@
 # Change to the data_validate folder
 cd "$1"
 shift
-echo "Activating data_validate environment..."
+echo "Activating data_validate environment in Linux..."
 source .venv/bin/activate  # Activate the virtual environment
 echo "Running data_validate..."
 python main.py "$@"

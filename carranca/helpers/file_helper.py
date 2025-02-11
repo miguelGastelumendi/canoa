@@ -70,7 +70,7 @@ def file_must_exist(file_full_name: str, source_full_name: str, replace_if_newer
             shutil.copystat(source_full_name, file_full_name)
 
     except OSError as e:
-        from ..app_context_vars import sidekick
+        from ..common.app_context_vars import sidekick
 
         sidekick.app_log.error(
             f"Error {('replacing' if done else 'copying file')} [{source_full_name}] to [{file_full_name}]: {e}')"
@@ -87,7 +87,7 @@ def folder_must_exist(full_path: str) -> bool:
             makedirs(full_path)
             done = True
     except Exception as e:
-        from ..app_context_vars import sidekick
+        from ..common.app_context_vars import sidekick
 
         done = False
         sidekick.app_log.error(f"Error creating folder {full_path}, {e}")

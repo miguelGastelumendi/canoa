@@ -30,10 +30,10 @@ from typing import Tuple
 from ..models import UserDataFiles
 
 from ..logged_user import LoggedUser
+from ...config.config_validate_process import ValidateProcessConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import now
 from ...helpers.error_helper import ModuleErrorCode
-from ...config_validate_process import ValidateProcessConfig
 
 from .Cargo import Cargo
 from .ProcessData import ProcessData
@@ -53,7 +53,7 @@ def process(
     valid_ext: list[str],
 ) -> Tuple[int, str, str]:
 
-    from ...app_context_vars import sidekick
+    from ...common.app_context_vars import sidekick
 
     current_module_name = __name__.split(".")[-1]
 
@@ -75,13 +75,13 @@ def process(
 
     def _updated(code):
         msg_ok = "The process ended without error and t" if code == 0 else "T"
-        msg_error = "." if code == 0 else f" although the process ended with error_code= [{code}]."
+        msg_error = "" if code == 0 else f" although the process ended with error_code= [{code}]"
         _display(f"{msg_ok}he DB record was updated successfully{msg_error}")
         return
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
     cargo = Cargo(
-        "2024.12.21",  # process version, 22 new column user_files.sep_id
+        "2025.02.05",  # process version, 22 new column user_files.sep_id
         sidekick.debugging,
         logged_user,
         ValidateProcessConfig(sidekick.debugging),
@@ -176,7 +176,7 @@ def process(
         sidekick.app_log.fatal(msg_exception, exc_info=error_code)
 
     finally:
-        _display(f"The validation process end with error code {error_code}")
+        _display(f"The validation process end with error code [{error_code}]")
         sidekick.display.set_elapsed_output(elapsed_output)
 
     return error_code, msg_error, msg_exception

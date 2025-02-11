@@ -20,9 +20,9 @@ from ..helpers.pw_helper import internal_logout
 from .models import MgmtUserSep
 from .SepIconConfig import SepIconConfig
 
-from ..app_context_vars import sidekick
+from ..common.app_context_vars import sidekick
 from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.db_helper import try_get_mgd_msg, ListOfRecords, ListOfRecordsEmpty
+from ..helpers.db_helper import try_get_mgd_msg, ListOfRecords
 from ..helpers.user_helper import get_batch_code
 
 from ..helpers.error_helper import ModuleErrorCode
@@ -48,9 +48,9 @@ def do_sep_mgmt() -> str:
     task_code = ModuleErrorCode.SEP_MANAGEMENT.value
     _, template, is_get, uiTexts = init_form_vars()
 
-    users_sep = ListOfRecordsEmpty
+    users_sep: ListOfRecords = []
     sep_fullname_list = []
-
+    msg_error = None
     try:
         task_code += 1  # 1
         template, is_get, uiTexts = get_private_form_data("sepMgmt")
@@ -91,9 +91,10 @@ def do_sep_mgmt() -> str:
 
             return users_sep, sep_fullname_list, msg_error
 
+        itemNone = "(None)" if is_str_none_or_empty(uiTexts["itemNone"]) else uiTexts["itemNone"]
         if is_get:
             task_code += 1  # 6
-            users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data(uiTexts["itemNone"])
+            users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data(itemNone)
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 7
             uiTexts[ui_msg_exception] = uiTexts["secKeyViolation"]
@@ -103,18 +104,19 @@ def do_sep_mgmt() -> str:
             txtGridResponse = request.form.get(js_grid_rsp)
             msg_success, msg_error, task_code = _save_and_email(txtGridResponse, uiTexts, task_code)
             task_code += 1
-            users_sep, sep_fullname_list, msg_error_read = __get_grid_data()
+            users_sep, sep_fullname_list, msg_error_read = __get_grid_data(itemNone)
             if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
                 uiTexts[ui_msg_success] = msg_success
             elif is_str_none_or_empty(msg_error):
                 uiTexts[ui_msg_error] = msg_error_read
             else:
-                uiTexts[ui_msg_error] = msg_error
+                uiTexts[ui_msg_error] = try_get_mgd_msg(msg_error, uiTexts["saveError"].format(task_code))
 
     except Exception as e:
         msg = add_msg_fatal("gridException", uiTexts, task_code)
         sidekick.app_log.error(e)
         sidekick.display.error(msg)
+
         # Todo error with users_sep,,, not ready
 
     tmpl = render_template(template, usersSep=users_sep.to_json(), sepList=sep_fullname_list, **uiTexts)
@@ -178,8 +180,8 @@ def _prepare_data_to_save(
         task_code += 1
         str_none: str = actions["none"]
         task_code += 1
-        remove: ListOfRecordsEmpty
-        assign: ListOfRecordsEmpty
+        remove: ListOfRecords = []
+        assign: ListOfRecords = []
         grid: ListOfRecords = grid_response["grid"]
         task_code += 1
         for item in grid:
@@ -212,7 +214,7 @@ def _save_data_to_db(
     from carranca import SqlAlchemyScopedSession
     from .models import MgmtUserSep
 
-    from ..app_context_vars import logged_user, sidekick
+    from ..common.app_context_vars import logged_user, sidekick
 
     msg_error = None
     assigned_by = logged_user.id
@@ -259,7 +261,7 @@ def _send_email(batch_code: str, uiTexts: UI_Texts, task_code: int) -> def_retur
     """
     from carranca import SqlAlchemyScopedSession
     from .models import MgmtEmailSep
-    from ..app_context_vars import sidekick
+    from ..common.app_context_vars import sidekick
     from ..helpers.py_helper import now
     from ..helpers.sendgrid_helper import send_email
 

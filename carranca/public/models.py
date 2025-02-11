@@ -69,7 +69,7 @@ def get_user_where(**filter: Any) -> Users:
     """
     Select a user by a unique filter
     """
-    from ..app_context_vars import sidekick
+    from ..common.app_context_vars import sidekick
 
     user = None
     with SqlAlchemyScopedSession() as db_session:
@@ -86,7 +86,7 @@ def persist_user(record: any, task_code: int = 1) -> None:
     """
     Updates a user's record
     """
-    from ..app_context_vars import sidekick
+    from ..common.app_context_vars import sidekick
 
     with SqlAlchemyScopedSession() as db_session:
         task_code = 0

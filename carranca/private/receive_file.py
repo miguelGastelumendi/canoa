@@ -11,8 +11,9 @@
 from flask import render_template, request
 from werkzeug.utils import secure_filename
 
-from ..app_context_vars import sidekick
-from ..app_context_vars import logged_user
+from ..common.app_context_vars import sidekick, logged_user
+from ..config.config_validate_process import ValidateProcessConfig
+
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.user_helper import now
@@ -25,7 +26,6 @@ from ..helpers.ui_texts_helper import (
     add_msg_error,
     add_msg_fatal,
 )
-from ..config_validate_process import ValidateProcessConfig
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 
 from .wtforms import ReceiveFileForm

@@ -32,7 +32,7 @@ class UserSEP:
 class LoggedUser:
     def __init__(self):
         from .SepIconConfig import SepIconConfig
-        from ..app_context_vars import sidekick
+        from ..common.app_context_vars import sidekick
 
         self.ready = current_user.is_authenticated if current_user else False
 
@@ -56,10 +56,12 @@ class LoggedUser:
             self.path = SepIconConfig.local_path
             if current_user.mgmt_sep_id is None:
                 self.sep = None
-            else: # TODO improve performance with cache (maybe session)
+            else:  # TODO improve performance with cache (maybe session)
+
                 def load_sep():
                     url, sep_fullname, sep = icon_prepare_for_html(current_user.mgmt_sep_id)
                     return UserSEP(self.path, url, sep_fullname, sep)
+
                 self.sep = LocalProxy(load_sep)
 
     def __repr__(self):

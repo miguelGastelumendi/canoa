@@ -12,9 +12,9 @@
 import os, time, platform
 from sys import argv
 from datetime import datetime
-from typing import Any, Type, Tuple
+from typing import Any, Type, Tuple, List
 
-from ..app_constants import app_name
+from ..common.app_constants import app_name
 
 
 # https://docs.python.org/3/library/platform.html#platform.system
@@ -63,15 +63,24 @@ def quote(s: str, always: bool = True) -> str:
     if not always and " " not in quoted:
         return s
 
+    quoted = quoted.replace(" ", "_")
+
     return f'"{quoted}"'
 
 
 def is_str_none_or_empty(s: str) -> bool:
     """
-    Returns True if the argument is None or an empty (only spaces, \t, \t, etc) obj as string
+    Returns True if the argument is None, not a str, or an empty (only spaces, \n, \t, etc) string
     """
     # até 2024-11-13 (Boa sorte!) return (s is None) or (as_str_strip(s) == "")
     return (s is None) or not isinstance(s, str) or (as_str_strip(s) == "")
+
+
+def is_list_none_or_empty(list: List) -> bool:
+    """
+    Returns True if the argument is None, not a List, or an empty List
+    """
+    return (list is None) or not isinstance(list, list) or len(list) == 0
 
 
 def get_init_params(from_instance: Any, From_class=None) -> dict:

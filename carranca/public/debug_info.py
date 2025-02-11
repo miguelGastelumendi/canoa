@@ -8,7 +8,7 @@
 
 # cSpell:ignore sqlalchemy
 from typing import List, Tuple
-from ..DynamicConfig import DynamicConfig
+from ..config.DynamicConfig import DynamicConfig
 
 
 def get_debug_info(app, config: DynamicConfig) -> List[Tuple[str, str]]:
@@ -40,7 +40,7 @@ def get_debug_info(app, config: DynamicConfig) -> List[Tuple[str, str]]:
     _add("Logging to File", config.LOG_FILE_STATUS)
 
     _add("Page Compression", config.APP_MINIFIED)
-    _add("App root folder", config.ROOT_FOLDER)
+    _add("App  folder", config.APP_FOLDER)
     _add("Database address", config.SQLALCHEMY_DATABASE_URI)
     _add("Server 'name'", config.SERVER_ADDRESS)
     _add("External address ", coalesce(config.SERVER_EXTERNAL_IP, "<set on demand>"))

@@ -83,7 +83,7 @@ def _register_blueprint_routes(app: Flask):
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
-    from .app_context_vars import logged_user
+    from .common.app_context_vars import logged_user
     from .helpers.route_helper import private_route, public_route, static_route
 
     app.jinja_env.globals.update(
@@ -138,11 +138,11 @@ def db_obfuscate(config):
 # ============================================================================ #
 # App + helpers
 def create_app():
-    from .app_constants import app_name, app_version
+    from .common.app_constants import app_name, app_version
 
     # === Check if all mandatory information is ready === #
-    from .igniter import ignite_sidekick
-    from .igniter import ignite_log_file
+    from .common.igniter import ignite_sidekick
+    from .common.igniter import ignite_log_file
 
     # === Global sidekick  === #
     global sidekick
@@ -194,7 +194,7 @@ def create_app():
     sidekick.display.info("The Login Manager was initialized with the app.")
 
     # -- Connect to Database
-    from .igniter import ignite_sql_connection
+    from .common.igniter import ignite_sql_connection
 
     uri = db_obfuscate(sidekick.config)
     ignite_sql_connection(sidekick, uri)

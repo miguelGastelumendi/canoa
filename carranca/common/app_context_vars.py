@@ -37,9 +37,9 @@ from typing import Callable, Any
 from threading import Lock
 from werkzeug.local import LocalProxy
 
-from . import sidekick as global_sidekick
+from .. import sidekick as global_sidekick
 from .Sidekick import Sidekick
-from .private.logged_user import LoggedUser
+from ..private.logged_user import LoggedUser
 
 
 # share global sidekick
@@ -69,7 +69,7 @@ def _get_scoped_var(var_name: str, func_creator: Callable[[], Any]) -> Any | Non
 
 # variables getters
 def _get_logged_user() -> LoggedUser | None:
-    from .helpers.pw_helper import is_someone_logged
+    from ..helpers.pw_helper import is_someone_logged
 
     """
     Info of the logged user or None if no one is logged

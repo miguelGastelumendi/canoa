@@ -13,7 +13,7 @@
 
 from os import path
 
-from ...app_context_vars import sidekick
+from ...common.app_context_vars import sidekick
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.db_helper import get_str_field_length
 from ...helpers.user_helper import now

@@ -25,7 +25,7 @@ from ..helpers.ui_texts_helper import (
     add_msg_error,
     add_msg_fatal,
 )
-from ..app_context_vars import logged_user
+from ..common.app_context_vars import logged_user
 
 
 def do_sep_edit() -> str:
@@ -106,7 +106,7 @@ def do_sep_edit() -> str:
                     icon_refresh(logged_user.sep)  # refresh this form icon
 
     except Exception as e:
-        from ..app_context_vars import sidekick
+        from ..common.app_context_vars import sidekick
 
         msg = (
             str(e)

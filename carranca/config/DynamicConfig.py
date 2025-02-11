@@ -13,11 +13,11 @@
 from os import environ
 from hashlib import sha384
 
-from .app_constants import app_name, app_version
-from .igniter import Fuse
 from .BaseConfig import BaseConfig, app_mode_development, app_mode_production
-from .helpers.py_helper import as_bool, is_str_none_or_empty, get_envvar_prefix
-from .helpers.wtf_helper import LenValidate
+from ..common.app_constants import app_name, app_version
+from ..common.igniter import Fuse
+from ..helpers.py_helper import as_bool, is_str_none_or_empty, get_envvar_prefix
+from ..helpers.wtf_helper import LenValidate
 
 
 # Get the Jinja Template folder name

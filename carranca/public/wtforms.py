@@ -14,7 +14,7 @@ from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import Email, InputRequired, Length
 
 from ..helpers.wtf_helper import LenValidate
-from ..app_context_vars import sidekick
+from ..common.app_context_vars import sidekick
 
 # Public forms
 # -------------------------------------------------------------

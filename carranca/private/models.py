@@ -21,8 +21,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from carranca import SqlAlchemyScopedSession
 
 from .SepIconConfig import SepIconConfig, SvgContent
-from ..app_context_vars import sidekick
-from ..helpers.db_helper import DBRecords, ListOfRecordsEmpty
+from ..common.app_context_vars import sidekick
+from ..helpers.db_helper import DBRecords
 from ..helpers.py_helper import is_str_none_or_empty
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
@@ -189,8 +189,8 @@ class MgmtUserSep(Base):
 
         msg_error = None
         with SqlAlchemyScopedSession() as db_session:
-            users_sep = ListOfRecordsEmpty
-            sep_list = ListOfRecordsEmpty
+            users_sep: ListOfRecords = []
+            sep_list: ListOfRecords = []
             try:
                 ssep_recs = db_session.scalars(select(SchemaSEP)).all()
                 sep_list = DBRecords(SchemaSEP.__tablename__, ssep_recs)
@@ -311,7 +311,7 @@ class MgmtSep(Base):
         """
         Saves a Sep record
         """
-        from ..app_context_vars import sidekick
+        from ..common.app_context_vars import sidekick
 
         done = False
         with SqlAlchemyScopedSession() as db_session:

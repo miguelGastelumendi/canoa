@@ -15,14 +15,14 @@ Used by:
 - password_reset_or_change.html.j2
 
 ./private
-- receive_file.html.js
+- receive_file.html.j2
 
 mgd
 --------------------------------------- #}
 
 {# only specify if different from default #}
 {% set dlg_cls_footer= "collapse" %}
-{% set formID = "id-form-main"%}
+{% set form_id = "id-form-main"%}
 {% if not base_js_head_list %}{%set base_js_head_list = []%} {% endif %}
 {# {% set _ = base_js_head_list.append(static_route("js/form_helper.js")) %} #}
 
@@ -48,7 +48,7 @@ mgd
 {# display the if not Success or Exception (see carranca\helpers\ui_texts_helper.py[add_msg_success]) #}
 {% if not msgOnly %}
 {# { Form --> #}
-<form method="post" action="" id={{formID}} class="mt-2" ) {{ formAttribute|default("") }}>
+<form method="post" action="" id={{form_id}} class="mt-2" {{ formAttribute|default("") }}>
     {{ form.hidden_tag() }}
 
     {% block frm_blc_content %}

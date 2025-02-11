@@ -1,20 +1,21 @@
 {# ------------------------------------
-.\includes\grid-header.html.j2
+.\includes\grid-body.html.j2
 ---------------------------------
 
-Common header for ag-grid
+Common body for ag-grid
 mgd
 --------------------------------------- #}
 
 {#
-{% block base_blc_head_js %}
+{% block dlg_blc_body %}
 
 Jinja does not process {% block %} definitions inside an included file.
 To ensure blocks are properly expanded, define them in the main template
 and place {% include %} inside the block."
 
 #}
-<script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
-{# {% endblock base_blc_head_js %} #}
+{% include "./includes/backend-msg.html.j2" %}
+<div id="grid_container" class="ag-theme-quartz" style="height: 400px"></div>
+{# {% endblock dlg_blc_body %} #}
 
 {# eof #}

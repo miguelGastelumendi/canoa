@@ -2,7 +2,7 @@
 
 received_file_mgmt.html.j2
 --------------------------
-Managed & Displays a grid received files
+Manages and displays a grid of received files
 
 Extends
 ./layouts/dialog.html.j2
@@ -20,7 +20,14 @@ mgd
 {% if not msgOnly %}
 {#--- msgOnly --- #}
 
-{% include "includes/grid-header.html.j2" %}
+{% block base_blc_head_js %}
+{% include "./includes/grid-header.html.j2" %}
+{% endblock base_blc_head_js %}
+
+{% block dlg_blc_body %}
+{% include "./includes/grid-body.html.j2" %}
+{% endblock dlg_blc_body %}
+
 
 {% block dlg_blc_footer %}
 <div class="mb-3 row">
@@ -40,19 +47,20 @@ mgd
             <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
             <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
             <input type="submit" style="display:none;">
-            <button type="submit" class="form-main-btn" disabled id="{{gridSubmitID}}">
+            <button type="submit" class="form-main-btn" id="{{gridSubmitID}}" disabled>
                 {{(grdBtnSave |default("Salvar"))}}
             </button>
         </form>
     </div>
 </div>
 {% endblock dlg_blc_footer %}
+
 {% block dlg_blc_javascript %}
 <script>
     const itemNone = '{{ itemNone }}';
     const itemRemove = '{{ itemRemove }}';
     const usersSep = ({{ usersSep | tojson }}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
-    const usedList = usersSep.map(item => item.sep)
+    const usedList = usersSep.map(item => item.sep);
     const initialList = {{ sepList | tojson }};
     const colData = {{ colData| tojson }};
     const colIconSrc = colData[1].n;
@@ -61,7 +69,7 @@ mgd
     const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmitID}}'));
     const dateFormat = '{{ dateFormat | default('pt-BR') }}';
 </script>
-<script src="{{static_route('js/rec_file_mgmt.js')}}"></script>
+<script src='{{static_route("js/rec_file_mgmt.js")}}'></script>
 {% endblock dlg_blc_javascript %}
 
 {#--- msgOnly --- #}

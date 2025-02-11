@@ -22,9 +22,9 @@ from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 
 
-from ..app_context_vars import sidekick
 from .py_helper import is_str_none_or_empty, to_str
 from .file_helper import is_same_file_name, change_file_ext, path_remove_last_folder
+from ..common.app_context_vars import sidekick
 
 
 def is_url_valid(url: str) -> bool:

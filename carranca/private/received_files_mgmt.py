@@ -11,10 +11,13 @@ import json
 from os import path
 from flask import render_template
 
+from ..helpers.pw_helper import internal_logout
+
 from .models import ReceivedFiles
-from ..app_context_vars import sidekick
-from ..app_context_vars import logged_user
-from ..helpers.db_helper import ListOfRecordsEmpty, ListOfRecords
+from ..common.app_context_vars import sidekick, logged_user
+from ..config.config_validate_process import ValidateProcessConfig
+
+from ..helpers.db_helper import ListOfRecords
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import UserFolders
 from ..helpers.file_helper import change_file_ext
@@ -27,7 +30,6 @@ from ..helpers.ui_texts_helper import (
     ui_msg_success,
     ui_msg_exception,
 )
-from ..config_validate_process import ValidateProcessConfig
 
 
 def received_files_fetch() -> ListOfRecords:
@@ -37,7 +39,7 @@ def received_files_fetch() -> ListOfRecords:
 
     received_files = ReceivedFiles.get_user_records(user_id)
     if received_files is None or len(received_files.records) == 0:
-        return ListOfRecordsEmpty
+        return []
     else:
         files = 0
         uf = UserFolders()
@@ -59,7 +61,7 @@ def received_files_grid() -> str:
     task_code = ModuleErrorCode.RECEIVED_FILES_MGMT.value
     _, template, is_get, uiTexts = init_form_vars()
 
-    users_sep = ListOfRecordsEmpty
+    users_sep: ListOfRecords = []
     sep_fullname_list = []
 
     try:
@@ -99,7 +101,7 @@ def received_files_grid() -> str:
             users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data()
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 7
-            #TODO: create ann error page
+            # TODO: create ann error page
             uiTexts[ui_msg_exception] = uiTexts["secKeyViolation"]
             internal_logout()
         else:
