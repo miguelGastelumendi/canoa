@@ -75,6 +75,14 @@ TODO:
 
 ------- 2025 - January -----------
 ----------------------------------
+
+
+    - fix data_validate html/css
+
+
+2025-02-1 β 3.51
+    - update ver in app_constants
+
 2025-02-06,10 β 3.50
     - dv: set --sector arg always sent. [Nenhum] if empty
     - new folder common
