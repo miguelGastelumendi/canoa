@@ -15,16 +15,16 @@ import json
 from typing import Tuple, TypeAlias
 from flask import render_template, request
 
-from ..helpers.pw_helper import internal_logout
 
 from .models import MgmtUserSep
+from .grid_texts import grid_id
 from .SepIconConfig import SepIconConfig
 
-from ..common.app_context_vars import sidekick
-from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.db_helper import try_get_mgd_msg, ListOfRecords
-from ..helpers.user_helper import get_batch_code
+from ..common.app_context_vars import sidekick, logged_user
 
+from ..helpers.py_helper import is_str_none_or_empty
+from ..helpers.db_helper import try_get_mgd_msg, ListOfDBRecords
+from ..helpers.user_helper import get_batch_code
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.email_helper import RecipientsListStr
 from ..helpers.route_helper import get_private_form_data, init_form_vars
@@ -32,10 +32,11 @@ from ..helpers.hints_helper import UI_Texts
 from ..helpers.ui_texts_helper import (
     add_msg_fatal,
     format_ui_item,
-    ui_DialogIcon,
     ui_msg_error,
     ui_msg_success,
     ui_msg_exception,
+    ui_icon_file_url,
+    ui_date_format,
 )
 
 # def returns
@@ -45,10 +46,10 @@ def_return: TypeAlias = Tuple[str, str, int]
 def do_sep_mgmt() -> str:
     from .sep_icon import icon_prepare_for_html
 
-    task_code = ModuleErrorCode.SEP_MANAGEMENT.value
+    task_code = ModuleErrorCode.SEP_MGMT.value
     _, template, is_get, uiTexts = init_form_vars()
 
-    users_sep: ListOfRecords = []
+    users_sep: ListOfDBRecords = []
     sep_fullname_list = []
     msg_error = None
     try:
@@ -68,33 +69,34 @@ def do_sep_mgmt() -> str:
         uiTexts["gridSecValue"] = js_grid_sec_value
         uiTexts[js_grid_submit_id] = js_grid_submit_id
         uiTexts[js_grid_sec_key] = js_grid_sec_key
-
-        uiTexts[ui_DialogIcon] = SepIconConfig.set_url(SepIconConfig.none_file)
+        uiTexts[ui_icon_file_url] = SepIconConfig.set_url(SepIconConfig.none_file)
+        uiTexts[ui_date_format] = logged_user.lang
 
         task_code += 1  # 3
-        colData = json.loads(uiTexts["colData"])
+        col_headers = json.loads(uiTexts["colData"])  # colHeaders
         task_code += 1  # 4
-        # grid columns, colData & colNames *must* match
-        colNames = ["user_id", "file_url", "user_name", "scm_sep_curr", "scm_sep_new", "when"]
+        # grid columns, colData & col_names *must* match in size
+        col_names = ["user_id", "file_url", "user_name", "scm_sep_curr", "scm_sep_new", "when"]
         task_code += 1  # 5
         # Rewrite it in an easier way to express it in js: colName: colHeader
-        uiTexts["colData"] = [{"n": key, "h": colData[key]} for key in colNames]
+        col_data = [{"n": key, "h": col_headers[key]} for key in col_names]
+        uiTexts["colData"] = col_data
 
-        def __get_grid_data(item_none):
+        def __get_grid_data(_item_none):
             users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view()
             for record in users_sep.records:
-                record.scm_sep_new = item_none
-                record.scm_sep_curr = item_none if record.scm_sep_curr is None else record.scm_sep_curr
+                record.scm_sep_new = _item_none
+                record.scm_sep_curr = _item_none if record.scm_sep_curr is None else record.scm_sep_curr
                 record.file_url = icon_prepare_for_html(record.sep_id)[0]  # url
 
             sep_fullname_list = [sep.sep_fullname for sep in sep_list.records]
 
             return users_sep, sep_fullname_list, msg_error
 
-        itemNone = "(None)" if is_str_none_or_empty(uiTexts["itemNone"]) else uiTexts["itemNone"]
+        item_none = "(None)" if is_str_none_or_empty(uiTexts["itemNone"]) else uiTexts["itemNone"]
         if is_get:
             task_code += 1  # 6
-            users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data(itemNone)
+            users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data(item_none)
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 7
             uiTexts[ui_msg_exception] = uiTexts["secKeyViolation"]
@@ -104,7 +106,7 @@ def do_sep_mgmt() -> str:
             txtGridResponse = request.form.get(js_grid_rsp)
             msg_success, msg_error, task_code = _save_and_email(txtGridResponse, uiTexts, task_code)
             task_code += 1
-            users_sep, sep_fullname_list, msg_error_read = __get_grid_data(itemNone)
+            users_sep, sep_fullname_list, msg_error_read = __get_grid_data(item_none)
             if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
                 uiTexts[ui_msg_success] = msg_success
             elif is_str_none_or_empty(msg_error):
@@ -119,7 +121,14 @@ def do_sep_mgmt() -> str:
 
         # Todo error with users_sep,,, not ready
 
-    tmpl = render_template(template, usersSep=users_sep.to_json(), sepList=sep_fullname_list, **uiTexts)
+    tmpl = render_template(
+        template,
+        usersSep=users_sep.to_json(),
+        sepList=sep_fullname_list,
+        gridID=grid_id,
+        # TODO colData=col_data,
+        **uiTexts,
+    )
     return tmpl
 
 
@@ -169,7 +178,7 @@ def _save_data(
 
 def _prepare_data_to_save(
     grid_response: dict[str, any], uiTexts: UI_Texts, task_code: int
-) -> Tuple[str, ListOfRecords, ListOfRecords, int]:
+) -> Tuple[str, ListOfDBRecords, ListOfDBRecords, int]:
     """Distributes the modifications in two groups: remove & assign"""
 
     msg_error = None
@@ -180,9 +189,9 @@ def _prepare_data_to_save(
         task_code += 1
         str_none: str = actions["none"]
         task_code += 1
-        remove: ListOfRecords = []
-        assign: ListOfRecords = []
-        grid: ListOfRecords = grid_response["grid"]
+        remove: ListOfDBRecords = []
+        assign: ListOfDBRecords = []
+        grid: ListOfDBRecords = grid_response["grid"]
         task_code += 1
         for item in grid:
             sep_new = item["scm_sep_new"]
@@ -201,7 +210,7 @@ def _prepare_data_to_save(
 
 
 def _save_data_to_db(
-    remove: ListOfRecords, update: ListOfRecords, batch_code: str, uiTexts: UI_Texts, task_code: int
+    remove: ListOfDBRecords, update: ListOfDBRecords, batch_code: str, uiTexts: UI_Texts, task_code: int
 ) -> def_return:
     """
     Saves user-made changes to the UI grid to the database

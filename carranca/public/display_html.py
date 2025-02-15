@@ -80,15 +80,15 @@ def __prepare_img_files(
 
 
 def display_html(docName: str):
-    from ..helpers.ui_texts_helper import get_msg_error, get_section, ui_pageTitle, ui_formTitle
+    from ..helpers.ui_texts_helper import get_msg_error, get_section, ui_page_title, ui_form_title
 
     template = "./home/document.html.j2"
     section = docName
 
     uiTexts = get_section(section)
     # must exist
-    uiTexts[ui_pageTitle] = uiTexts.get(ui_pageTitle, "Display Document")
-    uiTexts[ui_formTitle] = uiTexts.get(ui_formTitle, "Document")
+    uiTexts[ui_page_title] = uiTexts.get(ui_page_title, "Display Document")
+    uiTexts[ui_form_title] = uiTexts.get(ui_form_title, "Document")
     uiTexts["documentStyle"] = uiTexts.get("documentStyle", "")
 
     # shortcuts

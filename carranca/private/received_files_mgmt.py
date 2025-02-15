@@ -11,19 +11,17 @@ import json
 from os import path
 from flask import render_template
 
-from ..helpers.pw_helper import internal_logout
-
-from .models import ReceivedFiles
+from .models import ReceivedFiles, MgmtUserSep
+from .grid_texts import grid_id
 from ..common.app_context_vars import sidekick, logged_user
 from ..config.config_validate_process import ValidateProcessConfig
 
-from ..helpers.db_helper import ListOfRecords
+from ..helpers.db_helper import ListOfDBRecords, DBRecords
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import UserFolders
 from ..helpers.file_helper import change_file_ext
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data, init_form_vars
-from ..helpers.hints_helper import UI_Texts
 from ..helpers.ui_texts_helper import (
     add_msg_fatal,
     ui_msg_error,
@@ -32,28 +30,36 @@ from ..helpers.ui_texts_helper import (
 )
 
 
-def received_files_fetch() -> ListOfRecords:
+def received_files_fetch(no_sep: str) -> DBRecords:
 
     user_id = None if logged_user is None else logged_user.id
     # todo user c//if user.
 
     received_files = ReceivedFiles.get_user_records(user_id)
-    if received_files is None or len(received_files.records) == 0:
-        return []
-    else:
-        files = 0
+    received_rows = DBRecords(received_files.table_name)
+    if not (received_files is None or len(received_files) == 0):
         uf = UserFolders()
         report_ext = ValidateProcessConfig(False).output_file.ext
-        for record in received_files.records:
-            folder = uf.uploaded if record.file_origin == "L" else uf.downloaded
-            # create auxiliary fields
-            record.file_full_name = path.join(folder, logged_user.folder, record.stored_file_name)
-            record.file_found = path.isfile(record.file_full_name)
-            record.report_found = path.isfile(change_file_ext(record.file_full_name, report_ext))
-            if record.file_found:
-                files += 1
 
-    return received_files
+        for record in received_files:
+            folder = uf.uploaded if record.file_origin == "L" else uf.downloaded
+            file_full_name = path.join(folder, logged_user.folder, record.stored_file_name)
+            # Copy specific fields to a new object 'row'
+            row = {
+                "id": record.id,
+                "file_found": path.isfile(file_full_name),
+                "report_found": path.isfile(change_file_ext(file_full_name, report_ext)),
+                "sep": record.sep_fullname if record.sep_fullname else no_sep,
+                "file_name": change_file_ext(record.file_name, ""),
+                "user_name": record.user_name,
+                "receipt": record.user_receipt,
+                "when": record.submitted_at,
+                "errors": record.report_errors,
+                "warns": record.report_warns,
+            }
+            received_rows.append(row)
+
+    return received_rows
 
 
 def received_files_grid() -> str:
@@ -61,8 +67,8 @@ def received_files_grid() -> str:
     task_code = ModuleErrorCode.RECEIVED_FILES_MGMT.value
     _, template, is_get, uiTexts = init_form_vars()
 
-    users_sep: ListOfRecords = []
-    sep_fullname_list = []
+    if not is_get:
+        return ""  # TODO: error
 
     try:
         task_code += 1  # 1
@@ -83,39 +89,27 @@ def received_files_grid() -> str:
         uiTexts[js_grid_sec_key] = js_grid_sec_key
 
         task_code += 1  # 3
-        colData = json.loads(uiTexts["colData"])
+        col_headers = json.loads(uiTexts["colHeaders"])
+
         task_code += 1  # 4
-        # grid columns, colData & colNames *must* match in length.
-        colNames = ["id", "file_name", "report_name", "submitted_at"]
+        received_files = received_files_fetch(uiTexts["itemNone"])
+
         task_code += 1  # 5
-        # Rewrite it in an easier way to express it in js: colName: colHeader
-        uiTexts["colData"] = [{"n": key, "h": colData[key]} for key in colNames]
+        col_names = received_files[0].keys() if received_files else []
 
-        def __get_grid_data():
-            users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view(uiTexts["itemNone"])
-            sep_fullname_list = [sep["fullname"] for sep in sep_list]
-            return users_sep, sep_fullname_list, msg_error
+        task_code += 1  # 6
 
-        if is_get:
-            task_code += 1  # 6
-            users_sep, sep_fullname_list, uiTexts[ui_msg_error] = __get_grid_data()
-        elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
-            task_code += 2  # 7
-            # TODO: create ann error page
-            uiTexts[ui_msg_exception] = uiTexts["secKeyViolation"]
-            internal_logout()
-        else:
-            task_code += 3
-            txtGridResponse = request.form.get(js_grid_rsp)
-            msg_success, msg_error, task_code = _save_and_email(txtGridResponse, uiTexts, task_code)
-            task_code += 1
-            users_sep, sep_fullname_list, msg_error_read = __get_grid_data()
-            if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
-                uiTexts[ui_msg_success] = msg_success
-            elif is_str_none_or_empty(msg_error):
-                uiTexts[ui_msg_error] = msg_error_read
-            else:
-                uiTexts[ui_msg_error] = msg_error
+        # if set(col_names.keys()).issubset(col_headers.keys()):
+        #     print("All keys in col_names are present in col_headers")
+        #     result = [{"n": key, "h": col_headers[key]} for key in col_names]
+        #     print(result)
+        # else:
+        #     print("Not all keys in col_names are present in col_headers")
+        #     missing_keys = set(col_names.keys()) - set(col_headers.keys())
+        #     print(f"Missing keys: {missing_keys}")
+
+        # uiTexts["colData"] = [{"n": key, "h": col_headers[key]} for key in col_names]
+        uiTexts["colData"] = [{"n": key, "h": col_headers[key]} for key in col_headers]
 
     except Exception as e:
         msg = add_msg_fatal("gridException", uiTexts, task_code)
@@ -123,7 +117,7 @@ def received_files_grid() -> str:
         sidekick.display.error(msg)
         # Todo error with users_sep,,, not ready
 
-    tmpl = render_template(template, usersSep=users_sep, sepList=sep_fullname_list, **uiTexts)
+    tmpl = render_template(template, recFiles=received_files.to_json(), gridID=grid_id, **uiTexts)
     return tmpl
 
 

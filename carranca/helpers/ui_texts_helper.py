@@ -13,18 +13,20 @@ from .py_helper import is_str_none_or_empty
 from .hints_helper import UI_Texts
 from .jinja_helper import process_pre_templates
 
-# === Global variables=========================================
+# === Global constants form HTML ui ========================
 ui_msg_info = "msgInfo"
 ui_msg_error = "msgError"
 ui_msg_success = "msgSuccess"
 ui_msg_exception = "msgException"
-ui_DialogIcon = "iconFileUrl"
-ui_pageTitle = "pageTitle"
-ui_formTitle = "formTitle"
+ui_icon_file_url = "iconFileUrl"
+ui_date_format = "html_date_format"
+ui_page_title = "pageTitle"
+ui_form_title = "formTitle"
 # 'msgOnly' display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
 ui_msg_only = "msgOnly"
+ui_date_format = "html_date_format"
 
-user_locale = "pt-br"  # TODO:  browser || user property
+db_user_locale = "pt-br"  # TODO: current_user.lang
 msg_not_found = "Message '{0}' (not registered §: {1})"
 
 """
@@ -47,7 +49,7 @@ def __get_query(cols: str, section: str, item: str = None):
     query = (
         f"select {cols} from vw_ui_texts "
         f"where "
-        f"(locale = '{user_locale}') and (section_lower = lower('{section}')){item_filter};"
+        f"(locale = '{db_user_locale}') and (section_lower = lower('{section}')){item_filter};"
     )
     return query
 

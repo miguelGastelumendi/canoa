@@ -22,6 +22,7 @@ from flask_login import UserMixin
 
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
+from ..common.app_constants import app_lang
 
 Base = declarative_base()
 
@@ -34,6 +35,7 @@ class Users(Base, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(100), unique=True)
     username_lower = Column(String(100), Computed(""))
+    lang = Column(String(8), default=app_lang)
     email = Column(String(64), unique=True)
     mgmt_sep_id = Column(Integer, unique=True)
     password = Column(LargeBinary)

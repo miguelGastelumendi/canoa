@@ -21,7 +21,7 @@ from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data, get_input_text
 from ..helpers.ui_texts_helper import (
     ui_msg_info,
-    ui_DialogIcon,
+    ui_icon_file_url,
     add_msg_success,
     add_msg_error,
     add_msg_fatal,
@@ -42,7 +42,7 @@ def receive_file() -> str:
     tmpl_form = ReceiveFileForm(request.form)
 
     def _result():
-        uiTexts[ui_DialogIcon] = None if logged_user.sep is None else logged_user.sep.icon_url
+        uiTexts[ui_icon_file_url] = None if logged_user.sep is None else logged_user.sep.icon_url
         sep_fullname = uiTexts["noSEassigned"] if logged_user.sep is None else logged_user.sep.full_name
         uiTexts[ui_msg_info] = uiTexts[ui_msg_info].format(sep_fullname)
         tmpl = render_template(template, form=tmpl_form, **uiTexts)

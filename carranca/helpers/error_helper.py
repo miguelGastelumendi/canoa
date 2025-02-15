@@ -45,7 +45,7 @@ class ModuleErrorCode(IntEnum):
     NEXT_MODULE_ERROR = 400
 
     SEP_EDIT = 500
-    SEP_MANAGEMENT = 550
+    SEP_MGMT = 550
 
     RECEIVED_FILES_MGMT = 600
 

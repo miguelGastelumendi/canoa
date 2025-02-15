@@ -35,7 +35,7 @@ const gridOptions = {
             icon.src = activeRow.data[colIconSrc]
         }
     }
-    , rowData: usersSep
+    , rowData: rowData
     , columnDefs: [
         { field: colData[0].n, flex: 0, hide: true },
         { field: colIconSrc, flex: 0, hide: true },
@@ -103,7 +103,7 @@ const gridOptions = {
 
 //-------------
 //== Init
-const gridContainer = document.querySelector('#grid_container');
+const gridContainer = document.querySelector('#' + gridID);
 const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
 
 
@@ -126,7 +126,7 @@ const _itemAdd = (sepNew) => {
 
 const gridAdd = () => {
     if (getActiveCellValue() == '') { return }
-    let sep_new = getPrompt('Informe o nome do SEP a ser adicionado');
+    let sep_new = getPrompt(formAdd);
     _itemAdd(sep_new);
 }
 
@@ -135,9 +135,9 @@ const gridEdit = () => {
     if (cellValue == '') {
         // ignore
     } else if (initialList.includes(cellValue) || ignoreList.includes(cellValue)) {
-        alert('Somente SEP adicionados podem ser editados.')
+        alert(formCantEdit)
     } else {
-        let sep_new = getPrompt('Informe o nome do SEP (branco para remover)', cellValue);
+        let sep_new = getPrompt(formEdit, cellValue);
         if (sep_new !== cellValue) {
             selectList = selectList.filter(item => item !== cellValue);
             addedList = addedList.filter(item => item !== cellValue);

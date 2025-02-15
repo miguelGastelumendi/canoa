@@ -49,7 +49,7 @@ mgd
             <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
             <input type="submit" style="display:none;">
             <button type="submit" class="form-main-btn" disabled id="{{gridSubmitID}}">
-                {{(grdBtnSave |default("Salvar"))}}
+                {{(grdBtnSave |default("Save"))}}
             </button>
         </form>
     </div>
@@ -59,20 +59,24 @@ mgd
 <script>
     const itemNone = '{{ itemNone }}';
     const itemRemove = '{{ itemRemove }}';
-    const usersSep = ({{ usersSep | tojson }}).map(item => {
+    const rowData = ({{ usersSep | tojson }}).map(item => {
         if (item.when) {
             item.when = new Date(item.when);
         }
         return item;
     });
-    const usedList = usersSep.map(item => item.sep)
+    const usedList = rowData.map(item => item.sep);
     const initialList = {{ (sepList if sepList else '[]') | tojson }};
-    const colData = {{ colData| tojson }};
+    const gridID = '{{ gridID }}';
+    const colData = {{ colData | tojson }};
     const colIconSrc = colData[1].n;
     const colSepCurr = colData[3].n;
     const colSepNew = colData[4].n;
     const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmitID}}'));
-    const dateFormat = '{{ dateFormat | default('pt-BR') }}';
+    const dateFormat = '{{ dateFormat }}';
+    const formAdd = '{{ formAdd }}';
+    const formEdit = '{{ formEdit }}';
+    const formCantEdit = '{{ formCantEdit }}';
 </script>
 <script src="{{static_route('js/sep_mgmt.js')}}"></script>
 {% endblock dlg_blc_javascript %}

@@ -75,7 +75,7 @@ def icon_prepare_for_html(sep_or_id: MgmtSep | int | None) -> Tuple[str, str, Mg
             case SepIconConfig.none_file:
                 content = SepIconConfig.none_content()
             case _:
-                content = MgmtSep.db_content(sep.id)
+                content = MgmtSep.icon_content(sep.id)
 
         with open(file_full_name, "w", encoding="utf-8") as file:
             file.write(content)

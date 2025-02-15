@@ -187,16 +187,17 @@ class MgmtUserSep(Base):
         3) Error message if any action fails.
         """
 
+        users_sep: DBRecords = None
+        sep_list: DBRecords = None
         msg_error = None
         with SqlAlchemyScopedSession() as db_session:
-            users_sep: ListOfRecords = []
-            sep_list: ListOfRecords = []
             try:
+                mus_recs = db_session.scalars(select(MgmtUserSep)).all()
+                users_sep = DBRecords(MgmtUserSep.__tablename__, mus_recs)
+
                 ssep_recs = db_session.scalars(select(SchemaSEP)).all()
                 sep_list = DBRecords(SchemaSEP.__tablename__, ssep_recs)
 
-                mus_recs = db_session.scalars(select(MgmtUserSep)).all()
-                users_sep = DBRecords(MgmtUserSep.__tablename__, mus_recs)
             except Exception as e:
                 msg_error = str(e)
                 sidekick.display.error(msg_error)
@@ -287,7 +288,7 @@ class MgmtSep(Base):
         return sep, sep_fullname
 
     @staticmethod
-    def db_content(id: int) -> Optional[SvgContent]:
+    def icon_content(id: int) -> Optional[SvgContent]:
         """
         Returns the content of the icon_svg (useful for creating a file)
         """
@@ -344,8 +345,9 @@ class ReceivedFiles(Base):
 
     # file sep, when registered*
     file_sep_id = Column("id_sep", Integer)
-    # current user sep id*
-    mgmt_sep_id = Column(Integer)
+    # Sep Id selected by the user to submit the file
+    sep_id = Column(Integer)
+    sep_fullname = Column(String(256))
 
     submitted_at = Column("registered_at", DateTime)
     stored_file_name = Column(String(180))
@@ -354,6 +356,10 @@ class ReceivedFiles(Base):
     file_size = Column(Integer)
     file_crc32 = Column(Integer)
 
+    report_errors = Column(Integer)
+    report_warns = Column(Integer)
+
+    user_receipt = Column(String(15))
     email_sent = Column(Boolean)
     had_reception_error = Column(Boolean)
 

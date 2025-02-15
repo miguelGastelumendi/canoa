@@ -20,7 +20,7 @@ from ..helpers.route_helper import init_form_vars, get_input_text
 from ..helpers.error_helper import ModuleErrorCode, CanoeStumbled, did_I_stumbled
 from ..helpers.ui_texts_helper import (
     ui_msg_info,
-    ui_DialogIcon,
+    ui_icon_file_url,
     add_msg_success,
     add_msg_error,
     add_msg_fatal,
@@ -46,7 +46,7 @@ def do_sep_edit() -> str:
                 if sep is None or logged_user.sep.id is None:
                     raise CanoeStumbled(add_msg_fatal("sepEditNotFound", uiTexts), task_code, True)
                 task_code += 1  #
-                uiTexts[ui_DialogIcon] = logged_user.sep.icon_url
+                uiTexts[ui_icon_file_url] = logged_user.sep.icon_url
                 uiTexts[ui_msg_info] = uiTexts[ui_msg_info].format(sep_fullname)
             except CanoeStumbled as e:
                 raise

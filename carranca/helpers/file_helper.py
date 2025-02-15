@@ -28,6 +28,16 @@ def path_remove_last_folder(dir: str) -> str:
 
 
 def change_file_ext(file: str, ext: str):
+    """
+    Changes the extension of a given file.
+
+    Args:
+        file: The original file name.
+        ext: The new extension to be applied. Should include the dot (e.g., '.txt').
+
+    Returns:
+        The file name with the new extension.
+    """
     root, _ = path.splitext(file)
     new_file = root + ext
     return new_file

@@ -9,19 +9,16 @@
 
 import json
 from datetime import datetime
-from typing import Optional, TypeAlias, Union, Tuple, List, Any
+from typing import Optional, TypeAlias, Union, Tuple, Dict, List, Any
 from sqlalchemy import text, Sequence
 
 from carranca import SqlAlchemyScopedSession
 from .py_helper import is_str_none_or_empty, to_str
 
-# Array of table's rows as classes -> ListOfRecords
-ListOfRecords: TypeAlias = List["DBRecord"]
+# Array of table's rows as classes -> ListOfDBRecords
+ListOfDBRecords: TypeAlias = List["DBRecord"]
 
 JsonStrOfRecords: TypeAlias = str
-
-""" An empty ListOfRecords = [] """
-ListOfRecordsEmpty: ListOfRecords = []
 
 
 class DBRecord:
@@ -29,7 +26,9 @@ class DBRecord:
     A class that initializes an instance with attributes from a dictionary.
     """
 
-    def __init__(self, rec_dict: dict, field_types_filter: Optional[List[type]], rec_name: Optional[str]):
+    name = "db_record"
+
+    def __init__(self, rec_dict: dict, field_types_filter: Optional[List[type]]):
         """
         Args:
             rec_dict (dict): A dictionary containing the attributes to set on the instance.
@@ -39,16 +38,17 @@ class DBRecord:
         Note:
             If `field_types_filter` is provided, only keys with values matching the specified types will be set as attributes.
         """
-        if not is_str_none_or_empty(rec_name):
-            self.__class__.__name__ = rec_name
-
         for key, value in rec_dict.items():
             if isinstance(value, field_types_filter) if field_types_filter else True:
                 setattr(self, key, value)
 
+
+    def keys(self):
+        return list(self.__dict__.keys())
+
     def __repr__(self):
         attrs = ", ".join(f"{key}={value}" for key, value in self.__dict__.items())
-        return f"<{self.__class__.__name__}({attrs})>"
+        return f"<{self.name}({attrs})>"
 
 
 class DBRecords:
@@ -57,24 +57,47 @@ class DBRecords:
     """
 
     field_types_filter = (str, int, float, bool, datetime)
-    records: ListOfRecords = []
+    records: ListOfDBRecords = []
 
     def __init__(
         self,
         table_name: Optional[str],
-        slqaRecords: Sequence,
+        slqaRecords: Optional[Sequence] = None,
         simple: bool = True,
         includeNone: bool = True,
     ):
         self.table_name = self.__class__.__name__ if is_str_none_or_empty(table_name) else table_name
 
-        only_types = None if not simple else self.field_types_filter + (type(None),) if includeNone else ()
+        self.only_types = (
+            None if not simple else self.field_types_filter + (type(None),) if includeNone else ()
+        )
 
         (self.field_types_filter if simple else None) + ((type(None),) if simple and includeNone else ())
-        self.count = len(slqaRecords)
-        self.records: ListOfRecords = [
-            DBRecord(record.__dict__, only_types, "db_record") for record in slqaRecords
-        ]
+        if slqaRecords is not None:
+            self.records: ListOfDBRecords = [
+                DBRecord(record.__dict__, self.only_types) for record in slqaRecords
+            ]
+
+    def __iter__(self):
+        """make DBRecords iterable"""
+        return iter(self.records)
+
+    def __len__(self):
+        """make DBRecords have len"""
+        return len(self.records)
+
+    def __getitem__(self, index):
+        """make DBRecords subscriptable"""
+        return self.records[index]
+
+    @property
+    def count(self):
+        return self.__len__()
+
+    def append(self, record_dict: Dict[str, Any]):
+        """Appends a new DBRecord object based on the given dictionary."""
+        new_record = DBRecord(record_dict, self.only_types)
+        self.records.append(new_record)
 
     def to_json(self, exclude_fields: Optional[List[str]] = None):
         exclude_fields = (exclude_fields or []) + ["__class__.__name__"]

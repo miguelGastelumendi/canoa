@@ -15,6 +15,7 @@ from werkzeug.local import LocalProxy
 
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_user_code, get_user_folder
+from ..common.app_constants import app_lang
 
 
 # Basic information of the logged user.
@@ -38,6 +39,7 @@ class LoggedUser:
 
         if not self.ready:
             sidekick.display.debug(f"{self.__class__.__name__} was reset.")
+            self.lang = app_lang  # TODO: None -> use Browser default
             self.name = "?"
             self.id = -1
             self.email = ""
@@ -48,6 +50,7 @@ class LoggedUser:
             from .sep_icon import icon_prepare_for_html
 
             sidekick.display.debug(f"{self.__class__.__name__} was created.")
+            self.lang = current_user.lang
             self.name = current_user.username
             self.id = current_user.id
             self.email = current_user.email
