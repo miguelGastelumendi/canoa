@@ -363,21 +363,25 @@ class ReceivedFiles(Base):
     email_sent = Column(Boolean)
     had_reception_error = Column(Boolean)
 
+    @staticmethod
     def get_user_records(
-        user_id: int, email_sent: bool = True, had_reception_error: bool = False
+        id: int, user_id: int, email_sent: bool = True, had_reception_error: bool = False
     ) -> DBRecords:
         received_files = None
         msg_error = ""
         with SqlAlchemyScopedSession() as db_session:
             try:
-                stmt = select(ReceivedFiles).where(
-                    and_(
-                        ReceivedFiles.email_sent == email_sent,
-                        ReceivedFiles.had_reception_error == had_reception_error,
+                if id is not None:
+                    stmt = select(ReceivedFiles).where(ReceivedFiles.id == id)
+                else:
+                    stmt = select(ReceivedFiles).where(
+                        and_(
+                            ReceivedFiles.email_sent == email_sent,
+                            ReceivedFiles.had_reception_error == had_reception_error,
+                        )
                     )
-                )
-                if user_id is not None:
-                    stmt = stmt.where(ReceivedFiles.user_id == user_id)
+                    if user_id is not None:
+                        stmt = stmt.where(ReceivedFiles.user_id == user_id)
 
                 rows = db_session.scalars(stmt).all()
                 received_files = DBRecords(ReceivedFiles.__tablename__, rows)
@@ -388,6 +392,5 @@ class ReceivedFiles(Base):
                 sidekick.app_log.error(msg_error)
 
         return received_files
-
 
 # eof

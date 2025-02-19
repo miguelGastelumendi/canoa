@@ -27,13 +27,15 @@ def path_remove_last_folder(dir: str) -> str:
         return short_dir
 
 
-def change_file_ext(file: str, ext: str):
+def change_file_ext(file: str, ext: str = ""):
     """
     Changes the extension of a given file.
 
     Args:
         file: The original file name.
-        ext: The new extension to be applied. Should include the dot (e.g., '.txt').
+        ext: The new extension to be applied.
+             Should include the dot (e.g., '.txt').
+             If not provided, the extension is removed.
 
     Returns:
         The file name with the new extension.

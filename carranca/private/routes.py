@@ -104,7 +104,7 @@ def receive_file():
 
 
 @login_required
-@bp_private.route("/received_files_get", methods=["GET"])
+@bp_private.route("/received_files_get", methods=["POST"])
 def received_files_get() -> str:
     """
     Through this route, the user obtains a list of the files
@@ -115,7 +115,7 @@ def received_files_get() -> str:
     else:
         from .received_files_mgmt import received_files_fetch
 
-        records = received_files_fetch()
+        records, _ = received_files_fetch()
         json = records.to_json()
 
         return json
@@ -140,8 +140,8 @@ def received_files_mgmt():
 
 
 @login_required
-@bp_private.route("/received_file_get/<file_name>", methods=["GET"])
-def received_file_download(file_name: str):
+@bp_private.route("/received_file_download", methods=["GET", "POST"])
+def received_file_download():
     """
     Through this route, the user request to download one of the files
     he has send for validation or it's generated report.
@@ -149,14 +149,10 @@ def received_file_download(file_name: str):
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from flask import send_file
+        from .received_files_mgmt import received_file_get
 
-        try:
-            F = send_file(file_name)
-        except Exception as e:
-            print(e)
-
-        return F
+        html = received_file_get()
+        return html
 
 
 @login_required

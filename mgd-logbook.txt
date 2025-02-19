@@ -77,8 +77,21 @@ TODO:
 ------- 2025 - January -----------
 ----------------------------------
 
+    - save received files with .zip/.pdf extension (not PDF/pdF/etc)
+    - remove "Setorista" when logger_user is not adm
+    - disable btns of Gestão de Arquivos Enviados
 
     - fix data_validate html/css
+
+
+2025-02-17--18 β 3.53
+    - Fix bugs & improvements in ReceivedFiles.get_user_records
+    - ReceivedFiles.get_user_records, get a record by id
+    - Fix bugs & improvements in DBRecords()
+    - Remove ListOfDBRecords = []
+    - Start disable btns of Gestão de Arquivos Enviados
+    - Received_file_get() -> str | File: almost ready
+    - First file download!
 
 
 2025-02-14 β 3.52
@@ -88,8 +101,10 @@ TODO:
     - received file mgmt grid display (download btn)
     - DB version 3.50
 
+
 2025-02-11 β 3.51
     - update see app_constants
+
 
 2025-02-06,10 β 3.50
     - dv: set --sector arg always sent. [Nenhum] if empty

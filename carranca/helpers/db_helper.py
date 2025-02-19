@@ -42,7 +42,6 @@ class DBRecord:
             if isinstance(value, field_types_filter) if field_types_filter else True:
                 setattr(self, key, value)
 
-
     def keys(self):
         return list(self.__dict__.keys())
 
@@ -56,26 +55,25 @@ class DBRecords:
     A class that converts a SQLAlchemy query result into a list of DBRecord instances.
     """
 
-    field_types_filter = (str, int, float, bool, datetime)
+    simple_types_filter: Tuple[type, ...] = (str, int, float, bool, datetime)
     records: ListOfDBRecords = []
 
     def __init__(
         self,
-        table_name: Optional[str],
+        table_name: Optional[str] = "",
         slqaRecords: Optional[Sequence] = None,
-        simple: bool = True,
+        filter_types: Optional[Tuple[type, ...]] = None,
         includeNone: bool = True,
     ):
+        self.records: ListOfDBRecords = []
         self.table_name = self.__class__.__name__ if is_str_none_or_empty(table_name) else table_name
+        self.filter_types = filter_types if filter_types is not None else self.simple_types_filter
+        if includeNone:
+            self.filter_types += (type(None),)
 
-        self.only_types = (
-            None if not simple else self.field_types_filter + (type(None),) if includeNone else ()
-        )
-
-        (self.field_types_filter if simple else None) + ((type(None),) if simple and includeNone else ())
         if slqaRecords is not None:
             self.records: ListOfDBRecords = [
-                DBRecord(record.__dict__, self.only_types) for record in slqaRecords
+                DBRecord(record.__dict__, self.filter_types) for record in slqaRecords
             ]
 
     def __iter__(self):
@@ -96,7 +94,7 @@ class DBRecords:
 
     def append(self, record_dict: Dict[str, Any]):
         """Appends a new DBRecord object based on the given dictionary."""
-        new_record = DBRecord(record_dict, self.only_types)
+        new_record = DBRecord(record_dict, self.filter_types)
         self.records.append(new_record)
 
     def to_json(self, exclude_fields: Optional[List[str]] = None):

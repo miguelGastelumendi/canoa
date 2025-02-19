@@ -47,7 +47,7 @@ mgd
             action="{{private_route('sep_mgmt')}}">
             <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
             <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
-            <input type="submit" style="display:none;">
+            {# <input type="submit" style="display:none;"> #}
             <button type="submit" class="form-main-btn" disabled id="{{gridSubmitID}}">
                 {{(grdBtnSave |default("Save"))}}
             </button>

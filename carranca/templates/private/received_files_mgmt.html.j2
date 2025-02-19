@@ -32,25 +32,40 @@ mgd
 {% block dlg_blc_footer %}
 <div class="mb-3 row">
     <div class="col-auto">
-        <button type="button" onclick="gridAdd()" class="form-main-btn">
+        <button type="button" onclick="download('Z')" class="form-main-btn">
             {{ grdBtnDwnLoadZIP }}
         </button>
     </div>
     <div class="col-auto">
-        <button type="button" onclick="gridEdit()" class="form-main-btn">
+        <button type="button" onclick="download('P')" class="form-main-btn">
             {{ grdBtnDwnLoadPDF }}
         </button>
     </div>
 </div>
+<form method="post" action="{{ private_route('received_file_download') }}" id="{{gridSubmitID}}">
+    <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
+    <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
+</form>
 {% endblock dlg_blc_footer %}
 
 {% block dlg_blc_javascript %}
 <script>
-    const rowData = ({{ recFiles | default ([]) | tojson }}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
+    const rowData = ({{ rec_files | default ([]) | tojson }}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
     const colData = {{ colData | tojson }};
-    const gridID = '{{ gridID }}'
+    const gridID = '{{ gridID }}';
     const dateFormat = '{{ dateFormat | default('pt-BR') }}';
     const itemNone = '{{ itemNone }}';
+    const displayUser = '{{ display_user }}';
+
+    const download = (t) => {
+        if (activeRow) {
+            const id = `${activeRow.data["id"]}${t}`;
+            document.getElementById('{{gridRsp}}').value = id;
+            document.getElementById('{{gridSubmitID}}').submit();
+        }
+    }
+
+    // Assuming you have a way to set activeRow when a row is selected
 </script>
 <script src='{{static_route("js/received_files_mgmt.js")}}'></script>
 {% endblock dlg_blc_javascript %}
