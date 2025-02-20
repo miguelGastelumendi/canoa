@@ -43,12 +43,12 @@ mgd
         </button>
     </div>
     <div class="col-auto">
-        <form id="hiddenForm" onsubmit="return gridCargo('{{gridRsp}}')" method="POST"
+        <form id="hiddenForm" onsubmit="return gridCargo('{{grid_rsp}}')" method="POST"
             action="{{private_route('sep_mgmt')}}">
-            <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
-            <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
+            <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
+            <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
             {# <input type="submit" style="display:none;"> #}
-            <button type="submit" class="form-main-btn" disabled id="{{gridSubmitID}}">
+            <button type="submit" class="form-main-btn" disabled id="{{grid_submit_id}}">
                 {{(grdBtnSave |default("Save"))}}
             </button>
         </form>
@@ -67,12 +67,12 @@ mgd
     });
     const usedList = rowData.map(item => item.sep);
     const initialList = {{ (sepList if sepList else '[]') | tojson }};
-    const gridID = '{{ gridID }}';
-    const colData = {{ colData | tojson }};
-    const colIconSrc = colData[1].n;
-    const colSepCurr = colData[3].n;
-    const colSepNew = colData[4].n;
-    const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{gridSubmitID}}'));
+    const gridID = '{{ grid_id }}';
+    const colMeta = {{ colData | tojson }};
+    const colIconSrc = colMeta[1].n;
+    const colSepCurr = colMeta[3].n;
+    const colSepNew = colMeta[4].n;
+    const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{grid_submit_id}}'));
     const dateFormat = '{{ dateFormat }}';
     const formAdd = '{{ formAdd }}';
     const formEdit = '{{ formEdit }}';

@@ -39,7 +39,7 @@ sec_Success = "secSuccess"
 
 
 # === local def ===========================================
-def __get_query(cols: str, section: str, item: str = None):
+def __get_ui_texts_query(cols: str, section: str, item: str = None):
     # returns Select query for the current locale, section and, eventually, for only one item
     # use SQL lower(item) better than item.lower (use db locale)
     item_filter = "" if item is None else f" and (item_lower = lower('{item}'))"
@@ -66,7 +66,7 @@ def _get_row(item: str, section: str) -> tuple[str, str]:
     """returns tuple(text, title) for the item/section pair"""
     from .db_helper import retrieve_data
 
-    query = __get_query("text, title", section, item)
+    query = __get_ui_texts_query("text, title", section, item)
     result = retrieve_data(query)
     return ("", "") if result is None else result
 
@@ -122,7 +122,7 @@ def get_html(section: str) -> UI_Texts:
     imgList = get_text("images", section)
     # filter if not is_str_none_or_empty(imgList)
     # select item, text from vw_ui_texts v where v.section_lower = 'html_file' and item not in ('image3.png',  'image4.png')
-    query = __get_query("item, text", section)
+    query = __get_ui_texts_query("item, text", section)
     return _get_result_set(query)
 
 
@@ -133,7 +133,7 @@ def get_section(section_name: str) -> UI_Texts:
     if is_str_none_or_empty(section_name):
         items = {}
     else:
-        query = __get_query("item, text", section_name)
+        query = __get_ui_texts_query("item, text", section_name)
         items = _get_result_set(query)
         # texts = process_pre_templates(_texts) # TODO:
 

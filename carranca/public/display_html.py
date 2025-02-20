@@ -85,16 +85,16 @@ def display_html(docName: str):
     template = "./home/document.html.j2"
     section = docName
 
-    uiTexts = get_section(section)
+    ui_texts = get_section(section)
     # must exist
-    uiTexts[ui_page_title] = uiTexts.get(ui_page_title, "Display Document")
-    uiTexts[ui_form_title] = uiTexts.get(ui_form_title, "Document")
-    uiTexts["documentStyle"] = uiTexts.get("documentStyle", "")
+    ui_texts[ui_page_title] = ui_texts.get(ui_page_title, "Display Document")
+    ui_texts[ui_form_title] = ui_texts.get(ui_form_title, "Document")
+    ui_texts["documentStyle"] = ui_texts.get("documentStyle", "")
 
     # shortcuts
     body_key = "documentBody"
-    body = uiTexts.get(body_key, None)
-    images = uiTexts.get("images", None)
+    body = ui_texts.get(body_key, None)
+    images = ui_texts.get("images", None)
 
     # a comma separated list of images.ext names available on the db,
     # see below db_images & _prepare_img_files
@@ -128,13 +128,13 @@ def display_html(docName: str):
         body = img_change_src_path(body, img_folders)
 
     _body = jinja_pre_template(body)
-    uiTexts[body_key] = _body
+    ui_texts[body_key] = _body
 
     # Test function
     # temp = sidekick.app.jinja_env.from_string("{{ app_version() }}  + {{ app_name()}}")
     # print(temp.render())
 
-    tmpl = render_template(template, **uiTexts)
+    tmpl = render_template(template, **ui_texts)
     return tmpl
 
 

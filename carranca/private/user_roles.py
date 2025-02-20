@@ -18,6 +18,7 @@ class Roles(Enum):
     Admin = "ADM"
     Setorista = "SEP"
     Suporte = "SPT"
+    Unknown = "UNK"
 
 
 # eof

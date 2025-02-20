@@ -9,7 +9,7 @@ Extends
 
 mgd
 --------------------------------------- #}
-{# cSpell:ignore mgmt onclick tojson onsubmit #}
+{# cSpell:ignore mgmt onclick tojson onsubmit dnld, Rprt #}
 
 {# only specify if different from default #}
 {% set dlg_cls_size= 'modal-xl' %}
@@ -32,40 +32,43 @@ mgd
 {% block dlg_blc_footer %}
 <div class="mb-3 row">
     <div class="col-auto">
-        <button type="button" onclick="download('Z')" class="form-main-btn">
-            {{ grdBtnDwnLoadZIP }}
+        <button type="button" onclick="download('{{ dnld_F  }}}')" id="btn{{ dnld_F  }}" class="form-main-btn" disabled>
+            {{ btnDwnLoadFile }}
         </button>
     </div>
     <div class="col-auto">
-        <button type="button" onclick="download('P')" class="form-main-btn">
-            {{ grdBtnDwnLoadPDF }}
+        <button type="button" onclick="download('{{ dnld_R }}')" id="btn{{ dnld_R  }}" class="form-main-btn" disabled>
+            {{ btnDwnLoadRprt }}
         </button>
     </div>
 </div>
-<form method="post" action="{{ private_route('received_file_download') }}" id="{{gridSubmitID}}">
-    <input type="hidden" name="{{gridRsp}}" id="{{gridRsp}}">
-    <input type="hidden" name="{{gridSecKey}}" value="{{gridSecValue}}">
+<form method="post" action="{{private_route('received_file_download')}}" id="{{grid_submit_id}}">
+    <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
+    <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
 </form>
 {% endblock dlg_blc_footer %}
 
 {% block dlg_blc_javascript %}
 <script>
     const rowData = ({{ rec_files | default ([]) | tojson }}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
-    const colData = {{ colData | tojson }};
-    const gridID = '{{ gridID }}';
+    const colMeta = {{ grid_col_meta | tojson }};
+    const gridID = '{{ grid_id }}';
     const dateFormat = '{{ dateFormat | default('pt-BR') }}';
     const itemNone = '{{ itemNone }}';
     const displayUser = '{{ display_user }}';
-
+    const isAdm = {{ grid_user_is_adm }}
+    const defButtons = () => {
+        const btnFile = document.getElementById('btn{{dnld_F}}');
+        const btnRprt = document.getElementById('btn{{dnld_R}}');
+        return { btnFile, btnRprt };
+    }
     const download = (t) => {
         if (activeRow) {
             const id = `${activeRow.data["id"]}${t}`;
-            document.getElementById('{{gridRsp}}').value = id;
-            document.getElementById('{{gridSubmitID}}').submit();
+            document.getElementById('{{ grid_rsp }}').value = id;
+            document.getElementById('{{ grid_submit_id }}').submit();
         }
     }
-
-    // Assuming you have a way to set activeRow when a row is selected
 </script>
 <script src='{{static_route("js/received_files_mgmt.js")}}'></script>
 {% endblock dlg_blc_javascript %}

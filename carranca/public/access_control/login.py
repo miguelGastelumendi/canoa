@@ -31,7 +31,7 @@ def login():
     #  from ...app_request_scoped_vars import sidekick
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
-    tmpl_form, template, is_get, uiTexts = init_form_vars()
+    tmpl_form, template, is_get, ui_texts = init_form_vars()
     # TODO test, fake form?
 
     logged_in = False
@@ -39,7 +39,7 @@ def login():
         task_code += 1  # 1
         tmpl_form = LoginForm(request.form)
         task_code += 1  # 2
-        template, is_get, uiTexts = get_account_form_data("login")
+        template, is_get, ui_texts = get_account_form_data("login")
         task_code += 1  # 3
         if is_get and is_someone_logged():
             internal_logout()
@@ -58,15 +58,15 @@ def login():
             user = get_user_where(email=search_for) if user is None else user  # or by email
             task_code += 1  # 9
             if not user:
-                add_msg_error("userOrPwdIsWrong", uiTexts)
+                add_msg_error("userOrPwdIsWrong", ui_texts)
             elif not verify_pass(password, user.password):
                 user.password_failed_at = now()
                 task_code += 1  # 10
                 user.password_failures = user.password_failures + 1
-                add_msg_error("userOrPwdIsWrong", uiTexts)
+                add_msg_error("userOrPwdIsWrong", ui_texts)
                 persist_user(user, task_code)
             elif user.disabled:
-                add_msg_error("userIsDisabled", uiTexts)
+                add_msg_error("userIsDisabled", ui_texts)
             else:
                 task_code += 1  # 12
                 user.recover_email_token = None
@@ -89,7 +89,7 @@ def login():
                 return redirect_to(home_route())
 
     except Exception as e:
-        msg = add_msg_fatal("errorLogin", uiTexts, task_code)
+        msg = add_msg_fatal("errorLogin", ui_texts, task_code)
         sidekick.app_log.error(e)
         sidekick.app_log.debug(msg)
         if logged_in:
@@ -99,7 +99,7 @@ def login():
     return render_template(
         template,
         form=tmpl_form,
-        **uiTexts,
+        **ui_texts,
     )
 
 

@@ -29,12 +29,12 @@ from ..wtforms import ChangePassword
 
 def do_password_change():
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_CHANGE.value
-    tmpl_form, template, is_get, uiTexts = init_form_vars()
+    tmpl_form, template, is_get, ui_texts = init_form_vars()
     # TODO test, fake form?
 
     try:
         task_code += 1  # 1
-        template, is_get, uiTexts = get_account_form_data("passwordChange", "password_reset_or_change")
+        template, is_get, ui_texts = get_account_form_data("passwordChange", "password_reset_or_change")
         password = "" if is_get else get_input_text("password")
         task_code += 1  # 2
         confirm_password = "" if is_get else get_input_text("confirm_password")
@@ -48,12 +48,12 @@ def do_password_change():
         elif not sidekick.config.DB_len_val_for_pw.check(password):
             add_msg_error(
                 "invalidPassword",
-                uiTexts,
+                ui_texts,
                 sidekick.config.DB_len_val_for_pw.min,
                 sidekick.config.DB_len_val_for_pw.max,
             )
         elif password != confirm_password:
-            add_msg_error("passwordsAreDifferent", uiTexts)
+            add_msg_error("passwordsAreDifferent", ui_texts)
         elif user is None:
             internal_logout()
             return redirect_to(login_route())
@@ -63,16 +63,16 @@ def do_password_change():
             task_code += 1  # 6
             persist_user(user, task_code)
             task_code += 1  # 7
-            add_msg_success("chgPwSuccess", uiTexts)
+            add_msg_success("chgPwSuccess", ui_texts)
             task_code += 1  # 8
             internal_logout()
 
     except Exception as e:
-        msg = add_msg_fatal("errorPasswordChange", uiTexts, task_code)
+        msg = add_msg_fatal("errorPasswordChange", ui_texts, task_code)
         sidekick.app_log.info(msg)
         sidekick.app_log.error(str(e))
 
-    tmpl = render_template(template, form=tmpl_form, **uiTexts)
+    tmpl = render_template(template, form=tmpl_form, **ui_texts)
     return tmpl
 
 

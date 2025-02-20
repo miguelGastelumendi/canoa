@@ -37,12 +37,12 @@ const gridOptions = {
     }
     , rowData: rowData
     , columnDefs: [
-        { field: colData[0].n, flex: 0, hide: true },
+        { field: colMeta[0].n, flex: 0, hide: true },
         { field: colIconSrc, flex: 0, hide: true },
-        { field: colData[2].n, headerName: colData[2].h, flex: 1 },
+        { field: colMeta[2].n, headerName: colMeta[2].h, flex: 1 },
         {
-            field: colData[3].n,
-            headerName: colData[3].h,
+            field: colMeta[3].n,
+            headerName: colMeta[3].h,
             flex: 2,
             cellClassRules: {
                 'grd-item-none': params => params.value === itemNone,
@@ -50,8 +50,8 @@ const gridOptions = {
             },
         },
         {
-            field: colData[4].n,
-            headerName: colData[4].h,
+            field: colMeta[4].n,
+            headerName: colMeta[4].h,
             flex: 2,
             editable: true,
             cellClass: 'grd-col-sep_new',
@@ -92,9 +92,9 @@ const gridOptions = {
             }
         },
         {
-            field: colData[5].n
-            , headerName: colData[5].h
-            , valueFormatter: params => (params.data[colData[5].n] ? params.data[colData[5].n].toLocaleDateString(dateFormat) : '')
+            field: colMeta[5].n
+            , headerName: colMeta[5].h
+            , valueFormatter: params => (params.data[colMeta[5].n] ? params.data[colMeta[5].n].toLocaleDateString(dateFormat) : '')
             , flex: 1
         }
     ]

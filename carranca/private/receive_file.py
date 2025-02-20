@@ -38,14 +38,14 @@ RECEIVE_FILE_DEFAULT_ERROR = "uploadFileError"
 
 
 def receive_file() -> str:
-    template, is_get, uiTexts = get_private_form_data("receiveFile")
+    template, is_get, ui_texts = get_private_form_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
 
     def _result():
-        uiTexts[ui_icon_file_url] = None if logged_user.sep is None else logged_user.sep.icon_url
-        sep_fullname = uiTexts["noSEassigned"] if logged_user.sep is None else logged_user.sep.full_name
-        uiTexts[ui_msg_info] = uiTexts[ui_msg_info].format(sep_fullname)
-        tmpl = render_template(template, form=tmpl_form, **uiTexts)
+        ui_texts[ui_icon_file_url] = None if logged_user.sep is None else logged_user.sep.icon_url
+        sep_fullname = ui_texts["noSEassigned"] if logged_user.sep is None else logged_user.sep.full_name
+        ui_texts[ui_msg_info] = ui_texts[ui_msg_info].format(sep_fullname)
+        tmpl = render_template(template, form=tmpl_form, **ui_texts)
         return tmpl
 
     if is_get:
@@ -55,9 +55,9 @@ def receive_file() -> str:
         e_code = ModuleErrorCode.RECEIVE_FILE_ADMIT + code
 
         log_error = (
-            add_msg_fatal(msg_id, uiTexts, e_code, msg)
+            add_msg_fatal(msg_id, ui_texts, e_code, msg)
             if fatal
-            else add_msg_error(msg_id, uiTexts, e_code, msg)
+            else add_msg_error(msg_id, ui_texts, e_code, msg)
         )
         sidekick.app_log.error(log_error)
         return e_code
@@ -141,7 +141,7 @@ def receive_file() -> str:
 
         pd.received_file_name = secure_filename(pd.received_original_name)
         task_code = 20  # 20
-        ve = uiTexts["validExtensions"]
+        ve = ui_texts["validExtensions"]
         valid_extensions = ".zip" if is_str_none_or_empty(ve) else ve.lower().split(",")
 
         task_code += 1  # 21
@@ -151,7 +151,7 @@ def receive_file() -> str:
         error_code, msg_error, _ = process(logged_user, file_data, pd, received_at, valid_extensions)
 
         if error_code == 0:
-            log_msg = add_msg_success("uploadFileSuccess", uiTexts, pd.user_receipt, logged_user.email)
+            log_msg = add_msg_success("uploadFileSuccess", ui_texts, pd.user_receipt, logged_user.email)
             sidekick.display.debug(log_msg)
         else:
             log_msg = _log_error(msg_error, error_code, "", True)

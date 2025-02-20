@@ -110,8 +110,9 @@ def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI
         raise FileNotFoundError(f"The requested template '{tmplt_full_name}' was not found.")
 
     is_get = is_method_get()
-    texts = get_section(section)
-    return template, is_get, texts
+    # a section of ui_itens
+    ui_texts = get_section(section)
+    return template, is_get, ui_texts
 
 
 def get_private_form_data(section: str, tmplt: str = None) -> Tuple[str, bool, UI_Texts]:
@@ -123,7 +124,7 @@ def get_account_form_data(section: str, tmplt: str = None) -> Tuple[str, bool, U
 
 
 def init_form_vars() -> Tuple[Any, str, bool, UI_Texts]:
-    # tmplt_form, template, is_get, uiTexts
+    # tmplt_form, template, is_get, ui_texts
     return None, "", True, {}
 
 

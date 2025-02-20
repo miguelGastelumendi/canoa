@@ -33,6 +33,7 @@ class UserSEP:
 class LoggedUser:
     def __init__(self):
         from .SepIconConfig import SepIconConfig
+        from .user_roles import Roles
         from ..common.app_context_vars import sidekick
 
         self.ready = current_user.is_authenticated if current_user else False
@@ -46,6 +47,7 @@ class LoggedUser:
             self.code = "0"
             self.path = ""
             self.sep = None
+            self.role = Roles.Unknown
         else:
             from .sep_icon import icon_prepare_for_html
 
@@ -57,6 +59,9 @@ class LoggedUser:
             self.code = get_user_code(current_user.id)
             self.folder = get_user_folder(current_user.id)
             self.path = SepIconConfig.local_path
+            self.role = Roles.Unknown
+            self.isAdm = False
+            # ROLE self.role = Roles.Admin
             if current_user.mgmt_sep_id is None:
                 self.sep = None
             else:  # TODO improve performance with cache (maybe session)

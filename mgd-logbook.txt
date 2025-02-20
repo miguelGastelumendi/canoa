@@ -30,7 +30,7 @@ TODO:
         E. β 2.17
         F. β 2.17
         G. β 2.11
-        H. try_get_mgd_msg -> create [^|f(msg_code, ar1, arg2)default msg|^] -> search 'msg_code' in uiTexts
+        H. try_get_mgd_msg -> create [^|f(msg_code, ar1, arg2)default msg|^] -> search 'msg_code' in ui_texts
         I. One close button for: document.html.j2, dialog.html.j2, form.html.j2 (2024.11.19)
         J. PrivateDocs for About (2024.11.19)
 
@@ -77,11 +77,15 @@ TODO:
 ------- 2025 - January -----------
 ----------------------------------
 
-    - save received files with .zip/.pdf extension (not PDF/pdF/etc)
-    - remove "Setorista" when logger_user is not adm
-    - disable btns of Gestão de Arquivos Enviados
-
+    - save received files with pdf extension (not PDF/pdF/etc)
     - fix data_validate html/css
+
+2025-02-19 β 3.54
+    - new grid_helper.py (join ag-grid vars)
+    - disable buttons of Gestão de Arquivos Enviados
+    - retrieve rec_files
+    - remove "Setorista" when logger_user is not adm
+    - received_file_mgmt v1.0
 
 
 2025-02-17--18 β 3.53

@@ -34,7 +34,7 @@ def do_sep_edit() -> str:
     from .SepIconConfig import SepIconConfig
 
     task_code = ModuleErrorCode.SEP_EDIT.value
-    tmpl_form, template, is_get, uiTexts = init_form_vars()
+    tmpl_form, template, is_get, ui_texts = init_form_vars()
 
     sep_fullname = "" if logged_user.sep is None else logged_user.sep.full_name
     try:
@@ -44,19 +44,19 @@ def do_sep_edit() -> str:
             try:
                 sep, sep_fullname = MgmtSep.get_sep(logged_user.sep.id)
                 if sep is None or logged_user.sep.id is None:
-                    raise CanoeStumbled(add_msg_fatal("sepEditNotFound", uiTexts), task_code, True)
+                    raise CanoeStumbled(add_msg_fatal("sepEditNotFound", ui_texts), task_code, True)
                 task_code += 1  #
-                uiTexts[ui_icon_file_url] = logged_user.sep.icon_url
-                uiTexts[ui_msg_info] = uiTexts[ui_msg_info].format(sep_fullname)
+                ui_texts[ui_icon_file_url] = logged_user.sep.icon_url
+                ui_texts[ui_msg_info] = ui_texts[ui_msg_info].format(sep_fullname)
             except CanoeStumbled as e:
                 raise
             except Exception as e:
-                raise CanoeStumbled(add_msg_fatal("sepEditSelectError", uiTexts), task_code, True)
+                raise CanoeStumbled(add_msg_fatal("sepEditSelectError", ui_texts), task_code, True)
 
             return sep, sep_fullname, task_code
 
         task_code += 1  # 2
-        template, is_get, uiTexts = get_private_form_data("sepEdit")
+        template, is_get, ui_texts = get_private_form_data("sepEdit")
         task_code += 1  # 3
         tmpl_form = SepEdit(request.form)
         task_code += 1  # 4
@@ -92,14 +92,16 @@ def do_sep_edit() -> str:
                 task_code += 7  # 11+7 = 18
                 ext = SepIconConfig.ext.upper()
                 raise CanoeStumbled(
-                    add_msg_error("sepEditInvalidFormat", uiTexts, file_obj.filename, ext), task_code, False
+                    add_msg_error("sepEditInvalidFormat", ui_texts, file_obj.filename, ext),
+                    task_code,
+                    False,
                 )
 
             task_code += 19
             if not MgmtSep.set_sep(sep):
-                add_msg_fatal("sepEditFailed", uiTexts, sep_fullname, task_code)
+                add_msg_fatal("sepEditFailed", ui_texts, sep_fullname, task_code)
             else:
-                add_msg_success("sepEditSuccess", uiTexts, sep_fullname)
+                add_msg_success("sepEditSuccess", ui_texts, sep_fullname)
                 if new_icon:  # after post
                     from .sep_icon import icon_refresh
 
@@ -111,12 +113,12 @@ def do_sep_edit() -> str:
         msg = (
             str(e)
             if did_I_stumbled(e)
-            else add_msg_fatal("sepEditException", uiTexts, sep_fullname, task_code)
+            else add_msg_fatal("sepEditException", ui_texts, sep_fullname, task_code)
         )
         sidekick.display.error(msg)
         sidekick.app_log.error(e)
 
-    tmpl = render_template(template, form=tmpl_form, **uiTexts)
+    tmpl = render_template(template, form=tmpl_form, **ui_texts)
     return tmpl
 
 
