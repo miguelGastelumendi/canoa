@@ -10,12 +10,13 @@ mgd
 # cSpell:ignore MgmtSep mgmt
 
 from flask_login import current_user
-from werkzeug.local import LocalProxy
 
+# from werkzeug.local import LocalProxy
+
+from .roles_abbr import RolesAbbr
 from ..helpers.user_helper import get_user_code, get_user_folder
 from ..common.app_constants import app_lang
-from .roles_abbr import RolesAbbr
-from .User_sep import UserSEP
+from werkzeug.local import LocalProxy
 
 
 # Basic information of the logged user.
@@ -40,7 +41,6 @@ class LoggedUser:
             self.is_adm = False
             self.sep = None
         else:
-            from .sep_icon import icon_prepare_for_html
 
             sidekick.display.debug(f"{self.__class__.__name__} was created.")
             self.lang = current_user.lang
@@ -53,15 +53,24 @@ class LoggedUser:
             self.role_abbr = current_user.role.abbr
             self.role_name = current_user.role.name
             self.is_adm = self.role_abbr == RolesAbbr.Admin
-            if current_user.mgmt_sep_id is None:
-                self.sep = None
-            else:  # TODO improve performance with cache (maybe session)
 
-                def load_sep():
-                    url, sep_fullname, sep = icon_prepare_for_html(current_user.mgmt_sep_id)
-                    return UserSEP(self.path, url, sep_fullname, sep)
+    @property
+    def sep(self):
+        if current_user.mgmt_sep_id is None:
+            return None
+        else:
+            from ..common.app_context_vars import user_sep
 
-                self.sep = LocalProxy(load_sep)
+            return user_sep
+
+                # from .sep_icon import icon_prepare_for_html
+
+                # TODO improve performance with cache (maybe session)
+                # def load_sep():
+                #     url, sep_fullname, sep = icon_prepare_for_html(current_user.mgmt_sep_id)
+                #     return UserSEP(self.path, url, sep_fullname, sep)
+
+                # self.sep = LocalProxy(load_sep)
 
     def __repr__(self):
         user_info = "Unknown" if not self.ready else f"{self.name} [{self.id}]"

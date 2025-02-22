@@ -36,8 +36,13 @@ ui_msg_only = "msgOnly"
 ui_icon_file_url = "iconFileUrl"
 ui_date_format = "user_date_format"
 
-db_user_locale = app_lang  # TODO: current_user.lang
-msg_not_found = "Message '{0}' (not registered §: {1})"
+db_user_locale = app_lang
+
+
+class MsgNotFound:
+    cache = None
+    default = "Message '{0}' (not registered §: {1})"
+
 
 """
  See table ui_sections.name
@@ -62,6 +67,21 @@ def __get_ui_texts_query(cols: str, section: str, item: str = None):
         f"(locale = '{db_user_locale}') and (section_lower = lower('{section}')){item_filter};"
     )
     return query
+
+
+def msg_not_found() -> str:
+    if MsgNotFound.cache:
+        return MsgNotFound.cache
+
+    mnf = MsgNotFound.default
+    try:
+        text, _ = _get_row("messageNotFound", sec_Error)
+        MsgNotFound.cache = MsgNotFound.default if is_str_none_or_empty(text) else text
+        mnf = MsgNotFound.cache
+    except:
+        pass
+
+    return mnf
 
 
 def _get_result_set(query):
@@ -104,13 +124,6 @@ def _add_msg(item: str, section: str, name: str, texts=None, *args) -> str:
         texts[name] = value
 
     return value
-
-
-def _texts_init():
-    # initialize 'msg_not_found' str
-    text, _ = _get_row("messageNotFound", sec_Error)
-    mnf = msg_not_found if is_str_none_or_empty(text) else text
-    return mnf
 
 
 # === public ==============================================
@@ -163,9 +176,9 @@ def get_text(item: str, section: str, default: str = None) -> str:
     if not is_str_none_or_empty(text):
         pass
     elif default is None:
-        text = msg_not_found.format(item, section)
+        text = msg_not_found().format(item, section)
     else:
-        text = ""
+        text = default
     return text
 
 
@@ -204,8 +217,5 @@ def get_msg_error(item: str) -> str:
     # returns text for the item/'sec_Error' pair, adds the pair to texts => texts.add( text, 'msgError')
     return add_msg_error(item)
 
-
-# init msg_not_found
-msg_not_found = _texts_init()
 
 # eof

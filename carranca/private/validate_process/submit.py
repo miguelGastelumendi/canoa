@@ -133,7 +133,7 @@ def submit(cargo: Cargo) -> Cargo:
             task_code += 1  # 2
             raise Exception(f"The `{_cfg.dv_app.ui_name}` module caller [{batch_full_name}] was not found.")
 
-        result_ext = _cfg.output_file.ext
+        result_ext = _cfg.output_file.ext  # /!\ keep always the same case (all lower)
         final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
         final_report_full_name = path.join(_path_read, final_report_file_name)
 

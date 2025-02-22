@@ -17,14 +17,6 @@ cSpell:ignore nowrap unselectable noopener noreferrer termofuse onclick mgmt
         style="height: 3em; padding: 0 !important; background-color:#ffffff7a;">
 
         <div class="container">
-            <span style="width: '3em'">
-                {% if logged_user and logged_user.sep and logged_user.sep.icon_url %}
-                <img src="{{ logged_user.sep.icon_url }}"
-                    title="Setor Estrat&eacute;gico At&iacute;vo [{{logged_user.sep.full_name}}]" height="50%"
-                    width="50%">
-                {% endif %}
-            </span>
-
             <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
                 href="{{ private_route('receive_file') }}"
                 title="Abre o formulário para submeter um arquivo ZIP o do Google Drive ao processo de valida&ccedil;&atilde;o">

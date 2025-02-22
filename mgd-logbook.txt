@@ -78,12 +78,17 @@ TODO:
 ----------------------------------
 
     Todo:
-        - schema/sep mgmt
+        - schema/sep management
         - err_code <- grid_constants
-        - save received files with pdf extension (not PDF/pdF/etc)'
         - fix data_validate html/css
         - add_msg_fatal template
         - read data_validate warn + err & save them
+
+2025-02-21 β 3.56 Start multiple SEP by user
+    - remove SEP Icon from navigator
+    - save received files with 'pdf' extension (not PDF/pdF/etc)'
+    - review logged_user.sep (LocalProxy)
+    - review ui_texts_helper.py msg_not_found
 
 2025-02-21 β 3.55 received_files_mgmt & sep_mgmt `merged`
     - received_files_mgmt & sep_mgmt now uses js_grid_constants
