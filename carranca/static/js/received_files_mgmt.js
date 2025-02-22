@@ -16,8 +16,6 @@ let activeRow = null;
 let btnFile = /** @type {HTMLButtonElement|null} */ (null);
 let btnRprt = /** @type {HTMLButtonElement|null} */ (null);
 
-const icon = /** @type {HTMLImageElement} */(document.getElementById("dlg_icon"))
-
 window.addEventListener('beforeunload', (event) => {
 
 });

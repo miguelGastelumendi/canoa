@@ -15,9 +15,8 @@ from typing import Optional, Tuple
 from psycopg2 import DatabaseError, OperationalError
 from sqlalchemy import and_, select
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text
-from sqlalchemy.orm import defer, Session as SQLAlchemySession
+from sqlalchemy.orm import defer, Session as SQLAlchemySession, declarative_base
 
-from sqlalchemy.ext.declarative import declarative_base
 from carranca import SqlAlchemyScopedSession
 
 from .SepIconConfig import SepIconConfig, SvgContent
@@ -30,7 +29,7 @@ Base = declarative_base()
 
 
 # --- Table ---
-class UserDataFiles(Base):
+class UserDataFile(Base):
     """
     UserDataFiles is app's interface for the
     DB table `user_data_files` that works as a
@@ -99,7 +98,7 @@ class UserDataFiles(Base):
     @staticmethod
     def _get_record(session: SQLAlchemySession, uTicket: str):
         """gets the record with unique key: uTicket"""
-        stmt = select(UserDataFiles).where(UserDataFiles.ticket == uTicket)
+        stmt = select(UserDataFile).where(UserDataFile.ticket == uTicket)
         rows = session.scalars(stmt).all()
         if not rows:
             return None
@@ -117,7 +116,7 @@ class UserDataFiles(Base):
             try:
                 # if update, fetch existing record
                 # if insert, check if record already exists
-                record_to_ins_or_upd = UserDataFiles._get_record(db_session, uTicket)
+                record_to_ins_or_upd = UserDataFile._get_record(db_session, uTicket)
                 # check invalid conditions
                 msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
                 if isUpdate and record_to_ins_or_upd is None:
@@ -125,7 +124,7 @@ class UserDataFiles(Base):
                 elif isInsert and record_to_ins_or_upd is not None:
                     raise KeyError(msg_exists.format("already"))
                 elif isInsert:
-                    record_to_ins_or_upd = UserDataFiles(ticket=uTicket, **kwargs)
+                    record_to_ins_or_upd = UserDataFile(ticket=uTicket, **kwargs)
                     db_session.add(record_to_ins_or_upd)
                 else:  # isUpdate
                     for attr, value in kwargs.items():
@@ -137,7 +136,7 @@ class UserDataFiles(Base):
                 db_session.rollback()
                 operation = "update" if isUpdate else "insert to"
                 msg_error = (
-                    f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
+                    f"Cannot {operation} {UserDataFile.__tablename__}.ticket = {uTicket} | Error {e}."
                 )
                 sidekick.app_log.error(msg_error)
                 raise DatabaseError(msg_error)
@@ -145,14 +144,15 @@ class UserDataFiles(Base):
 
     # Public insert/update
     def insert(uTicket: str, **kwargs) -> None:
-        UserDataFiles._ins_or_upd(True, uTicket, **kwargs)
+        UserDataFile._ins_or_upd(True, uTicket, **kwargs)
         return None
 
     def update(uTicket: str, **kwargs) -> None:
-        UserDataFiles._ins_or_upd(False, uTicket, **kwargs)
+        UserDataFile._ins_or_upd(False, uTicket, **kwargs)
         return None
 
 
+# --- Table ---
 class MgmtUserSep(Base):
     """
     `vw_mgmt_user_sep` is DB view which holds the necessary information
@@ -392,5 +392,6 @@ class ReceivedFiles(Base):
                 sidekick.app_log.error(msg_error)
 
         return received_files
+
 
 # eof

@@ -16,7 +16,7 @@ from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import now
 
 from ..receive_file import RECEIVE_FILE_DEFAULT_ERROR
-from ..logged_user import LoggedUser
+from ..Logged_user import LoggedUser
 from .ProcessData import ProcessData
 
 

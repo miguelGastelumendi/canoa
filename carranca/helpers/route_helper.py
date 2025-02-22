@@ -11,9 +11,12 @@ import requests
 from os import path
 from typing import Tuple, Any
 from flask import redirect, request, url_for
+
 from .py_helper import is_str_none_or_empty, camel_to_snake, to_str
 from .hints_helper import UI_Texts
+from .ui_texts_helper import get_section
 from ..config import BaseConfig
+from ..common.app_context_vars import sidekick
 
 base_route_private = "private"
 base_route_public = "public"
@@ -94,9 +97,6 @@ def get_input_text(name: str) -> str:
 
 
 def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI_Texts]:
-    from ..common.app_context_vars import sidekick
-    from .ui_texts_helper import get_section
-
     tmplt = camel_to_snake(section) if tmplt is None else tmplt
     tmplt_file_name = f"{tmplt}.html.j2"
     # template *must* be with '/':
@@ -110,8 +110,10 @@ def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI
         raise FileNotFoundError(f"The requested template '{tmplt_full_name}' was not found.")
 
     is_get = is_method_get()
+
     # a section of ui_itens
     ui_texts = get_section(section)
+
     return template, is_get, ui_texts
 
 

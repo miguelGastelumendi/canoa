@@ -17,9 +17,10 @@ from os import path
 from typing import Callable, Type
 from base64 import b64encode
 
-from .py_helper import is_str_none_or_empty, strip_and_ignore_empty
+from .py_helper import is_str_none_or_empty
 from .email_helper import RecipientsDic, RecipientsListStr, mime_types
-from .ui_texts_helper import get_section, format_ui_item
+from .ui_texts_helper import get_section
+from ..common.app_context_vars import logged_user
 
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started
 # curl --request POST \

@@ -56,7 +56,6 @@ class DBRecords:
     """
 
     simple_types_filter: Tuple[type, ...] = (str, int, float, bool, datetime)
-    records: ListOfDBRecords = []
 
     def __init__(
         self,
@@ -67,14 +66,12 @@ class DBRecords:
     ):
         self.records: ListOfDBRecords = []
         self.table_name = self.__class__.__name__ if is_str_none_or_empty(table_name) else table_name
-        self.filter_types = filter_types if filter_types is not None else self.simple_types_filter
+        self.filter_types = filter_types if filter_types is not None else DBRecords.simple_types_filter
         if includeNone:
             self.filter_types += (type(None),)
 
         if slqaRecords is not None:
-            self.records: ListOfDBRecords = [
-                DBRecord(record.__dict__, self.filter_types) for record in slqaRecords
-            ]
+            self.records = [DBRecord(record.__dict__, self.filter_types) for record in slqaRecords]
 
     def __iter__(self):
         """make DBRecords iterable"""

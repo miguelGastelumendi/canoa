@@ -17,7 +17,7 @@ from ..helpers.file_helper import folder_must_exist
 
 from .models import MgmtSep
 from .SepIconConfig import SepIconConfig
-from .logged_user import UserSEP
+from .Logged_user import UserSEP
 
 
 def icon_refresh(sep: UserSEP | MgmtSep) -> bool:

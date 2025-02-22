@@ -1,12 +1,8 @@
-{# ------------------------------------
+{#-
+----------------------
 ./layouts/base.html.j2
 -----------------------
 The Base Template for Canoa
-
-Used by:
-./layouts/dialog.html.j2
-./private/home.html.j2
-
 
 
 TODO:
@@ -30,20 +26,15 @@ structure:
 </body>
 
 
-
 = []'static/form_help.js', ...]
 
-
-
 mgd
---------------------------------------- #}
-{# cSpell:ignore endwith fontawesome stylesheet endfor #}
-
+--------------------------------------- -#}
+{#- cSpell:ignore endwith fontawesome stylesheet endfor -#}
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
-
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Canoa {%+ if pageTitle %} &ndash; {{pageTitle}}{% endif %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -107,4 +98,4 @@ mgd
 </body>
 
 </html>
-{# eof #}
+{#- eof -#}

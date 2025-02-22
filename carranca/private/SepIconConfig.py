@@ -11,13 +11,13 @@ from os import path
 from typing import TypeAlias
 
 from ..helpers.route_helper import static_route
-from ..common.app_context_vars import sidekick
-
 
 SvgContent: TypeAlias = str
 
 
 class SepIconConfig:
+    from ..common.app_context_vars import sidekick  # Avoid Circular 2025.02.20
+
     ext = "svg"
     folder = "sep_icons"
     static_folder = path.basename(sidekick.app.static_folder)

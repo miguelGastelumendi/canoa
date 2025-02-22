@@ -19,12 +19,12 @@ from ...helpers.route_helper import get_account_form_data, get_input_text, init_
 from ...helpers.ui_texts_helper import add_msg_success, add_msg_error, add_msg_fatal
 
 from ..wtforms import RegisterForm
-from ..models import Users
+from ..models import User
 
 
 def register():
     def __exists_user_where(**kwargs: Any) -> bool:
-        records = Users.query.filter_by(**kwargs)
+        records = User.query.filter_by(**kwargs)
         user = None if not records or records.count() == 0 else records.first()
         return user is not None
 
@@ -63,7 +63,7 @@ def register():
             )
         else:
             task_code += 1  # 4
-            user_record_to_insert = Users(**request.form)
+            user_record_to_insert = User(**request.form)
             task_code += 1  # 5
             persist_user(user_record_to_insert, task_code)
             task_code += 1  # 6

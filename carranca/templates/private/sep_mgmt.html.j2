@@ -68,12 +68,12 @@ mgd
     const usedList = rowData.map(item => item.sep);
     const initialList = {{ (sepList if sepList else '[]') | tojson }};
     const gridID = '{{ grid_id }}';
-    const colMeta = {{ colData | tojson }};
+    const colMeta = {{ grid_col_meta | tojson }};
     const colIconSrc = colMeta[1].n;
     const colSepCurr = colMeta[3].n;
     const colSepNew = colMeta[4].n;
     const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{grid_submit_id}}'));
-    const dateFormat = '{{ dateFormat }}';
+    const dateFormat = '{{ user_date_format }}';
     const formAdd = '{{ formAdd }}';
     const formEdit = '{{ formEdit }}';
     const formCantEdit = '{{ formCantEdit }}';

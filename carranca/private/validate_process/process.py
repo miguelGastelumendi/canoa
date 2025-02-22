@@ -27,9 +27,9 @@
 from datetime import datetime
 from typing import Tuple
 
-from ..models import UserDataFiles
+from ..models import UserDataFile
 
-from ..logged_user import LoggedUser
+from ..Logged_user import LoggedUser
 from ...config.config_validate_process import ValidateProcessConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import now
@@ -132,7 +132,7 @@ def process(
             _display("No record was inserted")
         elif error_code == 0:
             try:
-                UserDataFiles.update(
+                UserDataFile.update(
                     cargo.table_udf_key,
                     error_code=0,
                     success_text=msg_success,
@@ -149,7 +149,7 @@ def process(
             sidekick.display.error(fatal_msg)
             sidekick.app_log.fatal(fatal_msg)
             try:
-                UserDataFiles.update(
+                UserDataFile.update(
                     cargo.table_udf_key,
                     error_code=error_code,
                     success_text=msg_success,  # not really success but standard_output

@@ -13,12 +13,19 @@
 
 from enum import Enum
 
+"""
+    carranca\private\models.py Table Role
+    This are import to determine the User's role
+        Is he/she the administrator?
+        maybe support/coder?
+        
+"""
 
-class Roles(Enum):
+
+class RolesAbbr(Enum):
     Admin = "ADM"
     Setorista = "SEP"
     Suporte = "SPT"
-    Unknown = "UNK"
 
 
 # eof

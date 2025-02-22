@@ -13,7 +13,6 @@ mgd
 
 {# only specify if different from default #}
 {% set dlg_cls_size= 'modal-xl' %}
-{% set dlg_var_icon= iconFileUrl %}
 
 {% extends "./layouts/dialog.html.j2" %}
 
@@ -53,9 +52,8 @@ mgd
     const rowData = ({{ rec_files | default ([]) | tojson }}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
     const colMeta = {{ grid_col_meta | tojson }};
     const gridID = '{{ grid_id }}';
-    const dateFormat = '{{ dateFormat | default('pt-BR') }}';
+    const dateFormat = '{{ user_date_format }}';
     const itemNone = '{{ itemNone }}';
-    const displayUser = '{{ display_user }}';
     const isAdm = {{ grid_user_is_adm }}
     const defButtons = () => {
         const btnFile = document.getElementById('btn{{dnld_F}}');

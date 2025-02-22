@@ -14,7 +14,7 @@ import shutil
 from os import path, stat
 
 from .Cargo import Cargo
-from ...private.logged_user import LoggedUser
+from ...private.Logged_user import LoggedUser
 from ...helpers.file_helper import change_file_ext
 from ...helpers.error_helper import ModuleErrorCode
 from ...config.config_validate_process import DataValidateApp

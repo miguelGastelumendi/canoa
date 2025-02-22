@@ -11,7 +11,7 @@
 # cSpell:ignore
 
 from .Cargo import Cargo
-from ..models import UserDataFiles
+from ..models import UserDataFile
 from ...common.app_context_vars import sidekick
 from ...helpers.email_helper import RecipientsDic, RecipientsListStr
 from ...helpers.user_helper import now_as_text, now
@@ -46,7 +46,7 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
         sidekick.display.info("email: An email was sent to the user with the result of the validation.")
 
         task_code += 2  # 3
-        UserDataFiles.update(
+        UserDataFile.update(
             cargo.table_udf_key,
             report_ready_at=cargo.report_ready_at,
             e_unzip_started_at=cargo.unzip_started_at,

@@ -39,7 +39,7 @@ from werkzeug.local import LocalProxy
 
 from .. import sidekick as global_sidekick
 from .Sidekick import Sidekick
-from ..private.logged_user import LoggedUser
+from ..private.Logged_user import LoggedUser
 
 
 # share global sidekick

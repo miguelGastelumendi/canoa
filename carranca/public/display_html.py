@@ -22,6 +22,7 @@ from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.html_helper import img_filenames, img_change_src_path
 from ..helpers.jinja_helper import jinja_pre_template
+from ..helpers.ui_texts_helper import get_msg_error, get_section, ui_page_title, ui_form_title
 from ..common.app_context_vars import sidekick
 
 
@@ -80,8 +81,6 @@ def __prepare_img_files(
 
 
 def display_html(docName: str):
-    from ..helpers.ui_texts_helper import get_msg_error, get_section, ui_page_title, ui_form_title
-
     template = "./home/document.html.j2"
     section = docName
 

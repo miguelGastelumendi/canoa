@@ -9,24 +9,34 @@
 """
 
 # cSpell:ignore getDictResultset connstr adaptabrasil
+
+from flask_login import current_user
+
+from .pw_helper import is_someone_logged
 from .py_helper import is_str_none_or_empty
-from .hints_helper import UI_Texts
 from .jinja_helper import process_pre_templates
+from .hints_helper import UI_Texts
+
+from ..common.app_constants import app_lang
 
 # === Global constants form HTML ui ========================
+#  For more info, see table ui_items.name
+#  from ui_texts is loaded ( init_form_vars() )
+
 ui_msg_info = "msgInfo"
 ui_msg_error = "msgError"
 ui_msg_success = "msgSuccess"
 ui_msg_exception = "msgException"
-ui_icon_file_url = "iconFileUrl"
-ui_date_format = "html_date_format"
 ui_page_title = "pageTitle"
 ui_form_title = "formTitle"
 # 'msgOnly' display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
 ui_msg_only = "msgOnly"
-ui_date_format = "html_date_format"
 
-db_user_locale = "pt-br"  # TODO: current_user.lang
+
+ui_icon_file_url = "iconFileUrl"
+ui_date_format = "user_date_format"
+
+db_user_locale = app_lang  # TODO: current_user.lang
 msg_not_found = "Message '{0}' (not registered §: {1})"
 
 """
@@ -135,9 +145,13 @@ def get_section(section_name: str) -> UI_Texts:
     else:
         query = __get_ui_texts_query("item, text", section_name)
         items = _get_result_set(query)
+
+        if items:
+            items[ui_msg_only] = False
+            items[ui_date_format] = current_user.lang if is_someone_logged() else app_lang
+
         # texts = process_pre_templates(_texts) # TODO:
 
-    items[ui_msg_only] = False
     return items
 
 
@@ -168,7 +182,6 @@ def add_msg_fatal(item: str, texts: UI_Texts = None, *args) -> str:
     Same as add_msg_error, but just displays the message (msg_only)
     """
     msg = add_msg_error(item, texts, *args)
-    texts[ui_msg_only] = True
     return msg
 
 

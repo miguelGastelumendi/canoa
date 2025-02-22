@@ -7,23 +7,26 @@
 
     Equipe da Canoa -- 2024
     mgd 2024-10-09, 2025-01-09
+
 """
 
 # cSpell: ignore mgmt tmpl samp
 
 import json
-from typing import Tuple, TypeAlias
+from typing import TypeAlias, Tuple, List
 from flask import render_template, request
 
 
 from .models import MgmtUserSep
 from .SepIconConfig import SepIconConfig
+from .sep_icon import icon_prepare_for_html
 
-from ..common.app_context_vars import sidekick, logged_user
+from ..common.app_context_vars import sidekick
 
 from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.db_helper import try_get_mgd_msg, ListOfDBRecords
+from ..helpers.db_helper import DBRecords, ListOfDBRecords, try_get_mgd_msg
 from ..helpers.user_helper import get_batch_code
+from ..helpers.js_grid_helper import js_grid_constants, js_grid_sec_key, js_grid_rsp, js_grid_sec_value
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.email_helper import RecipientsListStr
 from ..helpers.route_helper import get_private_form_data, init_form_vars
@@ -35,70 +38,58 @@ from ..helpers.ui_texts_helper import (
     ui_msg_success,
     ui_msg_exception,
     ui_icon_file_url,
-    ui_date_format,
 )
 
 # def returns
 def_return: TypeAlias = Tuple[str, str, int]
 
 
-def do_sep_mgmt() -> str:
-    from .sep_icon import icon_prepare_for_html
+def sep_data_fetch(_item_none) -> Tuple[DBRecords, List[str], str]:
 
+    users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view()
+    for record in users_sep.records:
+        record.scm_sep_new = _item_none
+        record.scm_sep_curr = _item_none if record.scm_sep_curr is None else record.scm_sep_curr
+        record.file_url = icon_prepare_for_html(record.sep_id)[0]  # url
+
+    sep_fullname_list = [sep.sep_fullname for sep in sep_list.records]
+
+    return users_sep, sep_fullname_list, msg_error
+
+
+def do_sep_mgmt() -> str:
     task_code = ModuleErrorCode.SEP_MGMT.value
     _, template, is_get, ui_texts = init_form_vars()
 
     users_sep: ListOfDBRecords = []
     sep_fullname_list = []
-    msg_error = None
+    msg_error: str = None
+    template = ""
     try:
         task_code += 1  # 1
         template, is_get, ui_texts = get_private_form_data("sepMgmt")
 
         task_code += 1  # 2
-
-        # py/js communication
-        ui_texts[ui_grid_rsp] = ui_grid_rsp
-        ui_texts[ui_grid_submit_id] = ui_grid_submit_id
-        ui_texts[ui_grid_sec_key] = ui_grid_sec_key
         ui_texts[ui_icon_file_url] = SepIconConfig.set_url(SepIconConfig.none_file)
-        ui_texts[ui_date_format] = logged_user.lang
 
         task_code += 1  # 3
-        col_meta_info = json.loads(ui_texts["colMetaInfo"])  # col meta info
-        task_code += 1  # 4
-        # grid columns, colData & col_names *must* match in size
         col_names = ["user_id", "file_url", "user_name", "scm_sep_curr", "scm_sep_new", "when"]
-        task_code += 1  # 5
-        # Rewrite it in an easier way to express it in js: colName: colHeader
-        col_data = [{"n": key, "h": col_meta_info[key]} for key in col_meta_info]
-        ui_texts["colData"] = col_data
-
-        def __get_grid_data(_item_none):
-            users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view()
-            for record in users_sep.records:
-                record.scm_sep_new = _item_none
-                record.scm_sep_curr = _item_none if record.scm_sep_curr is None else record.scm_sep_curr
-                record.file_url = icon_prepare_for_html(record.sep_id)[0]  # url
-
-            sep_fullname_list = [sep.sep_fullname for sep in sep_list.records]
-
-            return users_sep, sep_fullname_list, msg_error
+        grid_const, err_code = js_grid_constants(ui_texts["colMetaInfo"], col_names)
 
         item_none = "(None)" if is_str_none_or_empty(ui_texts["itemNone"]) else ui_texts["itemNone"]
         if is_get:
             task_code += 1  # 6
-            users_sep, sep_fullname_list, ui_texts[ui_msg_error] = __get_grid_data(item_none)
-        elif request.form.get(ui_grid_sec_key) != js_grid_sec_value:
+            users_sep, sep_fullname_list, ui_texts[ui_msg_error] = sep_data_fetch(item_none)
+        elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 7
             ui_texts[ui_msg_exception] = ui_texts["secKeyViolation"]
-        # TODO internal_logout()
+            # TODO internal_logout()
         else:
             task_code += 3
-            txtGridResponse = request.form.get(ui_grid_rsp)
+            txtGridResponse = request.form.get(js_grid_rsp)
             msg_success, msg_error, task_code = _save_and_email(txtGridResponse, ui_texts, task_code)
             task_code += 1
-            users_sep, sep_fullname_list, msg_error_read = __get_grid_data(item_none)
+            users_sep, sep_fullname_list, msg_error_read = sep_data_fetch(item_none)
             if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
                 ui_texts[ui_msg_success] = msg_success
             elif is_str_none_or_empty(msg_error):
@@ -117,8 +108,7 @@ def do_sep_mgmt() -> str:
         template,
         usersSep=users_sep.to_json(),
         sepList=sep_fullname_list,
-        gridID=grid_id,
-        # TODO colData=col_data,
+        **grid_const,
         **ui_texts,
     )
     return tmpl
@@ -270,7 +260,7 @@ def _send_email(batch_code: str, ui_texts: UI_Texts, task_code: int) -> def_retu
     msg_error = None
     with SqlAlchemyScopedSession() as db_session:
         try:
-            # Users involved in the `batch_code` batch modification.
+            # The users involved in the `batch_code` batch modification.
             user_list = db_session.query(MgmtEmailSep).filter_by(batch_code=batch_code).all()
             if not user_list:
                 return None, ui_texts["emailNone"], task_code

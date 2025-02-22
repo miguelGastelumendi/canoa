@@ -1,7 +1,7 @@
 # Equipe da Canoa -- 2024
 #
 #  A helper to keep data between sessions
-#     STILL ON DEVELOPMENT
+#     STILL UNDER DEVELOPMENT
 #
 # mgd 2024-10-17
 

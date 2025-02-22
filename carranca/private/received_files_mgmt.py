@@ -17,7 +17,7 @@ from ..config.config_validate_process import ValidateProcessConfig
 
 from ..helpers.db_helper import DBRecords
 from ..helpers.user_helper import UserFolders
-from ..helpers.grid_helper import grid_Constants, ui_grid_sec_key, ui_grid_rsp, js_grid_sec_value
+from ..helpers.js_grid_helper import js_grid_constants, js_grid_sec_key, js_grid_rsp, js_grid_sec_value
 from ..helpers.file_helper import change_file_ext
 from ..helpers.error_helper import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data, init_form_vars
@@ -76,9 +76,9 @@ def received_files_fetch(no_sep: str, rec_id: int) -> DBRecords:
 
 
 def received_files_grid() -> str:
-
     task_code = ModuleErrorCode.RECEIVED_FILES_MGMT.value
     _, template, is_get, ui_texts = init_form_vars()
+
     tmpl = ""
     if not is_get:
         return ""  # TODO: error
@@ -86,13 +86,17 @@ def received_files_grid() -> str:
         task_code += 1  # 1
         template, is_get, ui_texts = get_private_form_data("receivedFilesMgmt")
 
+        task_code += 1  # 2
         received_files, _, _ = received_files_fetch(ui_texts["itemNone"], None)
 
+        # TODO check empty received_files
         col_names = received_files[0].keys() if received_files else []
-        grid_const, err_code = grid_Constants(ui_texts["colMetaInfo"], col_names)
+        grid_const, err_code = js_grid_constants(ui_texts["colMetaInfo"], col_names)
         grid_const["dnld_R"] = dnld_R
         grid_const["dnld_F"] = dnld_F
-        grid_const["grid_user_is_adm"] = "true"  #  logged_user.
+        grid_const["grid_user_is_adm"] = str(True).lower()  # js bool TODO: logged_user.
+
+        task_code += 1  # 3
         tmpl = render_template(template, rec_files=received_files.to_json(), **grid_const, **ui_texts)
 
     except Exception as e:
@@ -115,9 +119,9 @@ def received_file_get() -> str | Response:
         _, is_get, ui_texts = get_private_form_data("receivedFilesMgmt")
 
         task_code += 1  # 2
-        rqst = request.form.get(ui_grid_rsp)
+        rqst = request.form.get(js_grid_rsp)
         rec_id, rec_type = rqst[:-1], rqst[-1]
-        if request.form.get(ui_grid_sec_key) != js_grid_sec_value:
+        if request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 7
             ui_texts[ui_msg_exception] = ui_texts["secKeyViolation"]
             # TODO internal_logout()

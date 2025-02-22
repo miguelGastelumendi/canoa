@@ -77,14 +77,38 @@ TODO:
 ------- 2025 - January -----------
 ----------------------------------
 
-    - save received files with pdf extension (not PDF/pdF/etc)
-    - fix data_validate html/css
+    Todo:
+        - schema/sep mgmt
+        - err_code <- grid_constants
+        - save received files with pdf extension (not PDF/pdF/etc)'
+        - fix data_validate html/css
+        - add_msg_fatal template
+        - read data_validate warn + err & save them
+
+2025-02-21 β 3.55 received_files_mgmt & sep_mgmt `merged`
+    - received_files_mgmt & sep_mgmt now uses js_grid_constants
+    - Create Users <-> Roles SQLAlchemy relation
+    - logged_user now has role_id & role_abbr
+    - Check if user role is valid (see login)
+    - Fix Circular import
+    - finished js_grid_constants to create grid forms
+    - always add ui_date_format to ui_texts (see ui_texts_helper.py:get_section)
+    - Rename tables, remove plural: UserDataFile (UserDataFiles), etc
+    - --
+    - DB: user rol changed to not null
+
+
+
+2025-02-19 β 3.54
+    - Check if usr Role is recognized by Canoa (in RoleAbbr.py)
+    - New properties for logged_user .role_abbr, .role_name & is_adm
+    - get_section, new param ui_date_format (from )
 
 2025-02-19 β 3.54
     - new grid_helper.py (join ag-grid vars)
     - disable buttons of Gestão de Arquivos Enviados
     - retrieve rec_files
-    - remove "Setorista" when logger_user is not adm
+    - remove "Setorista" column, when logger_user is not adm
     - received_file_mgmt v1.0
 
 
@@ -93,7 +117,7 @@ TODO:
     - ReceivedFiles.get_user_records, get a record by id
     - Fix bugs & improvements in DBRecords()
     - Remove ListOfDBRecords = []
-    - Start disable btns of Gestão de Arquivos Enviados
+    - Start disabled buttons of Gestão de Arquivos Enviados
     - Received_file_get() -> str | File: almost ready
     - First file download!
 
