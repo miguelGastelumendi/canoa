@@ -29,7 +29,7 @@ Base = declarative_base()
 
 
 # --- Table ---
-class UserDataFile(Base):
+class UserDataFiles(Base):
     """
     UserDataFiles is app's interface for the
     DB table `user_data_files` that works as a
@@ -43,62 +43,76 @@ class UserDataFile(Base):
 
     __tablename__ = "user_data_files"
 
-    # keys (register..on_ins)
+    # register, pk/fk/uniqueKey
     id = Column(Integer, primary_key=True, autoincrement=True)
     ticket = Column(String(40), unique=True)
-    user_receipt = Column(String(14))
-    id_sep = Column(Integer)
+    id_sep = Column(Integer)  # fk
+    id_users = Column(Integer)  # fk
 
-    # sys version (register..on_ins)
+    # register, file info
+    file_name = Column(String(80))
+    file_size = Column(Integer)
+    file_crc32 = Column(Integer)
+    user_receipt = Column(String(14))
+
+    # register, sys info
+    db_version = Column(String(12))
     app_version = Column(String(12))
     process_version = Column(String(12))
 
-    id_users = Column(Integer)  # fk
-    # file info (register..on_ins)
-    file_crc32 = Column(Integer)
-    file_name = Column(String(80))
-    file_origin = Column(String(1))
-    file_size = Column(Integer)
     from_os = Column(String(1))
+    file_origin = Column(String(1))
     original_name = Column(String(80), nullable=True, default=None)
 
-    # Process module
-    ## (register..on_ins)
+    ## register
     a_received_at = Column(DateTime)
     b_process_started_at = Column(DateTime)
     c_check_started_at = Column(DateTime)
     d_register_started_at = Column(DateTime)
 
-    ## saved at email.py
+    ## submit & email & process
     e_unzip_started_at = Column(DateTime)
     f_submit_started_at = Column(DateTime)
-    g_email_started_at = Column(DateTime)
+    g_report_ready_at = Column(DateTime)
 
-    z_process_end_at = Column(DateTime)
+    ## submit
+    validator_version = Column(String(8))
+    validator_result = Column(String(280))
+    report_errors = Column(Integer)
+    report_warns = Column(Integer)
+    report_tests = Column(Integer)
 
-    # event
-    ## saved at email.py
+    ## submit & email
+    h_email_started_at = Column(DateTime)
+
+    ## email.py
     email_sent = Column(Boolean, default=False)
-    report_ready_at = Column(DateTime)
 
-    # Set on trigger
-    # registered_at, at insert
-    # email_sent_at, when email_sent = T
-    # error_at, at error_code not 0
-
-    # obsolete
-    # upload_start_at = Column(DateTime)
-
+    ## process, on exit
     error_code = Column(Integer, nullable=True)
     error_msg = Column(String(200), nullable=True)
     error_text = Column(Text, nullable=True)
     success_text = Column(Text, nullable=True)
+    z_process_end_at = Column(DateTime)
+
+    ## Set on trigger
+    # registered_at, at insert
+    # db_version
+    # email_sent_at, when email_sent = T
+    # error_at, at error_code not 0
+    # Special
+    # error_handled, when admin handles the error (TODO)
+
+    ## obsolete
+    # upload_start_at -> 
+    # report_ready_ay -> g_report_ready_at
+    #
 
     # Helpers
     @staticmethod
     def _get_record(session: SQLAlchemySession, uTicket: str):
         """gets the record with unique key: uTicket"""
-        stmt = select(UserDataFile).where(UserDataFile.ticket == uTicket)
+        stmt = select(UserDataFiles).where(UserDataFiles.ticket == uTicket)
         rows = session.scalars(stmt).all()
         if not rows:
             return None
@@ -116,7 +130,7 @@ class UserDataFile(Base):
             try:
                 # if update, fetch existing record
                 # if insert, check if record already exists
-                record_to_ins_or_upd = UserDataFile._get_record(db_session, uTicket)
+                record_to_ins_or_upd = UserDataFiles._get_record(db_session, uTicket)
                 # check invalid conditions
                 msg_exists = f"The ticket '{uTicket}' is " + "{0} registered."
                 if isUpdate and record_to_ins_or_upd is None:
@@ -124,7 +138,7 @@ class UserDataFile(Base):
                 elif isInsert and record_to_ins_or_upd is not None:
                     raise KeyError(msg_exists.format("already"))
                 elif isInsert:
-                    record_to_ins_or_upd = UserDataFile(ticket=uTicket, **kwargs)
+                    record_to_ins_or_upd = UserDataFiles(ticket=uTicket, **kwargs)
                     db_session.add(record_to_ins_or_upd)
                 else:  # isUpdate
                     for attr, value in kwargs.items():
@@ -136,7 +150,7 @@ class UserDataFile(Base):
                 db_session.rollback()
                 operation = "update" if isUpdate else "insert to"
                 msg_error = (
-                    f"Cannot {operation} {UserDataFile.__tablename__}.ticket = {uTicket} | Error {e}."
+                    f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
                 )
                 sidekick.app_log.error(msg_error)
                 raise DatabaseError(msg_error)
@@ -144,11 +158,11 @@ class UserDataFile(Base):
 
     # Public insert/update
     def insert(uTicket: str, **kwargs) -> None:
-        UserDataFile._ins_or_upd(True, uTicket, **kwargs)
+        UserDataFiles._ins_or_upd(True, uTicket, **kwargs)
         return None
 
     def update(uTicket: str, **kwargs) -> None:
-        UserDataFile._ins_or_upd(False, uTicket, **kwargs)
+        UserDataFiles._ins_or_upd(False, uTicket, **kwargs)
         return None
 
 

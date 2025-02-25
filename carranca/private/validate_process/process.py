@@ -27,7 +27,7 @@
 from datetime import datetime
 from typing import Tuple
 
-from ..models import UserDataFile
+from ..models import UserDataFiles
 
 from ..Logged_user import LoggedUser
 from ...config.config_validate_process import ValidateProcessConfig
@@ -132,7 +132,7 @@ def process(
             _display("No record was inserted")
         elif error_code == 0:
             try:
-                UserDataFile.update(
+                UserDataFiles.update(
                     cargo.table_udf_key,
                     error_code=0,
                     success_text=msg_success,
@@ -149,15 +149,15 @@ def process(
             sidekick.display.error(fatal_msg)
             sidekick.app_log.fatal(fatal_msg)
             try:
-                UserDataFile.update(
+                UserDataFiles.update(
                     cargo.table_udf_key,
                     error_code=error_code,
                     success_text=msg_success,  # not really success but standard_output
-                    # without error, this fields are saved in email.py
-                    report_ready_at=cargo.report_ready_at,
+                # without error, this fields are saved in submit.py & email.py
                     e_unzip_started_at=cargo.unzip_started_at,
                     f_submit_started_at=cargo.submit_started_at,
-                    g_email_started_at=cargo.email_started_at,
+                    g_report_ready_at=cargo.report_ready_at,
+                    h_email_started_at=cargo.email_started_at,
                     z_process_end_at=process_ended,
                     error_msg=("<no error message>" if is_str_none_or_empty(msg_error) else msg_error),
                     error_text=msg_exception,

@@ -18,7 +18,7 @@ from ...common.app_context_vars import sidekick
 from ...helpers.py_helper import OS_IS_WINDOWS
 from ...helpers.user_helper import now
 from ...helpers.error_helper import ModuleErrorCode
-from ..models import UserDataFile
+from ..models import UserDataFiles
 
 from .Cargo import Cargo
 
@@ -60,7 +60,7 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         task_code += 1  # +4
         # cargo.table_udf_key == (set after insert)
         user_dataFiles_key = cargo.pd.file_ticket
-        UserDataFile.insert(
+        UserDataFiles.insert(
             user_dataFiles_key,
             id_users=cargo.user.id,
             id_sep=None if cargo.user.sep is None else cargo.user.sep.id,  # this is an FK

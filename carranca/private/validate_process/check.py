@@ -20,7 +20,7 @@ from ...helpers.user_helper import now
 from ...helpers.file_helper import file_must_exist, folder_must_exist, is_same_file_name
 from ...helpers.error_helper import ModuleErrorCode
 
-from ..models import UserDataFile
+from ..models import UserDataFiles
 from .Cargo import Cargo
 
 
@@ -32,7 +32,7 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
     cargo.check_started_at = now()
     receive_method = "downloaded" if cs.file_was_downloaded else "uploaded"
     try:
-        file_name_max_len = get_str_field_length(UserDataFile, "file_name")
+        file_name_max_len = get_str_field_length(UserDataFiles, "file_name")
 
         if file_data is None:
             task_code = 1

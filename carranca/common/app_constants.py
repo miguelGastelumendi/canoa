@@ -16,7 +16,7 @@
 app_name = "Canoa"
 
 # &beta; major.minor.patch
-app_version = "β 3.55"  # 2025-02-20
+app_version = "β 3.57"  # 2025-02-25
 
 # default user HTML/DB lang/locale (see table users.lang)
 app_lang = "pt-br"

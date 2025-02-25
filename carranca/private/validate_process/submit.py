@@ -9,12 +9,16 @@ mgd
 
 # cSpell:ignore nobuild
 
-import asyncio
+import re
+import json
 import shutil
+import asyncio
 from os import path, stat
 
 from .Cargo import Cargo
+from ..models import UserDataFiles
 from ...private.Logged_user import LoggedUser
+from ...helpers.py_helper import to_int
 from ...helpers.file_helper import change_file_ext
 from ...helpers.error_helper import ModuleErrorCode
 from ...config.config_validate_process import DataValidateApp
@@ -90,6 +94,72 @@ async def _run_validator(
     stdout_str = decode_std_text(stdout)
     stderr_str = decode_std_text(stderr)
     return stdout_str, stderr_str, exit_code
+
+
+def _store_report_result(
+    ui_name: str,
+    stdout_result_pattern: str,
+    cargo: Cargo,
+    std_out_str: str,
+):
+
+    # -------------------------------------
+    # Expected <{'data_validate': {'version': '0.5.02', 'report': {'errors': 676, 'warnings': 609, 'tests': 31}}}>
+
+    def _local_result(error: str) -> str:
+        error_encoded = json.dumps(error)
+        return f'{{"{ui_name}": {{"local_error": "{error_encoded}."}}}}'
+
+    result_json_str = ""
+    val_version = "?"
+    report_errors = None
+    report_warns = None
+    report_tests = None
+    try:
+        if is_str_none_or_empty(stdout_result_pattern):
+            result_json_str = _local_result("empty regex pattern")
+        elif is_str_none_or_empty(std_out_str):
+            result_json_str = _local_result("empty standard output")
+        else:
+            rd = re.findall(stdout_result_pattern, std_out_str)
+            if len(rd) == 0:
+                result_json_str = _local_result(f'no data matched "{stdout_result_pattern}"')
+            else:
+                result_json_str = rd[0][1:-1]
+                result = ""
+                try:
+                    result = json.loads(result_json_str)
+                except:
+                    result_json_str = result_json_str.replace("'", '"')
+                    result = json.loads(result_json_str)
+
+                val_version = result["data_validate"]["version"]
+                report = result["data_validate"]["report"]
+                report_errors = report["errors"]
+                report_warns = report["warnings"]
+                report_tests = report["tests"]
+                if len(rd) > 1:
+                    sidekick.display.warn(_local_result(f"{len(rd)} data matched. Expected only 1."))
+
+    except Exception as e:
+        result_json_str = _local_result(f"Extraction error [{e}]")
+
+    finally:
+        try:
+            UserDataFiles.update(
+                cargo.table_udf_key,
+                e_unzip_started_at=cargo.unzip_started_at,
+                f_submit_started_at=cargo.submit_started_at,
+                g_report_ready_at=cargo.report_ready_at,
+                # local info
+                validator_version=val_version,
+                validator_result=result_json_str,
+                report_errors=report_errors,
+                report_warns=report_warns,
+                report_tests=report_tests,
+            )
+        except Exception as e:
+            sidekick.app_log.error(f"Error saving data_validate result: {result_json_str}: [{e}].")
 
 
 def submit(cargo: Cargo) -> Cargo:
@@ -171,7 +241,9 @@ def submit(cargo: Cargo) -> Cargo:
             error_code = task_code
         else:
             # copy the final_report file to the same folder and
-            # with the same name as the uploaded file:
+            # with the same name as the uploaded file,
+            # But with extension `result_ext`
+            #  (important so later the file can be found):
             user_report_full_name = change_file_ext(cargo.pd.working_file_full_name(), result_ext)
             task_code += 3  # 8
             shutil.move(final_report_full_name, user_report_full_name)
@@ -182,6 +254,12 @@ def submit(cargo: Cargo) -> Cargo:
         msg_exception = str(e)
         sidekick.app_log.fatal(msg_exception, exc_info=error_code)
     finally:
+        _store_report_result(
+            _cfg.dv_app.ui_name,
+            _cfg.stdout_result_pattern,
+            cargo,
+            std_out_str,
+        )
         try:
             if cargo.receive_file_cfg.remove_tmp_files:
                 shutil.rmtree(_path_read)

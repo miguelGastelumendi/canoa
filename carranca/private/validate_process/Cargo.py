@@ -53,9 +53,9 @@ class Cargo:
 
         self.step = 1
         self.final = {}  # the process.py return values
-        """ When the process began """
         self.app_version = app_version
         self.process_version = process_version
+        """ When each process models begins """
         self.received_at = received_at
         self.process_started_at = now()
         self.check_started_at = None

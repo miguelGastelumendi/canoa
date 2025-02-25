@@ -68,7 +68,6 @@ TODO:
     - Menu to DB
     - sep_edit detected if form's input changed (don't update)
     - mudar erro 500
-    - [Sair:x] não fecha ok.
     - Menu responsive
     - remove pixel.css (simply css's)
 
@@ -76,7 +75,7 @@ TODO:
 
 ------- 2025 - January -----------
 ----------------------------------
-
+ 
     Todo:
         - schema/sep management
         - err_code <- grid_constants
@@ -84,7 +83,17 @@ TODO:
         - add_msg_fatal template
         - read data_validate warn + err & save them
 
-2025-02-21 β 3.56 Start multiple SEP by user
+
+2025-02-25 β 3.57 Read data_validate json from stdout & save it
+    - db_version = 3.60
+    - user_data_files.validator_result(varChar(208)) new
+    - user_data_files.report_ready_at -> g_report_ready_at
+    - user_data_files.report_ready_at = obsolete
+    - user_data_files.g_email_started_at -> h_email_started_at
+    - report_ready_at.g_email_started_at = obsolete
+    - save validator_result info (see submit.py:_store_report_result)
+
+2025-02-24 β 3.56 Start multiple SEP by user
     - remove SEP Icon from navigator
     - save received files with 'pdf' extension (not PDF/pdF/etc)'
     - review logged_user.sep (LocalProxy)

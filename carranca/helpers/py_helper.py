@@ -114,6 +114,16 @@ def get_init_params(from_instance: Any, From_class=None) -> dict:
     return params
 
 
+def to_int(s: str, default=-1) -> int:
+    """
+    Returns the argument as a integer or default if not a valid int
+    """
+    try:
+        return int(s)
+    except ValueError:
+        return default
+
+
 def to_str(s: str) -> str:
     """
     Returns the argument as a string, striping spaces
