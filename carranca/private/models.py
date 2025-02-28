@@ -104,7 +104,7 @@ class UserDataFiles(Base):
     # error_handled, when admin handles the error (TODO)
 
     ## obsolete
-    # upload_start_at -> 
+    # upload_start_at ->
     # report_ready_ay -> g_report_ready_at
     #
 
@@ -353,7 +353,7 @@ class ReceivedFiles(Base):
     __tablename__ = "vw_user_data_files"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column("id_users", Integer)
+    user_id = Column("id_users", Integer)  # index (user_id, registered_at)
     user_name = Column("username", String(100))
     user_email = Column("email", String(100))
 
@@ -363,7 +363,7 @@ class ReceivedFiles(Base):
     sep_id = Column(Integer)
     sep_fullname = Column(String(256))
 
-    submitted_at = Column("registered_at", DateTime)
+    submitted_at = Column("registered_at", DateTime)  # index (user_id, registered_at)
     stored_file_name = Column(String(180))
     file_name = Column("original_name", String(80))
     file_origin = Column(String(1))
@@ -374,8 +374,8 @@ class ReceivedFiles(Base):
     report_warns = Column(Integer)
 
     user_receipt = Column(String(15))
-    email_sent = Column(Boolean)
-    had_reception_error = Column(Boolean)
+    email_sent = Column(Boolean)  # index (email_sent, had_reception_error, user_id, registered_at)
+    had_reception_error = Column(Boolean)  # index (email_sent, had_reception_error, user_id, registered_at)
 
     @staticmethod
     def get_user_records(
@@ -385,6 +385,14 @@ class ReceivedFiles(Base):
         msg_error = ""
         with SqlAlchemyScopedSession() as db_session:
             try:
+                """----------------------------------------------
+                /!\ Attention
+                -------------------------------------------------
+                    There is an index on the underlying table
+                    (email_sent, had_reception_error, user_id, registered_at)
+                    so if you are going change the where clause, be sure
+                    to include these fields.
+                """
                 if id is not None:
                     stmt = select(ReceivedFiles).where(ReceivedFiles.id == id)
                 else:

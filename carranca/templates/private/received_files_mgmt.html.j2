@@ -31,7 +31,7 @@ mgd
 {% block dlg_blc_footer %}
 <div class="mb-3 row">
     <div class="col-auto">
-        <button type="button" onclick="download('{{ dnld_F  }}}')" id="btn{{ dnld_F  }}" class="form-main-btn" disabled>
+        <button type="button" onclick="download('{{ dnld_F }}')" id="btn{{ dnld_F  }}" class="form-main-btn" disabled>
             {{ btnDwnLoadFile }}
         </button>
     </div>
@@ -58,7 +58,7 @@ mgd
     const defButtons = () => {
         const btnFile = document.getElementById('btn{{dnld_F}}');
         const btnRprt = document.getElementById('btn{{dnld_R}}');
-        return { btnFile, btnRprt };
+        return [btnFile, btnRprt];
     }
     const download = (t) => {
         if (activeRow) {

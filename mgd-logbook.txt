@@ -75,13 +75,19 @@ TODO:
 
 ------- 2025 - January -----------
 ----------------------------------
- 
+
     Todo:
         - schema/sep management
         - err_code <- grid_constants
         - fix data_validate html/css
         - add_msg_fatal template
         - read data_validate warn + err & save them
+
+2025-02-26--28 β 3.58 indexes & Fix a couple Bugs
+    - new indexes in user_data_files for ReceivedFiles (vw_user_data_files)
+    - received_files_mgmt.html }}} -> }}
+    - { btn1, btn2 } -> [btn1, btn2 ]
+
 
 
 2025-02-25 β 3.57 Read data_validate json from stdout & save it
