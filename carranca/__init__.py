@@ -138,7 +138,7 @@ def db_obfuscate(config):
 # ============================================================================ #
 # App + helpers
 def create_app():
-    from .common.app_constants import app_name, app_version
+    from .common.app_constants import APP_NAME, APP_VERSION
 
     # === Check if all mandatory information is ready === #
     from .common.igniter import ignite_sidekick
@@ -146,7 +146,7 @@ def create_app():
 
     # === Global sidekick  === #
     global sidekick
-    sidekick, display_mute_after_init = ignite_sidekick(app_name, started)
+    sidekick, display_mute_after_init = ignite_sidekick(APP_NAME, started)
 
     # === Global app, Create the Flask App  ===`#
     name = __name__ if __name__.find(".") < 0 else __name__.split(".")[0]
@@ -157,7 +157,7 @@ def create_app():
     # -- app config
     app.config.from_object(sidekick.config)
     sidekick.display.info("App's config was successfully bound.")
-    app.config.from_prefixed_env(app_name)
+    app.config.from_prefixed_env(APP_NAME)
     sidekick.display.info("App's config updated with Environment Variables.")
 
     # -- Logfile
@@ -168,7 +168,7 @@ def create_app():
         sidekick.display.info(f"Logging to {info}.")
         # TODO: displayed_levels = [name for level, name in levels.items() if level >=\
 
-        app.logger.log(sidekick.config.LOG_MIN_LEVEL, f"{app_name}'s log {info} is ready.")
+        app.logger.log(sidekick.config.LOG_MIN_LEVEL, f"{APP_NAME}'s log {info} is ready.")
         sidekick.config.LOG_FILE_STATUS = "ready"
     else:
         sidekick.config.LOG_FILE_STATUS = "off"
@@ -184,7 +184,7 @@ def create_app():
     sidekick.display.info("The blueprint routes were collected and registered within the app.")
 
     # -- Jinja2
-    _register_jinja(app, sidekick.config.DEBUG_TEMPLATES, app_name, app_version)
+    _register_jinja(app, sidekick.config.DEBUG_TEMPLATES, APP_NAME, APP_VERSION)
     sidekick.display.info(
         f"The Jinja functions of this app have been attached 'jinja_env.globals' (with debug_templates {sidekick.config.DEBUG_TEMPLATES})."
     )

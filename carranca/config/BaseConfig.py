@@ -24,7 +24,7 @@ from os import path
 from flask import Config
 import logging
 
-from ..common.app_constants import app_name, app_version
+from ..common.app_constants import APP_NAME, APP_VERSION
 from ..helpers.file_helper import path_remove_last_folder
 import sys
 
@@ -53,8 +53,8 @@ class BaseConfig(Config):
         ----------------------------
     """
 
-    APP_NAME = app_name
-    APP_VERSION = app_version
+    APP_NAME = APP_NAME
+    APP_VERSION = APP_VERSION
 
     """ Canoa Configurations
         --------------------------
@@ -77,7 +77,7 @@ class BaseConfig(Config):
     """
     # Registered user on the email API
     EMAIL_ORIGINATOR = ""  # from os_environment
-    EMAIL_ORIGINATOR_NAME = f"e-mail de {app_name}"
+    EMAIL_ORIGINATOR_NAME = f"e-mail de {APP_NAME}"
     # "  with key
     EMAIL_API_KEY = ""  # from os_environment
     # Folders
@@ -107,7 +107,7 @@ class BaseConfig(Config):
     # SERVER_NAME = "" use it after understand how
     PREFERRED_URL_SCHEME = ""
     SECRET_KEY = ""
-    SESSION_COOKIE_NAME = f"{app_name.lower()}"
+    SESSION_COOKIE_NAME = f"{APP_NAME.lower()}"
 
     """ SQLAlchemy
         --------------------------

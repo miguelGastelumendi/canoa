@@ -17,7 +17,7 @@ from .py_helper import is_str_none_or_empty
 from .jinja_helper import process_pre_templates
 from .hints_helper import UI_Texts
 
-from ..common.app_constants import app_lang
+from ..common.app_constants import APP_LANG
 
 # === Global constants form HTML ui ========================
 #  For more info, see table ui_items.name
@@ -36,7 +36,7 @@ ui_msg_only = "msgOnly"
 ui_icon_file_url = "iconFileUrl"
 ui_date_format = "user_date_format"
 
-db_user_locale = app_lang
+db_user_locale = APP_LANG
 
 
 class MsgNotFound:
@@ -151,7 +151,7 @@ def get_html(section: str) -> UI_Texts:
 
 def get_section(section_name: str) -> UI_Texts:
     """
-    returns a UI_Texts of the 'section'
+    returns a UI_Texts of the 'section_name' from table 
     """
     if is_str_none_or_empty(section_name):
         items = {}
@@ -161,7 +161,7 @@ def get_section(section_name: str) -> UI_Texts:
 
         if items:
             items[ui_msg_only] = False
-            items[ui_date_format] = current_user.lang if is_someone_logged() else app_lang
+            items[ui_date_format] = current_user.lang if is_someone_logged() else APP_LANG
 
         # texts = process_pre_templates(_texts) # TODO:
 

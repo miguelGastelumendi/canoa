@@ -9,13 +9,13 @@
 # cSpell:ignore sqlalchemy keepalives psycopg2
 
 import time
-from .common.app_constants import app_name
+from .common.app_constants import APP_NAME
 
 # -------------------------------------------------------
 # Main --------------------------------------------------
 # -------------------------------------------------------
 # This should be the first message of this package
-the_aperture_msg = f"{app_name} is starting in {__name__}."
+the_aperture_msg = f"{APP_NAME} is starting in {__name__}."
 print(f"{'-' * len(the_aperture_msg)}\n{the_aperture_msg}")
 
 
@@ -37,7 +37,7 @@ if sidekick.config.APP_DISPLAY_DEBUG_MSG:
 # Tell everybody how quick we are
 elapsed = (time.perf_counter() - started) * 1000
 sidekick.display.info(
-    f"{app_name} is now ready for the journey. It took {elapsed:,.0f}ms to create and initialize it."
+    f"{APP_NAME} is now ready for the journey. It took {elapsed:,.0f}ms to create and initialize it."
 )
 
 if __name__ == "__main__":

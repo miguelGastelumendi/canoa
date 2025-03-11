@@ -14,6 +14,7 @@ from ...public.models import persist_user
 from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
 from ...private.roles_abbr import RolesAbbr
+from ...public.ups_handler import ups_handler
 from ...helpers.error_helper import ModuleErrorCode
 from ...helpers.ui_texts_helper import add_msg_error, add_msg_fatal
 from ...helpers.route_helper import (
@@ -33,6 +34,8 @@ def login():
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
     tmpl_form, template, is_get, ui_texts = init_form_vars()
     # TODO test, fake form?
+
+    return ups_handler()
 
     logged_in = False
     try:

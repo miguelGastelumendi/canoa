@@ -15,10 +15,6 @@
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "true",
                 "CANOA_DEBUG": "true",
-                "CANOA_EMAIL_API_KEY": "${env:CANOA_EMAIL_API_KEY}",
-                "CANOA_EMAIL_REPORT_CC": "${env:CANOA_EMAIL_REPORT_CC}",
-                "CANOA_EMAIL_ORIGINATOR": "${env:CANOA_EMAIL_ORIGINATOR}",
-                "CANOA_SQLALCHEMY_DATABASE_URI": "${env:CANOA_SQLALCHEMY_DATABASE_URI}",
             },
             "args": [
                 "run",

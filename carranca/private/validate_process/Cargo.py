@@ -10,7 +10,7 @@ Part of Canoa `File Validation` Processes
 """
 from datetime import datetime
 
-from ...common.app_constants import app_version
+from ...common.app_constants import APP_VERSION
 from ...config.config_validate_process import ValidateProcessConfig
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import now
@@ -53,7 +53,7 @@ class Cargo:
 
         self.step = 1
         self.final = {}  # the process.py return values
-        self.app_version = app_version
+        self.app_version = APP_VERSION
         self.process_version = process_version
         """ When each process models begins """
         self.received_at = received_at

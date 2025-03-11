@@ -15,7 +15,7 @@ from flask_login import current_user
 
 from .roles_abbr import RolesAbbr
 from ..helpers.user_helper import get_user_code, get_user_folder
-from ..common.app_constants import app_lang
+from ..common.app_constants import APP_LANG
 from werkzeug.local import LocalProxy
 
 
@@ -29,7 +29,7 @@ class LoggedUser:
 
         if not self.ready:
             sidekick.display.debug(f"{self.__class__.__name__} was reset.")
-            self.lang = app_lang  # TODO: None -> use Browser default
+            self.lang = APP_LANG  # TODO: None -> use Browser default
             self.name = "?"
             self.id = -1
             self.email = ""

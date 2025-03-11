@@ -13,12 +13,12 @@
 #  &
 #  - modify BaseConfig.py file each version change
 
-app_name = "Canoa"
+APP_NAME = "Canoa"
 
 # &beta; major.minor.patch
-app_version = "β 3.57"  # 2025-02-25
+APP_VERSION = "β 3.57"  # 2025-02-25
 
 # default user HTML/DB lang/locale (see table users.lang)
-app_lang = "pt-br"
+APP_LANG = "pt-br"
 
 # eof

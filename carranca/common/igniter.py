@@ -14,6 +14,7 @@ from flask import Flask
 from os import path
 
 from .Args import Args
+from .app_constants import APP_NAME
 from ..helpers.py_helper import is_str_none_or_empty
 
 
@@ -166,7 +167,7 @@ def _check_mandatory_keys(config, fDisplay) -> str:
             else _error_msg.format(
                 __name__,
                 f"confirming the existence of the mandatory configuration keys {CONFIG_MANDATORY_KEYS}",
-                f"Missing: {empty_keys.strip(',')}.",
+                f"Missing: {empty_keys.strip(',')} As Enviroment Variable must be prfeixed with {APP_NAME}.",
             )
         )
 
