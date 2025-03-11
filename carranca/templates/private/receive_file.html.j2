@@ -1,6 +1,7 @@
-{# ------------------------------------
+{# 
+----------------------------------
 ./private/receive_file.html.j2
--------------------------------
+----------------------------------
 Receive the file from the user and sends
 it to data validate, returns an e-mail
 
@@ -21,7 +22,7 @@ mgd
 
 <!-- { Load File -->
 <div class="form-group">
-    <label class="form-label" inert for={{ form.filename.id }}>{{ fileLabel }}</label>
+    <label class="form-label" inert for="{{form.filename.id}}">{{ fileLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fa fa-upload fa-lg"></i>
@@ -33,7 +34,7 @@ mgd
 
 <!-- { Google File -->
 <div class="form-group mt-3">
-    <label class="form-label" inert for={{ form.urlname.id }}>{{ urlLabel }}</label>
+    <label class="form-label" inert for="{{form.urlname.id}}">{{ urlLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <span class="fa fa-cloud-upload fa-lg"></span>

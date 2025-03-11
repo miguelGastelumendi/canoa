@@ -14,7 +14,7 @@ from sys import argv
 from datetime import datetime
 from typing import Any, Type, Tuple, List
 
-from ..common.app_constants import app_name
+from ..common.app_constants import APP_NAME
 
 
 # https://docs.python.org/3/library/platform.html#platform.system
@@ -25,8 +25,7 @@ OS_IS_MAC = OS_NAME_IS == "Darwin"
 
 
 def get_envvar_prefix() -> str:
-
-    return f"{app_name}_".upper()
+    return f"{APP_NAME}_".upper()
 
 
 def get_envvar(name: str, default: str = "") -> str:

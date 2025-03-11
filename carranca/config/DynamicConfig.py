@@ -14,7 +14,7 @@ from os import environ
 from hashlib import sha384
 
 from .BaseConfig import BaseConfig, app_mode_development, app_mode_production
-from ..common.app_constants import app_name, app_version
+from ..common.app_constants import APP_NAME, APP_VERSION
 from ..common.igniter import Fuse
 from ..helpers.py_helper import as_bool, is_str_none_or_empty, get_envvar_prefix
 from ..helpers.wtf_helper import LenValidate
@@ -102,7 +102,7 @@ class DynamicConfig(BaseConfig):
             used for securely signing the session cookie (mgd: change every version)
             https://flask.palletsprojects.com/en/latest/config/#SECRET_KEY
             """
-            unique = f"{app_name} v{app_version}".encode()
+            unique = f"{APP_NAME} v{APP_VERSION}".encode()
             self.SECRET_KEY = sha384(unique).hexdigest()
 
     # @property

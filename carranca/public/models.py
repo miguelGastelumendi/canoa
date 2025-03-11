@@ -21,7 +21,7 @@ from sqlalchemy.orm import relationship, declarative_base, joinedload
 from flask_login import UserMixin
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
-from ..common.app_constants import app_lang
+from ..common.app_constants import APP_LANG
 from ..private.roles_abbr import RolesAbbr
 
 Base = declarative_base()
@@ -35,7 +35,7 @@ class User(Base, UserMixin):
     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
     id = Column(Integer, primary_key=True, autoincrement=True)
     id_role = Column(Integer, ForeignKey("roles.id"))
-    lang = Column(String(8), default=app_lang)
+    lang = Column(String(8), default=APP_LANG)
     username = Column(String(100), unique=True)
     password = Column(LargeBinary)
     username_lower = Column(String(100), Computed(""))

@@ -41,7 +41,7 @@ from werkzeug.local import LocalProxy
 from .. import sidekick as global_sidekick
 from .Sidekick import Sidekick
 from ..private.User_sep import UserSEP
-from ..private.Logged_user import LoggedUser
+from ..private.logged_user import LoggedUser
 
 # share global sidekick
 sidekick: Sidekick = global_sidekick
