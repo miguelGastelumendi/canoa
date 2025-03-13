@@ -1,11 +1,11 @@
 """
- Equipe da Canoa -- 2024
+Equipe da Canoa -- 2024
 
- Configuration Files for the Application
+Configuration Files for the Application
 
- mgd 2024-05-06
- mgd 2024-05-21: Base, Debug, Production
- mgd 2024-10-11: Base went to it's own file
+mgd 2024-05-06
+mgd 2024-05-21: Base, Debug, Production
+mgd 2024-10-11: Base went to it's own file
 """
 
 # cSpell:ignore SQLALCHEMY searchpath
@@ -14,7 +14,7 @@ from os import environ
 from hashlib import sha384
 
 from .BaseConfig import BaseConfig, app_mode_development, app_mode_production
-from ..common.app_constants import APP_NAME, APP_VERSION
+from common.app_constants import APP_NAME, APP_VERSION
 from ..common.igniter import Fuse
 from ..helpers.py_helper import as_bool, is_str_none_or_empty, get_envvar_prefix
 from ..helpers.wtf_helper import LenValidate
@@ -72,6 +72,7 @@ class DynamicConfig(BaseConfig):
         self.APP_DEBUG = app_debug
         self.APP_PROPAGATE_DEBUG = app_propagate_debug
         self.SERVER_ADDRESS = server_address
+        self.EMAIL_REPORT_CC = ""
 
         # flask has config.from_prefixed_env() that us used in create_app
         # but I need one now, and displaying some msg.

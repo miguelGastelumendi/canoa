@@ -1,14 +1,14 @@
 """
-    Tables related to users
-    Part of Public Access Control Processes
+Tables related to users
+Part of Public Access Control Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore nullable sqlalchemy psycopg2 mgmt joinedload
 
-from carranca import SqlAlchemyScopedSession, login_manager
+from carranca import SqlAlchemyScopedSession, global_login_manager
 
 from typing import Any
 from psycopg2 import DatabaseError
@@ -21,7 +21,7 @@ from sqlalchemy.orm import relationship, declarative_base, joinedload
 from flask_login import UserMixin
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
-from ..common.app_constants import APP_LANG
+from common.app_constants import APP_LANG
 from ..private.roles_abbr import RolesAbbr
 
 Base = declarative_base()
@@ -125,14 +125,14 @@ def persist_user(record: any, task_code: int = 1) -> None:
 # -- Important for user flask manager ---------------------
 
 
-@login_manager.user_loader
+@global_login_manager.user_loader
 def user_loader(id):
     # current_user #
     user = get_user_where(id=id)
     return user
 
 
-@login_manager.request_loader
+@global_login_manager.request_loader
 def request_loader(request):
     username = "" if len(request.form) == 0 else request.form.get("username")
     user = None if is_str_none_or_empty(username) else get_user_where(username_lower=username.lower())

@@ -54,8 +54,7 @@ mgd
                 <div class="modal-header {{ dlg_cls_header|default('dlg-header') }}">
                     <h5 class="modal-title {{ dlg_cls_title|default('dlg-title') }}" inert>
                         {% if dlg_var_icon %}
-                        <img src="{{ dlg_var_icon | default('') }}" height="32px" width="32px" alt="[!]&nbsp;"
-                            id="dlg_icon">
+                        <img src="{{ dlg_var_icon }}" height="32px" width="32px" alt="[!]&nbsp;" id="dlg_icon">
                         {% endif %}
                         {{ formTitle | default(app_name) }}
                     </h5>

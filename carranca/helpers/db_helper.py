@@ -1,8 +1,8 @@
 """
-    Database data retrieve operations helper
+Database data retrieve operations helper
 
-    mgd
-    Equipe da Canoa -- 2024
+mgd
+Equipe da Canoa -- 2024
 """
 
 # cSpell:ignore psycopg2 sqlalchemy slqaRecords

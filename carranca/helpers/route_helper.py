@@ -1,8 +1,8 @@
 """
-    Python functions to assist routes.py
+Python functions to assist routes.py
 
-    mgd 2024-05-13
-    Equipe da Canoa -- 2024
+mgd 2024-05-13
+Equipe da Canoa -- 2024
 """
 
 # cSpell:ignore werkzeug tmplt
@@ -16,7 +16,6 @@ from .py_helper import is_str_none_or_empty, camel_to_snake, to_str
 from .hints_helper import UI_Texts
 from .ui_texts_helper import get_section
 from ..config import BaseConfig
-from ..common.app_context_vars import sidekick
 
 base_route_private = "private"
 base_route_public = "public"
@@ -97,6 +96,8 @@ def get_input_text(name: str) -> str:
 
 
 def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI_Texts]:
+    from ..common.app_context_vars import sidekick
+
     tmplt = camel_to_snake(section) if tmplt is None else tmplt
     tmplt_file_name = f"{tmplt}.html.j2"
     # template *must* be with '/':

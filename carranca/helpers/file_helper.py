@@ -8,6 +8,7 @@
 import os
 import shutil
 from os import path, makedirs
+from typing import Optional
 
 
 def file_full_name_parse(file_full_name: str) -> tuple[str, str, str]:
@@ -45,7 +46,7 @@ def change_file_ext(file: str, ext: str = ""):
     return new_file
 
 
-def is_first_param_newer(newer_full_name: str, older_full_name: str) -> bool | None:
+def is_first_param_newer(newer_full_name: str, older_full_name: str) -> Optional[bool]:
     newer_stat = os.stat(newer_full_name) if path.isfile(newer_full_name) else None
     older_stat = os.stat(older_full_name) if path.isfile(older_full_name) else None
 

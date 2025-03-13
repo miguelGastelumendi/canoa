@@ -1,7 +1,7 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
 #spell:ignore venv ccedil atilde receivefile datetime saude mgmt uix
-#spell:ignore Setorista sendgrid linux
+#spell:ignore Setorista sendgrid linux cnpq
 TODO:
 
 
@@ -72,24 +72,29 @@ TODO:
     - remove pixel.css (simply css's)
 
 
-
-------- 2025 - January -----------
-----------------------------------
-
     Todo:
         - schema/sep management
         - err_code <- grid_constants
         - fix data_validate html/css
         - add_msg_fatal template
-        - read data_validate warn + err & save them
+
+------- 2025 - February ----------
+----------------------------------
 
 
-2025-03-03--05 β 3.58 new ups-handler
-    - renew requirments.txt
-    - ups handler for Exceptions/Errors 
+2025-03-10--12 β 3.60 all processes revision
+
+2025-03-06--7,10 Planejamento bolsa/cnpq
+
+2025-03-03--05 β 3.59 new ups-handler
+    - renew requirements.txt
+    - ups handler for Exceptions/Errors
       new error template
-      improve user messages, 
+      improve user messages,
 
+
+------- 2025 - February ----------
+----------------------------------
 
 2025-02-26--28 β 3.58 indexes & Fix a couple Bugs
     - new indexes in user_data_files for ReceivedFiles (vw_user_data_files)
@@ -176,6 +181,9 @@ TODO:
     - fix py_helper.quote
 
 
+------- 2025 - January -----------
+----------------------------------
+
 2025-01-27-31 β 3.48
     - remove global config, add global sidekick
     - refactored  app_context_vars.py (request + app)
@@ -246,7 +254,7 @@ TODO:
     - email_helper.py -> sendgrid_helper.py (sendgrid functions)
     - new file: email_helper.py  with generic email functions
     - new file: app_constants.py (finally a good solution)
-    - new envvar EMAIL_REPORT_CC  (hide emails)
+    - new envvar EMAIL_REPORT_CC  (to hide emails)
     - envvars went to launch.json file (remove from Windows' envvars)
     - create class RecipientsListDic & type RecipientsListStr
     - 12 minor fixes

@@ -1,18 +1,19 @@
 """
-    *Routes*
-    Part of Public Access Control Processes
-    This routes are public, users _must_ not be logged
-    (they will be redirect or raise an error, unauthorized_handler)
+*Routes*
+Part of Public Access Control Processes
+This routes are public, users _must_ not be logged
+(they will be redirect or raise an error, unauthorized_handler)
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
-# cSpell:ignore 
+# cSpell:ignore errorhandler
 
-import inspect
 from flask import Blueprint, render_template
-from flask_login import LoginManager
+
+# from flask_login import LoginManager
+from carranca import global_login_manager
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.route_helper import (
     bp_name,
@@ -29,7 +30,6 @@ from ..helpers.route_helper import (
 
 # === module variables ====================================
 bp_public = Blueprint(bp_name(base_route_public), base_route_public, url_prefix="")
-login_manager = LoginManager()
 
 
 # === routes =============================================
@@ -137,11 +137,6 @@ def docs(publicDocName: str):
     # TODO privateDocs for About
     return display_html(publicDocName)
 
-# Unauthorized Access -------------------------------------
-@login_manager.unauthorized_handler
-def unauthorized_handler():
-    return render_template("home/page-403.html"), 403
-
 
 # Common Errors -------------------------------------------
 # 403 Forbidden
@@ -160,5 +155,12 @@ def not_found_error(error):
 @bp_public.errorhandler(500)
 def internal_error(error):
     return render_template("home/page-500.html"), 500
+
+
+# Unauthorized Access -------------------------------------
+@global_login_manager.unauthorized_handler
+def unauthorized_handler():
+    return render_template("home/page-403.html"), 403
+
 
 # eof

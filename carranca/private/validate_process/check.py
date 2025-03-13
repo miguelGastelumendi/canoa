@@ -73,7 +73,7 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
                     f"The {receive_method} file [{cs.received_original_name}] has been renamed to [{cs.received_file_name}]."
                 )
             sidekick.display.info(
-                f"check: The {receive_method} file [{cs.received_file_name}] successfully verified."
+                f"check: The {receive_method} file [{cs.received_file_name}] was successfully verified."
             )
         else:
             sidekick.app_log.error(

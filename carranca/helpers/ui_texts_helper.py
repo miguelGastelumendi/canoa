@@ -1,10 +1,10 @@
 """
-   Equipe da Canoa -- 2024
+Equipe da Canoa -- 2024
 
-   texts_Helper.py
-   Retrieve ui texts item for current language
-   (refactored from helper.py)
-   mgd 2024-04-03
+texts_Helper.py
+Retrieve ui texts item for current language
+(refactored from helper.py)
+mgd 2024-04-03
 
 """
 
@@ -17,7 +17,7 @@ from .py_helper import is_str_none_or_empty
 from .jinja_helper import process_pre_templates
 from .hints_helper import UI_Texts
 
-from ..common.app_constants import APP_LANG
+from common.app_constants import APP_LANG
 
 # === Global constants form HTML ui ========================
 #  For more info, see table ui_items.name
@@ -151,7 +151,7 @@ def get_html(section: str) -> UI_Texts:
 
 def get_section(section_name: str) -> UI_Texts:
     """
-    returns a UI_Texts of the 'section_name' from table 
+    returns a UI_Texts of the 'section_name' from table
     """
     if is_str_none_or_empty(section_name):
         items = {}

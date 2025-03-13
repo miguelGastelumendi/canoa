@@ -1,20 +1,20 @@
 """
- Equipe da Canoa -- 2024
+Equipe da Canoa -- 2024
 
- Some functions I miss. I brought to Py
- mgd 2024-04-09--27
- mgd 2025-02-04
+Some functions I miss. I brought to Py
+mgd 2024-04-09--27
+mgd 2025-02-04
 
- """
+"""
 
 # cSpell:ignore latin CCITT
 
 import os, time, platform
 from sys import argv
 from datetime import datetime
-from typing import Any, Type, Tuple, List
+from typing import Any, Type, Tuple, List, Optional
 
-from ..common.app_constants import APP_NAME
+from common.app_constants import APP_NAME
 
 
 # https://docs.python.org/3/library/platform.html#platform.system
@@ -131,7 +131,7 @@ def to_str(s: str) -> str:
 
 
 # initialize special attributes
-def as_bool(val: Any, val_if_none: bool | None = False) -> bool:
+def as_bool(val: Any, val_if_none: Optional[bool] = False) -> bool:
     # fmt: off
     return (val_if_none if val is None else str(val).lower() in ["1", "t", str(True).lower(),])
     # fmt: on

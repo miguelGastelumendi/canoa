@@ -25,7 +25,7 @@ from ..models import get_user_where
 
 
 def password_reset(token):
-    from ...app_context_vars import sidekick
+    from ...common.app_context_vars import sidekick
 
     def __is_token_valid(time_stamp, max: int) -> bool:
         """

@@ -1,15 +1,15 @@
 """
- main.py
-   Main Module following the Application Factory Pattern
+main.py
+  Main Module following the Application Factory Pattern
 
-   Equipe da Canoa -- 2024
-   mgd 2024-10-03
+  Equipe da Canoa -- 2024
+  mgd 2024-10-03
 """
 
 # cSpell:ignore sqlalchemy keepalives psycopg2
 
 import time
-from .common.app_constants import APP_NAME
+from common.app_constants import APP_NAME
 
 # -------------------------------------------------------
 # Main --------------------------------------------------
@@ -39,6 +39,13 @@ elapsed = (time.perf_counter() - started) * 1000
 sidekick.display.info(
     f"{APP_NAME} is now ready for the journey. It took {elapsed:,.0f}ms to create and initialize it."
 )
+
+# -------------------------------------------
+# /i\
+# -------------------------------------------
+# on the server, __name__ is 'carranca.main'
+# the app is executed by
+# `canoa\.vscode\launch.json`
 
 if __name__ == "__main__":
     app.run()

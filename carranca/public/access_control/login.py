@@ -1,9 +1,9 @@
 """
-    *Login*
-    Part of Public Access Control Processes
+*Login*
+Part of Public Access Control Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore tmpl sqlalchemy wtforms
@@ -35,7 +35,7 @@ def login():
     tmpl_form, template, is_get, ui_texts = init_form_vars()
     # TODO test, fake form?
 
-    return ups_handler()
+    ##  return ups_handler(303, "ups!", "continuing...", True)
 
     logged_in = False
     try:

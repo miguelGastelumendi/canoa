@@ -75,5 +75,4 @@ def do_password_change():
     tmpl = render_template(template, form=tmpl_form, **ui_texts)
     return tmpl
 
-
 # eof

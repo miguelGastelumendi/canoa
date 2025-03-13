@@ -1,15 +1,15 @@
 """
-    SEP Icon
-    Prepares the SEP's Icon for HTML
+SEP Icon
+Prepares the SEP's Icon for HTML
 
-    Equipe da Canoa -- 2024
-    mgd 2024-11-16
+Equipe da Canoa -- 2024
+mgd 2024-11-16
 """
 
 # cSpell:ignore mgmt
 
 from os import path, remove
-from typing import Tuple
+from typing import Optional, Tuple
 
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
@@ -38,7 +38,7 @@ def icon_refresh(sep: UserSEP | MgmtSep) -> bool:
     return refreshed
 
 
-def icon_prepare_for_html(sep_or_id: MgmtSep | int | None) -> Tuple[str, str, MgmtSep]:
+def icon_prepare_for_html(sep_or_id: Optional[MgmtSep | int]) -> Tuple[str, str, MgmtSep]:
     """
     Creates a file with the SEP's svg data (if necessary) and
     returns

@@ -80,7 +80,7 @@ mgd
 
 <body>
     <main>
-        {% if logged_user %}
+        {% if logged_user() %}
         {% set setNavButtonState= navButtonState | default('nav-button-disabled') %}
         {% with navButtonState = setNavButtonState %}
         {% include 'includes/navigator.html.j2' %}

@@ -17,7 +17,6 @@ from .Args import Args
 from .app_constants import APP_NAME
 from ..helpers.py_helper import is_str_none_or_empty
 
-
 _error_msg = "[{0}]: An error occurred while {1}. Message: `{2}`."
 fuse = None
 
@@ -167,7 +166,7 @@ def _check_mandatory_keys(config, fDisplay) -> str:
             else _error_msg.format(
                 __name__,
                 f"confirming the existence of the mandatory configuration keys {CONFIG_MANDATORY_KEYS}",
-                f"Missing: {empty_keys.strip(',')} As Enviroment Variable must be prfeixed with {APP_NAME}.",
+                f"Missing: {empty_keys.strip(',')} As Environment Variable must be prefixed with {APP_NAME}.",
             )
         )
 
@@ -205,7 +204,7 @@ def _ignite_server_name(config) -> Tuple[any, str]:
             # Flask Config
             config.RUN_HOST = address.host
             config.RUN_PORT = address.port
-            fuse.display.info(f"The Flask Server Address was set to '{scheme}{config.SERVER_ADDRESS}'.")
+            fuse.display.info(f"The Flask Server address was set to '{scheme}{config.SERVER_ADDRESS}'.")
 
     except Exception as e:
         fuse.display.error(f"`urlparse({try_url}) -> parsed: {address.host}:{address.port}`")

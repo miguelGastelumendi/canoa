@@ -11,7 +11,7 @@
 from typing import Any
 from flask import render_template, request
 
-from ...app_context_vars import sidekick
+from ...common.app_context_vars import sidekick
 from ...public.models import persist_user
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...helpers.error_helper import ModuleErrorCode

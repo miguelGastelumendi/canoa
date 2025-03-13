@@ -24,7 +24,7 @@ from os import path
 from flask import Config
 import logging
 
-from ..common.app_constants import APP_NAME, APP_VERSION
+from common.app_constants import APP_NAME, APP_VERSION
 from ..helpers.file_helper import path_remove_last_folder
 import sys
 

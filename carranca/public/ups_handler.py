@@ -13,7 +13,7 @@ Equipe da Canoa -- 2025
 mgd 2025-03-05
 """
 
-# cSpell:ignore 
+# cSpell:ignore
 import inspect
 from flask import render_template
 from helpers.pw_helper import internal_logout, is_someone_logged

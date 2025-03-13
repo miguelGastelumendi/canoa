@@ -14,6 +14,9 @@ from datetime import datetime
 
 from .user_helper import now
 
+app = None
+Persisted = []
+
 
 class InterSessions:
     def __init__(self, app_mode):

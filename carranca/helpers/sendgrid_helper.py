@@ -14,7 +14,7 @@ import sendgrid
 from sendgrid.helpers.mail import Email, To, Cc, Bcc
 
 from os import path
-from typing import Callable, Type
+from typing import Callable, Optional, Type
 from base64 import b64encode
 
 from .py_helper import is_str_none_or_empty
@@ -42,9 +42,9 @@ from ..common.app_context_vars import logged_user
 def send_email(
     send_to_or_dic: RecipientsListStr | RecipientsDic,
     texts_or_section: dict | str,
-    email_body_params: dict = None,
-    file_to_send_full_name: str = None,
-    file_to_send_type: str = None,
+    email_body_params: Optional[dict] = None,
+    file_to_send_full_name: Optional[str] = None,
+    file_to_send_type: Optional[str] = None,
 ) -> bool:
     """
         » Sends an email, handling both: string and dictionary formats for the recipient.
@@ -64,11 +64,11 @@ def send_email(
             Expected dict Keys:
                 subject=texts["subject"],
                 html_content=texts["content"],
-        email_body_params: dict[key: str, value: str] | None
+        email_body_params: Optional[ dict[key: str, value: str] ]
             values to sSubstitute {key} in the content
-        file_to_send_full_name: str | None
+        file_to_send_full_name: Optional[str]
             full path and name of file to attach to the mail
-        file_to_send_type: str | None
+        file_to_send_type: Optional[str]
             MIME (Multipurpose Internet Mail Extensions) type for the file. See list below, based on the file extension
 
     Returns: (mgd 2024-06-05)

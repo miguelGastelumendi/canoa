@@ -1,31 +1,30 @@
-""" *app_context_vars*
+"""*app_context_vars*
 
-    Request Context
-    ---------------
-    Contains the mechanisms to store and retrieve variables from Flask's g object.
+Request Context
+---------------
+Contains the mechanisms to store and retrieve variables from Flask's g object.
 
-    The `g` object is a global namespace for holding any data you want during the
-    lifetime of a request.
+The `g` object is a global namespace for holding any data you want during the
+lifetime of a request.
 
-    It is unique to each request and is used to store and share data across different
-    parts of your application, such as between view functions, before/after
-    request functions, and other request handlers.
-
-
-    Application Context
-    -------------------
-    Contains a shortcut to the global sidekick object.
+It is unique to each request and is used to store and share data across different
+parts of your application, such as between view functions, before/after
+request functions, and other request handlers.
 
 
-    -- [/!\] -------
-        Avoid calling any of this functions on main.py or carranca.__init__.py
-        there is no has_request_context and there is a
-        sidekick running create in.
+Application Context
+-------------------
+Contains a shortcut to the global sidekick object.
+
+
+-- [/!\] -------
+    Avoid calling any of these functions in `main.py` or `carranca.__init__.py`
+    as there is no `has_request_context` and a sidekick is already running.
 
 
 
-    Equipe da Canoa -- 2025
-    mgd
+Equipe da Canoa -- 2025
+mgd
 
 
 """
@@ -33,15 +32,15 @@
 # cSpell:ignore mgmt
 
 from flask import has_request_context, g
-from typing import Callable, Any
+from typing import Callable, Any, Optional
 from threading import Lock
 from flask_login import current_user
 from werkzeug.local import LocalProxy
 
-from .. import sidekick as global_sidekick
+from carranca import global_sidekick
 from .Sidekick import Sidekick
 from ..private.User_sep import UserSEP
-from ..private.logged_user import LoggedUser
+from ..private.LoggedUser import LoggedUser
 
 # share global sidekick
 sidekick: Sidekick = global_sidekick
@@ -51,7 +50,7 @@ sidekick: Sidekick = global_sidekick
 _locks = {}
 
 
-def _get_scoped_var(var_name: str, func_creator: Callable[[], Any]) -> Any | None:
+def _get_scoped_var(var_name: str, func_creator: Callable[[], Any]) -> Optional[Any]:
     """
     Returns a variable from the current request context, creating it if necessary.
     """
@@ -70,7 +69,7 @@ def _get_scoped_var(var_name: str, func_creator: Callable[[], Any]) -> Any | Non
 
 # Logged User
 # -----------
-def _get_logged_user() -> LoggedUser | None:
+def _get_logged_user() -> Optional[LoggedUser]:
     from ..helpers.pw_helper import is_someone_logged
 
     """
@@ -84,7 +83,7 @@ def _get_logged_user() -> LoggedUser | None:
 
 # User SEP
 # -----------
-def do_user_ser() -> UserSEP | None:
+def do_user_ser() -> Optional[UserSEP]:
     from ..private.sep_icon import icon_prepare_for_html
 
     url, sep_fullname, sep = icon_prepare_for_html(current_user.mgmt_sep_id)
@@ -93,7 +92,7 @@ def do_user_ser() -> UserSEP | None:
     return user_sep
 
 
-def _get_user_sep() -> UserSEP | None:
+def _get_user_sep() -> Optional[UserSEP]:
     from ..helpers.pw_helper import is_someone_logged
 
     if is_someone_logged():
@@ -104,10 +103,10 @@ def _get_user_sep() -> UserSEP | None:
 
 # Proxies
 # -------
-logged_user: LoggedUser | None = LocalProxy(_get_logged_user)
+logged_user: Optional[LoggedUser] = LocalProxy(_get_logged_user)
 
 
-user_sep: UserSEP | None = LocalProxy(_get_user_sep)
+user_sep: Optional[UserSEP] = LocalProxy(_get_user_sep)
 
 
 # eof

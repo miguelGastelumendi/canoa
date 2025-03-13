@@ -1,5 +1,5 @@
 """
-Module for handling logged user information.
+Class for handling logged user information.
 
 This module extends Flask's `current_user` with additional utilities specific to Canoa.
 
@@ -14,9 +14,8 @@ from flask_login import current_user
 # from werkzeug.local import LocalProxy
 
 from .roles_abbr import RolesAbbr
+from common.app_constants import APP_LANG
 from ..helpers.user_helper import get_user_code, get_user_folder
-from ..common.app_constants import APP_LANG
-from werkzeug.local import LocalProxy
 
 
 # Basic information of the logged user.
@@ -63,14 +62,14 @@ class LoggedUser:
 
             return user_sep
 
-                # from .sep_icon import icon_prepare_for_html
+            # from .sep_icon import icon_prepare_for_html
 
-                # TODO improve performance with cache (maybe session)
-                # def load_sep():
-                #     url, sep_fullname, sep = icon_prepare_for_html(current_user.mgmt_sep_id)
-                #     return UserSEP(self.path, url, sep_fullname, sep)
+            # TODO improve performance with cache (maybe session)
+            # def load_sep():
+            #     url, sep_fullname, sep = icon_prepare_for_html(current_user.mgmt_sep_id)
+            #     return UserSEP(self.path, url, sep_fullname, sep)
 
-                # self.sep = LocalProxy(load_sep)
+            # self.sep = LocalProxy(load_sep)
 
     def __repr__(self):
         user_info = "Unknown" if not self.ready else f"{self.name} [{self.id}]"

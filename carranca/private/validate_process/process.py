@@ -1,25 +1,25 @@
 """
-    Performs the complete validation process:
-        1. Check: file name, validates name, create folders
-        2. Register: save process info( user, file, & times) in DB.users_files
-        3. Unzip unzip the uploaded file
-        4. Submit, sends the file to the `data_validate`
-        5. Email, data_validate output is sent via email
+Performs the complete validation process:
+    1. Check: file name, validates name, create folders
+    2. Register: save process info( user, file, & times) in DB.users_files
+    3. Unzip unzip the uploaded file
+    4. Submit, sends the file to the `data_validate`
+    5. Email, data_validate output is sent via email
 
-        Cargo
-            is a class to shares: ProcessData, Params, args, and return values between the 5 modules.
+    Cargo
+        is a class to shares: ProcessData, Params, args, and return values between the 5 modules.
 
-        ProcessData
-            is a class that keep the files & folders names
+    ProcessData
+        is a class that keep the files & folders names
 
-        Params
-            is as class that has the values of Configurable parameters of each module
+    Params
+        is as class that has the values of Configurable parameters of each module
 
 
-    Part of Canoa `File Validation` Processes
+Part of Canoa `File Validation` Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore ext
@@ -29,11 +29,11 @@ from typing import Tuple
 
 from ..models import UserDataFiles
 
-from ..Logged_user import LoggedUser
-from ...config.config_validate_process import ValidateProcessConfig
+from ..LoggedUser import LoggedUser
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import now
 from ...helpers.error_helper import ModuleErrorCode
+from ...config.config_validate_process import ValidateProcessConfig
 
 from .Cargo import Cargo
 from .ProcessData import ProcessData
@@ -153,7 +153,7 @@ def process(
                     cargo.table_udf_key,
                     error_code=error_code,
                     success_text=msg_success,  # not really success but standard_output
-                # without error, this fields are saved in submit.py & email.py
+                    # without error, this fields are saved in submit.py & email.py
                     e_unzip_started_at=cargo.unzip_started_at,
                     f_submit_started_at=cargo.submit_started_at,
                     g_report_ready_at=cargo.report_ready_at,

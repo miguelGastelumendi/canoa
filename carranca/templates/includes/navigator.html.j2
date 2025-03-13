@@ -8,7 +8,7 @@ Used by:
 
 mgd
 
-cSpell:ignore nowrap unselectable noopener noreferrer termofuse onclick mgmt
+cSpell:ignore nowrap unselectable noopener noreferrer termofuse onclick mgmt Estrat gicos gico sess formul
 --------------------------------------- #}
 
 <header class="header-global">
@@ -57,13 +57,13 @@ cSpell:ignore nowrap unselectable noopener noreferrer termofuse onclick mgmt
             </a>
             <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
                 href="{{ public_route('docs', publicDocName='aboutApp') }}"
-                title="Mostra informaca&ccedil;&atilde;o sobre o aplicativo">
+                title="Mostra informa&ccedil;&atilde;o sobre o aplicativo">
                 [Sobre]
             </a>
             <!-- a type="button" href="{{ private_route('test_route') }}">[testar arquivo]</a>  -->
             <button class="nav-button {{ navButtonState }}" onclick="logout()"
                 title="Fecha a sess&atilde;o e sai do aplicativo">
-                [Sair:&nbsp;&nbsp;{{logged_user.name}}]
+                [Sair:&nbsp;&nbsp;{{logged_user().name}}]
             </button>
         </div>
     </nav>
