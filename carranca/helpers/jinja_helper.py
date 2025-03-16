@@ -4,17 +4,18 @@
 
 # cSpell:ignore
 
+from flask import current_app
+
 # mark a string as a jinja text, a text that will be parsed before rendering
 _jinja_pre_template_mark = "^"
 
 
 def jinja_pre_template(val: str) -> str:
-    from ..common.app_context_vars import sidekick
 
     text = val
     try:
         # Create a template from the value
-        template = sidekick.app.jinja_env.from_string(val)
+        template = current_app.jinja_env.from_string(val)
         text = template.render()
     except Exception as e:
         print(f"Error rendering template [{val}]: {e}")

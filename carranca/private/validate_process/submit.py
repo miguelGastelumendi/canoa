@@ -18,9 +18,8 @@ from os import path, stat
 from .Cargo import Cargo
 from ..models import UserDataFiles
 from ..LoggedUser import LoggedUser
-from ...helpers.py_helper import to_int
 from ...helpers.file_helper import change_file_ext
-from ...helpers.error_helper import ModuleErrorCode
+from ...common.app_error_assistant import ModuleErrorCode
 from ...common.app_context_vars import sidekick
 from ...config.config_validate_process import DataValidateApp
 from ...helpers.py_helper import (
@@ -123,7 +122,9 @@ def _store_report_result(
         else:
             rd = re.findall(stdout_result_pattern, std_out_str)
             if len(rd) == 0:
-                result_json_str = _local_result(f'no data matched "{stdout_result_pattern}"')
+                result_json_str = _local_result(
+                    f'no data matched "{stdout_result_pattern}"'
+                )
             else:
                 result_json_str = rd[0][1:-1]
                 result = ""
@@ -139,7 +140,9 @@ def _store_report_result(
                 report_warns = report["warnings"]
                 report_tests = report["tests"]
                 if len(rd) > 1:
-                    sidekick.display.warn(_local_result(f"{len(rd)} data matched. Expected only 1."))
+                    sidekick.display.warn(
+                        _local_result(f"{len(rd)} data matched. Expected only 1.")
+                    )
 
     except Exception as e:
         result_json_str = _local_result(f"Extraction error [{e}]")
@@ -159,7 +162,9 @@ def _store_report_result(
                 report_tests=report_tests,
             )
         except Exception as e:
-            sidekick.app_log.error(f"Error saving data_validate result: {result_json_str}: [{e}].")
+            sidekick.app_log.error(
+                f"Error saving data_validate result: {result_json_str}: [{e}]."
+            )
 
 
 def submit(cargo: Cargo) -> Cargo:
@@ -201,7 +206,9 @@ def submit(cargo: Cargo) -> Cargo:
         data_validate_path = cargo.pd.path.data_validate
         if not path.isfile(batch_full_name):  # TODO send to check module
             task_code += 1  # 2
-            raise Exception(f"The `{_cfg.dv_app.ui_name}` module caller [{batch_full_name}] was not found.")
+            raise Exception(
+                f"The `{_cfg.dv_app.ui_name}` module caller [{batch_full_name}] was not found."
+            )
 
         result_ext = _cfg.output_file.ext  # /!\ keep always the same case (all lower)
         final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
@@ -244,7 +251,9 @@ def submit(cargo: Cargo) -> Cargo:
             # with the same name as the uploaded file,
             # But with extension `result_ext`
             #  (important so later the file can be found):
-            user_report_full_name = change_file_ext(cargo.pd.working_file_full_name(), result_ext)
+            user_report_full_name = change_file_ext(
+                cargo.pd.working_file_full_name(), result_ext
+            )
             task_code += 3  # 8
             shutil.move(final_report_full_name, user_report_full_name)
             task_code += 1  # 9
@@ -268,10 +277,14 @@ def submit(cargo: Cargo) -> Cargo:
                 pass  # rename and move?
 
         except:
-            sidekick.app_log.warning("The communication folders between apps were *not* deleted.")
+            sidekick.app_log.warning(
+                "The communication folders between apps were *not* deleted."
+            )
 
     # goto email.py
-    error_code = 0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT
+    error_code = (
+        0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT
+    )
     if error_code == 0:
         sidekick.display.info(
             f"submit: The unzipped files were submitted to '{_cfg.dv_app.ui_name}' and a report was generated."

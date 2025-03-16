@@ -7,7 +7,6 @@ Equipe da Canoa -- 2024
 
 # cSpell:ignore psycopg2 sqlalchemy slqaRecords
 
-import json
 from datetime import datetime
 from typing import Optional, TypeAlias, Union, Tuple, Dict, List, Any
 from sqlalchemy import text, Sequence
@@ -19,6 +18,24 @@ from .py_helper import is_str_none_or_empty, to_str
 ListOfDBRecords: TypeAlias = List["DBRecord"]
 
 JsonStrOfRecords: TypeAlias = str
+
+
+def db_connstr_obfuscate(config) -> str:
+    """Hide any confidential info before it is displayed in debug mode"""
+    import re
+
+    db_uri = str(config.SQLALCHEMY_DATABASE_URI)
+    db_uri_safe = re.sub(
+        config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
+        config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
+        config.SQLALCHEMY_DATABASE_URI,
+    )
+    config.SQLALCHEMY_DATABASE_URI = db_uri_safe
+    config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX = ""
+    config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR = ""
+    config.SQLALCHEMY_DATABASE_URI = ""
+
+    return db_uri
 
 
 class DBRecord:
@@ -65,13 +82,19 @@ class DBRecords:
         includeNone: bool = True,
     ):
         self.records: ListOfDBRecords = []
-        self.table_name = self.__class__.__name__ if is_str_none_or_empty(table_name) else table_name
-        self.filter_types = filter_types if filter_types is not None else DBRecords.simple_types_filter
+        self.table_name = (
+            self.__class__.__name__ if is_str_none_or_empty(table_name) else table_name
+        )
+        self.filter_types = (
+            filter_types if filter_types is not None else DBRecords.simple_types_filter
+        )
         if includeNone:
             self.filter_types += (type(None),)
 
         if slqaRecords is not None:
-            self.records = [DBRecord(record.__dict__, self.filter_types) for record in slqaRecords]
+            self.records = [
+                DBRecord(record.__dict__, self.filter_types) for record in slqaRecords
+            ]
 
     def __iter__(self):
         """make DBRecords iterable"""
@@ -97,7 +120,11 @@ class DBRecords:
     def to_json(self, exclude_fields: Optional[List[str]] = None):
         exclude_fields = (exclude_fields or []) + ["__class__.__name__"]
         return [
-            {key: value for key, value in record.__dict__.items() if key not in exclude_fields}
+            {
+                key: value
+                for key, value in record.__dict__.items()
+                if key not in exclude_fields
+            }
             for record in self.records
         ]
 
@@ -215,7 +242,9 @@ def retrieve_dict(query: str):
                 result = {data[0]: data[1]}
     except Exception as e:
         result = {}
-        sidekick.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
+        sidekick.app_log.error(
+            f"An error occurred loading the dict from [{query}]: {e}"
+        )
 
     # # Check if the result is a tuple of tuples (multiple rows)
     # if isinstance(data, tuple) and all(isinstance(row, tuple) and len(row) >= 2 for row in data):

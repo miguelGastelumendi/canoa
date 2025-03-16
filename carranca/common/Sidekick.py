@@ -38,12 +38,12 @@ Sidekick
 
 # cSpell:ignore sqlalchemy mgd appcontext
 
-from flask import Flask
+from flask import Flask, current_app
 from logging import Logger
 from datetime import datetime
 
 from .Display import Display
-from ..config.BaseConfig import BaseConfig  #  BaseConfig instead of DynamicConfig, avoid Circular
+from ..config.BaseConfig import BaseConfig
 
 
 class Sidekick:
@@ -61,9 +61,9 @@ class Sidekick:
         self.started_at = datetime.now()
         display.debug(f"{self.__class__.__name__} was created.")
 
+    # TODO remove almost unused
     @property
     def app(self) -> Flask:
-        from flask import current_app
 
         return current_app
 

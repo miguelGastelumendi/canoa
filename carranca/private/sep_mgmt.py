@@ -27,17 +27,14 @@ from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.db_helper import DBRecords, ListOfDBRecords, try_get_mgd_msg
 from ..helpers.user_helper import get_batch_code
 from ..helpers.js_grid_helper import js_grid_constants, js_grid_sec_key, js_grid_rsp, js_grid_sec_value
-from ..helpers.error_helper import ModuleErrorCode
+from ..common.app_error_assistant import ModuleErrorCode
 from ..helpers.email_helper import RecipientsListStr
 from ..helpers.route_helper import get_private_form_data, init_form_vars
 from ..helpers.hints_helper import UI_Texts
 from ..helpers.ui_texts_helper import (
     add_msg_fatal,
     format_ui_item,
-    ui_msg_error,
-    ui_msg_success,
-    ui_msg_exception,
-    ui_icon_file_url,
+    UITxtKey,
 )
 
 # def returns
@@ -70,7 +67,7 @@ def do_sep_mgmt() -> str:
         template, is_get, ui_texts = get_private_form_data("sepMgmt")
 
         task_code += 1  # 2
-        ui_texts[ui_icon_file_url] = SepIconConfig.set_url(SepIconConfig.none_file)
+        ui_texts[UITxtKey.Form.icon] = SepIconConfig.set_url(SepIconConfig.none_file)
 
         task_code += 1  # 3
         col_names = ["user_id", "file_url", "user_name", "scm_sep_curr", "scm_sep_new", "when"]
@@ -79,10 +76,10 @@ def do_sep_mgmt() -> str:
         item_none = "(None)" if is_str_none_or_empty(ui_texts["itemNone"]) else ui_texts["itemNone"]
         if is_get:
             task_code += 1  # 6
-            users_sep, sep_fullname_list, ui_texts[ui_msg_error] = sep_data_fetch(item_none)
+            users_sep, sep_fullname_list, ui_texts[UITxtKey.Msg.error] = sep_data_fetch(item_none)
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 7
-            ui_texts[ui_msg_exception] = ui_texts["secKeyViolation"]
+            ui_texts[UITxtKey.Msg.exception] = ui_texts["secKeyViolation"]
             # TODO internal_logout()
         else:
             task_code += 3
@@ -91,11 +88,11 @@ def do_sep_mgmt() -> str:
             task_code += 1
             users_sep, sep_fullname_list, msg_error_read = sep_data_fetch(item_none)
             if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
-                ui_texts[ui_msg_success] = msg_success
+                ui_texts[UITxtKey.Msg.success] = msg_success
             elif is_str_none_or_empty(msg_error):
-                ui_texts[ui_msg_error] = msg_error_read
+                ui_texts[UITxtKey.Msg.error] = msg_error_read
             else:
-                ui_texts[ui_msg_error] = try_get_mgd_msg(msg_error, ui_texts["saveError"].format(task_code))
+                ui_texts[UITxtKey.Msg.error] = try_get_mgd_msg(msg_error, ui_texts["saveError"].format(task_code))
 
     except Exception as e:
         msg = add_msg_fatal("gridException", ui_texts, task_code)

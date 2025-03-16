@@ -1,12 +1,12 @@
 """
-    Second step:
-    - Save the file with a unique name in Uploaded_file
-    - Create a record in table user_data_files (UserDataFiles)
+Second step:
+- Save the file with a unique name in Uploaded_file
+- Create a record in table user_data_files (UserDataFiles)
 
-    Part of Canoa `File Validation` Processes
+Part of Canoa `File Validation` Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore ccitt
@@ -17,7 +17,7 @@ from zlib import crc32
 from ...common.app_context_vars import sidekick
 from ...helpers.py_helper import OS_IS_WINDOWS
 from ...helpers.user_helper import now
-from ...helpers.error_helper import ModuleErrorCode
+from ...common.app_error_assistant import ModuleErrorCode
 from ..models import UserDataFiles
 
 from .Cargo import Cargo
@@ -25,7 +25,9 @@ from .Cargo import Cargo
 
 def register(cargo: Cargo, file_data: object | str) -> Cargo:
 
-    def _save_uploaded_file_locally(full_name: str, file_obj: object) -> tuple[int, int]:
+    def _save_uploaded_file_locally(
+        full_name: str, file_obj: object
+    ) -> tuple[int, int]:
         """saves on local disk the uploaded file"""
         # create the uploaded_file, from file_obj
         with open(full_name, "wb") as file:
@@ -63,7 +65,9 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         UserDataFiles.insert(
             user_dataFiles_key,
             id_users=cargo.user.id,
-            id_sep=None if cargo.user.sep is None else cargo.user.sep.id,  # this is an FK
+            id_sep=(
+                None if cargo.user.sep is None else cargo.user.sep.id
+            ),  # this is an FK
             user_receipt=cargo.pd.user_receipt,
             app_version=cargo.app_version,
             process_version=cargo.process_version,
@@ -85,7 +89,9 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         # so process.end knows what to do (update or skip)
         file_registered = cargo.file_registered(user_dataFiles_key)
         task_code = 0  # very important!
-        sidekick.display.info(f"register: The file information was inserted into the database.")
+        sidekick.display.info(
+            "register: The file information was inserted into the database."
+        )
     except Exception as e:
         task_code += 10
         msg_exception = str(e)
@@ -97,7 +103,9 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         sidekick.app_log.fatal(f"{msg_fatal}{msg_deleted}. Error: [{msg_exception}].")
 
     # goto module unzip
-    error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_REGISTER + task_code
+    error_code = (
+        0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_REGISTER + task_code
+    )
     return cargo.update(error_code, "", msg_exception, {}, {})
 
 

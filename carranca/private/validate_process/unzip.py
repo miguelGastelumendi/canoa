@@ -14,7 +14,7 @@ import zipfile
 from .Cargo import Cargo
 from ...common.app_context_vars import sidekick
 from ...helpers.user_helper import now
-from ...helpers.error_helper import ModuleErrorCode
+from ...common.app_error_assistant import ModuleErrorCode
 
 
 def unzip(cargo: Cargo) -> Cargo:

@@ -10,20 +10,21 @@
 # cSpell:ignore sqlalchemy app_name cssless sendgrid ENDC psycopg2 mandatories
 
 from typing import Tuple
-from flask import Flask
 from os import path
 
 from .Args import Args
 from .app_constants import APP_NAME
+from .app_error_assistant import RaiseIf
 from ..helpers.py_helper import is_str_none_or_empty
 
 _error_msg = "[{0}]: An error occurred while {1}. Message: `{2}`."
-fuse = None
+fuse: "Fuse" = None
 
 
 # ---------------------------------------------------------------------------- #
-# Escape Door
+# Escape Door, use display after sidekick is craated
 def _log_and_exit(ups: str):
+
     if fuse and fuse.display:
         fuse.display.error(ups)
     exit(ups)
@@ -43,7 +44,9 @@ class Fuse:
         self.args = args
 
         if is_str_none_or_empty(args.app_mode):
-            self.app_mode = app_mode_development if args.app_debug else app_mode_production
+            self.app_mode = (
+                app_mode_development if args.app_debug else app_mode_production
+            )
         else:
             self.app_mode = self.args.app_mode
 
@@ -78,7 +81,7 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
     import json
 
     msg_error = None
-    new_fuse = None
+    new_fuse: Fuse = None
     try:
         from .Display import Display
 
@@ -125,7 +128,9 @@ def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
             raise Exception(f"Unknown config mode '{fuse.app_mode}'.")
 
         if not path.isfile(path.join(Config.APP_FOLDER, "main.py")):
-            raise Exception("main.py file not found in the app folder. Check BaseConfig.APP_FOLDER.")
+            raise Exception(
+                "main.py file not found in the app folder. Check BaseConfig.APP_FOLDER."
+            )
 
         Config.APP_DEBUGGING = True if fuse.debugging else Config.APP_DEBUG
         Config.APP_ARGS = fuse.args
@@ -150,7 +155,9 @@ def _check_mandatory_keys(config, fDisplay) -> str:
             value = getattr(config, key, "")
             empty = value is None or value.strip() == ""
             if empty:
-                fDisplay.error(f"[{__name__}]: Config[{config.APP_MODE}].{key} has no value.")
+                fDisplay.error(
+                    f"[{__name__}]: Config[{config.APP_MODE}].{key} has no value."
+                )
             return empty
 
         has_empty = False
@@ -204,10 +211,14 @@ def _ignite_server_name(config) -> Tuple[any, str]:
             # Flask Config
             config.RUN_HOST = address.host
             config.RUN_PORT = address.port
-            fuse.display.info(f"The Flask Server address was set to '{scheme}{config.SERVER_ADDRESS}'.")
+            fuse.display.info(
+                f"The Flask Server address was set to '{scheme}{config.SERVER_ADDRESS}'."
+            )
 
     except Exception as e:
-        fuse.display.error(f"`urlparse({try_url}) -> parsed: {address.host}:{address.port}`")
+        fuse.display.error(
+            f"`urlparse({try_url}) -> parsed: {address.host}:{address.port}`"
+        )
         msg_error = _error_msg.format(
             __name__,
             f"parsing server address. Expect value is [HostName:Port], found: [{config.SERVER_ADDRESS}]",
@@ -218,53 +229,22 @@ def _ignite_server_name(config) -> Tuple[any, str]:
 
 
 # ---------------------------------------------------------------------------- #
-def ignite_log_file(config: DynamicConfig, app: Flask) -> Tuple[str, str]:
-    import logging
+def _ignite_sql_connection(uri: str) -> str:
 
-    if not config.LOG_TO_FILE:
-        return "", logging.NOTSET
+    from sqlalchemy import create_engine, select
 
-    from os import path
-    from ..helpers.user_helper import get_unique_filename
-    from logging.handlers import RotatingFileHandler
-    from ..helpers.file_helper import folder_must_exist
-
-    msg_error = None
-    full_name = ""
-    task = "file_name"
-    # https://www.adventuresinmachinelearning.com/flask-logging-the-ultimate-guide-for-developers/
+    error = None
+    fuse.display.debug("Connecting to the database.")  # this may take a while
     try:
-        file_name = config.LOG_FILE_NAME
-        if is_str_none_or_empty(file_name):
-            file_name = get_unique_filename(f"{config.APP_NAME}_", ".log")
-            config.LOG_FILE_NAME = file_name
+        engine = create_engine(uri)
+        with engine.connect() as connection:
+            connection.scalar(select(1))
+            fuse.display.info("The database connection is active.")
 
-        task = "file_folder"
-        file_folder = config.LOG_FILE_FOLDER
-        if is_str_none_or_empty(file_folder):
-            file_folder = "log_files"
-            config.LOG_FILE_FOLDER = file_folder
-
-        if not folder_must_exist(file_folder):
-            msg_error = f"Cannot create log's files folder [{file_folder}]."
-        else:
-            task = "full_name"
-            full_name = path.join(".", config.LOG_FILE_FOLDER, file_name)
-
-            task = "level"
-            s_level = logging._levelToName[config.LOG_MIN_LEVEL]
-
-            task = "handler"
-            handler = RotatingFileHandler(full_name, maxBytes=10000, backupCount=1)
-            handler.setLevel(config.LOG_MIN_LEVEL)
-            app.logger.addHandler(handler)
     except Exception as e:
-        msg_error = f"Cannot create log's {task}: [{e}]"
+        error = f"Unable to connect to the database. Error details: [{e}]."
 
-    if not is_str_none_or_empty(msg_error):
-        _log_and_exit(msg_error)
-
-    return full_name, s_level
+    return error
 
 
 # - ---------------------------------------------------------------------------- #
@@ -273,8 +253,12 @@ def ignite_log_file(config: DynamicConfig, app: Flask) -> Tuple[str, str]:
 from .Sidekick import Sidekick
 
 
-def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
+def ignite_app(app_name, start_at) -> Tuple[Sidekick, bool]:
+    from .Display import Display
+
     global fuse
+    warns = 0
+    errors = 0
 
     debug_2 = _get_debug_2()
     args = Args(debug_2).from_arguments()
@@ -302,6 +286,18 @@ def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
         _log_and_exit(error)
     fuse.display.debug("Flask's Server Name is ready and configured.")
 
+    # Check DB connection, stop if not debugging
+    error = _ignite_sql_connection(config.SQLALCHEMY_DATABASE_URI)
+    if not error:
+        fuse.display.info(
+            "SQLAlchemy engine was created and the db connection was successfully tested."
+        )
+    elif RaiseIf.ignite_no_sql_conn:
+        _log_and_exit(error)
+    else:
+        errors += 1
+        fuse.display.error(error)
+
     # Create the session shared 'sidekick'
     sidekick = Sidekick(config, fuse.display)
     fuse.display.info("The 'sidekick' was ignited.")
@@ -310,43 +306,34 @@ def ignite_sidekick(app_name, start_at) -> Tuple[Sidekick, bool]:
     # Give warnings of import configuration that may be missing
     from ..helpers.py_helper import is_str_none_or_empty
 
-    warns = 0
     if is_str_none_or_empty(config.EMAIL_API_KEY):
         warns += 1
-        fuse.display.warn(f"Sendgrid API key was not found, the app will not be able to send emails.")
+        fuse.display.warn(
+            "Sendgrid API key was not found, the app will not be able to send emails."
+        )
 
     if is_str_none_or_empty(config.EMAIL_ORIGINATOR):
         warns += 1
         fuse.display.warn(
-            f"The app email originator is not defined, the app will not be able to send emails."
+            "The app email originator is not defined, the app will not be able to send emails."
         )
 
     # ---------------------------------------------------------------------------- #
     # Final message
 
-    fuse.display.info(f"{__name__} module completed with 0 errors and {warns} warnings.")
+    fuse.display.print(
+        (
+            Display.Kind.INFO
+            if warns + errors == 0
+            else (Display.Kind.WARN if errors == 0 else Display.Kind.ERROR)
+        ),
+        f"{__name__} module completed with {errors} errors and {warns} warnings.",
+    )
     display_mute_after_init = fuse.args.display_mute_after_init
 
     del fuse  # clean up fuse to prevent memory leaks
 
     return sidekick, display_mute_after_init
-
-
-# - ---------------------------------------------------------------------------- #
-def ignite_sql_connection(sidekick, uri):
-
-    from sqlalchemy import create_engine, select
-
-    try:
-        engine = create_engine(uri)
-        with engine.connect() as connection:
-            connection.scalar(select(1))
-            sidekick.display.info("The database connection is active.")
-
-    except Exception as e:
-        _log_and_exit(f"Unable to connect to the database. Error details: [{e}].")
-
-    return
 
 
 # eof

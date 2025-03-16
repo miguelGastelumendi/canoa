@@ -8,7 +8,7 @@ mgd
 """
 
 # cSpell:ignore
-import locale
+
 from common.app_constants import APP_LANG
 from .LoggedUser import LoggedUser
 
@@ -16,7 +16,6 @@ from .LoggedUser import LoggedUser
 class JinjaUser:
     def __init__(self, logged_user: LoggedUser):
         from ..common.app_context_vars import sidekick
-        from .SepIconConfig import SepIconConfig  # Avoid Circular 2025.02.20
 
         self.ready = logged_user.ready if logged_user else False
 
@@ -26,7 +25,9 @@ class JinjaUser:
             self.name = logged_user.name
         else:
             sidekick.display.debug(f"{self.__class__.__name__} was reset.")
-            self.lang = APP_LANG  # locale.getdefaultlocale()[0]  # TODO, check if available
+            self.lang = (
+                APP_LANG  # locale.getdefaultlocale()[0]  # TODO, check if available
+            )
             self.name = "?"
 
     def __repr__(self):

@@ -17,7 +17,7 @@ from googleapiclient.discovery import build
 
 from ..common.app_context_vars import sidekick
 from .py_helper import is_str_none_or_empty, to_str
-from .file_helper import is_same_file_name, change_file_ext, remove_last_folder
+from .file_helper import is_same_file_name, change_file_ext
 from .html_helper import CONTENT_TYPE_HTML
 
 
@@ -68,7 +68,7 @@ def download_public_file(url, filename, guess_extension_if_not_provided=True) ->
         task_code += 1
         _, file_ext = path.splitext(filename)
         ext_is_empty = is_str_none_or_empty(file_ext)
-        is_folder = filename.endswith(path.sep)
+        # is_folder = filename.endswith(path.sep)
         rename_it = guess_extension_if_not_provided and ext_is_empty
 
         task_code += 1
@@ -117,7 +117,9 @@ def get_file_id_from_url(url: str) -> str:
     return id
 
 
-def download_response(response: requests.Response, filename: str, rename_it: bool) -> int:
+def download_response(
+    response: requests.Response, filename: str, rename_it: bool
+) -> int:
 
     task_code = 1
     _, file_ext = path.splitext(filename)
@@ -132,7 +134,9 @@ def download_response(response: requests.Response, filename: str, rename_it: boo
                     task_code = 6
                     f.write(chunk)
                     task_code = 8
-                    ext_by_magic = ext_by_magic if ext_found else puremagic.what(None, chunk)
+                    ext_by_magic = (
+                        ext_by_magic if ext_found else puremagic.what(None, chunk)
+                    )
                     ext_found = ext_found or bool(
                         ext_by_magic
                     )  # just try to find extension with the first `chunk`
@@ -162,13 +166,16 @@ def download_public_google_file(file_id, file_folder):
         "canoa-download-key.json",
     )
 
-    credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    credentials = Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+    )
 
     service = build("drive", "v3", credentials=credentials)
 
-    file_md = get_file_metadata(service, file_id)
-    file_name = file_md["name"]
-    destination_path = file_name  # Or specify a custom path
+    # How to get the file ID:
+    # file_md = get_file_metadata(service, file_id)
+    # file_name = file_md["name"]
+    # destination_path = file_name  # Or specify a custom path
 
     request = service.files().get_media(fileId=file_id)
 
@@ -179,7 +186,9 @@ def download_public_google_file(file_id, file_folder):
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            sidekick.display.debug("download: progress %d%%." % int(status.progress() * 100))
+            sidekick.display.debug(
+                "download: progress %d%%." % int(status.progress() * 100)
+            )
     finally:
         fh.close()
 

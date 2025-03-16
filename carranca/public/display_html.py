@@ -1,14 +1,14 @@
 """
-    *Display HTM File*
-    Reformats an HTML from the DB:
-        - header
-        - body
-        - images
-    using `docName` as a section in
-    the db.view vw_ui_texts
+*Display HTM File*
+Reformats an HTML from the DB:
+    - header
+    - body
+    - images
+using `docName` as a section in
+the db.view vw_ui_texts
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore tmpl
@@ -22,7 +22,7 @@ from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.html_helper import img_filenames, img_change_src_path
 from ..helpers.jinja_helper import jinja_pre_template
-from ..helpers.ui_texts_helper import get_msg_error, get_section, ui_page_title, ui_form_title
+from ..helpers.ui_texts_helper import get_msg_error, get_section, UITxtKey
 from ..common.app_context_vars import sidekick
 
 
@@ -35,18 +35,22 @@ def __prepare_img_files(
     missing_files = html_images.copy()  # missing files from folder, assume all
 
     for file_name in html_images:
-        if is_img_local_path_ready and os.path.exists(os.path.join(img_local_path, file_name)):
+        if is_img_local_path_ready and os.path.exists(
+            os.path.join(img_local_path, file_name)
+        ):
             missing_files.remove(file_name)  # this img is not missing.
 
     if not folder_must_exist(img_local_path):
-        sidekick.app_log.error(f"Cannot create folder [{img_local_path}] to keep the HTML's images.")
+        sidekick.app_log.error(
+            f"Cannot create folder [{img_local_path}] to keep the HTML's images."
+        )
         return False
 
     # folder for images & a list of missing_files, are ready.
     # available_files are files that are not on the file system,
     #   but can be retrieved from the DB (db_images says so)
     available_files = [file for file in missing_files if file in db_images]
-    repairable_files = len(available_files) - len(missing_files)
+    # TO USE repairable_files = len(available_files) - len(missing_files)
     if len(missing_files) == 0:
         return True  # every file is in file system!
 
@@ -86,8 +90,10 @@ def display_html(docName: str):
 
     ui_texts = get_section(section)
     # must exist
-    ui_texts[ui_page_title] = ui_texts.get(ui_page_title, "Display Document")
-    ui_texts[ui_form_title] = ui_texts.get(ui_form_title, "Document")
+    ui_texts[UITxtKey.Page.title] = ui_texts.get(
+        UITxtKey.Page.title, "Display Document"
+    )
+    ui_texts[UITxtKey.Form.title] = ui_texts.get(UITxtKey.Form.title, "Document")
     ui_texts["documentStyle"] = ui_texts.get("documentStyle", "")
 
     # shortcuts
@@ -130,7 +136,7 @@ def display_html(docName: str):
     ui_texts[body_key] = _body
 
     # Test function
-    # temp = sidekick.app.jinja_env.from_string("{{ app_version() }}  + {{ app_name()}}")
+    # temp = current_app.jinja_env.from_string("{{ app_version() }}  + {{ app_name()}}")
     # print(temp.render())
 
     tmpl = render_template(template, **ui_texts)

@@ -14,31 +14,45 @@ from flask_login import current_user
 
 from .pw_helper import is_someone_logged
 from .py_helper import is_str_none_or_empty
-from .jinja_helper import process_pre_templates
+
+# TODO from .jinja_helper import process_pre_templates
 from .hints_helper import UI_Texts
 
-from common.app_constants import APP_LANG
+from ..common.app_constants import APP_LANG
+from ..common.app_error_assistant import CanoeStumbled, ModuleErrorCode, RaiseIf
 
-# === Global constants form HTML ui ========================
+# === Global 'constants' form HTML ui ========================
 #  For more info, see table ui_items.name
 #  from ui_texts is loaded ( init_form_vars() )
 
-ui_msg_info = "msgInfo"
-ui_msg_error = "msgError"
-ui_msg_success = "msgSuccess"
-ui_msg_exception = "msgException"
-ui_page_title = "pageTitle"
-ui_form_title = "formTitle"
-# 'msgOnly' display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
-ui_msg_only = "msgOnly"
+
+class UITxtKey:
+    class Msg:
+        info = "msgInfo"
+        warn = "msgWarn"
+        error = "msgError"
+        success = "msgSuccess"
+        exception = "msgException"
+
+    class Page:
+        title = "pageTitle"
+
+    class Form:
+        title = "formTitle"
+        icon = "dlg_var_icon"
+        date_format = "user_date_format"
+        # display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
+        msg_only = "msgOnly"
+        btn_close = "btnMsgOnly"
+
+    class Error:
+        no_db_conn = "NoDBConnection"
+        code = "ups_error_code"
+        where = "ups_offending_def"
+        http_code = "ups_http_code"
 
 
-ui_icon_file_url = "iconFileUrl"
-ui_date_format = "user_date_format"
-
-db_user_locale = APP_LANG
-
-
+# === File class/var = ========================
 class MsgNotFound:
     cache = None
     default = "Message '{0}' (not registered §: {1})"
@@ -49,8 +63,14 @@ class MsgNotFound:
  This two sections are special (id=1 & id=2):
  as they group all msg error and msgs success
 """
-sec_Error = "secError"
-sec_Success = "secSuccess"
+DB_SECTION_ERROR = "secError"
+DB_SECTION_SUCCESS = "secSuccess"
+
+
+# === user locale  ========================================
+def ui_texts_locale() -> str:
+    locale = current_user.lang if is_someone_logged() else APP_LANG
+    return locale
 
 
 # === local def ===========================================
@@ -64,7 +84,7 @@ def __get_ui_texts_query(cols: str, section: str, item: str = None):
     query = (
         f"select {cols} from vw_ui_texts "
         f"where "
-        f"(locale = '{db_user_locale}') and (section_lower = lower('{section}')){item_filter};"
+        f"(locale = '{ui_texts_locale()}') and (section_lower = lower('{section}')){item_filter};"
     )
     return query
 
@@ -75,7 +95,7 @@ def msg_not_found() -> str:
 
     mnf = MsgNotFound.default
     try:
-        text, _ = _get_row("messageNotFound", sec_Error)
+        text, _ = _get_row("messageNotFound", DB_SECTION_ERROR)
         MsgNotFound.cache = MsgNotFound.default if is_str_none_or_empty(text) else text
         mnf = MsgNotFound.cache
     except:
@@ -120,7 +140,7 @@ def _add_msg(item: str, section: str, name: str, texts=None, *args) -> str:
     except:
         value = s
 
-    if texts:  # from .ui_texts_helper import UI_Texts
+    if texts:  # add to texts
         texts[name] = value
 
     return value
@@ -132,6 +152,7 @@ def format_ui_item(texts: UI_Texts, key: str, *args):
     try:
         result = result.format(*args)
     except:
+        # eat this err, user will see it (TODO log if debug)
         pass
 
     return result
@@ -142,7 +163,7 @@ def get_html(section: str) -> UI_Texts:
     returns a UI_Texts with the HTML info
      TODO except for.. not ready, still working...
     """
-    imgList = get_text("images", section)
+    # imgList = get_text("images", section)
     # filter if not is_str_none_or_empty(imgList)
     # select item, text from vw_ui_texts v where v.section_lower = 'html_file' and item not in ('image3.png',  'image4.png')
     query = __get_ui_texts_query("item, text", section)
@@ -160,8 +181,10 @@ def get_section(section_name: str) -> UI_Texts:
         items = _get_result_set(query)
 
         if items:
-            items[ui_msg_only] = False
-            items[ui_date_format] = current_user.lang if is_someone_logged() else APP_LANG
+            items[UITxtKey.Form.msg_only] = False
+            items[UITxtKey.Form.date_format] = ui_texts_locale()
+        elif RaiseIf.no_ui_texts:
+            raise CanoeStumbled("", ModuleErrorCode.UI_TEXTS.value, True)
 
         # texts = process_pre_templates(_texts) # TODO:
 
@@ -187,7 +210,7 @@ def add_msg_error(item: str, texts: UI_Texts = None, *args) -> str:
     returns text for the [item/'sec_Error'] pair
     and adds pair to texts => texts.add( text, 'msgError')
     """
-    return _add_msg(item, sec_Error, ui_msg_error, texts, *args)
+    return _add_msg(item, DB_SECTION_ERROR, UITxtKey.Msg.error, texts, *args)
 
 
 def add_msg_fatal(item: str, texts: UI_Texts = None, *args) -> str:
@@ -204,12 +227,12 @@ def add_msg_success(item: str, texts: UI_Texts = None, *args) -> str:
     (of the vw_ui_texts wonderful view)
     and adds the pair to `texts` => texts.add(text, 'msgSuccess')
 
-    Finally sets texts[ui_msg_only] = True, so the form only displays
+    Finally sets texts[UITxtKey.Form.msg_only] = True, so the form only displays
     the message (no other form inputs)
 
     """
-    msg = _add_msg(item, sec_Success, ui_msg_success, texts, *args)
-    texts[ui_msg_only] = True
+    msg = _add_msg(item, DB_SECTION_SUCCESS, UITxtKey.Msg.success, texts, *args)
+    texts[UITxtKey.Form.msg_only] = True
     return msg
 
 

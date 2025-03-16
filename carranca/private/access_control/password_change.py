@@ -1,9 +1,9 @@
 """
-    *Change Password*
-    Part of Private Access Control Processes
+*Change Password*
+Part of Private Access Control Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore tmpl wtforms
@@ -13,7 +13,7 @@ from flask_login import current_user
 
 from ...public.models import persist_user
 from ...helpers.pw_helper import internal_logout, hash_pass
-from ...helpers.error_helper import ModuleErrorCode
+from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.ui_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
 from ...helpers.route_helper import (
     redirect_to,
@@ -34,7 +34,9 @@ def do_password_change():
 
     try:
         task_code += 1  # 1
-        template, is_get, ui_texts = get_account_form_data("passwordChange", "password_reset_or_change")
+        template, is_get, ui_texts = get_account_form_data(
+            "passwordChange", "password_reset_or_change"
+        )
         password = "" if is_get else get_input_text("password")
         task_code += 1  # 2
         confirm_password = "" if is_get else get_input_text("confirm_password")
@@ -74,5 +76,6 @@ def do_password_change():
 
     tmpl = render_template(template, form=tmpl_form, **ui_texts)
     return tmpl
+
 
 # eof

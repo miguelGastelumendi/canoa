@@ -1,8 +1,8 @@
 """
-    File helpers
+File helpers
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 import os
@@ -56,7 +56,9 @@ def is_first_param_newer(newer_full_name: str, older_full_name: str) -> Optional
         return newer_stat.st_mtime > older_stat.st_mtime
 
 
-def file_must_exist(file_full_name: str, source_full_name: str, replace_if_newer: bool = False) -> bool:
+def file_must_exist(
+    file_full_name: str, source_full_name: str, replace_if_newer: bool = False
+) -> bool:
     """
     Checks if a file exists and optionally replaces it if newer.
 

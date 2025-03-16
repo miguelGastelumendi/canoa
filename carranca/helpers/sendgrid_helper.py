@@ -1,10 +1,10 @@
 """
-    Email helper, based in sendgrid API
+Email helper, based in sendgrid API
 
-    Equipe da Canoa -- 2024
+Equipe da Canoa -- 2024
 
-    mgd
-    2024-05-10... 2025-01-09
+mgd
+2024-05-10... 2025-01-09
 """
 
 # pylint: disable=E1101
@@ -20,7 +20,6 @@ from base64 import b64encode
 from .py_helper import is_str_none_or_empty
 from .email_helper import RecipientsDic, RecipientsListStr, mime_types
 from .ui_texts_helper import get_section
-from ..common.app_context_vars import logged_user
 
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started
 # curl --request POST \
@@ -88,16 +87,18 @@ def send_email(
     try:
 
         # Required info: email originator (owner of API_KEY)
-        from_email = Email(sidekick.config.EMAIL_ORIGINATOR, sidekick.config.EMAIL_ORIGINATOR_NAME)
+        from_email = Email(
+            sidekick.config.EMAIL_ORIGINATOR, sidekick.config.EMAIL_ORIGINATOR_NAME
+        )
         task = "setting email originator"
         if is_str_none_or_empty(from_email.email):
-            error = f"Unknown `email originator`. Cannot send email."
+            error = "Unknown `email originator`. Cannot send email."
             raise ValueError(error)
 
         task = "setting email API key"
         apiKey = sidekick.config.EMAIL_API_KEY
         if is_str_none_or_empty(apiKey):
-            error = f"Unknown `email API key`. Cannot send email."
+            error = "Unknown `email API key`. Cannot send email."
             raise ValueError(error)
 
         # Get a RecipientsDic from `send_to_or_dic` param
@@ -115,7 +116,8 @@ def send_email(
         task = "getting file extension"
         ext = (
             None
-            if is_str_none_or_empty(file_to_send_full_name) or not is_str_none_or_empty(file_to_send_type)
+            if is_str_none_or_empty(file_to_send_full_name)
+            or not is_str_none_or_empty(file_to_send_type)
             else path.splitext(file_to_send_full_name)[1].lower()
         )
 
@@ -141,13 +143,15 @@ def send_email(
                     try:
                         texts[key] = value.format(**email_body_params)
                     except KeyError as e:
-                        sidekick.app_log.error("Missing placeholder {e} in params.")
+                        sidekick.app_log.error(f"Missing placeholder {e} in params.")
         else:
             error = f"Unknown `texts_or_section` datatype {type(texts_or_section)}, expected is [dict|str]. Cannot send email."
             raise ValueError(error)
 
         # A nice notice
-        if is_str_none_or_empty(recipients.to) and not is_str_none_or_empty(recipients.bcc):
+        if is_str_none_or_empty(recipients.to) and not is_str_none_or_empty(
+            recipients.bcc
+        ):
             sidekick.display.warn(
                 "Warning: Sending email with only BCC recipient might be rejected by some servers."
             )
@@ -162,7 +166,9 @@ def send_email(
 
         # Add recipients (generic way)
         def _addRecipients(
-            recipientsStr: RecipientsListStr, fAdd: Callable[[str, str], None], recipient_class: Type
+            recipientsStr: RecipientsListStr,
+            fAdd: Callable[[str, str], None],
+            recipient_class: Type,
         ) -> int:
             result = 0
 
@@ -216,7 +222,9 @@ def send_email(
         return sent
     except Exception as e:
         sc = status_code if status_code != 0 else getattr(e, "status_code", 0)
-        error = f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
+        error = (
+            f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
+        )
         msg = getattr(e, "body", str(e))
         msg_error = f"{error} \nSendGrid: [{msg}]."
         sidekick.app_log.error(msg_error)

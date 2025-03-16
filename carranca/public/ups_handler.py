@@ -15,33 +15,51 @@ mgd 2025-03-05
 
 # cSpell:ignore
 import inspect
-from flask import render_template
-from helpers.pw_helper import internal_logout, is_someone_logged
-from helpers.ui_texts_helper import get_section, ui_msg_only, ui_msg_exception, ui_msg_info, ui_icon_file_url
+from typing import Tuple
+
+from helpers.hints_helper import UI_Texts
+
+# TO USE from flask import render_template
+
+from ..helpers.pw_helper import internal_logout, is_someone_logged
+from ..helpers.html_helper import icon_url
+from ..helpers.route_helper import get_template_name
+from ..helpers.ui_texts_helper import get_section, UITxtKey
+from ..config.local_ui_texts import local_ui_texts, local_form_texts
+
 
 #  --------------------
-def ups_handler( task_code: int, msg_exception: str, msg_info: str, logout: bool = False ): #, user_msg: str):
-    ui_texts = get_section("UpsTexts")
-
-    ui_texts[ui_msg_only] = False
-    ui_texts[ui_msg_info] = msg_info
-    ui_texts[ui_msg_exception] = msg_exception
-    ui_texts[ui_icon_file_url] = 'home/ups_handler.svg'
+def ups_handler(
+    error_code: int, msg_exception: str, logout: bool = False
+) -> Tuple[dict, str, UI_Texts]:
+    try:
+        ui_texts = get_section(f"Ups-{error_code}")
+    except:
+        ui_texts = local_ui_texts(UITxtKey.Error.no_db_conn)
 
     context_texts = {
-        "ups_task_code": task_code,
-        "ups_offending_def": inspect.stack()[1].function,
-        "ups_http_code": 500,
+        UITxtKey.Form.msg_only: True,
+        UITxtKey.Msg.exception: msg_exception,
+        UITxtKey.Form.icon: icon_url("icons", "ups_handler.svg"),
+        UITxtKey.Error.code: error_code,
+        UITxtKey.Error.where: inspect.stack()[1].function,
+        UITxtKey.Error.http_code: 500,
     }
 
     for key, value in context_texts.items():
         if key not in ui_texts:
             ui_texts[key] = value
 
+    for key, value in local_form_texts().items():
+        if key not in ui_texts:
+            ui_texts[key] = value
+
+    # TODO: send email
     if logout and is_someone_logged():
         internal_logout()
 
-    return render_template("home/ups_page.html", **ui_texts)
+    ups_template = get_template_name("ups_page", "home")
+    return {}, ups_template, ui_texts
 
 
 # eof

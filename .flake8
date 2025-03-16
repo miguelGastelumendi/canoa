@@ -1,0 +1,4 @@
+[flake8]
+;https://flake8.pycqa.org/en/latest/glossary.html
+; o ignore all style-related errors (E) and warnings (W).
+ignore = E,W

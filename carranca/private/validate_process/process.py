@@ -32,7 +32,7 @@ from ..models import UserDataFiles
 from ..LoggedUser import LoggedUser
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import now
-from ...helpers.error_helper import ModuleErrorCode
+from ...common.app_error_assistant import ModuleErrorCode
 from ...config.config_validate_process import ValidateProcessConfig
 
 from .Cargo import Cargo

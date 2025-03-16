@@ -18,7 +18,7 @@ from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.db_helper import get_str_field_length
 from ...helpers.user_helper import now
 from ...helpers.file_helper import file_must_exist, folder_must_exist, is_same_file_name
-from ...helpers.error_helper import ModuleErrorCode
+from ...common.app_error_assistant import ModuleErrorCode
 
 from ..models import UserDataFiles
 from .Cargo import Cargo

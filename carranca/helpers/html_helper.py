@@ -5,7 +5,28 @@
 
 # cSpell:ignore
 
+import os
 from bs4 import BeautifulSoup
+from flask import current_app
+
+HTML_PATH_SEP: str = "/"
+
+
+def icon_url(folder: str, file_name: str) -> str:
+    """
+    Constructs the full URL path for an icon image to be used in an HTML img tag.
+
+    Args:
+        folder (str): The sub folder (of the static folder) where the icon image is located
+        file_name (str): The name of the icon image file.
+
+    Returns:
+        str: The full URL path of the icon image.
+    """
+    base_path = os.path.basename(current_app.static_folder)
+    icon_path = os.path.join(os.path.sep, base_path, folder, file_name)
+    icon_url = icon_path.replace(os.sep, HTML_PATH_SEP)
+    return icon_url
 
 
 def img_change_src_path(html_content: str, new_img_folder: list) -> str:

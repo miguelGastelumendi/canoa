@@ -1,11 +1,11 @@
 """
-    Equipe da Canoa -- 2024
-    Files Download: Google Drive (except zip) & others Publicly Shared Files
+Equipe da Canoa -- 2024
+Files Download: Google Drive (except zip) & others Publicly Shared Files
 
-    inspired in
-    https://stackoverflow.com/questions/38511444/python-download-files-from-google-drive-using-url
+inspired in
+https://stackoverflow.com/questions/38511444/python-download-files-from-google-drive-using-url
 
-    mgd 2024-08-01
+mgd 2024-08-01
 """
 
 # cSpell:ignore puremagic surl googleapiclient gserviceaccount chunksize
@@ -23,7 +23,7 @@ from google.oauth2.service_account import Credentials
 
 
 from .py_helper import is_str_none_or_empty, to_str
-from .file_helper import is_same_file_name, change_file_ext, path_remove_last_folder
+from .file_helper import is_same_file_name, change_file_ext
 from ..common.app_context_vars import sidekick
 
 
@@ -76,7 +76,9 @@ def get_file_id_from_url(url: str) -> str:
     return id
 
 
-def download_response(response: requests.Response, filename: str, rename_it: bool) -> int:
+def download_response(
+    response: requests.Response, filename: str, rename_it: bool
+) -> int:
 
     task_code = 1
     _, file_ext = path.splitext(filename)
@@ -91,7 +93,9 @@ def download_response(response: requests.Response, filename: str, rename_it: boo
                     task_code = 6
                     f.write(chunk)
                     task_code = 8
-                    ext_by_magic = ext_by_magic if ext_found else puremagic.what(None, chunk)
+                    ext_by_magic = (
+                        ext_by_magic if ext_found else puremagic.what(None, chunk)
+                    )
                     ext_found = ext_found or bool(
                         ext_by_magic
                     )  # just try to find extension with the first `chunk`
@@ -102,7 +106,7 @@ def download_response(response: requests.Response, filename: str, rename_it: boo
             rename(filename, new_filename)
 
         return 0
-    except Exception as e:
+    except:  # Exception #as e:
         #   g.app_log.error(f"Could save file  [{filename}], error [{e}].")
         return task_code
 
@@ -142,7 +146,9 @@ def download_public_google_file(
         gdFile_id = None
         if is_str_none_or_empty(url_or_file_id) or len(url_or_file_id) < 10:
             task_code = 2
-            raise ValueError(f"Invalid parameter value 'url_or_file_id' [{url_or_file_id}]].")
+            raise ValueError(
+                f"Invalid parameter value 'url_or_file_id' [{url_or_file_id}]]."
+            )
         elif url_or_file_id.lower().startswith("https://"):
             task_code = 3
             gdFile_id = get_file_id_from_url(url_or_file_id)
@@ -173,7 +179,9 @@ def download_public_google_file(
             raise FileNotFoundError(service_account_file)
 
         task_code += 1  # 8
-        credentials = Credentials.from_service_account_file(service_account_file, scopes=scope)
+        credentials = Credentials.from_service_account_file(
+            service_account_file, scopes=scope
+        )
 
         task_code += 1  # 9
         gdService = build("drive", "v3", credentials=credentials)
@@ -195,7 +203,9 @@ def download_public_google_file(
             gdFile_name = original_file_name + ext
 
         file_full_path = (
-            path.join(file_folder, gdFile_name) if not is_str_none_or_empty(file_folder) else gdFile_name
+            path.join(file_folder, gdFile_name)
+            if not is_str_none_or_empty(file_folder)
+            else gdFile_name
         )
 
         if not path.isfile(file_full_path):
@@ -219,13 +229,17 @@ def download_public_google_file(
             downloader = MediaIoBaseDownload(f, request, chunksize=cs)
             task_code += 1  # 17
             done = False
-            sidekick.display.info(f"download: The download of the file [{file_full_path}] has begun.")
+            sidekick.display.info(
+                f"download: The download of the file [{file_full_path}] has begun."
+            )
             # file_crc32 = crc32(b'')  # Initialize CRC32 checksum
             while done is False:
                 status, done = downloader.next_chunk()
                 # TODO find how: file_crc32 = crc32(status, file_crc32)
                 if status:
-                    sidekick.display.debug("download: progress %d%%." % int(status.progress() * 100))
+                    sidekick.display.debug(
+                        "download: progress %d%%." % int(status.progress() * 100)
+                    )
 
         task_code = 0
         sidekick.display.info("download: The file was downloaded.")

@@ -13,7 +13,7 @@ mgd
 {# cSpell:ignore elif mgmt #}
 
 
-{% if msgInfo or msgError or msgSuccess %}
+{% if msgInfo or msgWarn or msgError or msgSuccess %}
 <!-- { BackendMessage -->
 <div class="text-center text-md-center mt-0 mb-3">
     <h6 class="font-weight-normal">
@@ -21,13 +21,21 @@ mgd
         <div class="alert alert-danger">
             {{ msgError | safe }}
         </div>
+        {% endif %}
 
-        {% elif msgSuccess %}
+        {% if msgWarn %}
+        <div class="alert alert-warning">
+            {{ msgWarn | safe }}
+        </div>
+        {% endif %}
+
+        {% if msgSuccess %}
         <div class="alert alert-success">
             {{ msgSuccess | safe }}
         </div>
+        {% endif %}
 
-        {% elif msgInfo %}
+        {% if msgInfo %}
         <div class="alert alert-info">
             {{ msgInfo | safe }}
         </div>

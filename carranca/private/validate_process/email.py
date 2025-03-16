@@ -16,7 +16,7 @@ from ...common.app_context_vars import sidekick
 from ...helpers.email_helper import RecipientsDic, RecipientsListStr
 from ...helpers.user_helper import now_as_text, now
 from ...helpers.sendgrid_helper import send_email
-from ...helpers.error_helper import ModuleErrorCode
+from ...common.app_error_assistant import ModuleErrorCode
 
 
 def email(cargo: Cargo, user_report_full_name) -> Cargo:

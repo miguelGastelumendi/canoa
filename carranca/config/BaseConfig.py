@@ -26,9 +26,13 @@ import logging
 
 from common.app_constants import APP_NAME, APP_VERSION
 from ..helpers.file_helper import path_remove_last_folder
-import sys
 
-CONFIG_MANDATORY_KEYS = ["SQLALCHEMY_DATABASE_URI", "SERVER_ADDRESS", "SECRET_KEY", "APP_MODE"]
+CONFIG_MANDATORY_KEYS = [
+    "SQLALCHEMY_DATABASE_URI",
+    "SERVER_ADDRESS",
+    "SECRET_KEY",
+    "APP_MODE",
+]
 
 # === Available app/config modes, add yours own mode here (extend)
 app_mode_production: str = "Production"  # capital P

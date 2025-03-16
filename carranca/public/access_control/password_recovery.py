@@ -13,7 +13,7 @@ import secrets
 
 from ...public.models import persist_user
 from ...helpers.sendgrid_helper import send_email
-from ...helpers.error_helper import ModuleErrorCode
+from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.email_helper import RecipientsListStr
 from ...helpers.ui_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
 from ...helpers.route_helper import (

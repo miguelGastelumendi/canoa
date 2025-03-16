@@ -1,0 +1,40 @@
+{#
+----------------------------------
+./home/ups-page.html.j2
+----------------------------------
+This is a genric error/exception/ups
+display page
+
+Extends:
+./layouts/form.html.j2
+
+mgd 2025-03-05--15
+--------------------------------------- #}
+
+{% set dlg_var_close = False %}
+
+{% extends "./layouts/dialog.html.j2" %}
+
+{# == Dialog Body == #}
+{% block dlg_blc_body %}
+
+{% include "includes/backend-msg.html.j2" %}
+
+{% block frm_blc_above %}
+{% endblock frm_blc_above %}
+
+{% block frm_blc_below %}
+{% endblock frm_blc_below %}
+
+{% endblock dlg_blc_body %}
+
+{% block dlg_blc_footer %}
+<form action="{{ public_route('login') }}" method="GET">
+    <button class="form-control form-main-btn" id='id_form_main_btn' type="submit" aria-label="Close">
+        {{ okButton | default("OK") }}
+    </button>
+</form>
+{% endblock dlg_blc_footer %}
+{# ==^ Dialog Body ^== #}
+
+{# eof #}

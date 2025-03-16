@@ -95,21 +95,31 @@ def get_input_text(name: str) -> str:
     return to_str(text)
 
 
-def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI_Texts]:
+def get_template_name(tmplt: str, folder: str) -> str:
     from ..common.app_context_vars import sidekick
 
-    tmplt = camel_to_snake(section) if tmplt is None else tmplt
     tmplt_file_name = f"{tmplt}.html.j2"
     # template *must* be with '/':
     template = f"./{folder}/{tmplt_file_name}"
-    tmplt_full_name = path.join(".", sidekick.config.TEMPLATES_FOLDER, folder, tmplt_file_name)
+    tmplt_full_name = path.join(
+        ".", sidekick.config.TEMPLATES_FOLDER, folder, tmplt_file_name
+    )
     if tmplt_full_name in templates_found:
         pass
     elif path.isfile(tmplt_full_name):
         templates_found.append(tmplt_full_name)
     else:
-        raise FileNotFoundError(f"The requested template '{tmplt_full_name}' was not found.")
+        raise FileNotFoundError(
+            f"The requested template '{tmplt_full_name}' was not found."
+        )
 
+    return template
+
+
+def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI_Texts]:
+
+    tmplt = camel_to_snake(section) if tmplt is None else tmplt
+    template = get_template_name(tmplt, folder)
     is_get = is_method_get()
 
     # a section of ui_itens
@@ -118,17 +128,21 @@ def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI
     return template, is_get, ui_texts
 
 
-def get_private_form_data(section: str, tmplt: str = None) -> Tuple[str, bool, UI_Texts]:
+def get_private_form_data(
+    section: str, tmplt: str = None
+) -> Tuple[str, bool, UI_Texts]:
     return _get_form_data(section, tmplt, base_route_private)
 
 
-def get_account_form_data(section: str, tmplt: str = None) -> Tuple[str, bool, UI_Texts]:
+def get_account_form_data(
+    section: str, tmplt: str = None
+) -> Tuple[str, bool, UI_Texts]:
     return _get_form_data(section, tmplt, "accounts")
 
 
-def init_form_vars() -> Tuple[Any, str, bool, UI_Texts]:
+def init_form_vars() -> Tuple[dict, str, bool, UI_Texts]:
     # tmplt_form, template, is_get, ui_texts
-    return None, "", True, {}
+    return {}, "", True, {}
 
 
 def redirect_to(route: str, message: str = None) -> str:
@@ -140,7 +154,9 @@ def is_external_ip_ready(config: BaseConfig) -> bool:
 
     if is_str_none_or_empty(config.SERVER_EXTERNAL_IP):
         try:
-            config.SERVER_EXTERNAL_IP = requests.get(config.EXTERNAL_IP_SERVICE).text.strip()
+            config.SERVER_EXTERNAL_IP = requests.get(
+                config.EXTERNAL_IP_SERVICE
+            ).text.strip()
         except:
             # LOG
             config.SERVER_EXTERNAL_IP = ""
