@@ -11,6 +11,7 @@
 # cSpell:ignore
 
 from os import path
+
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import get_file_ticket, get_user_receipt
 from ...helpers.file_helper import path_remove_last_folder

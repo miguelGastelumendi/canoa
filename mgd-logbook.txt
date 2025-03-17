@@ -81,7 +81,7 @@ TODO:
 ------- 2025 - February ----------
 ----------------------------------
 
-
+2025-03-17 β 3.62 Review Validate Process files (split submit.py)
 
 2025-03-13--15 β 3.61 new Exception user window
     - new: local_ui_texts.py (texts used when no DB connection, so no texts)
@@ -91,7 +91,7 @@ TODO:
     - extension: flake8
 
 
-2025-03-10--12 β 3.60 revision off all the processes 
+2025-03-10--12 β 3.60 revision off all the processes
 
 2025-03-06--7,10 Planejamento bolsa/cnpq
 

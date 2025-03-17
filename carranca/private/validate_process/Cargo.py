@@ -14,7 +14,7 @@ from ..LoggedUser import LoggedUser
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import now
 from ...common.app_constants import APP_VERSION
-from ...config.config_validate_process import ValidateProcessConfig
+from ...config.ValidateProcessConfig import ValidateProcessConfig
 
 from ..receive_file import RECEIVE_FILE_DEFAULT_ERROR
 from .ProcessData import ProcessData

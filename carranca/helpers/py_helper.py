@@ -1,7 +1,7 @@
 """
 Equipe da Canoa -- 2024
 
-Some functions I miss. I brought to Py
+Some functions I miss so I brought them to Py
 mgd 2024-04-09--27
 mgd 2025-02-04
 
