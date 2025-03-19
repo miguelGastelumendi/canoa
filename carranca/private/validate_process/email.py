@@ -1,11 +1,11 @@
 """
-    Fifth & last step:
-    - Send an email to the user, attach the validation report.
+Fifth & last step:
+- Send an email to the user, attach the validation report.
 
-    Part of Canoa `File Validation` Processes
+Part of Canoa `File Validation` Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore
@@ -60,7 +60,7 @@ def email(cargo: Cargo, user_report_full_name) -> Cargo:
             f"There was a problem sending the results email: {msg_exception}.", exc_info=task_code
         )
 
-    error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_EMAIL + task_code
+    error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_EMAIL.value + task_code
     return cargo.update(error_code, "uploadFileEmail_failed", msg_exception)
 
 

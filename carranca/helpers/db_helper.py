@@ -5,13 +5,16 @@ mgd
 Equipe da Canoa -- 2024
 """
 
-# cSpell:ignore psycopg2 sqlalchemy slqaRecords
+# cSpell:ignore psycopg2 sqlalchemy slqaRecords connstr
 
 from datetime import datetime
 from typing import Optional, TypeAlias, Union, Tuple, Dict, List, Any
+from psycopg2 import DatabaseError, OperationalError
 from sqlalchemy import text, Sequence
 
-from carranca import SqlAlchemyScopedSession
+from .. import global_sqlalchemy_scoped_session
+
+from ..config import BaseConfig
 from .py_helper import is_str_none_or_empty, to_str
 
 # Array of table's rows as classes -> ListOfDBRecords
@@ -20,11 +23,10 @@ ListOfDBRecords: TypeAlias = List["DBRecord"]
 JsonStrOfRecords: TypeAlias = str
 
 
-def db_connstr_obfuscate(config) -> str:
+def db_connstr_obfuscate(config: BaseConfig):
     """Hide any confidential info before it is displayed in debug mode"""
     import re
 
-    db_uri = str(config.SQLALCHEMY_DATABASE_URI)
     db_uri_safe = re.sub(
         config.SQLALCHEMY_DATABASE_URI_REMOVE_PW_REGEX,
         config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR,
@@ -35,7 +37,7 @@ def db_connstr_obfuscate(config) -> str:
     config.SQLALCHEMY_DATABASE_URI_REPLACE_PW_STR = ""
     config.SQLALCHEMY_DATABASE_URI = ""
 
-    return db_uri
+    return
 
 
 class DBRecord:
@@ -82,19 +84,13 @@ class DBRecords:
         includeNone: bool = True,
     ):
         self.records: ListOfDBRecords = []
-        self.table_name = (
-            self.__class__.__name__ if is_str_none_or_empty(table_name) else table_name
-        )
-        self.filter_types = (
-            filter_types if filter_types is not None else DBRecords.simple_types_filter
-        )
+        self.table_name = self.__class__.__name__ if is_str_none_or_empty(table_name) else table_name
+        self.filter_types = filter_types if filter_types is not None else DBRecords.simple_types_filter
         if includeNone:
             self.filter_types += (type(None),)
 
         if slqaRecords is not None:
-            self.records = [
-                DBRecord(record.__dict__, self.filter_types) for record in slqaRecords
-            ]
+            self.records = [DBRecord(record.__dict__, self.filter_types) for record in slqaRecords]
 
     def __iter__(self):
         """make DBRecords iterable"""
@@ -120,11 +116,7 @@ class DBRecords:
     def to_json(self, exclude_fields: Optional[List[str]] = None):
         exclude_fields = (exclude_fields or []) + ["__class__.__name__"]
         return [
-            {
-                key: value
-                for key, value in record.__dict__.items()
-                if key not in exclude_fields
-            }
+            {key: value for key, value in record.__dict__.items() if key not in exclude_fields}
             for record in self.records
         ]
 
@@ -162,15 +154,49 @@ def try_get_mgd_msg(error: object, default_msg: str = None) -> str:
         return mgd_message if is_mgd else default_msg
 
 
-def _execute_sql(query: str):
+def _execute_sql(query: str) -> Any:
     """Runs an SQL query and returns the result"""
     result = None
-    if not is_str_none_or_empty(query):
-        _text = text(query)
-        with SqlAlchemyScopedSession() as db_session:
-            result = db_session.execute(_text)
+    if is_str_none_or_empty(query):
+        return result
+
+    _text = text(query)
+    with global_sqlalchemy_scoped_session() as db_session:
+        result = db_session.execute(_text)
 
     return result
+
+
+def _fetch_rows(func_or_query, *args, **kwargs):
+    """
+    Executes a SQL query or a function with a database session.
+
+    Args:
+        func_or_query: A callable function or a SQL query string.
+        *args: Additional positional arguments to pass to the function.
+        **kwargs: Additional keyword arguments to pass to the function.
+
+    Returns:
+        A tuple containing an error (if any) and the result of the query or function.
+
+
+    TODO refine this function, test, use CanoeStumble
+    """
+
+    try:
+        with global_sqlalchemy_scoped_session() as db_session:
+            if callable(func_or_query):
+                return None, func_or_query(db_session, *args, **kwargs)
+            elif isinstance(func_or_query, str):
+                query = text(func_or_query)
+                return None, db_session.execute(query)
+            else:
+                return "Invalid argument type", None
+
+    except (OperationalError, DatabaseError) as e:
+        return e, f"Database connection error: {e}"
+    except Exception as e:
+        return e, f"Error executing SQL function: {e}"
 
 
 def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
@@ -193,11 +219,15 @@ def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
     from ..common.app_context_vars import sidekick
 
     try:
-        data_rows = _execute_sql(query)
-        rows = data_rows.fetchall()
+        err, data_rows = _fetch_rows(query)
+        # TODO:
+        if err:
+            raise err
+
+        rows = data_rows.fetchall() if data_rows else None
 
         if not rows:
-            return None
+            return []
         elif len(rows) > 1 and len(rows[0]) > 1:
             # Multiple rows with multiple columns
             return tuple(tuple(row) for row in rows)
@@ -212,7 +242,7 @@ def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
             return rows[0][0]
     except Exception as e:
         sidekick.app_log.error(f"An error occurred retrieving db data [{query}]: {e}")
-        return None
+        return []
 
 
 def retrieve_dict(query: str):
@@ -241,10 +271,8 @@ def retrieve_dict(query: str):
             elif isinstance(data[0], tuple) and len(data) == 2:
                 result = {data[0]: data[1]}
     except Exception as e:
+        sidekick.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
         result = {}
-        sidekick.app_log.error(
-            f"An error occurred loading the dict from [{query}]: {e}"
-        )
 
     # # Check if the result is a tuple of tuples (multiple rows)
     # if isinstance(data, tuple) and all(isinstance(row, tuple) and len(row) >= 2 for row in data):

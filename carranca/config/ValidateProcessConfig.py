@@ -1,16 +1,16 @@
 """
-    config_validate_process.py
+config_validate_process.py
 
-    ValidateProcessConfig
-    Configuration of the file for validate process
-    (./private/validate_process)
-    Stores the configurable parameters required at each step
+ValidateProcessConfig
+Configuration of the file for validate process
+(./private/validate_process)
+Stores the configurable parameters required at each step
 
-    see README.md
-    Part of Canoa `File Validation` Processes
+see README.md
+Part of Canoa `File Validation` Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 
 """
 
@@ -58,7 +58,7 @@ class ValidateProcessConfig:
         )
         _cc = get_envvar("EMAIL_REPORT_CC")
         self.cc_recipients = RecipientsDic(cc=_cc)  # reports's email cc recipients
-        self.remove_tmp_files = True  # remove data_validate temporary files from (...data_tunnel\<user_code>\) used in the process [True]
+        self.remove_tmp_files = False  # remove data_validate temporary files from (...data_tunnel\<user_code>\) used in the process [True]
         _debug = ValidateProcessConfig._debug_process  # hard coded debug flag
         self.debug_process = debug if _debug is None else bool(_debug)
         self.stdout_result_pattern = r"<\{'data_validate':.*?}>"

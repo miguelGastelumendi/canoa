@@ -1,8 +1,8 @@
 """
-    Model of the table of files uploaded by users
+Model of the table of files uploaded by users
 
-    mgd
-    Equipe da Canoa -- 2024
+mgd
+Equipe da Canoa -- 2024
 """
 
 # cSpell:ignore ssep
@@ -17,7 +17,7 @@ from sqlalchemy import and_, select
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text
 from sqlalchemy.orm import defer, Session as SQLAlchemySession, declarative_base
 
-from carranca import SqlAlchemyScopedSession
+from .. import global_sqlalchemy_scoped_session
 
 from .SepIconConfig import SepIconConfig, SvgContent
 from ..common.app_context_vars import sidekick
@@ -126,7 +126,7 @@ class UserDataFiles(Base):
         """insert or update a record with unique key: uTicket"""
         # action: insert/update
         isUpdate = not isInsert
-        with SqlAlchemyScopedSession() as db_session:
+        with global_sqlalchemy_scoped_session() as db_session:
             try:
                 # if update, fetch existing record
                 # if insert, check if record already exists
@@ -204,7 +204,7 @@ class MgmtUserSep(Base):
         users_sep: DBRecords = None
         sep_list: DBRecords = None
         msg_error = None
-        with SqlAlchemyScopedSession() as db_session:
+        with global_sqlalchemy_scoped_session() as db_session:
             try:
                 mus_recs = db_session.scalars(select(MgmtUserSep)).all()
                 users_sep = DBRecords(MgmtUserSep.__tablename__, mus_recs)
@@ -286,8 +286,9 @@ class MgmtSep(Base):
 
         sep: Optional[MgmtSep] = None
         sep_fullname: Optional[str] = None
-        with SqlAlchemyScopedSession() as db_session:
+        with global_sqlalchemy_scoped_session() as db_session:
             try:
+                # This block send as a function? (with an Exception msg)
                 stmt = select(MgmtSep).options(defer(MgmtSep.icon_svg)).where(MgmtSep.id == id)
                 _sep = db_session.execute(stmt).scalar_one_or_none()
                 stmt = select(SchemaSEP).where(SchemaSEP.id == _sep.id)
@@ -309,7 +310,7 @@ class MgmtSep(Base):
 
         sep = None
         icon_content: SvgContent = None
-        with SqlAlchemyScopedSession() as db_session:
+        with global_sqlalchemy_scoped_session() as db_session:
             try:
                 stmt = select(MgmtSep).where(MgmtSep.id == id)
                 sep = db_session.execute(stmt).scalar_one_or_none()
@@ -329,7 +330,7 @@ class MgmtSep(Base):
         from ..common.app_context_vars import sidekick
 
         done = False
-        with SqlAlchemyScopedSession() as db_session:
+        with global_sqlalchemy_scoped_session() as db_session:
             try:
                 db_session.add(sep)
                 db_session.commit()
@@ -383,7 +384,7 @@ class ReceivedFiles(Base):
     ) -> DBRecords:
         received_files = None
         msg_error = ""
-        with SqlAlchemyScopedSession() as db_session:
+        with global_sqlalchemy_scoped_session() as db_session:
             try:
                 """----------------------------------------------
                 /!\ Attention

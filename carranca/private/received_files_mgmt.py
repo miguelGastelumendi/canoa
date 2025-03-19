@@ -12,7 +12,7 @@ from flask import render_template, send_file, abort, request, Response
 
 from .models import ReceivedFiles
 from ..common.app_context_vars import sidekick, logged_user
-from ..config.config_validate_process import ValidateProcessConfig
+from ..config.ValidateProcessConfig import ValidateProcessConfig
 
 from ..helpers.db_helper import DBRecords
 from ..helpers.user_helper import UserFolders

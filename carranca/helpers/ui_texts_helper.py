@@ -39,7 +39,7 @@ class UITxtKey:
 
     class Form:
         title = "formTitle"
-        icon = "dlg_var_icon"
+        icon = "iconFileUrl"
         date_format = "user_date_format"
         # display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
         msg_only = "msgOnly"
@@ -69,7 +69,7 @@ DB_SECTION_SUCCESS = "secSuccess"
 
 # === user locale  ========================================
 def ui_texts_locale() -> str:
-    locale = current_user.lang if is_someone_logged() else APP_LANG
+    locale = (current_user.lang if is_someone_logged() else APP_LANG).lower()
     return locale
 
 
@@ -78,13 +78,14 @@ def __get_ui_texts_query(cols: str, section: str, item: str = None):
     # returns Select query for the current locale, section and, eventually, for only one item
     # use SQL lower(item) better than item.lower (use db locale)
     item_filter = "" if item is None else f" and (item_lower = lower('{item}'))"
+    
     # ** /!\ ******************************************************************
     #  don't use <schema>.table_name. Must set
     #  ALTER ROLE canoa_connstr IN DATABASE adaptabrasil SET search_path=canoa;
     query = (
         f"select {cols} from vw_ui_texts "
         f"where "
-        f"(locale = '{ui_texts_locale()}') and (section_lower = lower('{section}')){item_filter};"
+        f"(locale = lower('{ui_texts_locale()}')) and (section_lower = lower('{section}')){item_filter};"
     )
     return query
 
@@ -183,7 +184,7 @@ def get_section(section_name: str) -> UI_Texts:
         if items:
             items[UITxtKey.Form.msg_only] = False
             items[UITxtKey.Form.date_format] = ui_texts_locale()
-        elif RaiseIf.no_ui_texts:
+        elif items is None and RaiseIf.no_ui_texts:
             raise CanoeStumbled("", ModuleErrorCode.UI_TEXTS.value, True)
 
         # texts = process_pre_templates(_texts) # TODO:

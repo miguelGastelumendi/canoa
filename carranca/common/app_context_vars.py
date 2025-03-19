@@ -40,6 +40,7 @@ from werkzeug.local import LocalProxy
 from carranca import global_sidekick
 from .Sidekick import Sidekick
 from ..private.User_sep import UserSEP
+from ..private.JinjaUser import JinjaUser
 from ..private.LoggedUser import LoggedUser
 
 # share global sidekick
@@ -81,9 +82,20 @@ def _get_logged_user() -> Optional[LoggedUser]:
         return None
 
 
+# Logged User
+# -----------
+def _get_jinja_user() -> Optional[JinjaUser]:
+    def _do_jinja_user() -> JinjaUser:
+        return JinjaUser(_get_logged_user())
+
+    jinja_user = _get_scoped_var("_jinja_user", _do_jinja_user)
+
+    return jinja_user
+
+
 # User SEP
 # -----------
-def do_user_ser() -> Optional[UserSEP]:
+def do_user_sep() -> Optional[UserSEP]:
     from ..private.sep_icon import icon_prepare_for_html
 
     url, sep_fullname, sep = icon_prepare_for_html(current_user.mgmt_sep_id)
@@ -96,7 +108,7 @@ def _get_user_sep() -> Optional[UserSEP]:
     from ..helpers.pw_helper import is_someone_logged
 
     if is_someone_logged():
-        return _get_scoped_var("_user_sep", do_user_ser)
+        return _get_scoped_var("_user_sep", do_user_sep)
     else:
         return None
 
@@ -104,6 +116,9 @@ def _get_user_sep() -> Optional[UserSEP]:
 # Proxies
 # -------
 logged_user: Optional[LoggedUser] = LocalProxy(_get_logged_user)
+
+
+jinja_user: Optional[JinjaUser] = LocalProxy(_get_jinja_user)
 
 
 user_sep: Optional[UserSEP] = LocalProxy(_get_user_sep)

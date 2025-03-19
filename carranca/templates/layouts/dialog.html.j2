@@ -31,7 +31,7 @@ dlg_cls_title | default('dlg-title')
 dlg_cls_top | default('mt-6')
 
 
-dlg_var_icon // the path to an icon to set on the dialog header
+dlg_var_icon // the path to an icon to set on the dialog header, if none, no icon is displayed
 dlg_var_style
 dlg_var_scroll
 dlg_var_close | default(True) // display Close button
@@ -46,15 +46,15 @@ mgd
 
 {% block base_blc_content %}
 <section>
-    <div class="modal{%+ if not (dlg_var_vCentered | default(False)) %} {{ dlg_cls_top|default('mt-6') }}{% endif %}"
-        style="{{(dlg_var_style|default('display: block;'))|trim}}" tabindex="-1" id="dlg-id-main">
+    <div id="dlg-id-main" tabindex="-1" style="{{(dlg_var_style|default('display: block;'))|trim}}"
+        class="modal {%+ if not (dlg_var_vCentered | default(False)) %}{{ dlg_cls_top |default('mt-6')|trim}}{% endif %}">
         <div
-            class="modal-dialog{{ dlg_cls_size|default('')|trim}}{%+ if (dlg_var_vCentered|default(False)) %}modal-dialog-centered{% endif %}{%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %}{{dlg_cls_dialog|default('')}}">
+            class="modal-dialog {{dlg_cls_size|default('')|trim}}{%+ if (dlg_var_vCentered|default(False)) %}modal-dialog-centered{% endif %}{%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %}{{dlg_cls_dialog|default('')}}">
             <div class="modal-content{{ dlg_cls_content|default('')|trim }}">
                 <div class="modal-header {{ dlg_cls_header|default('dlg-header')|trim }}">
                     <h5 class="modal-title {{ dlg_cls_title|default('dlg-title')|trim }}" inert>
                         {% if dlg_var_icon %}
-                        <img src="{{ dlg_var_icon }}" height="32px" width="32px" alt="[!]&nbsp;" id="dlg_icon">
+                        <img id="dlg_icon" src="{{dlg_var_icon}}" height="32px" width="32px" alt="[!]&nbsp;">
                         {% endif %}
                         {{formTitle|default(app_name)}}
                     </h5>

@@ -78,14 +78,19 @@ def home_route() -> str:
     return private_route("home")
 
 
-def is_method_get() -> bool:  # raise error
-    # mgd 2024.03.21
-    is_get = True
-    if request.method.upper() == "POST":
+def is_method_get() -> bool:
+    """
+    Determine if the current request method is GET.
+    Raises a ValueError for unexpected request methods.
+    """
+    rm = request.method.upper()
+    is_get = rm == "GET"
+    if is_get:
+        pass
+    elif rm == "POST":
         is_get = False
-    elif not is_get:
-        # if not is_get then is_post, there is no other possibility
-        raise ValueError("Unexpected request method.")
+    else:
+        raise ValueError(f"Unexpected request method: '{rm}'.")
 
     return is_get
 
@@ -101,17 +106,13 @@ def get_template_name(tmplt: str, folder: str) -> str:
     tmplt_file_name = f"{tmplt}.html.j2"
     # template *must* be with '/':
     template = f"./{folder}/{tmplt_file_name}"
-    tmplt_full_name = path.join(
-        ".", sidekick.config.TEMPLATES_FOLDER, folder, tmplt_file_name
-    )
+    tmplt_full_name = path.join(".", sidekick.config.TEMPLATES_FOLDER, folder, tmplt_file_name)
     if tmplt_full_name in templates_found:
         pass
     elif path.isfile(tmplt_full_name):
         templates_found.append(tmplt_full_name)
     else:
-        raise FileNotFoundError(
-            f"The requested template '{tmplt_full_name}' was not found."
-        )
+        raise FileNotFoundError(f"The requested template '{tmplt_full_name}' was not found.")
 
     return template
 
@@ -128,15 +129,11 @@ def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI
     return template, is_get, ui_texts
 
 
-def get_private_form_data(
-    section: str, tmplt: str = None
-) -> Tuple[str, bool, UI_Texts]:
+def get_private_form_data(section: str, tmplt: str = None) -> Tuple[str, bool, UI_Texts]:
     return _get_form_data(section, tmplt, base_route_private)
 
 
-def get_account_form_data(
-    section: str, tmplt: str = None
-) -> Tuple[str, bool, UI_Texts]:
+def get_account_form_data(section: str, tmplt: str = None) -> Tuple[str, bool, UI_Texts]:
     return _get_form_data(section, tmplt, "accounts")
 
 
@@ -154,11 +151,9 @@ def is_external_ip_ready(config: BaseConfig) -> bool:
 
     if is_str_none_or_empty(config.SERVER_EXTERNAL_IP):
         try:
-            config.SERVER_EXTERNAL_IP = requests.get(
-                config.EXTERNAL_IP_SERVICE
-            ).text.strip()
+            config.SERVER_EXTERNAL_IP = requests.get(config.EXTERNAL_IP_SERVICE).text.strip()
         except:
-            # LOG
+            # TODO: LOG
             config.SERVER_EXTERNAL_IP = ""
 
     return not is_str_none_or_empty(config.SERVER_EXTERNAL_IP)

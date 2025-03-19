@@ -33,7 +33,7 @@ from ..LoggedUser import LoggedUser
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.user_helper import now
 from ...common.app_error_assistant import ModuleErrorCode
-from ...config.config_validate_process import ValidateProcessConfig
+from ...config.ValidateProcessConfig import ValidateProcessConfig
 
 from .Cargo import Cargo
 from .ProcessData import ProcessData
@@ -113,9 +113,9 @@ def process(
                 break
         except Exception as e:
             error_code = (
-                ModuleErrorCode.RECEIVE_FILE_PROCESS + cargo.step
+                ModuleErrorCode.RECEIVE_FILE_PROCESS.value + cargo.step
                 if error_code == 0
-                else ModuleErrorCode.RECEIVE_FILE_EXCEPTION + error_code
+                else ModuleErrorCode.RECEIVE_FILE_EXCEPTION.value + error_code
             )
             msg_exception = _get_msg_exception(e, msg_exception, error_code)
             msg_error = cargo.default_error if is_str_none_or_empty(msg_error) else msg_error
@@ -140,7 +140,7 @@ def process(
                 )
                 _updated(0)
             except Exception as e:
-                error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 1
+                error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS.value + 1
                 fatal_msg = f"An error occurred while updating the final process record: [{e}]."
                 sidekick.display.error(fatal_msg)
                 sidekick.app_log.fatal(fatal_msg)
@@ -164,13 +164,13 @@ def process(
                 )
                 _updated(error_code)
             except Exception as e:
-                error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 2
+                error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS.value + 2
                 msg_exception = _get_msg_exception(e, msg_exception, error_code)
                 sidekick.display.error(msg_exception)
                 sidekick.app_log.fatal(msg_exception, exc_info=error_code)
 
     except Exception as e:
-        error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS + 3
+        error_code = ModuleErrorCode.RECEIVE_FILE_PROCESS.value + 3
         msg_exception = _get_msg_exception(e, msg_exception, error_code)
         sidekick.display.error(msg_exception)
         sidekick.app_log.fatal(msg_exception, exc_info=error_code)

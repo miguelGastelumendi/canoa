@@ -1,11 +1,11 @@
 """
-    Third step:
-    - Unzip the uploaded file to a common folder with `data_validate` app
+Third step:
+- Unzip the uploaded file to a common folder with `data_validate` app
 
-    Part of Canoa `File Validation` Processes
+Part of Canoa `File Validation` Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore
@@ -50,7 +50,7 @@ def unzip(cargo: Cargo) -> Cargo:
         sidekick.display.info(f"unzip: The file was unpacked in [{unzip_folder}].")
     except Exception as e:
         msg_exception = str(e)
-        error_code = task_code + ModuleErrorCode.RECEIVE_FILE_UNZIP
+        error_code = task_code + ModuleErrorCode.RECEIVE_FILE_UNZIP.value
         sidekick.app_log.fatal(
             f"Error unzipping file [{zip_full_name}] in [{unzip_folder}]: [{e}].", exc_info=error_code
         )

@@ -1,12 +1,12 @@
 """
-    First step:
-    - Simple file validations
-    - Check if exist or create process folders
+First step:
+- Simple file validations
+- Check if exist or create process folders
 
-    Part of Canoa `File Validation` Processes
+Part of Canoa `File Validation` Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore werkzeug ext
@@ -82,7 +82,7 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
 
     except Exception as e:
         msg_exception = str(e)
-        # is the highest possible (see ModuleErrorCode.RECEIVE_FILE_CHECK + 1)
+        # is the highest possible (see ModuleErrorCode.RECEIVE_FILE_CHECK.value + 1)
         task_code = 19
         sidekick.app_log.fatal(
             f"Exception [{e}], code {task_code}, occurred in module `check` while validating the {receive_method} file [{cs.received_original_name}].",
@@ -90,7 +90,7 @@ def check(cargo: Cargo, file_data: object | str, valid_ext: list[str]) -> Cargo:
         )
 
     # goto module register.py
-    error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_CHECK + task_code
+    error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_CHECK.value + task_code
     return cargo.update(error_code, "", msg_exception, {"file_data": file_data})
 
 

@@ -104,7 +104,7 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
 
     # goto module unzip
     error_code = (
-        0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_REGISTER + task_code
+        0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_REGISTER.value + task_code
     )
     return cargo.update(error_code, "", msg_exception, {}, {})
 

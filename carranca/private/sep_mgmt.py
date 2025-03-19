@@ -1,12 +1,12 @@
 """
-    User Profile's Management and SEP assignment
+User Profile's Management and SEP assignment
 
-    NB: SEP is an old acronym for
-        "Setor Estratégico de Planejamento" (Strategic Planning Sector)
-        so it was kept here
+NB: SEP is an old acronym for
+    "Setor Estratégico de Planejamento" (Strategic Planning Sector)
+    so it was kept here
 
-    Equipe da Canoa -- 2024
-    mgd 2024-10-09, 2025-01-09
+Equipe da Canoa -- 2024
+mgd 2024-10-09, 2025-01-09
 
 """
 
@@ -92,7 +92,9 @@ def do_sep_mgmt() -> str:
             elif is_str_none_or_empty(msg_error):
                 ui_texts[UITxtKey.Msg.error] = msg_error_read
             else:
-                ui_texts[UITxtKey.Msg.error] = try_get_mgd_msg(msg_error, ui_texts["saveError"].format(task_code))
+                ui_texts[UITxtKey.Msg.error] = try_get_mgd_msg(
+                    msg_error, ui_texts["saveError"].format(task_code)
+                )
 
     except Exception as e:
         msg = add_msg_fatal("gridException", ui_texts, task_code)
@@ -199,7 +201,7 @@ def _save_data_to_db(
         3) logs the changes to the `log_user_sep` log.
     """
 
-    from carranca import SqlAlchemyScopedSession
+    from carranca import global_sqlalchemy_scoped_session
     from .models import MgmtUserSep
 
     from ..common.app_context_vars import logged_user, sidekick
@@ -208,7 +210,7 @@ def _save_data_to_db(
     assigned_by = logged_user.id
     user_not_found = []
     task_code += 1
-    with SqlAlchemyScopedSession() as db_session:
+    with global_sqlalchemy_scoped_session() as db_session:
         try:
 
             def __set_user_sep_new(id: int, sep_new: str):
@@ -247,7 +249,7 @@ def _send_email(batch_code: str, ui_texts: UI_Texts, task_code: int) -> def_retu
     Send an email for each user with a
     'new' SEP or if it was removed
     """
-    from carranca import SqlAlchemyScopedSession
+    from carranca import global_sqlalchemy_scoped_session
     from .models import MgmtEmailSep
     from ..common.app_context_vars import sidekick
     from ..helpers.py_helper import now
@@ -255,7 +257,7 @@ def _send_email(batch_code: str, ui_texts: UI_Texts, task_code: int) -> def_retu
 
     task_code += 1
     msg_error = None
-    with SqlAlchemyScopedSession() as db_session:
+    with global_sqlalchemy_scoped_session() as db_session:
         try:
             # The users involved in the `batch_code` batch modification.
             user_list = db_session.query(MgmtEmailSep).filter_by(batch_code=batch_code).all()

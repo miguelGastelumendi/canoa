@@ -8,7 +8,7 @@ mgd
 
 # cSpell:ignore nullable sqlalchemy psycopg2 mgmt joinedload
 
-from carranca import SqlAlchemyScopedSession, global_login_manager
+from carranca import global_sqlalchemy_scoped_session, global_login_manager
 
 from typing import Any
 from psycopg2 import DatabaseError
@@ -95,16 +95,11 @@ def get_user_where(**filter: Any) -> User:
     from ..common.app_context_vars import sidekick
 
     user = None
-    with SqlAlchemyScopedSession() as db_session:
+    with global_sqlalchemy_scoped_session() as db_session:
         try:
             # stmt = select(User).filter_by(**filter)
             # user =  db_session.execute(stmt).scalar_one_or_none()
-            user = (
-                db_session.query(User)
-                .options(joinedload(User.role))
-                .filter_by(**filter)
-                .first()
-            )
+            user = db_session.query(User).options(joinedload(User.role)).filter_by(**filter).first()
         except Exception as e:
             sidekick.app_log.error(f"Error retrieving user {filter}: [{e}].")
 
@@ -117,7 +112,7 @@ def persist_user(record: any, task_code: int = 1) -> None:
     """
     from ..common.app_context_vars import sidekick
 
-    with SqlAlchemyScopedSession() as db_session:
+    with global_sqlalchemy_scoped_session() as db_session:
         task_code = 0
         try:
             task_code += 1
@@ -148,11 +143,7 @@ def user_loader(id):
 @global_login_manager.request_loader
 def request_loader(request):
     username = "" if len(request.form) == 0 else request.form.get("username")
-    user = (
-        None
-        if is_str_none_or_empty(username)
-        else get_user_where(username_lower=username.lower())
-    )
+    user = None if is_str_none_or_empty(username) else get_user_where(username_lower=username.lower())
     return user
 
 
@@ -176,16 +167,14 @@ def get_user_role_abbr(user_id: int, user_role_id: int) -> RolesAbbr:
 
     abbr = None
     if not user_role_id is None:
-        with SqlAlchemyScopedSession() as db_session:
+        with global_sqlalchemy_scoped_session() as db_session:
             try:
                 row = db_session.query(Role).filter_by(id=user_role_id).first()
                 abbr = None if row is None else row.abbr
             except Exception as e:
                 from ..common.app_context_vars import sidekick
 
-                sidekick.app_log.error(
-                    f"Error retrieving user {user_id} role {user_role_id}: [{e}]."
-                )
+                sidekick.app_log.error(f"Error retrieving user {user_id} role {user_role_id}: [{e}].")
 
     return abbr
 

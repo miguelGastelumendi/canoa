@@ -9,14 +9,23 @@ Equipe Canoa -- 2025
 mgd 2025-03-15
 """
 
+# cSpell:ignore Situación
+
 from helpers.html_helper import icon_url
 from ..helpers.ui_texts_helper import ui_texts_locale, UITxtKey
 
 default_locale = "en"
 default_section = "Form"
 
+
+class Locale:
+    br = "pt-br"
+    en = "en"
+    es = "es"
+
+
 local_texts = {
-    "pt-br": {
+    Locale.br: {
         default_section: {
             UITxtKey.Form.title: "Situação Inesperada",
             UITxtKey.Form.date_format: "pt-br",
@@ -26,7 +35,7 @@ local_texts = {
             UITxtKey.Msg.warn: "Houve um erro e não foi possível conectar ao banco de dados. Por favor, tente novamente mais tarde."
         },
     },
-    "en": {
+    Locale.en: {
         default_section: {
             UITxtKey.Form.title: "Unexpected Situation",
             UITxtKey.Form.date_format: "en",
@@ -36,7 +45,7 @@ local_texts = {
             UITxtKey.Msg.warn: "There was an error and it was not possible to connect to the database. Please try again later."
         },
     },
-    "es": {
+    Locale.es: {
         default_section: {
             UITxtKey.Form.title: "Situación Inesperada",
             UITxtKey.Form.date_format: "es",

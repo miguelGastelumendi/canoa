@@ -22,7 +22,7 @@ from .ProcessData import ProcessData
 
 class Cargo:
     name = "Cargo"
-    default_error = RECEIVE_FILE_DEFAULT_ERROR
+    default_error: int = RECEIVE_FILE_DEFAULT_ERROR
 
     def __init__(
         self,
