@@ -20,7 +20,10 @@ from typing import NamedTuple
 from ..helpers.py_helper import OS_IS_WINDOWS, get_envvar
 from ..helpers.email_helper import RecipientsDic
 
-OutputFile = NamedTuple("OutputFile", name=str, ext=str)
+
+class OutputFile(NamedTuple):
+    name: str
+    ext: str
 
 
 class DataValidateApp(NamedTuple):

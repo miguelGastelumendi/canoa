@@ -37,10 +37,10 @@ class LoggedUser:
             self.path = ""
             self.role_abbr = None
             self.role_name = None
-            self.is_adm = False
             self.sep = None
+            self.is_adm = False
+            self.is_power = False
         else:
-
             sidekick.display.debug(f"{self.__class__.__name__} was created.")
             self.lang = current_user.lang
             self.name = current_user.username
@@ -51,7 +51,10 @@ class LoggedUser:
             self.path = SepIconConfig.local_path
             self.role_abbr = current_user.role.abbr
             self.role_name = current_user.role.name
-            self.is_adm = self.role_abbr == RolesAbbr.Admin
+            self.is_adm: bool = self.role_abbr == RolesAbbr.Admin.value
+            self.is_power: bool = self.is_adm or (
+                (self.role_abbr == RolesAbbr.Suporte.value) and sidekick.debugging
+            )
 
     @property
     def sep(self):

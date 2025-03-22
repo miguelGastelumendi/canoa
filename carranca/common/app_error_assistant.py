@@ -39,7 +39,7 @@ class ModuleErrorCode(IntEnum):
     ACCESS_CONTROL_PW_RECOVERY = 140
     ACCESS_CONTROL_PW_RESET = 160
 
-    # User Interface Text Retriavel
+    # User Interface Text Retrieval
     UI_TEXTS = 170  # 1
 
     # RECEIVE_FILE_* =: [200... 270] + 100
@@ -62,10 +62,10 @@ class ModuleErrorCode(IntEnum):
 
 class RaiseIf:
     """Flags to raise an error if
-    or just ignore the codition
+    or just ignore the condition
     """
 
-    ignite_no_sql_conn = False
+    ignite_no_sql_conn = True
     no_ui_texts = True
 
 

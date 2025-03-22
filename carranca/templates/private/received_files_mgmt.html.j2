@@ -9,7 +9,7 @@ Extends
 
 mgd
 --------------------------------------- #}
-{# cSpell:ignore mgmt onclick tojson onsubmit dnld, Rprt #}
+{# cSpell:ignore mgmt onclick tojson onsubmit dnld Rprt endfor onchange #}
 
 {# only specify if different from default #}
 {% set dlg_cls_size= 'modal-xl' %}
@@ -30,14 +30,26 @@ mgd
 
 {% block dlg_blc_footer %}
 <div class="mb-3 row">
+    {% if users_list %}
     <div class="col-auto">
-        <button type="button" onclick="download('{{ dnld_F }}')" id="btn{{ dnld_F  }}" class="form-main-btn" disabled>
-            {{ btnDwnLoadFile }}
+        <select id="sel{{grid_id}}" class="form-control form-select" style="{{sel_width}}"
+            onchange="filterGrid('{{grid_id}}')">
+            {% for item in users_list %}
+            <option value="{{item}}">{{item}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+    <div class="col-auto">
+        <button type="button" onclick="download('{{dnld_F}}')" id="btn{{dnld_F}}" class="form-control form-main-btn"
+            style="{{btn_width}}" disabled>
+            {{btnDwnLoadFile}}
         </button>
     </div>
     <div class="col-auto">
-        <button type="button" onclick="download('{{ dnld_R }}')" id="btn{{ dnld_R  }}" class="form-main-btn" disabled>
-            {{ btnDwnLoadRprt }}
+        <button type="button" onclick="download('{{dnld_R}}')" id="btn{{dnld_R}}" class="form-control form-main-btn"
+            style="{{btn_width}}" disabled>
+            {{btnDwnLoadRprt}}
         </button>
     </div>
 </div>
@@ -49,12 +61,14 @@ mgd
 
 {% block dlg_blc_javascript %}
 <script>
-    const rowData = ({{ rec_files | default ([]) | tojson }}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
-    const colMeta = {{ grid_col_meta | tojson }};
-    const gridID = '{{ grid_id }}';
-    const dateFormat = '{{ user_date_format }}';
-    const itemNone = '{{ itemNone }}';
-    const isAdm = {{ grid_user_is_adm }}
+    const usersList = {{ users_list | default ([]) | tojson}}
+    const rowData = ({{ files_rec | default ([]) | tojson}}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
+    const listUser = ({{ users_list | default ([]) | tojson}})
+    const colMeta = {{ grid_col_meta | tojson}};
+    const gridID = '{{grid_id}}';
+    const dateFormat = '{{user_date_format}}';
+    const itemNone = '{{itemNone}}';
+    const isPower = {{ user_is_power | tojson}};
     const defButtons = () => {
         const btnFile = document.getElementById('btn{{dnld_F}}');
         const btnRprt = document.getElementById('btn{{dnld_R}}');
@@ -63,8 +77,8 @@ mgd
     const download = (t) => {
         if (activeRow) {
             const id = `${activeRow.data["id"]}${t}`;
-            document.getElementById('{{ grid_rsp }}').value = id;
-            document.getElementById('{{ grid_submit_id }}').submit();
+            document.getElementById('{{grid_rsp}}').value = id;
+            document.getElementById('{{grid_submit_id}}').submit();
         }
     }
 </script>

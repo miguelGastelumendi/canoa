@@ -2,4 +2,5 @@
     "python.analysis.extraPaths": [
         "./carranca"
     ],
+    "python.analysis.typeCheckingMode": "off",
 }

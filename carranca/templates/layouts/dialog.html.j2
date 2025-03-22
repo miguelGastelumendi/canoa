@@ -14,52 +14,56 @@ X => meaning
 ---------------
 _var_ => VARiable
 _cls_ => CLaSs
--id- => ID
+dlg-name-id => ID
 _blc_ => BLoCk
 _js_ => JScript
 
 - Configuration (default is '', if not shown)
 dlg_cls_body | default('dlg-body')
-dlg_cls_btnClose
-dlg_cls_btnOk
+dlg_cls_btn_close
+dlg_cls_btn_ok
 dlg_cls_content
 dlg_cls_dialog
 dlg_cls_footer | default('dlg-footer')
 dlg_cls_header | default('dlg-header')
-dlg_cls_size | 'Default = 500px ' modal-sm, modal-lg, modal-xl
+dlg_cls_size | 'Default = 500px' modal-sm, modal-lg, modal-xl
+https://getbootstrap.com/docs/4.2/components/modal/#optional-sizes
 dlg_cls_title | default('dlg-title')
 dlg_cls_top | default('mt-6')
 
 
-dlg_var_icon // the path to an icon to set on the dialog header, if none, no icon is displayed
+
+dlg_var_icon // the url to an icon to set on the dialog header, if none, no icon is displayed
+dlg_var_icon_id //| 'dlg-var-icon-id' the id of the icon
 dlg_var_style
 dlg_var_scroll
 dlg_var_close | default(True) // display Close button
-dlg_var_vCentered | default(False) // from is Vertical Centered
+dlg_var_v_centered | default(False) // from is Vertical Centered
 
 mgd
 
 --------------------------------------- #}
-{# cSpell:ignore tabindex endfor #}
+{# cSpell:ignore tabindex endfor elif #}
 
 {% extends "./layouts/base.html.j2" %}
 
 {% block base_blc_content %}
 <section>
-    <div id="dlg-id-main" tabindex="-1" style="{{(dlg_var_style|default('display: block;'))|trim}}"
-        class="modal {%+ if not (dlg_var_vCentered | default(False)) %}{{ dlg_cls_top |default('mt-6')|trim}}{% endif %}">
+    <div id="dlg-main-id" tabindex="-1" style="{{(dlg_var_style|default('display: block;'))|trim}}"
+        class="modal {%+ if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top |default('mt-6')|trim}}{% endif %}">
         <div
-            class="modal-dialog {{dlg_cls_size|default('')|trim}}{%+ if (dlg_var_vCentered|default(False)) %}modal-dialog-centered{% endif %}{%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %}{{dlg_cls_dialog|default('')}}">
+            class="modal-dialog {{dlg_cls_size|default('')|trim}}{%+ if (dlg_var_v_centered|default(False)) %}modal-dialog-centered{% endif %}{%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %}{{dlg_cls_dialog|default('')}}">
             <div class="modal-content{{ dlg_cls_content|default('')|trim }}">
                 <div class="modal-header {{ dlg_cls_header|default('dlg-header')|trim }}">
                     <h5 class="modal-title {{ dlg_cls_title|default('dlg-title')|trim }}" inert>
                         {% if dlg_var_icon %}
-                        <img id="dlg_icon" src="{{dlg_var_icon}}" height="32px" width="32px" alt="[!]&nbsp;">
+                        <img id="{{dlg_var_icon_id|default('dlg-var-icon-id')}})" src="{{dlg_var_icon}}" height="32px"
+                            width="32px" alt="[!]&nbsp;">
                         {% endif %}
                         {{formTitle|default(app_name)}}
                     </h5>
                     <form action="{{ public_route('login') }}" method="GET">
-                        <button type="submit" class="btn-close {{ dlg_cls_btnClose | default('') }}"
+                        <button type="submit" class="btn-close {{ dlg_cls_btn_close | default('') }}"
                             data-bs-dismiss="modal" {%+ if not (dlg_var_close|default(True)) %}style='display: none;'
                             {%endif%} aria-label="Close">
                         </button>

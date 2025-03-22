@@ -1,10 +1,10 @@
 """
-    *Routes*
-    Private Routes
-    This routes are private, users _must be_ logged
+*Routes*
+Private Routes
+This routes are private, users _must be_ logged
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell: ignore werkzeug wtforms tmpl mgmt
@@ -113,9 +113,9 @@ def received_files_get() -> str:
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .received_files_mgmt import received_files_fetch
+        from .received_files.received_files_mgmt import fetch_records
 
-        records, _ = received_files_fetch()
+        records, _ = fetch_records()
         json = records.to_json()
 
         return json
@@ -126,16 +126,16 @@ def received_files_get() -> str:
 def received_files_mgmt():
     """
     Through this route, the user gets a grid that allows
-    they to manage and download the files he has sent for
+    him to manage and download the files he has sent for
     validation.
     """
 
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .received_files_mgmt import received_files_grid
+        from .received_files.init_grid import init_grid
 
-        html = received_files_grid()
+        html = init_grid()
         return html
 
 
@@ -149,9 +149,9 @@ def received_file_download():
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .received_files_mgmt import received_file_get
+        from .received_files.download_record import download_rec
 
-        html = received_file_get()
+        html = download_rec()
         return html
 
 

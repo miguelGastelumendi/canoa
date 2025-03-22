@@ -18,7 +18,7 @@ let assignedList = [];
 let selectList = [...initialList];
 let removeCount = 0
 const ignoreList = [itemRemove, itemNone];
-const icon = /** @type {HTMLImageElement} */(document.getElementById("dlg_icon"))
+const icon = /** @type {HTMLImageElement} */(document.getElementById("dlg_var_icon_id"))
 
 window.addEventListener('beforeunload', (event) => {
     if (assignedList.length > 0) {

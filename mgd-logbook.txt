@@ -2,52 +2,6 @@
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
 #spell:ignore venv ccedil atilde receivefile datetime saude mgmt uix
 #spell:ignore Setorista sendgrid linux cnpq
-TODO:
-
-
-    2024-09-
-        a. β 2.17
-        b. sent email with errors
-        c. replace db_helper.persist_record with Users.update
-        d. if template not ready use Error Template
-        e. Always send Success & Error message to forms, if error -> alert -> close -> [!] -> display again
-        f. Standardize css class names as my-class-name
-        0. About title
-        1. β 2.17
-        2. Set User Name in e-mail
-        3. Wait for process on forms.
-        4. Require actual/current pw to be able to change pw, changepassword user `timer`
-        5. Install on Windows server with Hunspell
-        6. Add exception message to the forms (alert)
-        7. Test error on authentication process: error on start (no Form)
-        7. Avoid user's simultaneous validation
-        8. <form action="{{ url_for('handle_click') }}" method="post/get"><button type="submit">Go to Other Location</button></form> instead of href=
-        9. β 2.17
-        A. User's information UI
-        B. Standardize ui messages with db (eg password_*)
-        C. password_recovery, align left form text
-        D. The recipient of the email must be different from CC (and perhaps from BCC as well)
-        E. β 2.17
-        F. β 2.17
-        G. β 2.11
-        H. try_get_mgd_msg -> create [^|f(msg_code, ar1, arg2)default msg|^] -> search 'msg_code' in ui_texts
-        I. One close button for: document.html.j2, dialog.html.j2, form.html.j2 (2024.11.19)
-        J. PrivateDocs for About (2024.11.19)
-
-
-    ## Small Tasks ##
-        - init_form_vars create a 'error tmpl'
-        - check use o form-main-btn in *.j2
-        - share jinja_cache templates + texts (see route_helper templates_found)
-        - Login Remember not always working
-        - Tmpl for error Internal Error
-        - Display colors
-        - Smart menu (always, modified)
-        - Share form..htm.j2 and document.htm.j2 main button
-
-    ## Possible Bugs ##
-        - Check if logged_user.sep is None (occurring now 2025.06.01)
-
 
 
 -----------------------------------------------------------
@@ -55,31 +9,28 @@ TODO:
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
 
-TODO:
-2025-03- β 4.x
-    - [Arquivos enviados] (para usuários Setorista)
-        > Mostrar um grid com 6\3 colunas
-            [Arquivo Submetido], [Relatório], [Data], [Disponível] [# Error] [# Warn ]
-            (se o arquivo ainda está disponível)
-            Permitir fazer download do arquivos submetidos e relatórios
-
-    # TODO do a Proxy func for sep
-    - [Nenhum] to ui_texts
-    - Menu to DB
-    - sep_edit detected if form's input changed (don't update)
-    - mudar erro 500
-    - Menu responsive
-    - remove pixel.css (simply css's)
+------- 2025 - March -------------
+----------------------------------
+    sidekick:
+        - log to file
 
 
-    Todo:
-        - schema/sep management
-        - err_code <- grid_constants
-        - fix data_validate html/css
-        - add_msg_fatal template
+
 
 ------- 2025 - March -------------
 ----------------------------------
+
+
+2025-03-19-20--21 β 3.65 received_files_mgmt for adm v1
+    - Refactor received_files_mgmt.py for the adm user
+    - New vw_user_data_files_count with users to manage
+    - select number from db_version order by id desc limit 1
+    - New user attribute (is_power) to test adm privileges while debugging:
+         user.is_power =
+            (self.role_abbr == RolesAbbr.Suporte.value) and sidekick.debugging)
+            or
+            is_adm
+    - Set Select users in received_files_mgmt.html
 
 2025-03-19 β 3.64 set me as the git user on this local repo
 
@@ -152,7 +103,7 @@ TODO:
 2025-02-19 β 3.54
     - new grid_helper.py (join ag-grid vars)
     - disable buttons of Gestão de Arquivos Enviados
-    - retrieve rec_files
+    - retrieve files_rec
     - remove "Setorista" column, when logger_user is not adm
     - received_file_mgmt v1.0
 
@@ -1086,29 +1037,67 @@ TODO:
     » Create authentication template
     » After login display new "window", import?
 
----------------------------------- Typical Flask
 
-my_flask_app/
-    app.py
-    config.py
-    requirements.txt
-    .gitignore
-    app/
-        __init__.py
-        models.py
-        routes.py
-        utils.py
-        forms.py
-        extensions.py
-    static/
-        css/
-        js/
-        img/
-    templates/
-        base.html.j2
-        index.html
-        ...
-uploaded_files/
-    file1.txt
-    file2.jpg
+# Historical TODO: fix 2025.03.19 (one year later)
+TODO:
+
+    # TODO do a Proxy func for sep
+    - [Nenhum] to ui_texts
+    - Menu to DB
+    - sep_edit detected if form's input changed (don't update)
+    - mudar erro 500
+    - Menu responsive
+    - remove pixel.css (simply css's)
+
+
+    Todo:
+        - schema/sep management
+        - err_code <- grid_constants
+        - fix data_validate html/css
+        - add_msg_fatal template
+
+
+
+    2024-09-
+        a. β 2.17
+        b. sent email with errors
+        c. replace db_helper.persist_record with Users.update
+        d. if template not ready use Error Template
+        e. Always send Success & Error message to forms, if error -> alert -> close -> [!] -> display again
+        f. Standardize css class names as my-class-name
+        0. About title
+        1. β 2.17
+        2. Set User Name in e-mail
+        3. Wait for process on forms.
+        4. Require actual/current pw to be able to change pw, changepassword user `timer`
+        5. Install on Windows server with Hunspell
+        6. Add exception message to the forms (alert)
+        7. Test error on authentication process: error on start (no Form)
+        7. Avoid user's simultaneous validation
+        8. <form action="{{ url_for('handle_click') }}" method="post/get"><button type="submit">Go to Other Location</button></form> instead of href=
+        9. β 2.17
+        A. User's information UI
+        B. Standardize ui messages with db (eg password_*)
+        C. password_recovery, align left form text
+        D. The recipient of the email must be different from CC (and perhaps from BCC as well)
+        E. β 2.17
+        F. β 2.17
+        G. β 2.11
+        H. try_get_mgd_msg -> create [^|f(msg_code, ar1, arg2)default msg|^] -> search 'msg_code' in ui_texts
+        I. One close button for: document.html.j2, dialog.html.j2, form.html.j2 (2024.11.19)
+        J. PrivateDocs for About (2024.11.19)
+
+
+    ## Small Tasks ##
+        - init_form_vars create a 'error tmpl'
+        - check use o form-main-btn in *.j2
+        - share jinja_cache templates + texts (see route_helper templates_found)
+        - Login Remember not always working
+        - Tmpl for error Internal Error
+        - Display colors
+        - Smart menu (always, modified)
+        - Share form..htm.j2 and document.htm.j2 main button
+
+    ## Possible Bugs ##
+        - Check if logged_user.sep is None (occurring now 2025.06.01)
 

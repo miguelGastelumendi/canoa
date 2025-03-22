@@ -15,10 +15,11 @@ from sqlalchemy.orm import scoped_session
 from .common.Sidekick import Sidekick
 from typing import Optional
 
-# 3 App Global variables
+# 4 App Global variables
 global_sidekick: Optional[Sidekick] = None
 global_login_manager: Optional[LoginManager] = None
 global_sqlalchemy_scoped_session: Optional[scoped_session] = None
+APP_DB_VERSION: str = "?"
 
 """
 'scoped' refers to the management of SQLAlchemy `Session` objects within a specific scope,
@@ -205,9 +206,9 @@ def create_app():
     # is assigned before being used.
 
     # === 1/3 Global sidekick  === #
-    global global_sidekick
+    global global_sidekick, APP_DB_VERSION
     # === Check if all mandatory information is ready === #
-    global_sidekick, display_mute_after_init = ignite_app(APP_NAME, started)
+    global_sidekick, APP_DB_VERSION, display_mute_after_init = ignite_app(APP_NAME, started)
     _info(f"[{global_sidekick}] instance is now ready. It will be available during app's context.")
 
     # == 2/3 Global Scoped SQLAlchemy Session

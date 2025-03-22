@@ -2,7 +2,7 @@
 ----------------------------------
 ./home/ups-page.html.j2
 ----------------------------------
-This is a genric error/exception/ups
+This is a generic error/exception/ups
 display page
 
 Extends:
@@ -12,6 +12,9 @@ mgd 2025-03-05--15
 --------------------------------------- #}
 
 {% set dlg_var_close = False %}
+{% set dlg_var_icon= iconFileUrl %}
+{% set dlg_var_svg= iconSvgUrl %}
+{# see canoa.css #}
 
 {% extends "./layouts/dialog.html.j2" %}
 

@@ -15,7 +15,7 @@ mgd 2025-03-05
 
 # cSpell:ignore
 import inspect
-from typing import Tuple
+from typing import Optional, Tuple
 
 from helpers.hints_helper import UI_Texts
 
@@ -24,22 +24,34 @@ from helpers.hints_helper import UI_Texts
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.html_helper import icon_url
 from ..helpers.route_helper import get_template_name
-from ..helpers.ui_texts_helper import get_section, UITxtKey
 from ..config.local_ui_texts import local_ui_texts, local_form_texts
+from ..helpers.ui_texts_helper import get_section, UITxtKey
+from ..common.app_error_assistant import CanoeStumbled
 
 
 #  --------------------
 def ups_handler(
-    error_code: int, msg_exception: str, logout: bool = False
+    error_code: int, user_msg: str, e: Exception, logout: bool = False
 ) -> Tuple[dict, str, UI_Texts]:
+    from ..common.app_context_vars import logged_user, sidekick
+
     try:
         ui_texts = get_section(f"Ups-{error_code}")
     except:
         ui_texts = local_ui_texts(UITxtKey.Error.no_db_conn)
 
+    if isinstance(e, CanoeStumbled):
+        error_code = e.error_code
+        error_msg = e.msg
+    elif logged_user.is_power if logged_user else False:
+        error_msg = str(e)
+    else:
+        error_msg = None
+
     context_texts = {
+        UITxtKey.Msg.warn: user_msg,
+        UITxtKey.Msg.error: error_msg,
         UITxtKey.Form.msg_only: True,
-        UITxtKey.Msg.exception: msg_exception,
         UITxtKey.Form.icon: icon_url("icons", "ups_handler.svg"),
         UITxtKey.Error.code: error_code,
         UITxtKey.Error.where: inspect.stack()[1].function,
@@ -59,6 +71,10 @@ def ups_handler(
         internal_logout()
 
     ups_template = get_template_name("ups_page", "home")
+
+    sidekick.app_log.error(e)
+    sidekick.app_log.debug(error_msg)
+
     return {}, ups_template, ui_texts
 
 

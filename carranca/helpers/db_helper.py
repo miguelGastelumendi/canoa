@@ -5,15 +5,14 @@ mgd
 Equipe da Canoa -- 2024
 """
 
-# cSpell:ignore psycopg2 sqlalchemy slqaRecords connstr
+# cSpell:ignore sqlalchemy slqaRecords connstr
 
-from datetime import datetime
 from typing import Optional, TypeAlias, Union, Tuple, Dict, List, Any
-from psycopg2 import DatabaseError, OperationalError
+from datetime import datetime
 from sqlalchemy import text, Sequence
+from sqlalchemy.exc import DatabaseError, OperationalError
 
 from .. import global_sqlalchemy_scoped_session
-
 from ..config import BaseConfig
 from .py_helper import is_str_none_or_empty, to_str
 
@@ -154,22 +153,9 @@ def try_get_mgd_msg(error: object, default_msg: str = None) -> str:
         return mgd_message if is_mgd else default_msg
 
 
-def _execute_sql(query: str) -> Any:
-    """Runs an SQL query and returns the result"""
-    result = None
-    if is_str_none_or_empty(query):
-        return result
-
-    _text = text(query)
-    with global_sqlalchemy_scoped_session() as db_session:
-        result = db_session.execute(_text)
-
-    return result
-
-
-def _fetch_rows(func_or_query, *args, **kwargs):
+def db_fetch_rows(func_or_query, *args, **kwargs) -> Tuple[Optional[Exception], Optional[str], Any]:
     """
-    Executes a SQL query or a function with a database session.
+    Executes a SQL query or a function within a database session.
 
     Args:
         func_or_query: A callable function or a SQL query string.
@@ -179,24 +165,31 @@ def _fetch_rows(func_or_query, *args, **kwargs):
     Returns:
         A tuple containing an error (if any) and the result of the query or function.
 
-
     TODO refine this function, test, use CanoeStumble
     """
+
+    def _prep_error(msg: str, e: Exception) -> Tuple[Exception, str]:
+        from ..common.app_context_vars import sidekick
+
+        # TODO LOG to log
+        sidekick.display.error(f"[{func_or_query}]: '{msg}': Error details: {e}.")
+        return e, msg
 
     try:
         with global_sqlalchemy_scoped_session() as db_session:
             if callable(func_or_query):
-                return None, func_or_query(db_session, *args, **kwargs)
+                return None, None, func_or_query(db_session, *args, **kwargs)
             elif isinstance(func_or_query, str):
                 query = text(func_or_query)
-                return None, db_session.execute(query)
+                return None, None, db_session.execute(query)
             else:
-                return "Invalid argument type", None
+                return _prep_error("Invalid argument type", None)
 
     except (OperationalError, DatabaseError) as e:
-        return e, f"Database connection error: {e}"
+        return _prep_error("Database connection error", e)
+
     except Exception as e:
-        return e, f"Error executing SQL function: {e}"
+        return _prep_error("Error executing SQL", e)
 
 
 def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
@@ -219,7 +212,7 @@ def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
     from ..common.app_context_vars import sidekick
 
     try:
-        err, data_rows = _fetch_rows(query)
+        err, _, data_rows = db_fetch_rows(query)
         # TODO:
         if err:
             raise err
@@ -282,7 +275,7 @@ def retrieve_dict(query: str):
     return result.copy()  # there is a very strange error
 
 
-def get_str_field_length(table_model: object, field_name: str) -> str:
+def get_str_field_length(table_model: object, field_name: str) -> int:
     """
     Args:
       table_model: Flask SQLAlchemy Table Model

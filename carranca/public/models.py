@@ -6,12 +6,12 @@ Equipe da Canoa -- 2024
 mgd
 """
 
-# cSpell:ignore nullable sqlalchemy psycopg2 mgmt joinedload
+# cSpell:ignore nullable sqlalchemy mgmt joinedload
 
 from carranca import global_sqlalchemy_scoped_session, global_login_manager
 
 from typing import Any
-from psycopg2 import DatabaseError
+from sqlalchemy.exc import DatabaseError
 
 from sqlalchemy import (
     Column,

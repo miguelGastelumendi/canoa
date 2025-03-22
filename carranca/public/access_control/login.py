@@ -15,7 +15,7 @@ from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
 from ...private.roles_abbr import RolesAbbr
 from ...public.ups_handler import ups_handler
-from ...common.app_error_assistant import CanoeStumbled, ModuleErrorCode
+from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.ui_texts_helper import add_msg_error, add_msg_fatal
 from ...helpers.route_helper import (
     home_route,
@@ -55,12 +55,8 @@ def login():
             task_code += 1  # 7
             user = get_user_where(username_lower=search_for)  # by uname
             task_code += 1  # 8
-            user = (
-                get_user_where(email=search_for) if user is None else user
-            )  # or by email
-            user_role_abbr = (
-                None if user is None else get_user_role_abbr(user.id, user.id_role)
-            )
+            user = get_user_where(email=search_for) if user is None else user  # or by email
+            user_role_abbr = None if user is None else get_user_role_abbr(user.id, user.id_role)
             task_code += 1  # 9
             if not user:
                 task_code += 1  # 10
@@ -101,15 +97,10 @@ def login():
                 task_code += 1  # 20
                 return redirect_to(home_route())
 
-    except CanoeStumbled as cs:
-        tmpl_form, template, ui_texts = ups_handler(cs.error_code, cs.msg, False)
     except Exception as e:
+        error_code = task_code
         msg = add_msg_fatal("errorLogin", ui_texts, task_code)
-        sidekick.app_log.error(e)
-        sidekick.app_log.debug(msg)
-        if logged_in:
-            internal_logout()
-        # TODO if template not ready use Error Template
+        tmpl_form, template, ui_texts = ups_handler(error_code, msg, e, True)
 
     return render_template(
         template,

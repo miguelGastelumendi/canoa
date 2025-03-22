@@ -17,15 +17,16 @@ mgd
 <!-- { BackendMessage -->
 <div class="text-center text-md-center mt-0 mb-3">
     <h6 class="font-weight-normal">
-        {% if msgError %}
-        <div class="alert alert-danger">
-            {{ msgError | safe }}
-        </div>
-        {% endif %}
-
+        {# Warn is only used is ups_handler, to show a 'light error', if user is adm, follows str(e) #}
         {% if msgWarn %}
         <div class="alert alert-warning">
             {{ msgWarn | safe }}
+        </div>
+        {% endif %}
+
+        {% if msgError %}
+        <div class="alert alert-danger">
+            {{ msgError | safe }}
         </div>
         {% endif %}
 

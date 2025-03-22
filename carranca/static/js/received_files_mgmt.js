@@ -37,9 +37,10 @@ const gridOptions = {
         { field: colMeta[1].n, flex: 0, hide: true },
         { field: colMeta[2].n, flex: 0, hide: true },
 
-        { field: colMeta[3].n, headerName: colMeta[3].h, flex: 1, filter: isAdm, hide: !isAdm },
+        //{ field: colMeta[3].n, headerName: colMeta[3].h, flex: 1, filter: isPower, hide: !isPower },
+        { field: colMeta[3].n, headerName: colMeta[3].h, flex: 1, hide: true },
         {
-            field: colMeta[4].n, headerName: colMeta[4].h, flex: 2,
+            field: colMeta[4].n, headerName: colMeta[4].h, flex: 0,
             cellClassRules: {
                 'grd-item-none': params => params.value == itemNone
             },
@@ -55,7 +56,7 @@ const gridOptions = {
         },
         { field: colMeta[6].n, headerName: colMeta[6].h, flex: 1 },
         {
-            field: colMeta[7].n, headerName: colMeta[7].h, flex: 2,
+            field: colMeta[7].n, headerName: colMeta[7].h, flex: 1,
             filter: true,
             valueFormatter: params => (params.value ? new Date(params.value).toLocaleString(dateFormat) : ''),
         },

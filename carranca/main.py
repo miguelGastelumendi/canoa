@@ -6,7 +6,7 @@ main.py
   mgd 2024-10-03
 """
 
-# cSpell:ignore sqlalchemy keepalives psycopg2
+# cSpell:ignore sqlalchemy keepalives
 
 import time
 from common.app_constants import APP_NAME
@@ -37,7 +37,7 @@ if sidekick.config.APP_DISPLAY_DEBUG_MSG:
 # Tell everybody how quick we are
 elapsed = (time.perf_counter() - started) * 1000
 sidekick.display.info(
-    f"{APP_NAME} is now ready for the journey. It took {elapsed:,.0f}ms to create and initialize it."
+    f"{APP_NAME} is now ready for the journey. It took {elapsed:,.0f} ms to create and initialize it."
 )
 
 # -------------------------------------------

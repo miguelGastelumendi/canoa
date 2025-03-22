@@ -29,7 +29,7 @@ const formEdit = /** @type {string} */ '';
 const formCantEdit = /** @type {string} */ '';
 
 // received_files_mgmt.js
-const isAdm = /** @type {bool} */ false;
+const isPower = /** @type {bool} */ false;
 const defButtons = () => {
     return [
         /** @type {!HTMLButtonElement} */ (/** @type {unknown} */ (null)),

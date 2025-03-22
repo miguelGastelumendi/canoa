@@ -1,11 +1,11 @@
 """
- Equipe da Canoa -- 2024
+Equipe da Canoa -- 2024
 
- Simple colored print to screen
+Simple colored print to screen
 
- mgd 2024-09-27,10-11,12-05
+mgd 2024-09-27,10-11,12-05
 
- """
+"""
 
 # cSpell:ignore colorfy
 
@@ -55,6 +55,8 @@ class Display:
         WARN = 4
         ERROR = 5
         DEBUG = 6
+
+    #  EXCEPT = 7 # todo, call
 
     # https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
     def code(color_code: int):

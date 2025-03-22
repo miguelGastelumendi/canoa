@@ -10,6 +10,7 @@ mgd 2024-04-03
 
 # cSpell:ignore getDictResultset connstr adaptabrasil
 
+from typing import Optional
 from flask_login import current_user
 
 from .pw_helper import is_someone_logged
@@ -32,14 +33,15 @@ class UITxtKey:
         warn = "msgWarn"
         error = "msgError"
         success = "msgSuccess"
-        exception = "msgException"
+
+    # TODO   exception = "msgException"
 
     class Page:
         title = "pageTitle"
 
-    class Form:
+    class Form:  # & dialog
         title = "formTitle"
-        icon = "iconFileUrl"
+        icon = "iconFileUrl"  # url of an png/svg icon dlg_var_icon = iconFileUrl, dlg_var_icon_id
         date_format = "user_date_format"
         # display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
         msg_only = "msgOnly"
@@ -54,7 +56,7 @@ class UITxtKey:
 
 # === File class/var = ========================
 class MsgNotFound:
-    cache = None
+    cache: Optional[str] = None
     default = "Message '{0}' (not registered §: {1})"
 
 
@@ -74,11 +76,11 @@ def ui_texts_locale() -> str:
 
 
 # === local def ===========================================
-def __get_ui_texts_query(cols: str, section: str, item: str = None):
+def __get_ui_texts_query(cols: str, section: str, item: Optional[str] = None):
     # returns Select query for the current locale, section and, eventually, for only one item
     # use SQL lower(item) better than item.lower (use db locale)
     item_filter = "" if item is None else f" and (item_lower = lower('{item}'))"
-    
+
     # ** /!\ ******************************************************************
     #  don't use <schema>.table_name. Must set
     #  ALTER ROLE canoa_connstr IN DATABASE adaptabrasil SET search_path=canoa;
@@ -176,7 +178,7 @@ def get_section(section_name: str) -> UI_Texts:
     returns a UI_Texts of the 'section_name' from table
     """
     if is_str_none_or_empty(section_name):
-        items = {}
+        items: UI_Texts = {}
     else:
         query = __get_ui_texts_query("item, text", section_name)
         items = _get_result_set(query)
@@ -206,7 +208,7 @@ def get_text(item: str, section: str, default: str = None) -> str:
     return text
 
 
-def add_msg_error(item: str, texts: UI_Texts = None, *args) -> str:
+def add_msg_error(item: str, texts: UI_Texts = {}, *args) -> str:
     """
     returns text for the [item/'sec_Error'] pair
     and adds pair to texts => texts.add( text, 'msgError')
@@ -214,7 +216,7 @@ def add_msg_error(item: str, texts: UI_Texts = None, *args) -> str:
     return _add_msg(item, DB_SECTION_ERROR, UITxtKey.Msg.error, texts, *args)
 
 
-def add_msg_fatal(item: str, texts: UI_Texts = None, *args) -> str:
+def add_msg_fatal(item: str, texts: UI_Texts = {}, *args) -> str:
     """
     Same as add_msg_error, but just displays the message (msg_only)
     """

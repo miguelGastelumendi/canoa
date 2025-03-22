@@ -90,13 +90,19 @@ body {
 
 .dlg-body {
     background-color: var(--bodyBackColor);
-
 }
 
 .dlg-footer {
     background-color: var(--footerBackColor);
-
 }
+
+
+/* dialog ids */
+#dlg-var-svg-id {
+    fill: var(--buttonBackColor, red);
+}
+
+
 
 /* ============================================
  *  carranca\templates\layouts\grid.html.j2
@@ -162,7 +168,14 @@ body {
     color: var(--buttonTextColor);
     font-size: 1.1rem;
     min-width: 8em;
+}
 
+.form-main-btn {
+    background-color: var(--buttonBackColor);
+    border: none;
+    color: var(--buttonTextColor);
+    font-size: 1.1rem;
+    min-width: 8em;
 }
 
 .form-main-btn:hover {

@@ -14,9 +14,10 @@ mgd
 import os
 from zlib import crc32
 
-from ...common.app_context_vars import sidekick
 from ...helpers.py_helper import OS_IS_WINDOWS
 from ...helpers.user_helper import now
+from ...private.received_files.constants import FILE_ORIGIN_CLOUD, FILE_ORIGIN_LOCAL
+from ...common.app_context_vars import sidekick
 from ...common.app_error_assistant import ModuleErrorCode
 from ..models import UserDataFiles
 
@@ -25,9 +26,7 @@ from .Cargo import Cargo
 
 def register(cargo: Cargo, file_data: object | str) -> Cargo:
 
-    def _save_uploaded_file_locally(
-        full_name: str, file_obj: object
-    ) -> tuple[int, int]:
+    def _save_uploaded_file_locally(full_name: str, file_obj: object) -> tuple[int, int]:
         """saves on local disk the uploaded file"""
         # create the uploaded_file, from file_obj
         with open(full_name, "wb") as file:
@@ -65,16 +64,14 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         UserDataFiles.insert(
             user_dataFiles_key,
             id_users=cargo.user.id,
-            id_sep=(
-                None if cargo.user.sep is None else cargo.user.sep.id
-            ),  # this is an FK
+            id_sep=(None if cargo.user.sep is None else cargo.user.sep.id),  # this is an FK
             user_receipt=cargo.pd.user_receipt,
             app_version=cargo.app_version,
             process_version=cargo.process_version,
             # file info
             file_crc32=file_crc32,
             file_name=cargo.pd.received_file_name,
-            file_origin="L" if cargo.pd.file_was_uploaded else "C",  # Local | Cloud
+            file_origin=FILE_ORIGIN_LOCAL if cargo.pd.file_was_uploaded else FILE_ORIGIN_CLOUD,
             file_size=file_size,
             from_os="W" if OS_IS_WINDOWS else "L",  # Linux
             original_name=cargo.pd.received_original_name,
@@ -89,9 +86,7 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         # so process.end knows what to do (update or skip)
         file_registered = cargo.file_registered(user_dataFiles_key)
         task_code = 0  # very important!
-        sidekick.display.info(
-            "register: The file information was inserted into the database."
-        )
+        sidekick.display.info("register: The file information was inserted into the database.")
     except Exception as e:
         task_code += 10
         msg_exception = str(e)
@@ -103,9 +98,7 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         sidekick.app_log.fatal(f"{msg_fatal}{msg_deleted}. Error: [{msg_exception}].")
 
     # goto module unzip
-    error_code = (
-        0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_REGISTER.value + task_code
-    )
+    error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_REGISTER.value + task_code
     return cargo.update(error_code, "", msg_exception, {}, {})
 
 

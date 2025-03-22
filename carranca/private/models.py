@@ -9,19 +9,18 @@ Equipe da Canoa -- 2024
 
 # Equipe da Canoa -- 2024
 #
-# cSpell:ignore: nullable psycopg2 sqlalchemy sessionmaker mgmt
+# cSpell:ignore: nullable sqlalchemy sessionmaker mgmt
 
 from typing import Optional, Tuple
-from psycopg2 import DatabaseError, OperationalError
-from sqlalchemy import and_, select
-from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text
-from sqlalchemy.orm import defer, Session as SQLAlchemySession, declarative_base
+from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text, select, and_
+from sqlalchemy.exc import DatabaseError, OperationalError
+from sqlalchemy.orm import defer, Session as SQLAlchemySession, declarative_base, scoped_session
 
 from .. import global_sqlalchemy_scoped_session
 
 from .SepIconConfig import SepIconConfig, SvgContent
 from ..common.app_context_vars import sidekick
-from ..helpers.db_helper import DBRecords
+from ..helpers.db_helper import DBRecords, db_fetch_rows
 from ..helpers.py_helper import is_str_none_or_empty
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
@@ -201,20 +200,15 @@ class MgmtUserSep(Base):
         3) Error message if any action fails.
         """
 
-        users_sep: DBRecords = None
-        sep_list: DBRecords = None
-        msg_error = None
-        with global_sqlalchemy_scoped_session() as db_session:
-            try:
-                mus_recs = db_session.scalars(select(MgmtUserSep)).all()
-                users_sep = DBRecords(MgmtUserSep.__tablename__, mus_recs)
+        def _get_list(db_session: scoped_session):
+            mus_recs = db_session.scalars(select(MgmtUserSep)).all()
+            users_sep = DBRecords(MgmtUserSep.__tablename__, mus_recs)
 
-                ssep_recs = db_session.scalars(select(SchemaSEP)).all()
-                sep_list = DBRecords(SchemaSEP.__tablename__, ssep_recs)
+            ssep_recs = db_session.scalars(select(SchemaSEP)).all()
+            sep_list = DBRecords(SchemaSEP.__tablename__, ssep_recs)
+            return users_sep, sep_list
 
-            except Exception as e:
-                msg_error = str(e)
-                sidekick.display.error(msg_error)
+        _, msg_error, users_sep, sep_list = db_fetch_rows(_get_list)
 
         return users_sep, sep_list, msg_error
 
@@ -245,7 +239,7 @@ class SchemaSEP(Base):
     """
     SchemaSEP is app's interface for the
     DB view `vw_scm_sep` that provides a couple of
-    columns .
+    columns
     """
 
     __tablename__ = "vw_scm_sep"
@@ -379,42 +373,79 @@ class ReceivedFiles(Base):
     had_reception_error = Column(Boolean)  # index (email_sent, had_reception_error, user_id, registered_at)
 
     @staticmethod
-    def get_user_records(
+    def get_records(
         id: int, user_id: int, email_sent: bool = True, had_reception_error: bool = False
     ) -> DBRecords:
-        received_files = None
-        msg_error = ""
-        with global_sqlalchemy_scoped_session() as db_session:
-            try:
-                """----------------------------------------------
-                /!\ Attention
-                -------------------------------------------------
-                    There is an index on the underlying table
-                    (email_sent, had_reception_error, user_id, registered_at)
-                    so if you are going change the where clause, be sure
-                    to include these fields.
-                """
-                if id is not None:
-                    stmt = select(ReceivedFiles).where(ReceivedFiles.id == id)
-                else:
-                    stmt = select(ReceivedFiles).where(
-                        and_(
-                            ReceivedFiles.email_sent == email_sent,
-                            ReceivedFiles.had_reception_error == had_reception_error,
-                        )
-                    )
-                    if user_id is not None:
-                        stmt = stmt.where(ReceivedFiles.user_id == user_id)
 
-                rows = db_session.scalars(stmt).all()
-                received_files = DBRecords(ReceivedFiles.__tablename__, rows)
-            except Exception as e:
-                msg_error = (
-                    f"Cannot load records from {ReceivedFiles.__tablename__}.where = {stmt} | Error {e}."
+        def _get_records(db_session: scoped_session) -> DBRecords:
+            """----------------------------------------------
+            /!\ Attention
+            -------------------------------------------------
+                There is an index on the underlying table
+                (email_sent, had_reception_error, user_id, registered_at)
+                so if you are going change the where clause, be sure
+                to include these fields.
+            """
+            stmt = None
+            if id is not None:
+                stmt = select(ReceivedFiles).where(ReceivedFiles.id == id)
+            else:
+                stmt = select(ReceivedFiles).where(
+                    and_(
+                        ReceivedFiles.email_sent == email_sent,
+                        ReceivedFiles.had_reception_error == had_reception_error,
+                    )
                 )
-                sidekick.app_log.error(msg_error)
+                if user_id is not None:
+                    stmt = stmt.where(ReceivedFiles.user_id == user_id)
+
+            rows = db_session.scalars(stmt).all()
+            records = DBRecords(ReceivedFiles.__tablename__, rows)
+
+            return records
+
+        e, msg_error, received_files = db_fetch_rows(_get_records)
+        if e:  # TODO
+            raise Exception(msg_error)
 
         return received_files
+
+
+# --- Table ---
+class ReceivedFilesCount(Base):
+    """
+    ReceivedFilesCount is app's interface for the
+    DB view `vw_user_data_files_count` that provides the needed
+    information to manage users that have send files
+    """
+
+    __tablename__ = "vw_user_data_files_count"
+
+    user_id = Column("id", Integer, primary_key=True)
+    user_name = Column("username", String(100))
+    user_email = Column("email", String(100))
+    rol_id = Column("id_role", Integer)
+    rol_abbr = Column("abbr", String(3))
+    rol_name = Column("name", String(64))
+    files_count = Column(Integer)
+
+    @staticmethod
+    def get_records(user_id: Optional[int] = None) -> DBRecords:
+        def _get_records(db_session: scoped_session) -> DBRecords:
+            stmt = select(ReceivedFilesCount)
+            if user_id is not None:
+                stmt = stmt.where(ReceivedFilesCount.user_id == user_id)
+
+            rows = db_session.scalars(stmt).all()
+            records = DBRecords(ReceivedFilesCount.__tablename__, rows)
+
+            return records
+
+        e, msg_error, received_files_count = db_fetch_rows(_get_records)
+        if e:  # TODO ups
+            raise Exception(msg_error)
+
+        return received_files_count
 
 
 # eof
