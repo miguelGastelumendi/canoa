@@ -14,7 +14,7 @@ from os import path
 from flask import send_file, abort, request, Response
 
 from .constants import DNLD_R, DNLD_F
-from .fetch_records import fetch_record_s
+from .fetch_records import fetch_record_s, IGNORE_USER
 
 from ...helpers.js_grid_helper import (
     js_grid_sec_key,
@@ -51,7 +51,7 @@ def download_rec() -> Response | None:
         else:
             task_code += 1  # 4
             no_sep = ui_texts["itemNone"]
-            received_files, download_file_name, report_ext = fetch_record_s(no_sep, rec_id)
+            received_files, download_file_name, report_ext = fetch_record_s(no_sep, rec_id, IGNORE_USER)
             if rec_type == DNLD_R:
                 download_file_name = change_file_ext(download_file_name, report_ext)
 

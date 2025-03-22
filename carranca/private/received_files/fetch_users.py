@@ -31,18 +31,6 @@ def fetch_user_s(user_id: int = None) -> DBRecords:
 
     received_files_count = ReceivedFilesCount.get_records(user_id)
     received_rows = DBRecords(received_files_count.table_name, received_files_count)
-    # if received_files_count:
-    #     for record in received_files_count:
-    #         row = {
-    #             "user_id": record.user_id,
-    #             "user_name": record.user_name,
-    #             "user_email": record.user_email,
-    #             "rol_id": record.rol_id,
-    #             "rol_name": record.rol_name,
-    #             "rol_abbr": record.rol_abbr,
-    #             "files_count": record.files_count,
-    #         }
-    #         received_rows.append(row)
 
     return received_rows
 

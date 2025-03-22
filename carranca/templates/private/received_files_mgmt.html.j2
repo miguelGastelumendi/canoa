@@ -32,11 +32,8 @@ mgd
 <div class="mb-3 row">
     {% if users_list %}
     <div class="col-auto">
-        <select id="sel{{grid_id}}" class="form-control form-select" style="{{sel_width}}"
-            onchange="filterGrid('{{grid_id}}')">
-            {% for item in users_list %}
-            <option value="{{item}}">{{item}}</option>
-            {% endfor %}
+        <select id="{{sel_id}}" class="form-control form-select" style="{{sel_width}}" {% for code, name in
+            users_list%}<option value="{{code}}">{{name}}</option>{% endfor %}
         </select>
     </div>
     {% endif %}
@@ -81,6 +78,14 @@ mgd
             document.getElementById('{{grid_submit_id}}').submit();
         }
     }
+
+    document.getElementById('{{sel_id}}').addEventListener('change', function() {
+        const userId = this.value;
+    const href = '{{ private_route('received_files_mgmt') }}?id=' + userId;
+    window.location.href = href}
+    )
+
+
 </script>
 <script src='{{static_route("js/received_files_mgmt.js")}}'></script>
 {% endblock dlg_blc_javascript %}

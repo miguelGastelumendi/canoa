@@ -20,6 +20,7 @@ window.addEventListener('beforeunload', (event) => {
 
 });
 
+
 //-------------
 // == Basic Grid
 const gridOptions = {

@@ -9,7 +9,7 @@
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
 
-------- 2025 - March -------------
+------- 2025 - April -------------
 ----------------------------------
     sidekick:
         - log to file
@@ -20,14 +20,16 @@
 ------- 2025 - March -------------
 ----------------------------------
 
+2025-03-22 β 3.66 received_files_mgmt for adm v2
+    - ready to test
 
-2025-03-19-20--21 β 3.65 received_files_mgmt for adm v1
+2025-03-19---21 β 3.65 received_files_mgmt for adm v1
     - Refactor received_files_mgmt.py for the adm user
     - New vw_user_data_files_count with users to manage
     - select number from db_version order by id desc limit 1
     - New user attribute (is_power) to test adm privileges while debugging:
          user.is_power =
-            (self.role_abbr == RolesAbbr.Suporte.value) and sidekick.debugging)
+            ((self.role_abbr == RolesAbbr.Suporte.value) and sidekick.debugging)
             or
             is_adm
     - Set Select users in received_files_mgmt.html

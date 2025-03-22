@@ -8,7 +8,7 @@ mgd 2025-01-14 & 03-18
 """
 
 from os import path
-from typing import Tuple
+from typing import Tuple, Optional
 from ..models import ReceivedFiles
 from ...common.app_context_vars import logged_user
 from ...config.ValidateProcessConfig import ValidateProcessConfig
@@ -17,26 +17,27 @@ from ...helpers.db_helper import DBRecords
 from ...helpers.user_helper import UserFolders
 from ...helpers.file_helper import change_file_ext
 
+ALL_RECS = None
+IGNORE_USER = None
 
-def fetch_record_s(no_sep: str, rec_id: int = None, user_id: int = None) -> Tuple[DBRecords, str, str]:
+
+def fetch_record_s(
+    no_sep: str, rec_id: int = ALL_RECS, user_id: int = IGNORE_USER
+) -> Tuple[DBRecords, str, str]:
     """Fetch received files records from the view vw_user_data_files
 
     no_sep: str: text to show when the record has an empty SEP
     rec_id: int | None: record id to fetch or None
             When rec_id is:
-                - None, fetch all records for the user (user_id or logged_user)
+                - ALL_RECS(None), fetch all records for the user with user_id
                 - has value, ignore user_id and fetch the record with the given id & return file full_name too
-    user_id: int | None user id to fetch records for
-            When user_id:
-                - None, fetch records for the logged user
+    user_id: int  user id to fetch records for
+
     return: DBRecords: records fetched and the last record's file full_name
 
     """
 
-    if user_id is None:
-        user_id = logged_user.id if logged_user else None
-
-    if rec_id is None and user_id is None:
+    if rec_id is ALL_RECS and user_id is IGNORE_USER:
         return DBRecords(), None, None
 
     received_files = ReceivedFiles.get_records(id=rec_id, user_id=user_id)

@@ -8,9 +8,8 @@ mgd
 """
 
 # cSpell: ignore werkzeug wtforms tmpl mgmt
-
-from flask import Blueprint, render_template
-from flask_login import login_required
+from flask import Blueprint, render_template, request
+from flask_login import login_required, current_user
 
 from ..helpers.pw_helper import internal_logout, nobody_is_logged
 from ..helpers.route_helper import (
@@ -20,7 +19,6 @@ from ..helpers.route_helper import (
     login_route,
     redirect_to,
 )
-
 
 # === module variables ====================================
 bp_private = Blueprint(bp_name(base_route_private), base_route_private, url_prefix="")
@@ -128,19 +126,27 @@ def received_files_mgmt():
     Through this route, the user gets a grid that allows
     him to manage and download the files he has sent for
     validation.
+
+    When the user is power_user, he can request files from an other user_id
     """
 
     if nobody_is_logged():
         return redirect_to(login_route())
+    # elif id is not None and not logged_user.is_power and id != logged_user.id:
+    #     # only power_user can request other user files
+    #     return redirect_to(login_route())
     else:
+        rid = request.args.get("id", type=int)  # Get 'id' from query parameters
+        id = current_user.id if rid is None else rid
         from .received_files.init_grid import init_grid
 
-        html = init_grid()
+        html = init_grid(id)
+
         return html
 
 
 @login_required
-@bp_private.route("/received_file_download", methods=["GET", "POST"])
+@bp_private.route("/received_file_download", methods=["POST"])
 def received_file_download():
     """
     Through this route, the user request to download one of the files

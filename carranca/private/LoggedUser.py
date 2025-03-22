@@ -49,8 +49,8 @@ class LoggedUser:
             self.code = get_user_code(current_user.id)
             self.folder = get_user_folder(current_user.id)
             self.path = SepIconConfig.local_path
-            self.role_abbr = current_user.role.abbr
-            self.role_name = current_user.role.name
+            self.role_abbr: str = current_user.role.abbr
+            self.role_name: str = current_user.role.name
             self.is_adm: bool = self.role_abbr == RolesAbbr.Admin.value
             self.is_power: bool = self.is_adm or (
                 (self.role_abbr == RolesAbbr.Suporte.value) and sidekick.debugging
