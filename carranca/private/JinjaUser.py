@@ -9,8 +9,8 @@ mgd
 
 # cSpell:ignore
 
-from common.app_constants import APP_LANG
 from .LoggedUser import LoggedUser
+from ..common.app_constants import APP_LANG
 
 
 class JinjaUser:
@@ -25,9 +25,7 @@ class JinjaUser:
             self.name = logged_user.name
         else:
             sidekick.display.debug(f"{self.__class__.__name__} was reset.")
-            self.lang = (
-                APP_LANG  # locale.getdefaultlocale()[0]  # TODO, check if available
-            )
+            self.lang = APP_LANG  # locale.getdefaultlocale()[0]  # TODO, check if available
             self.name = "?"
 
     def __repr__(self):

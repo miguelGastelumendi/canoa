@@ -9,7 +9,7 @@ main.py
 # cSpell:ignore sqlalchemy keepalives
 
 import time
-from common.app_constants import APP_NAME
+from .common.app_constants import APP_NAME
 
 # -------------------------------------------------------
 # Main --------------------------------------------------

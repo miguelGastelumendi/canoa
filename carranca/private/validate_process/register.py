@@ -43,22 +43,25 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         return file_size, file_crc32
 
     error_code = 0
-    task_code = 0
+    task_code = 1
     msg_exception = ""
     file_saved = cargo.pd.file_was_downloaded
     file_registered = False
     work_fname = cargo.pd.working_file_full_name()
     try:
+        task_code += 1  # 2
         register_started_at = now()
         file_size = 0
         file_crc32 = 0
         if cargo.pd.file_was_uploaded:
+            task_code += 1  # 3
             file_size, file_crc32 = _save_uploaded_file_locally(work_fname, file_data)
             file_saved = True
         else:
+            task_code += 2  # 4
             file_size, file_crc32 = _crc_from_downloaded_file(work_fname)
 
-        task_code += 1  # +4
+        task_code = 6  # 6
         # cargo.table_udf_key == (set after insert)
         user_dataFiles_key = cargo.pd.file_ticket
         UserDataFiles.insert(
@@ -81,14 +84,13 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
             c_check_started_at=cargo.check_started_at,
             d_register_started_at=register_started_at,
         )
-        task_code += 1  # +5
+        task_code += 1  # 7
         # After registered, table_udf_key has a value, set in cargo.file_registered
         # so process.end knows what to do (update or skip)
         file_registered = cargo.file_registered(user_dataFiles_key)
-        task_code = 0  # very important!
         sidekick.display.info("register: The file information was inserted into the database.")
     except Exception as e:
-        task_code += 10
+        error_code = ModuleErrorCode.RECEIVE_FILE_REGISTER.value + task_code
         msg_exception = str(e)
         msg_fatal = f"Error registering the file [{cargo.pd.received_file_name}]"
         msg_deleted = ""
@@ -98,7 +100,6 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         sidekick.app_log.fatal(f"{msg_fatal}{msg_deleted}. Error: [{msg_exception}].")
 
     # goto module unzip
-    error_code = 0 if task_code == 0 else ModuleErrorCode.RECEIVE_FILE_REGISTER.value + task_code
     return cargo.update(error_code, "", msg_exception, {}, {})
 
 

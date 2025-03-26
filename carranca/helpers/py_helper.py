@@ -14,7 +14,7 @@ from sys import argv
 from datetime import datetime
 from typing import Any, Type, Tuple, List, Optional
 
-from common.app_constants import APP_NAME
+from ..common.app_constants import APP_NAME
 
 
 # https://docs.python.org/3/library/platform.html#platform.system

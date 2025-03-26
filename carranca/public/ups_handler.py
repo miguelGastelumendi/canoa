@@ -17,12 +17,11 @@ mgd 2025-03-05
 import inspect
 from typing import Optional, Tuple
 
-from helpers.hints_helper import UI_Texts
-
 # TO USE from flask import render_template
 
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.html_helper import icon_url
+from ..helpers.hints_helper import UI_Texts
 from ..helpers.route_helper import get_template_name
 from ..config.local_ui_texts import local_ui_texts, local_form_texts
 from ..helpers.ui_texts_helper import get_section, UI_Texts_Key

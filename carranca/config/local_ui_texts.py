@@ -11,7 +11,7 @@ mgd 2025-03-15
 
 # cSpell:ignore Situación
 
-from helpers.html_helper import icon_url
+from ..helpers.html_helper import icon_url
 from ..helpers.ui_texts_helper import ui_texts_locale, UI_Texts_Key
 
 default_locale = "en"

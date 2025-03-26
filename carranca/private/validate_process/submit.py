@@ -108,7 +108,7 @@ def submit(cargo: Cargo) -> Cargo:
     msg_error = "receiveFileSubmit_error"
     error_code = 0
     msg_exception = ""
-    task_code = 0
+    task_code = 1
     std_out_str = None
     std_err_str = None
     exit_code = 0
@@ -125,7 +125,7 @@ def submit(cargo: Cargo) -> Cargo:
     # )
 
     try:
-        task_code += 1  # 1
+        task_code += 1  # 2
         # shortcuts
         _cfg = cargo.receive_file_cfg
         _path = cargo.pd.path
@@ -134,7 +134,7 @@ def submit(cargo: Cargo) -> Cargo:
         batch_full_name = _path.batch_full_name
         data_validate_path = cargo.pd.path.data_validate
         if not path.isfile(batch_full_name):  # TODO send to check module
-            task_code += 1  # 2
+            task_code += 1  # 3
             raise Exception(f"The `{_cfg.dv_app.ui_name}` module caller [{batch_full_name}] was not found.")
 
         result_ext = _cfg.output_file.ext  # /!\ keep always the same case (all lower)
@@ -142,7 +142,7 @@ def submit(cargo: Cargo) -> Cargo:
         final_report_full_name = path.join(_path_read, final_report_file_name)
 
         try:
-            task_code += 2  # 3
+            task_code = 5  # 5
             std_out_str, std_err_str, exit_code = asyncio.run(
                 run_validator(
                     batch_full_name,
@@ -155,7 +155,7 @@ def submit(cargo: Cargo) -> Cargo:
                     cargo.in_debug_mode,
                 )
             )
-            task_code += 1  # 4
+            task_code += 1  # 6
         except Exception as e:
             msg_exception = str(e)
             raise Exception(e)
@@ -164,27 +164,29 @@ def submit(cargo: Cargo) -> Cargo:
 
         cargo.report_ready_at = now()
 
-        task_code += 1  # 5
+        task_code += 1  # 7
         if not path.exists(final_report_full_name):
-            task_code += 1  # 6
+            task_code += 1  # 8
             raise Exception(
                 f"\n{sidekick.app_name}: Report was not found.\n » {_cfg.dv_app.ui_name}.stderr:\n{std_err_str}\n » {_cfg.dv_app.ui_name}.stdout:\n {std_out_str}\n ExitCode {exit_code}\n » End."
             )
         elif stat(final_report_full_name).st_size < 200:
-            task_code += 2  # 7
-            error_code = task_code
+            task_code += 2  # 9
+            raise Exception(
+                f"\n{sidekick.app_name}: Report has an invalid size = {stat(final_report_full_name).st_size}b."
+            )
         else:
             # copy the final_report file to the same folder and
             # with the same name as the uploaded file,
             # But with extension `result_ext`
             #  (important so later the file can be found):
             user_report_full_name = change_file_ext(cargo.pd.working_file_full_name(), result_ext)
-            task_code += 3  # 8
+            task_code += 3  # 10
             shutil.move(final_report_full_name, user_report_full_name)
-            task_code += 1  # 9
+            task_code += 1  # 11
             error_code = 0 if path.exists(user_report_full_name) else task_code
     except Exception as e:
-        error_code = task_code
+        error_code = task_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT.value
         msg_exception = str(e)
         sidekick.app_log.fatal(msg_exception, exc_info=error_code)
     finally:
@@ -205,7 +207,6 @@ def submit(cargo: Cargo) -> Cargo:
             sidekick.app_log.warning("The communication folders between apps were *not* deleted.")
 
     # goto email.py
-    error_code = 0 if (error_code == 0) else error_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT.value
     if error_code == 0:
         sidekick.display.info(
             f"submit: The unzipped files were submitted to '{_cfg.dv_app.ui_name}' and a report was generated."
