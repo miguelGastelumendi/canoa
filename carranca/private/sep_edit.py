@@ -19,7 +19,7 @@ from ..helpers.route_helper import get_private_form_data
 from ..helpers.route_helper import init_form_vars, get_input_text
 from ..common.app_error_assistant import ModuleErrorCode, CanoeStumbled, did_I_stumbled
 from ..helpers.ui_texts_helper import (
-    UITxtKey,
+    UI_Texts_Key,
     add_msg_success,
     add_msg_error,
     add_msg_fatal,
@@ -43,20 +43,14 @@ def do_sep_edit() -> str:
             try:
                 sep, sep_fullname = MgmtSep.get_sep(logged_user.sep.id)
                 if sep is None or logged_user.sep.id is None:
-                    raise CanoeStumbled(
-                        add_msg_fatal("sepEditNotFound", ui_texts), task_code, True
-                    )
+                    raise CanoeStumbled(add_msg_fatal("sepEditNotFound", ui_texts), task_code, True)
                 task_code += 1  #
-                ui_texts[UITxtKey.Form.icon] = logged_user.sep.icon_url
-                ui_texts[UITxtKey.Msg.info] = ui_texts[UITxtKey.Msg.info].format(
-                    sep_fullname
-                )
+                ui_texts[UI_Texts_Key.Form.icon] = logged_user.sep.icon_url
+                ui_texts[UI_Texts_Key.Msg.info] = ui_texts[UI_Texts_Key.Msg.info].format(sep_fullname)
             except CanoeStumbled:
                 raise
             except Exception:
-                raise CanoeStumbled(
-                    add_msg_fatal("sepEditSelectError", ui_texts), task_code, True
-                )
+                raise CanoeStumbled(add_msg_fatal("sepEditSelectError", ui_texts), task_code, True)
 
             return sep, sep_fullname, task_code
 
@@ -79,11 +73,7 @@ def do_sep_edit() -> str:
             task_code += 3  # 6+3 = 9
             sep.description = get_input_text(tmpl_form.description.name)
             task_code += 1  # 10
-            file_obj = (
-                request.files[tmpl_form.icon_filename.name]
-                if len(request.files) > 0
-                else None
-            )
+            file_obj = request.files[tmpl_form.icon_filename.name] if len(request.files) > 0 else None
             task_code += 1  # 11
             if not file_obj:
                 pass  # and save
@@ -91,9 +81,7 @@ def do_sep_edit() -> str:
                 task_code += 1  # 12
                 sep.icon_original_name = secure_filename(file_obj.filename)
                 task_code += 1  # 13
-                sep.icon_file_name = (
-                    f"{logged_user.code}u-{sep.id:03}sep.{SepIconConfig.ext}"
-                )
+                sep.icon_file_name = f"{logged_user.code}u-{sep.id:03}sep.{SepIconConfig.ext}"
                 sep.icon_uploaded_at = now()
                 task_code += 1  # 14
                 sep.icon_svg = file_obj.read().decode("utf-8")
@@ -103,9 +91,7 @@ def do_sep_edit() -> str:
                 task_code += 7  # 11+7 = 18
                 ext = SepIconConfig.ext.upper()
                 raise CanoeStumbled(
-                    add_msg_error(
-                        "sepEditInvalidFormat", ui_texts, file_obj.filename, ext
-                    ),
+                    add_msg_error("sepEditInvalidFormat", ui_texts, file_obj.filename, ext),
                     task_code,
                     False,
                 )

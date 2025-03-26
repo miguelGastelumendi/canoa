@@ -14,7 +14,7 @@ Equipe da Canoa -- 2024
 from typing import Optional, Tuple
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text, select, and_
 from sqlalchemy.exc import DatabaseError, OperationalError
-from sqlalchemy.orm import defer, Session as SQLAlchemySession, declarative_base, scoped_session
+from sqlalchemy.orm import defer, Session, declarative_base, scoped_session
 
 from .. import global_sqlalchemy_scoped_session
 
@@ -109,10 +109,10 @@ class UserDataFiles(Base):
 
     # Helpers
     @staticmethod
-    def _get_record(session: SQLAlchemySession, uTicket: str):
+    def _get_record(db_session: Session, uTicket: str):
         """gets the record with unique key: uTicket"""
         stmt = select(UserDataFiles).where(UserDataFiles.ticket == uTicket)
-        rows = session.scalars(stmt).all()
+        rows = db_session.scalars(stmt).all()
         if not rows:
             return None
         elif len(rows) == 1:
@@ -125,6 +125,7 @@ class UserDataFiles(Base):
         """insert or update a record with unique key: uTicket"""
         # action: insert/update
         isUpdate = not isInsert
+        db_session: Session
         with global_sqlalchemy_scoped_session() as db_session:
             try:
                 # if update, fetch existing record
@@ -200,7 +201,7 @@ class MgmtUserSep(Base):
         3) Error message if any action fails.
         """
 
-        def _get_list(db_session: scoped_session):
+        def _get_list(db_session: Session):
             mus_recs = db_session.scalars(select(MgmtUserSep)).all()
             users_sep = DBRecords(MgmtUserSep.__tablename__, mus_recs)
 
@@ -208,7 +209,10 @@ class MgmtUserSep(Base):
             sep_list = DBRecords(SchemaSEP.__tablename__, ssep_recs)
             return users_sep, sep_list
 
-        _, msg_error, users_sep, sep_list = db_fetch_rows(_get_list)
+        e, msg_error, [users_sep, sep_list] = db_fetch_rows(_get_list)
+        # TODO, check all db_fetch_rows (or raise an error)
+        if e is not None:
+            raise e
 
         return users_sep, sep_list, msg_error
 
@@ -280,6 +284,7 @@ class MgmtSep(Base):
 
         sep: Optional[MgmtSep] = None
         sep_fullname: Optional[str] = None
+        db_session: Session
         with global_sqlalchemy_scoped_session() as db_session:
             try:
                 # This block send as a function? (with an Exception msg)
@@ -304,6 +309,7 @@ class MgmtSep(Base):
 
         sep = None
         icon_content: SvgContent = None
+        db_session: Session
         with global_sqlalchemy_scoped_session() as db_session:
             try:
                 stmt = select(MgmtSep).where(MgmtSep.id == id)
@@ -324,6 +330,7 @@ class MgmtSep(Base):
         from ..common.app_context_vars import sidekick
 
         done = False
+        db_session: Session
         with global_sqlalchemy_scoped_session() as db_session:
             try:
                 db_session.add(sep)
@@ -377,7 +384,7 @@ class ReceivedFiles(Base):
         id: int, user_id: int, email_sent: bool = True, had_reception_error: bool = False
     ) -> DBRecords:
 
-        def _get_records(db_session: scoped_session) -> DBRecords:
+        def _get_records(db_session: Session) -> DBRecords:
             """----------------------------------------------
             /!\ Attention
             -------------------------------------------------
@@ -431,7 +438,7 @@ class ReceivedFilesCount(Base):
 
     @staticmethod
     def get_records(user_id: Optional[int] = None) -> DBRecords:
-        def _get_records(db_session: scoped_session) -> DBRecords:
+        def _get_records(db_session: Session) -> DBRecords:
             stmt = select(ReceivedFilesCount)
             if user_id is not None:
                 stmt = stmt.where(ReceivedFilesCount.user_id == user_id)

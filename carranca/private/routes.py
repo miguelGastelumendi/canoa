@@ -132,11 +132,8 @@ def received_files_mgmt():
 
     if nobody_is_logged():
         return redirect_to(login_route())
-    # elif id is not None and not logged_user.is_power and id != logged_user.id:
-    #     # only power_user can request other user files
-    #     return redirect_to(login_route())
     else:
-        rid = request.args.get("id", type=int)  # Get 'id' from query parameters
+        rid = request.args.get("id", type=int)  # Get 'id' from Request
         id = current_user.id if rid is None else rid
         from .received_files.init_grid import init_grid
 

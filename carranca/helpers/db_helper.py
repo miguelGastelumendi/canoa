@@ -7,10 +7,12 @@ Equipe da Canoa -- 2024
 
 # cSpell:ignore sqlalchemy slqaRecords connstr
 
-from typing import Optional, TypeAlias, Union, Tuple, Dict, List, Any
+from typing import Optional, TypeAlias, Union, Tuple, Dict, List, Any, Callable
 from datetime import datetime
 from sqlalchemy import text, Sequence
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import DatabaseError, OperationalError
+from sqlalchemy.engine import CursorResult
 
 from .. import global_sqlalchemy_scoped_session
 from ..config import BaseConfig
@@ -153,7 +155,9 @@ def try_get_mgd_msg(error: object, default_msg: str = None) -> str:
         return mgd_message if is_mgd else default_msg
 
 
-def db_fetch_rows(func_or_query, *args, **kwargs) -> Tuple[Optional[Exception], Optional[str], Any]:
+def db_fetch_rows(
+    func_or_query: str | Callable[[Session, Any], Any], *args, **kwargs
+) -> Tuple[Optional[Exception], Optional[str], Tuple[Any, ...] | CursorResult]:
     """
     Executes a SQL query or a function within a database session.
 
@@ -163,33 +167,44 @@ def db_fetch_rows(func_or_query, *args, **kwargs) -> Tuple[Optional[Exception], 
         **kwargs: Additional keyword arguments to pass to the function.
 
     Returns:
+        A tuple containing:
+            - An error (if any)
+            - A message
+            - Returns, if type of func_or_query is
+                callable: A tuple of unknown size
+                str: CursorResult
+
         A tuple containing an error (if any) and the result of the query or function.
 
-    TODO refine this function, test, use CanoeStumble
     """
 
-    def _prep_error(msg: str, e: Exception) -> Tuple[Exception, str]:
+    def _prep_error(e: Exception, msg: str) -> Tuple[Exception, str, Tuple[None]]:
         from ..common.app_context_vars import sidekick
 
         # TODO LOG to log
         sidekick.display.error(f"[{func_or_query}]: '{msg}': Error details: {e}.")
-        return e, msg
+        return e, msg, (None,)
 
     try:
+        db_session: Session
         with global_sqlalchemy_scoped_session() as db_session:
             if callable(func_or_query):
-                return None, None, func_or_query(db_session, *args, **kwargs)
+                returned = func_or_query(db_session, *args, **kwargs)
+                return None, None, returned
             elif isinstance(func_or_query, str):
                 query = text(func_or_query)
-                return None, None, db_session.execute(query)
+                cursor: CursorResult = db_session.execute(query)
+                return None, None, cursor
             else:
-                return _prep_error("Invalid argument type", None)
-
+                return _prep_error(
+                    TypeError(f"Invalid argument type in {__name__}"),
+                    f"[{func_or_query}]: is not callable nor str.",
+                )
     except (OperationalError, DatabaseError) as e:
-        return _prep_error("Database connection error", e)
+        return _prep_error(e, "Database connection error")
 
     except Exception as e:
-        return _prep_error("Error executing SQL", e)
+        return _prep_error(e, "Error executing SQL")
 
 
 def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
@@ -212,12 +227,12 @@ def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
     from ..common.app_context_vars import sidekick
 
     try:
-        err, _, data_rows = db_fetch_rows(query)
+        err, _, data_cursor = db_fetch_rows(query)
         # TODO:
         if err:
             raise err
 
-        rows = data_rows.fetchall() if data_rows else None
+        rows = data_cursor.fetchall() if data_cursor else None
 
         if not rows:
             return []

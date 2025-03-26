@@ -27,7 +27,7 @@ from ..common.app_error_assistant import CanoeStumbled, ModuleErrorCode, RaiseIf
 #  from ui_texts is loaded ( init_form_vars() )
 
 
-class UITxtKey:
+class UI_Texts_Key:
     class Msg:
         info = "msgInfo"
         warn = "msgWarn"
@@ -184,8 +184,8 @@ def get_section(section_name: str) -> UI_Texts:
         items = _get_result_set(query)
 
         if items:
-            items[UITxtKey.Form.msg_only] = False
-            items[UITxtKey.Form.date_format] = ui_texts_locale()
+            items[UI_Texts_Key.Form.msg_only] = False
+            items[UI_Texts_Key.Form.date_format] = ui_texts_locale()
         elif items is None and RaiseIf.no_ui_texts:
             raise CanoeStumbled("", ModuleErrorCode.UI_TEXTS.value, True)
 
@@ -213,7 +213,7 @@ def add_msg_error(item: str, texts: UI_Texts = {}, *args) -> str:
     returns text for the [item/'sec_Error'] pair
     and adds pair to texts => texts.add( text, 'msgError')
     """
-    return _add_msg(item, DB_SECTION_ERROR, UITxtKey.Msg.error, texts, *args)
+    return _add_msg(item, DB_SECTION_ERROR, UI_Texts_Key.Msg.error, texts, *args)
 
 
 def add_msg_fatal(item: str, texts: UI_Texts = {}, *args) -> str:
@@ -234,8 +234,8 @@ def add_msg_success(item: str, texts: UI_Texts = None, *args) -> str:
     the message (no other form inputs)
 
     """
-    msg = _add_msg(item, DB_SECTION_SUCCESS, UITxtKey.Msg.success, texts, *args)
-    texts[UITxtKey.Form.msg_only] = True
+    msg = _add_msg(item, DB_SECTION_SUCCESS, UI_Texts_Key.Msg.success, texts, *args)
+    texts[UI_Texts_Key.Form.msg_only] = True
     return msg
 
 

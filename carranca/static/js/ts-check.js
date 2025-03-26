@@ -17,6 +17,7 @@ var colMeta = /** @type {Object[]} */[];
 var rowData = /** @type {JSON} */ '';
 var itemNone = /** @type {string} */ '';
 var itemRemove = /** @type {string} */ '';
+var jsData = /** @type {HTMLScriptElement} */ '';
 
 var btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById("myb"));
 var dateFormat = /** @type {string} */ '';

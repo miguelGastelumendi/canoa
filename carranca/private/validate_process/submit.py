@@ -35,7 +35,7 @@ def _store_report_result(
 ):
 
     # -------------------------------------
-    # Expected <{'data_validate': {'version': '0.5.02', 'report': {'errors': 676, 'warnings': 609, 'tests': 31}}}>
+    # Expected <{"data_validate": {"version": "0.5.02", "report": {"errors": 676, "warnings": 609, "tests": 31}}}>
 
     def _local_result(error: str) -> str:
         error_encoded = json.dumps(error)
@@ -46,6 +46,7 @@ def _store_report_result(
     report_errors = None
     report_warns = None
     report_tests = None
+    result = ""
     try:
         if is_str_none_or_empty(stdout_result_pattern):
             result_json_str = _local_result("empty regex pattern")
@@ -54,7 +55,7 @@ def _store_report_result(
         else:
             rd = re.findall(stdout_result_pattern, std_out_str)
             if len(rd) == 0:
-                result_json_str = _local_result(f'no data matched "{stdout_result_pattern}"')
+                result_json_str = _local_result(f"no data matched regex: [{stdout_result_pattern}]")
             else:
                 result_json_str = rd[0][1:-1]
                 result = ""
@@ -73,7 +74,7 @@ def _store_report_result(
                     sidekick.display.warn(_local_result(f"{len(rd)} data matched. Expected only 1."))
 
     except Exception as e:
-        result_json_str = _local_result(f"Extraction error [{e}]")
+        result_json_str = _local_result(f"Extraction error [{e}], result [{result}].")
 
     finally:
         try:

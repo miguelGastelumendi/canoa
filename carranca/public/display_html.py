@@ -22,7 +22,7 @@ from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.html_helper import img_filenames, img_change_src_path
 from ..helpers.jinja_helper import jinja_pre_template
-from ..helpers.ui_texts_helper import get_msg_error, get_section, UITxtKey
+from ..helpers.ui_texts_helper import get_msg_error, get_section, UI_Texts_Key
 from ..common.app_context_vars import sidekick
 
 
@@ -35,15 +35,11 @@ def __prepare_img_files(
     missing_files = html_images.copy()  # missing files from folder, assume all
 
     for file_name in html_images:
-        if is_img_local_path_ready and os.path.exists(
-            os.path.join(img_local_path, file_name)
-        ):
+        if is_img_local_path_ready and os.path.exists(os.path.join(img_local_path, file_name)):
             missing_files.remove(file_name)  # this img is not missing.
 
     if not folder_must_exist(img_local_path):
-        sidekick.app_log.error(
-            f"Cannot create folder [{img_local_path}] to keep the HTML's images."
-        )
+        sidekick.app_log.error(f"Cannot create folder [{img_local_path}] to keep the HTML's images.")
         return False
 
     # folder for images & a list of missing_files, are ready.
@@ -90,10 +86,8 @@ def display_html(docName: str):
 
     ui_texts = get_section(section)
     # must exist
-    ui_texts[UITxtKey.Page.title] = ui_texts.get(
-        UITxtKey.Page.title, "Display Document"
-    )
-    ui_texts[UITxtKey.Form.title] = ui_texts.get(UITxtKey.Form.title, "Document")
+    ui_texts[UI_Texts_Key.Page.title] = ui_texts.get(UI_Texts_Key.Page.title, "Display Document")
+    ui_texts[UI_Texts_Key.Form.title] = ui_texts.get(UI_Texts_Key.Form.title, "Document")
     ui_texts["documentStyle"] = ui_texts.get("documentStyle", "")
 
     # shortcuts

@@ -14,8 +14,10 @@ from flask import redirect, request, url_for
 
 from .py_helper import is_str_none_or_empty, camel_to_snake, to_str
 from .hints_helper import UI_Texts
-from .ui_texts_helper import get_section
+from .ui_texts_helper import UI_Texts_Key
 from ..config import BaseConfig
+
+from .ui_texts_helper import get_section
 
 base_route_private = "private"
 base_route_public = "public"
@@ -125,6 +127,8 @@ def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI
 
     # a section of ui_itens
     ui_texts = get_section(section)
+    if not is_get:
+        ui_texts[UI_Texts_Key.Msg.info] = ""  # only get has info
 
     return template, is_get, ui_texts
 

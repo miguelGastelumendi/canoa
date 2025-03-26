@@ -13,28 +13,28 @@ mgd 2024-10-09, 2025-01-09
 # cSpell: ignore mgmt tmpl samp
 
 import json
-from typing import TypeAlias, Tuple, List
 from flask import render_template, request
-
+from typing import TypeAlias, Tuple, List
+from sqlalchemy.orm import Session
 
 from .models import MgmtUserSep
 from .SepIconConfig import SepIconConfig
 from .sep_icon import icon_prepare_for_html
 
-from ..common.app_context_vars import sidekick
+from ..public.ups_handler import ups_handler
+from ..common.app_error_assistant import ModuleErrorCode
 
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.db_helper import DBRecords, ListOfDBRecords, try_get_mgd_msg
 from ..helpers.user_helper import get_batch_code
 from ..helpers.js_grid_helper import js_grid_constants, js_grid_sec_key, js_grid_rsp, js_grid_sec_value
-from ..common.app_error_assistant import ModuleErrorCode
 from ..helpers.email_helper import RecipientsListStr
 from ..helpers.route_helper import get_private_form_data, init_form_vars
 from ..helpers.hints_helper import UI_Texts
 from ..helpers.ui_texts_helper import (
     add_msg_fatal,
     format_ui_item,
-    UITxtKey,
+    UI_Texts_Key,
 )
 
 # def returns
@@ -61,55 +61,55 @@ def do_sep_mgmt() -> str:
     users_sep: ListOfDBRecords = []
     sep_fullname_list = []
     msg_error: str = None
-    template = ""
+    tmpl = ""
     try:
         task_code += 1  # 1
         template, is_get, ui_texts = get_private_form_data("sepMgmt")
 
         task_code += 1  # 2
-        ui_texts[UITxtKey.Form.icon] = SepIconConfig.set_url(SepIconConfig.none_file)
+        ui_texts[UI_Texts_Key.Form.icon] = SepIconConfig.set_url(SepIconConfig.none_file)
 
         task_code += 1  # 3
         col_names = ["user_id", "file_url", "user_name", "scm_sep_curr", "scm_sep_new", "when"]
-        grid_const, err_code = js_grid_constants(ui_texts["colMetaInfo"], col_names)
-
+        grid_const, _ = js_grid_constants(ui_texts["colMetaInfo"], col_names)
+        users_sep = []
         item_none = "(None)" if is_str_none_or_empty(ui_texts["itemNone"]) else ui_texts["itemNone"]
         if is_get:
             task_code += 1  # 6
-            users_sep, sep_fullname_list, ui_texts[UITxtKey.Msg.error] = sep_data_fetch(item_none)
+            users_sep, sep_fullname_list, ui_texts[UI_Texts_Key.Msg.error] = sep_data_fetch(item_none)
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
+            # TODO: up_handler
             task_code += 2  # 7
-            ui_texts[UITxtKey.Msg.exception] = ui_texts["secKeyViolation"]
+            ui_texts[UI_Texts_Key.Msg.exception] = ui_texts["secKeyViolation"]
             # TODO internal_logout()
         else:
             task_code += 3
             txtGridResponse = request.form.get(js_grid_rsp)
             msg_success, msg_error, task_code = _save_and_email(txtGridResponse, ui_texts, task_code)
             task_code += 1
-            users_sep, sep_fullname_list, msg_error_read = sep_data_fetch(item_none)
+            _, _, users_sep, sep_fullname_list, msg_error_read = sep_data_fetch(item_none)
             if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
-                ui_texts[UITxtKey.Msg.success] = msg_success
+                ui_texts[UI_Texts_Key.Msg.success] = msg_success
             elif is_str_none_or_empty(msg_error):
-                ui_texts[UITxtKey.Msg.error] = msg_error_read
+                ui_texts[UI_Texts_Key.Msg.error] = msg_error_read
             else:
-                ui_texts[UITxtKey.Msg.error] = try_get_mgd_msg(
+                ui_texts[UI_Texts_Key.Msg.error] = try_get_mgd_msg(
                     msg_error, ui_texts["saveError"].format(task_code)
                 )
 
+        tmpl = render_template(
+            template,
+            usersSep=users_sep.to_json(),
+            sepList=sep_fullname_list,
+            **grid_const,
+            **ui_texts,
+        )
+
     except Exception as e:
         msg = add_msg_fatal("gridException", ui_texts, task_code)
-        sidekick.app_log.error(e)
-        sidekick.display.error(msg)
+        _, template, ui_texts = ups_handler(task_code, msg, e, False)
+        tmpl = render_template(template, **ui_texts)
 
-        # Todo error with users_sep,,, not ready
-
-    tmpl = render_template(
-        template,
-        usersSep=users_sep.to_json(),
-        sepList=sep_fullname_list,
-        **grid_const,
-        **ui_texts,
-    )
     return tmpl
 
 
@@ -210,6 +210,7 @@ def _save_data_to_db(
     assigned_by = logged_user.id
     user_not_found = []
     task_code += 1
+    db_session: Session
     with global_sqlalchemy_scoped_session() as db_session:
         try:
 
@@ -257,6 +258,7 @@ def _send_email(batch_code: str, ui_texts: UI_Texts, task_code: int) -> def_retu
 
     task_code += 1
     msg_error = None
+    db_session: Session
     with global_sqlalchemy_scoped_session() as db_session:
         try:
             # The users involved in the `batch_code` batch modification.

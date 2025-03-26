@@ -20,7 +20,7 @@ from ..helpers.user_helper import now
 from ..common.app_error_assistant import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data, get_input_text
 from ..helpers.ui_texts_helper import (
-    UITxtKey,
+    UI_Texts_Key,
     add_msg_success,
     add_msg_error,
     add_msg_fatal,
@@ -41,13 +41,13 @@ def receive_file() -> str:
     tmpl_form = ReceiveFileForm(request.form)
 
     def _result():
-        ui_texts[UITxtKey.Form.icon] = None if logged_user.sep is None else logged_user.sep.icon_url
-        sep_fullname = ui_texts["noSEassigned"] if logged_user.sep is None else logged_user.sep.full_name
-        ui_texts[UITxtKey.Msg.info] = ui_texts[UITxtKey.Msg.info].format(sep_fullname)
+        ui_texts[UI_Texts_Key.Form.icon] = None if logged_user.sep is None else logged_user.sep.icon_url
         tmpl = render_template(template, form=tmpl_form, **ui_texts)
         return tmpl
 
     if is_get:
+        sep_fullname = ui_texts["noSEassigned"] if logged_user.sep is None else logged_user.sep.full_name
+        ui_texts[UI_Texts_Key.Msg.info] = ui_texts[UI_Texts_Key.Msg.info].format(sep_fullname)
         return _result()
 
     def _log_error(msg_id: str, code: int, msg: str = "", fatal: bool = False) -> int:
@@ -119,7 +119,7 @@ def receive_file() -> str:
         else:
             task_code += 3  # 14
             # this is a placeholder for the real name (I yet don't know it)
-            # so si.working_file_name() has the correct format to
+            # so pd.working_file_name() has the correct format to
             pd.received_file_name = "{0}"
             download_code, filename, md = download_public_google_file(
                 url_str,

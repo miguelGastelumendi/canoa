@@ -12,6 +12,7 @@ from carranca import global_sqlalchemy_scoped_session, global_login_manager
 
 from typing import Any
 from sqlalchemy.exc import DatabaseError
+from sqlalchemy.orm import Session
 
 from sqlalchemy import (
     Column,
@@ -95,6 +96,7 @@ def get_user_where(**filter: Any) -> User:
     from ..common.app_context_vars import sidekick
 
     user = None
+    db_session: Session
     with global_sqlalchemy_scoped_session() as db_session:
         try:
             # stmt = select(User).filter_by(**filter)

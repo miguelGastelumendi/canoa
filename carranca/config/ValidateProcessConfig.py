@@ -64,7 +64,7 @@ class ValidateProcessConfig:
         self.remove_tmp_files = False  # remove data_validate temporary files from (...data_tunnel\<user_code>\) used in the process [True]
         _debug = ValidateProcessConfig._debug_process  # hard coded debug flag
         self.debug_process = debug if _debug is None else bool(_debug)
-        self.stdout_result_pattern = r"<\{'data_validate':.*?}>"
+        self.stdout_result_pattern = r"<\{\"data_validate\":.*?}>"
 
 
 # eof

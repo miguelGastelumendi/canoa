@@ -2,7 +2,7 @@
  * @preserve
  * sep_mgmt.js
  * version 0.4
- * 2024.10.18 -- 31
+ * 2024.10.18 -- 31, 2025.03
  * Miguel Gastelumendi -- mgd
 */
 // @ts-check
@@ -24,6 +24,8 @@ window.addEventListener('beforeunload', (event) => {
 //-------------
 // == Basic Grid
 const gridOptions = {
+    onFirstDataRendered: () => {
+    },
     onCellFocused: (event) => {
         activeRow = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex);
         if (activeRow) {
@@ -37,8 +39,6 @@ const gridOptions = {
         { field: colMeta[0].n, flex: 0, hide: true },
         { field: colMeta[1].n, flex: 0, hide: true },
         { field: colMeta[2].n, flex: 0, hide: true },
-
-        //{ field: colMeta[3].n, headerName: colMeta[3].h, flex: 1, filter: isPower, hide: !isPower },
         { field: colMeta[3].n, headerName: colMeta[3].h, flex: 1, hide: true },
         {
             field: colMeta[4].n, headerName: colMeta[4].h, flex: 0,

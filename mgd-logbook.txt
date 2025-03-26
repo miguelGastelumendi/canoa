@@ -1,24 +1,44 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
 #spell:ignore venv ccedil atilde receivefile datetime saude mgmt uix
-#spell:ignore Setorista sendgrid linux cnpq
+#spell:ignore Setorista sendgrid linux cnpq ajax
 
+
+
+------------- TODOs -------------
+----------------------------------
+    sidekick:
+        » log to file
+    db:
+        » user_data_files
+            - set elapsed time, no datetime
+            - no column in_debug
+    ui:
+        » wait... background in 5s
+        » Form
+            - if is saving -> set flag not to leave
+            - if [OK] -> disable [OK],[x], etc
+        » Change logout alert to Canoa form
+        » About -> display db version
+        » ajax
+
+
+------- 2025 - April -------------
+----------------------------------
+
+
+------- 2025 - March -------------
+----------------------------------
 
 -----------------------------------------------------------
   Logbook
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
 
-------- 2025 - April -------------
-----------------------------------
-    sidekick:
-        - log to file
-
-
-
-
-------- 2025 - March -------------
-----------------------------------
+2025-03-22 β 3.67 Published
+    - received_files_mgmt for adm ready
+    - Review of all processes.
+    - Published
 
 2025-03-22 β 3.66 received_files_mgmt for adm v2
     - ready to test
