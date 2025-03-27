@@ -13,7 +13,7 @@ import re
 import json
 import shutil
 import asyncio
-from os import path, stat
+from os import path, stat, access, X_OK
 
 from .Cargo import Cargo
 from ..models import UserDataFiles
@@ -21,10 +21,7 @@ from .run_validator import run_validator
 from ...helpers.file_helper import change_file_ext
 from ...common.app_context_vars import sidekick
 from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.py_helper import (
-    is_str_none_or_empty,
-    now,
-)
+from ...helpers.py_helper import is_str_none_or_empty, now, OS_IS_LINUX
 
 
 def _store_report_result(
@@ -133,9 +130,13 @@ def submit(cargo: Cargo) -> Cargo:
         _path_write = cargo.pd.path.data_tunnel_user_write
         batch_full_name = _path.batch_full_name
         data_validate_path = cargo.pd.path.data_validate
+        batch_has_run_permission = True
         if not path.isfile(batch_full_name):  # TODO send to check module
             task_code += 1  # 3
             raise Exception(f"The `{_cfg.dv_app.ui_name}` module caller [{batch_full_name}] was not found.")
+        elif OS_IS_LINUX and not access(batch_full_name, X_OK):
+            batch_has_run_permission = False
+            sidekick.warn(f"Account doesn't have the necessary permissions to execute '{batch_full_name}'.")
 
         result_ext = _cfg.output_file.ext  # /!\ keep always the same case (all lower)
         final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
@@ -168,7 +169,12 @@ def submit(cargo: Cargo) -> Cargo:
         if not path.exists(final_report_full_name):
             task_code += 1  # 8
             raise Exception(
-                f"\n{sidekick.app_name}: Report was not found.\n » {_cfg.dv_app.ui_name}.stderr:\n{std_err_str}\n » {_cfg.dv_app.ui_name}.stdout:\n {std_out_str}\n ExitCode {exit_code}\n » End."
+                f"\n{sidekick.app_name}: Report was not found."
+                + (f"\nCheck `x` permission on {batch_full_name}" if not batch_has_run_permission else "")
+                + f"\n » {_cfg.dv_app.ui_name}.stderr:\n{std_err_str}"
+                + f"\n » {_cfg.dv_app.ui_name}.stdout:\n {std_out_str}"
+                + f"\nExitCode {exit_code}"
+                + f"\nEnd."
             )
         elif stat(final_report_full_name).st_size < 200:
             task_code += 2  # 9
@@ -188,6 +194,7 @@ def submit(cargo: Cargo) -> Cargo:
     except Exception as e:
         error_code = task_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT.value
         msg_exception = str(e)
+        sidekick.error(msg_exception)
         sidekick.app_log.fatal(msg_exception, exc_info=error_code)
     finally:
         _store_report_result(
@@ -204,7 +211,7 @@ def submit(cargo: Cargo) -> Cargo:
                 pass  # leave the files for debugging
 
         except:
-            sidekick.app_log.warning("The communication folders between apps were *not* deleted.")
+            sidekick.app_log.warning("The communication folders contents was *not* deleted.")
 
     # goto email.py
     if error_code == 0:

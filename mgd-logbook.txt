@@ -34,10 +34,14 @@
   Logbook
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
-2025-03-22 β 3.68 Published
-    - Small fixes
 
-2025-03-22 β 3.67 Published
+2025-03-26 β 3.69 Published
+    - Minor fixes for Linux
+
+2025-03-26 β 3.68 Published
+    - Minor fixes Windows
+
+2025-03-26 β 3.67 Published
     - received_files_mgmt for adm ready
     - Review of all processes.
     - Published

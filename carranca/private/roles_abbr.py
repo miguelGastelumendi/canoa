@@ -14,11 +14,11 @@
 from enum import Enum
 
 """
-    carranca\private\models.py Table Role
+    carranca/private/models.py Table Role
     This are import to determine the User's role
         Is he/she the administrator?
         maybe support/coder?
-        
+
 """
 
 
