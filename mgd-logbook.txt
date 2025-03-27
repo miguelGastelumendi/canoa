@@ -35,7 +35,7 @@
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
 
-2025-03-26 β 3.69 Published
+2025-03-26 β 3.69 Published Linux
     - Minor fixes for Linux
 
 2025-03-26 β 3.68 Published
