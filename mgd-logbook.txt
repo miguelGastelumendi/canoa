@@ -34,6 +34,9 @@
 
 ------- 2025 - March -------------
 ----------------------------------
+2025-03-31β 4.1 issue #32 Part 2/3
+    - HTML Layouts have been tested
+    - Unused 'static' files have been removed
 
 -----------------------------------------------------------
   Logbook
@@ -41,8 +44,6 @@
 -----------------------------------------------------------
 2025-03-31β 4.0 issue #32 Part 1/3
     - Substitute pixel.css by plain Bootstrap 5.3.3 (latest)
-
-
 
 2025-03-26 β 3.69 Published Linux
     - Minor fixes for Linux

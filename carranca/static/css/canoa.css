@@ -137,7 +137,6 @@ body {
 .form-label {
     color: var(--labelTextColor);
     font-weight: 500;
-    /* 400 = normal, 700 = bold */
 }
 
 .form-text {

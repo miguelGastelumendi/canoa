@@ -51,14 +51,14 @@ mgd
 <section>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const closeButton = document.('btn-close-id');
-            closeButton.addEventListener('click', => {
+            const closeButton = document.getElementById('btn-close-id');
+            closeButton.addEventListener('click', () => {
                 window.location.href = "{{ public_route('login') }}";
             });
         });
     </script>
     <div id="dlg-main-id" tabindex="-1" style="{{(dlg_var_style|default('display: block;'))|trim}}"
-        class="modal {%+ if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top |default('mt-6')|trim}}{% endif %}"
+        class="modal {% if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top | default('mt-5')|trim}}{% endif %}"
         tabindex="-1">
         <div class="modal-dialog {{ dlg_cls_size|default('')|trim }}
                 {%+ if (dlg_var_v_centered|default(False)) %} modal-dialog-centered {% endif %}
