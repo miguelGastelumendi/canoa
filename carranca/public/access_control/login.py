@@ -34,6 +34,7 @@ def login():
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
     tmpl_form, template, is_get, ui_texts = init_form_vars()
 
+    html = ""  # TODO init
     logged_in = False
     try:
         task_code += 1  # 1
@@ -97,16 +98,22 @@ def login():
                 task_code += 1  # 20
                 return redirect_to(home_route())
 
+        html = render_template(
+            template,
+            form=tmpl_form,
+            **ui_texts,
+        )
     except Exception as e:
         error_code = task_code
         msg = add_msg_fatal("errorLogin", ui_texts, task_code)
         tmpl_form, template, ui_texts = ups_handler(error_code, msg, e, True)
+        html = render_template(
+            template,
+            form=tmpl_form,
+            **ui_texts,
+        )
 
-    return render_template(
-        template,
-        form=tmpl_form,
-        **ui_texts,
-    )
+    return html
 
 
 # eof

@@ -90,6 +90,8 @@ body {
 
 .dlg-body {
     background-color: var(--bodyBackColor);
+    border-bottom-left-radius: var(--bs-modal-inner-border-radius);
+    border-bottom-right-radius: var(--bs-modal-inner-border-radius);
 }
 
 .dlg-footer {
@@ -134,7 +136,8 @@ body {
  * ============================================ */
 .form-label {
     color: var(--labelTextColor);
-    padding: 0 .4em;
+    font-weight: 500;
+    /* 400 = normal, 700 = bold */
 }
 
 .form-text {

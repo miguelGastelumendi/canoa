@@ -49,11 +49,22 @@ mgd
 
 {% block base_blc_content %}
 <section>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeButton = document.('btn-close-id');
+            closeButton.addEventListener('click', => {
+                window.location.href = "{{ public_route('login') }}";
+            });
+        });
+    </script>
     <div id="dlg-main-id" tabindex="-1" style="{{(dlg_var_style|default('display: block;'))|trim}}"
-        class="modal {%+ if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top |default('mt-6')|trim}}{% endif %}">
-        <div
-            class="modal-dialog {{dlg_cls_size|default('')|trim}}{%+ if (dlg_var_v_centered|default(False)) %}modal-dialog-centered{% endif %}{%+ if dlg_var_scroll %}modal-dialog-scrollable{% endif %}{{dlg_cls_dialog|default('')}}">
-            <div class="modal-content{{ dlg_cls_content|default('')|trim }}">
+        class="modal {%+ if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top |default('mt-6')|trim}}{% endif %}"
+        tabindex="-1">
+        <div class="modal-dialog {{ dlg_cls_size|default('')|trim }}
+                {%+ if (dlg_var_v_centered|default(False)) %} modal-dialog-centered {% endif %}
+                {%+ if dlg_var_scroll %} modal-dialog-scrollable {% endif %}
+                {{ dlg_cls_dialog|default('')}} ">
+            <div class="modal-content {{ dlg_cls_content|default('')|trim }}">
                 <div class="modal-header {{ dlg_cls_header|default('dlg-header')|trim }}">
                     <h5 class="modal-title {{ dlg_cls_title|default('dlg-title')|trim }}" inert>
                         {% if dlg_var_icon %}
@@ -62,12 +73,11 @@ mgd
                         {% endif %}
                         {{formTitle|default(app_name)}}
                     </h5>
-                    <form action="{{ public_route('login') }}" method="GET">
-                        <button type="submit" class="btn-close {{ dlg_cls_btn_close | default('') }}"
-                            data-bs-dismiss="modal" {%+ if not (dlg_var_close|default(True)) %}style='display: none;'
-                            {%endif%} aria-label="Close">
-                        </button>
-                    </form>
+                    {% if (dlg_var_close|default(True)) %}
+                    <button id="btn-close-id" class="btn-close {{ dlg_cls_btn_close | default('') }}" type="button"
+                        data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                    {%endif%}
                 </div>
                 <div class="modal-body {{ dlg_cls_body|default('dlg-body') }}">
                     {% block dlg_blc_body %}

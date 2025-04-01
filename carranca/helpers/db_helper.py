@@ -11,8 +11,10 @@ from typing import Optional, TypeAlias, Union, Tuple, Dict, List, Any, Callable
 from datetime import datetime
 from sqlalchemy import text, Sequence
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import DatabaseError, OperationalError
+from sqlalchemy.exc import DatabaseError, OperationalError, ProgrammingError
 from sqlalchemy.engine import CursorResult
+
+from psycopg2.errors import ProgrammingError as psycopg2_ProgrammingError
 
 from .. import global_sqlalchemy_scoped_session
 from ..config import BaseConfig
@@ -182,7 +184,8 @@ def db_fetch_rows(
         from ..common.app_context_vars import sidekick
 
         # TODO LOG to log
-        sidekick.display.error(f"[{func_or_query}]: '{msg}': Error details: {e}.")
+        err_code = f"[{e.code}]" if hasattr(e, "code") else ""
+        sidekick.display.error(f"[{func_or_query}]: '{msg}': Error{err_code} details: {e}.")
         return e, msg, (None,)
 
     try:
@@ -200,11 +203,17 @@ def db_fetch_rows(
                     TypeError(f"Invalid argument type in {__name__}"),
                     f"[{func_or_query}]: is not callable nor str.",
                 )
+    # https://docs.sqlalchemy.org/en/13/errors.html
+    # https://docs.sqlalchemy.org/en/13/errors.html#programmingerror
+    except ProgrammingError as e:
+        return _prep_error(e, "Evaluating the SQL request.")
+
+    # https://docs.sqlalchemy.org/en/13/errors.html#operationalerror
     except (OperationalError, DatabaseError) as e:
-        return _prep_error(e, "Database connection error")
+        return _prep_error(e, "Database connection error.")
 
     except Exception as e:
-        return _prep_error(e, "Error executing SQL")
+        return _prep_error(e, "Error executing SQL.")
 
 
 def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:

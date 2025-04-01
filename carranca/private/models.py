@@ -14,7 +14,9 @@ Equipe da Canoa -- 2024
 from typing import Optional, Tuple
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text, select, and_
 from sqlalchemy.exc import DatabaseError, OperationalError
-from sqlalchemy.orm import defer, Session, declarative_base, scoped_session
+from sqlalchemy.orm import defer, Session, declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
+
 
 from .. import global_sqlalchemy_scoped_session
 
@@ -22,6 +24,7 @@ from .SepIconConfig import SepIconConfig, SvgContent
 from ..common.app_context_vars import sidekick
 from ..helpers.db_helper import DBRecords, db_fetch_rows
 from ..helpers.py_helper import is_str_none_or_empty
+from ..helpers.user_helper import get_user_code
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
 Base = declarative_base()
@@ -435,6 +438,10 @@ class ReceivedFilesCount(Base):
     rol_abbr = Column("abbr", String(3))
     rol_name = Column("name", String(64))
     files_count = Column(Integer)
+
+    @hybrid_property
+    def user_code(self):
+        return get_user_code(self.user_id)
 
     @staticmethod
     def get_records(user_id: Optional[int] = None) -> DBRecords:

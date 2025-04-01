@@ -15,16 +15,21 @@
             - no column in_debug
     ui:
         » wait... background in 5s
+        » Dialog
+            - ups_handler dependes of dialog.html.j2 (if it has error...)
         » Form
             - if is saving -> set flag not to leave
             - if [OK] -> disable [OK],[x], etc
         » Change logout alert to Canoa form
         » About -> display db version
         » ajax
+        » Linux
+            - check no x permission on run_validate Linux
 
 
 ------- 2025 - April -------------
 ----------------------------------
+
 
 
 ------- 2025 - March -------------
@@ -34,6 +39,10 @@
   Logbook
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
+2025-03-31β 4.0 issue #32 Part 1/3
+    - Substitute pixel.css by plain Bootstrap 5.3.3 (latest)
+
+
 
 2025-03-26 β 3.69 Published Linux
     - Minor fixes for Linux
