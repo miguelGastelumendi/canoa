@@ -19,6 +19,7 @@
             - ups_handler dependes of dialog.html.j2 (if it has error...)
         » Form
             - if is saving -> set flag not to leave
+            - save form state, to enable/disable menu
             - if [OK] -> disable [OK],[x], etc
         » Change logout alert to Canoa form
         » About -> display db version
@@ -39,7 +40,10 @@
   Logbook
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
-
+2025-04-01--03 β 4.02 issue #32 Part 3/3a
+    - TODO:
+         finish: __init__.py[_get_app_menu]
+         fix: Mobile size overlap
 
 2025-03-31β 4.01 issue #32 Part 2/3 u
     - HTML Layouts have been tested

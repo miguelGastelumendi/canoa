@@ -19,6 +19,7 @@ from typing import Optional
 global_sidekick: Optional[Sidekick] = None
 global_login_manager: Optional[LoginManager] = None
 global_sqlalchemy_scoped_session: Optional[scoped_session] = None
+global_app_menu: dict = {}
 APP_DB_VERSION: str = "?"
 
 """
@@ -102,7 +103,7 @@ def _register_blueprint_routes(app: Flask):
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
 
-    def get_jinja_user() -> Optional[JinjaUser]:
+    def _get_jinja_user() -> Optional[JinjaUser]:
         juser: JinjaUser = None
         if is_someone_logged():
             # 'import logged_user' only when a user is logged
@@ -112,15 +113,34 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
 
         return juser
 
+    def _get_app_menu() -> dict:
+        global global_app_menu
+        if not global_app_menu:
+            # from helpers.ui_texts_helper import get_menu_texts
+
+            # global_app_menu = get_menu_texts()
+            global_app_menu = {
+                "validate": "Valida&ccedil;&atilde;o",
+                "strategicSector": "Setor Estrat&eacute;gico",
+                "document": "Documentos",
+            }
+
+        return global_app_menu
+
     app.jinja_env.globals.update(
         app_name=app_name,
         app_version=app_version,
         static_route=static_route,
         private_route=private_route,
         public_route=public_route,
-        logged_user=get_jinja_user,
+        logged_user=_get_jinja_user,
+        # app_menu=_get_app_menu,
+        app_menu={
+            "validate": "Valida&ccedil;&atilde;o",
+            "strategicSector": "Setor Estrat&eacute;gico",
+            "document": "Documentos",
+        },
     )
-
     if debugUndefined:
         # Enable DebugUndefined for better error messages in Jinja2 templates
         app.jinja_env.undefined = jinja2.DebugUndefined

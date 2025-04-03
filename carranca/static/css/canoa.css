@@ -50,20 +50,10 @@ body {
 }
 
 /* ============================================
- *  menu.html.j2
+ *  navigator.html.j2
  * ============================================ */
-.nav-button {
-    /* Base styles for all navigation buttons */
-    display: inline-block;
-    white-space: nowrap;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    cursor: pointer;
-    background-color: inherit;
-    /* Inherit background color from parent element */
-    /* Add this to remove default button borders */
-    border: none;
+#navbar-main {
+    background-color: #ffffff7a;
 }
 
 .nav-button-enabled {

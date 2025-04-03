@@ -17,7 +17,7 @@ from .hints_helper import UI_Texts
 from .ui_texts_helper import UI_Texts_Key
 from ..config import BaseConfig
 
-from .ui_texts_helper import get_section
+from .ui_texts_helper import get_form_texts
 
 base_route_private = "private"
 base_route_public = "public"
@@ -126,7 +126,7 @@ def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, UI
     is_get = is_method_get()
 
     # a section of ui_itens
-    ui_texts = get_section(section)
+    ui_texts = get_form_texts(section)
     if not is_get:
         ui_texts[UI_Texts_Key.Msg.info] = ""  # only get has info
 

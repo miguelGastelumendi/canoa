@@ -161,21 +161,21 @@ def format_ui_item(texts: UI_Texts, key: str, *args):
     return result
 
 
-def get_html(section: str) -> UI_Texts:
-    """
-    returns a UI_Texts with the HTML info
-     TODO except for.. not ready, still working...
-    """
-    # imgList = get_text("images", section)
-    # filter if not is_str_none_or_empty(imgList)
-    # select item, text from vw_ui_texts v where v.section_lower = 'html_file' and item not in ('image3.png',  'image4.png')
-    query = __get_ui_texts_query("item, text", section)
-    return _get_result_set(query)
+# def get_html(section: str) -> UI_Texts:
+#     """
+#     returns a UI_Texts with the HTML info
+#      TODO except for.. not ready, still working...
+#     """
+#     # imgList = get_text("images", section)
+#     # filter if not is_str_none_or_empty(imgList)
+#     # select item, text from vw_ui_texts v where v.section_lower = 'html_file' and item not in ('image3.png',  'image4.png')
+#     query = __get_ui_texts_query("item, text", section)
+#     return _get_result_set(query)
 
 
 def get_section(section_name: str) -> UI_Texts:
     """
-    returns a UI_Texts of the 'section_name' from table
+    returns a UI_Texts of the 'section_name' from table vw_ui_texts
     """
     if is_str_none_or_empty(section_name):
         items: UI_Texts = {}
@@ -183,13 +183,22 @@ def get_section(section_name: str) -> UI_Texts:
         query = __get_ui_texts_query("item, text", section_name)
         items = _get_result_set(query)
 
-        if items:
-            items[UI_Texts_Key.Form.msg_only] = False
-            items[UI_Texts_Key.Form.date_format] = ui_texts_locale()
-        elif items is None and RaiseIf.no_ui_texts:
+        if items is None and RaiseIf.no_ui_texts:
             raise CanoeStumbled("", ModuleErrorCode.UI_TEXTS.value, True)
 
-        # texts = process_pre_templates(_texts) # TODO:
+    return items
+
+
+def get_app_menu() -> UI_Texts:
+    return get_section("appMenu")
+
+
+def get_form_texts(section_name: str) -> UI_Texts:
+    items = get_section(section_name)
+    if items:
+        # items = process_pre_templates(items) # TODO:
+        items[UI_Texts_Key.Form.msg_only] = False
+        items[UI_Texts_Key.Form.date_format] = ui_texts_locale()
 
     return items
 

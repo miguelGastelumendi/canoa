@@ -8,109 +8,133 @@ Used by:
 
 mgd
 
-cSpell:ignore nowrap unselectable noopener noreferrer termofuse onclick mgmt Estrat gicos gico sess formul
---------------------------------------- #}
+TODO Selected menu class-> active
 
-{# <nav class="navbar navbar-expand-lg navbar-light bg-light">
+cSpell:ignore unselectable labelledby haspopup noopener noreferrer onclick
+cSpell:ignore semi-words: formul mgmt estrat gicos sess
+--------------------------------------- #}
+<nav id="navbar-main" class="navbar fixed-top navbar-expand-sm shadow-sm px-2">
+    {% set menu_header = app_menu %}
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Navbar</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="navbar-brand">{{app_name}}</div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapsible"
+            aria-controls="navbarCollapsible" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                </li>
+
+        <div class="collapse navbar-collapse" id="navbarCollapsible">
+            <ul class="navbar-nav me-auto mb-lg-0">
+                {# Validate #}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown
+                    <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-receive"
+                        role="button" data-bs-toggle="dropdown">
+                        {{menu_header['validate']}}
+
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ private_route('receive_file') }}"
+                                title="Abre o formulário para submeter um arquivo ZIP o do Google Drive ao processo de valida&ccedil;&atilde;o">
+                                Enviar arquivo ou link
+                            </a>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ private_route('received_files_mgmt') }}"
+                                title="Abre o grid dos arquivos submetidos ao processo de valida&ccedil;&atilde;o">
+                                <i>Download</i> dos já enviados
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {# Setor Estratégico #}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-se"
+                        role="button" data-bs-toggle="dropdown">
+                        {{menu_header['strategicSector']}}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ private_route('sep_mgmt') }}"
+                                title="Abre o grid de Gest&atilde;o de Setores Estrat&eacute;gicos">
+                                Gest&atilde;o
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">&nbsp;&nbsp;Edi&ccedil;&atilde;o
+                        </li>
+                        <li><a class="dropdown-item" href="{{ private_route('sep_edit') }}">&#9657;&nbsp;teste/Novo</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ private_route('sep_edit') }}">&#9657;&nbsp;teste/Cores</a>
+                        </li>
+                        <li><a class="dropdown-item"
+                                href="{{ private_route('sep_edit') }}">&#9657;&nbsp;<i>outros..</i></a></li>
+                    </ul>
+                </li>
+
+
+                {# Documentos #}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-docs"
+                        role="button" data-bs-toggle="dropdown">
+                        {{menu_header['document']}}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item"
+                                href="https://docs.google.com/document/d/1ZYOQricIqeNkZ3XnLoSXp-lKle9V1UTb-acASZtAa4E/edit"
+                                target="_blank" rel="noopener noreferrer"
+                                title="Abre o documento 'Especifica&ccedil;&atilde;o de Requisitos e Formatos' em outra aba">
+                                Especifica&ccedil;&atilde;o
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ public_route('docs', publicDocName='termsOfUse') }}"
+                                title="Exibe o documento de pol&iacute;tica de privacidade do aplicativo">
+                                Pol&iacute;tica de Privacidade
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ public_route('docs', publicDocName='termsOfUse') }}"
+                                title="Exibe o documento de termos de uso do aplicativo">
+                                Termos de Uso
+                            </a>
+                        </li>
+                        <li>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ public_route('docs', publicDocName='aboutApp') }}"
+                                title="Mostra informa&ccedil;&atilde;o sobre o aplicativo">
+                                Sobre {{ app_name }}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {# Usuário #}
+                {% if logged_user() %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-user"
+                        role="button" data-bs-toggle="dropdown">
+                        {{logged_user().name}}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ private_route('change_password') }}"
+                                title="Abre o formul&aacute;rio para alterar sua senha">
+                                Mudar senha
+                            </a>
+                        </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="logout()"
+                                title="Fecha a sess&atilde;o e sai do aplicativo">
+                                Sair de {{app_name}}
+                            </a>
+                        </li>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                </li>
+                {% endif %}
             </ul>
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
         </div>
     </div>
-</nav> #}
-
-
-
-<header class="header-global">
-    <nav id="navbar-main" aria-label="Primary menu"
-        class="navbar navbar-expand-lg navbar-dark container-xxl flex-wrap flex-md-nowrap"
-        style="height: 3em; padding: 0 !important; background-color:#ffffff7a;">
-
-        <div class="container">
-            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
-                href="{{ private_route('receive_file') }}"
-                title="Abre o formulário para submeter um arquivo ZIP o do Google Drive ao processo de valida&ccedil;&atilde;o">
-                [Validar dados]
-            </a>
-            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
-                href="{{ private_route('received_files_mgmt') }}"
-                title="Abre o grid dos arquivos submetidos ao processo de valida&ccedil;&atilde;o">
-                [Arquivos Enviados]
-            </a>
-
-            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
-                href="{{ private_route('sep_mgmt') }}"
-                title="Abre o grid de Gest&atilde;o de Setores Estrat&eacute;gicos">
-                [Gest&atilde;o de SE]
-            </a>
-            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
-                href="{{ private_route('sep_edit') }}"
-                title="Abre o formulário de edi&ccedil;&atilde;o do Setor Estrat&eacute;gico">
-                [Edi&ccedil;&atilde;o de SE]
-            </a>
-            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
-                href="https://docs.google.com/document/d/1ZYOQricIqeNkZ3XnLoSXp-lKle9V1UTb-acASZtAa4E/edit"
-                target="_blank" rel="noopener noreferrer"
-                title="Abre o documento 'Especifica&ccedil;&atilde;o de Requisitos e Formatos' em outra aba">
-                [Especifica&ccedil;&atilde;o]
-            </a>
-            {# href="{{ public_route('docs', publicDocName='termsOfUse') }}" #}
-            {# href="{{ public_route('docs', publicDocName='sectorSpecifications') }}" #}
-            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
-                href="{{ public_route('docs', publicDocName='termsOfUse') }}"
-                title="Exibe o documento de pol&iacute;tica de privacidade do aplicativo">
-                [Pol&iacute;tica de Privacidade]
-            </a>
-            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
-                href="{{ private_route('change_password') }}" title="Abre o formul&aacute;rio para alterar sua senha">
-                [Mudar senha]
-            </a>
-            <a class="unselectable-text nav-button {{ navButtonState }}" type="button"
-                href="{{ public_route('docs', publicDocName='aboutApp') }}"
-                title="Mostra informa&ccedil;&atilde;o sobre o aplicativo">
-                [Sobre]
-            </a>
-            <!-- a type="button" href="{{ private_route('test_route') }}">[testar arquivo]</a>  -->
-            <button class="nav-button {{ navButtonState }}" onclick="logout()"
-                title="Fecha a sess&atilde;o e sai do aplicativo">
-                [Sair:&nbsp;&nbsp;{{logged_user().name}}]
-            </button>
-        </div>
-    </nav>
-</header>
-
+</nav>
 
 {# eof #}

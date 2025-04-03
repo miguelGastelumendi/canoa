@@ -16,7 +16,6 @@ from typing import Any, Type, Tuple, List, Optional
 
 from ..common.app_constants import APP_NAME
 
-
 # https://docs.python.org/3/library/platform.html#platform.system
 OS_NAME_IS = platform.system()
 OS_IS_WINDOWS = OS_NAME_IS == "Windows"
@@ -25,6 +24,7 @@ OS_IS_MAC = OS_NAME_IS == "Darwin"
 
 
 def get_envvar_prefix() -> str:
+
     return f"{APP_NAME}_".upper()
 
 
