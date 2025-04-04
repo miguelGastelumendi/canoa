@@ -12,21 +12,15 @@
 
     /* https://www.colorhexa.com/704214 */
     /* complementary */
-    --buttonBackColor: #144270;
-    --buttonTextColor: white;
-    /*
-    --buttonBackColor: #647663;
-     --titleBackColor: #c4884c;
-    --labelTextColor: #c4884c;
-    --linkTextColor: #60370e;
-    */
-    --titleBackColor: #b36920;
-    --titleTextColor: white;
-    --labelTextColor: #814c17;
-    --linkTextColor: #a25f1d;
-    --bodyBackColor: #fbf3ea;
-    --footerBackColor: #f8e9d9;
-    --controlBackColor: #fefcfa;
+    --canoa-dlg-header-bg: #b36920;
+    --canoa-dlg-header-color: white;
+    --canoa-form-text-color: #814c17;
+    --canoa-form-label-color: #814c17;
+    --canoa-form-link-color: #a25f1d;
+    --canoa-form-body-bg: #fbf3ea;
+    --canoa-form-footer-bg: #f8e9d9;
+    --canoa-form-button-bg: #144270;
+    --canoa-form-button-color: white;
 }
 
 body {
@@ -56,42 +50,32 @@ body {
     background-color: #ffffff7a;
 }
 
-.nav-button-enabled {
-    color: var(--buttonBackColor);
-}
-
-.nav-button-disabled {
-    /* color: #999; */
-    color: var(--labelTextColor);
-    pointer-events: none;
-}
 
 /* ============================================
  *  carranca\templates\layouts\dialog.tmpl
  * ============================================ */
 .dlg-header {
-    background-color: var(--titleBackColor);
+    background-color: var(--canoa-dlg-header-bg);
 }
 
 .dlg-title {
-    color: var(--titleTextColor);
-    font-size: 1.5rem;
+    color: var(--canoa-dlg-header-color);
 }
 
 .dlg-body {
-    background-color: var(--bodyBackColor);
+    background-color: var(--canoa-form-body-bg);
     border-bottom-left-radius: var(--bs-modal-inner-border-radius);
     border-bottom-right-radius: var(--bs-modal-inner-border-radius);
 }
 
 .dlg-footer {
-    background-color: var(--footerBackColor);
+    background-color: var(--canoa-form-footer-bg);
 }
 
 
 /* dialog ids */
 #dlg-var-svg-id {
-    fill: var(--buttonBackColor, red);
+    fill: var(--canoa-form-button-bg, red);
 }
 
 
@@ -125,12 +109,12 @@ body {
  *  carranca\templates\layouts\form.html
  * ============================================ */
 .form-label {
-    color: var(--labelTextColor);
+    color: var(--canoa-form-label-color);
     font-weight: 500;
 }
 
 .form-text {
-    color: var(--labelTextColor);
+    color: var(--canoa-form-text-color);
 }
 
 .form-line {
@@ -138,45 +122,34 @@ body {
 }
 
 .form-link {
-    color: var(--linkTextColor);
+    color: var(--canoa-form-link-color);
     font-weight: 400;
+    text-decoration: none;
 }
 
 .form-link:hover {
     text-decoration: underline;
 }
 
-.form-control {
-    background-color: var(--controlBackColor);
-}
-
 .form-check-btn {
-    accent-color: var(--buttonBackColor);
+    accent-color: var(--canoa-form-button-bg);
 }
 
 .form-main-btn {
-    background-color: var(--buttonBackColor);
+    background-color: var(--canoa-form-button-bg);
     border: none;
-    color: var(--buttonTextColor);
-    font-size: 1.1rem;
-    min-width: 8em;
-}
-
-.form-main-btn {
-    background-color: var(--buttonBackColor);
-    border: none;
-    color: var(--buttonTextColor);
+    color: var(--canoa-form-button-color);
     font-size: 1.1rem;
     min-width: 8em;
 }
 
 .form-main-btn:hover {
-    background-color: var(--buttonBackColor);
-    filter: brightness(120%);
+    background-color: var(--canoa-form-button-bg);
+    filter: brightness(130%);
 }
 
 .form-main-btn:disabled {
-    background-color: var(--buttonBackColor);
+    background-color: var(--canoa-form-button-bg);
     filter: brightness(60%);
 }
 
@@ -184,15 +157,11 @@ body {
  *          responsive design
  * ============================================ */
 
-@media screen and (max-width: 992px) {
-    .divInputProjectName {
-        width: 60%;
+/* @media screen and (max-width: 992px) {
+    .dlg-title {
+        font-size: 80%;
     }
-
-    .divRememberLogin {
-        font-size: 13px;
-    }
-}
+} */
 
 ::-webkit-input-placeholder {
     font-style: italic;

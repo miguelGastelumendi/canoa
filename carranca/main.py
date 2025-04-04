@@ -9,7 +9,7 @@ main.py
 # cSpell:ignore sqlalchemy keepalives
 
 import time
-from .common.app_constants import APP_NAME
+from .common.app_constants import APP_NAME, APP_VERSION
 
 # -------------------------------------------------------
 # Main --------------------------------------------------
@@ -37,7 +37,7 @@ if sidekick.config.APP_DISPLAY_DEBUG_MSG:
 # Tell everybody how quick we are
 elapsed = (time.perf_counter() - started) * 1000
 sidekick.display.info(
-    f"{APP_NAME} is now ready for the journey. It took {elapsed:,.0f} ms to create and initialize it."
+    f"{APP_NAME} version {APP_VERSION} is now ready for the journey. It took {elapsed:,.0f} ms to create and initialize it."
 )
 
 # -------------------------------------------

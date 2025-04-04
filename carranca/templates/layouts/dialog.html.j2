@@ -52,6 +52,7 @@ mgd
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const closeButton = document.getElementById('btn-close-id');
+            if (!closeButton) { return; }
             closeButton.addEventListener('click', () => {
                 window.location.href = "{{ public_route('login') }}";
             });

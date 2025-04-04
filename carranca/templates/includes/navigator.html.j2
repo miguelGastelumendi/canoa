@@ -16,9 +16,9 @@ cSpell:ignore semi-words: formul mgmt estrat gicos sess
 <nav id="navbar-main" class="navbar fixed-top navbar-expand-sm shadow-sm px-2">
     {% set menu_header = app_menu %}
     <div class="container-fluid">
-        <div class="navbar-brand">{{app_name}}</div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapsible"
-            aria-controls="navbarCollapsible" aria-label="Toggle navigation">
+        <div class="navbar-brand mb-1">{{app_name}}</div>
+        <button class="navbar-toggler" {{navButtonState}} type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarCollapsible" aria-controls="navbarCollapsible" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
