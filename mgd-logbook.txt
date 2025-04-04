@@ -40,6 +40,12 @@
   Logbook
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
+-----------------------------------------------------------
+2025-04-01--03 β 4.03 issue #32 Part 3/3b
+    fixes: Mobile size overlap
+    - TODO:
+         finish: __init__.py[_get_app_menu]
+
 2025-04-01--03 β 4.02 issue #32 Part 3/3a
     - TODO:
          finish: __init__.py[_get_app_menu]
