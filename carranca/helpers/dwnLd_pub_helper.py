@@ -18,7 +18,7 @@ from googleapiclient.discovery import build
 from ..common.app_context_vars import sidekick
 from .py_helper import is_str_none_or_empty, to_str
 from .file_helper import is_same_file_name, change_file_ext
-from .html_helper import CONTENT_TYPE_HTML
+from .html_helper import CONTENT_TYPE_HTML, URL_PATH_SEP
 
 
 def download_public_file(url, filename, guess_extension_if_not_provided=True) -> int:
@@ -101,7 +101,7 @@ def get_file_id_from_url(url: str) -> str:
     """Extracts the file ID from a Google Drive shared link."""
     id = None
     surl = to_str(url)
-    parts = surl.split("/")
+    parts = surl.split(URL_PATH_SEP)
     try:
         id = parts[parts.index("d") + 1]
     except ValueError:

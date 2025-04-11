@@ -18,8 +18,8 @@ from ..helpers.py_helper import now
 from ..helpers.route_helper import get_private_form_data
 from ..helpers.route_helper import init_form_vars, get_input_text
 from ..common.app_error_assistant import ModuleErrorCode, CanoeStumbled, did_I_stumbled
-from ..helpers.ui_texts_helper import (
-    UI_Texts_Key,
+from ..helpers.ui_db_texts_helper import (
+    UITextsKeys,
     add_msg_success,
     add_msg_error,
     add_msg_fatal,
@@ -45,8 +45,8 @@ def do_sep_edit() -> str:
                 if sep is None or logged_user.sep.id is None:
                     raise CanoeStumbled(add_msg_fatal("sepEditNotFound", ui_texts), task_code, True)
                 task_code += 1  #
-                ui_texts[UI_Texts_Key.Form.icon] = logged_user.sep.icon_url
-                ui_texts[UI_Texts_Key.Msg.info] = ui_texts[UI_Texts_Key.Msg.info].format(sep_fullname)
+                ui_texts[UITextsKeys.Form.icon] = logged_user.sep.icon_url
+                ui_texts[UITextsKeys.Msg.info] = ui_texts[UITextsKeys.Msg.info].format(sep_fullname)
             except CanoeStumbled:
                 raise
             except Exception:

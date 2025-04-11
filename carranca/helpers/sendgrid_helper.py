@@ -19,7 +19,7 @@ from base64 import b64encode
 
 from .py_helper import is_str_none_or_empty
 from .email_helper import RecipientsDic, RecipientsListStr, mime_types
-from .ui_texts_helper import get_section
+from .ui_db_texts_helper import get_section
 
 # https://docs.sendgrid.com/pt-br/for-developers/sending-email/api-getting-started
 # curl --request POST \
@@ -59,11 +59,11 @@ def send_email(
             If a RecipientsListStr is used, it's assumed to be the "to" recipient.
         texts_or_section: (dict or str)
             if str, is an entry of .ui_texts_helper.get_section that returns a dict
-            if dict[str, str], it is used directly.
+            if Dict[str, str], it is used directly.
             Expected dict Keys:
                 subject=texts["subject"],
                 html_content=texts["content"],
-        email_body_params: Optional[ dict[key: str, value: str] ]
+        email_body_params: Optional[ Dict[key: str, value: str] ]
             values to sSubstitute {key} in the content
         file_to_send_full_name: Optional[str]
             full path and name of file to attach to the mail
@@ -87,9 +87,7 @@ def send_email(
     try:
 
         # Required info: email originator (owner of API_KEY)
-        from_email = Email(
-            sidekick.config.EMAIL_ORIGINATOR, sidekick.config.EMAIL_ORIGINATOR_NAME
-        )
+        from_email = Email(sidekick.config.EMAIL_ORIGINATOR, sidekick.config.EMAIL_ORIGINATOR_NAME)
         task = "setting email originator"
         if is_str_none_or_empty(from_email.email):
             error = "Unknown `email originator`. Cannot send email."
@@ -116,8 +114,7 @@ def send_email(
         task = "getting file extension"
         ext = (
             None
-            if is_str_none_or_empty(file_to_send_full_name)
-            or not is_str_none_or_empty(file_to_send_type)
+            if is_str_none_or_empty(file_to_send_full_name) or not is_str_none_or_empty(file_to_send_type)
             else path.splitext(file_to_send_full_name)[1].lower()
         )
 
@@ -149,9 +146,7 @@ def send_email(
             raise ValueError(error)
 
         # A nice notice
-        if is_str_none_or_empty(recipients.to) and not is_str_none_or_empty(
-            recipients.bcc
-        ):
+        if is_str_none_or_empty(recipients.to) and not is_str_none_or_empty(recipients.bcc):
             sidekick.display.warn(
                 "Warning: Sending email with only BCC recipient might be rejected by some servers."
             )
@@ -222,9 +217,7 @@ def send_email(
         return sent
     except Exception as e:
         sc = status_code if status_code != 0 else getattr(e, "status_code", 0)
-        error = (
-            f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
-        )
+        error = f"Sendgrid email failed while {task}. Error: [{e}], Status Code: [{sc}]."
         msg = getattr(e, "body", str(e))
         msg_error = f"{error} \nSendGrid: [{msg}]."
         sidekick.app_log.error(msg_error)

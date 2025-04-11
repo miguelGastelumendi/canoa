@@ -49,6 +49,7 @@ class User(Base, UserMixin):
     password = Column(LargeBinary)
     username_lower = Column(String(100), Computed(""))
     email = Column(String(64), unique=True)
+    # OBSOLETE
     mgmt_sep_id = Column(Integer, unique=True)
     last_login_at = Column(DateTime, nullable=True)
     recover_email_token = Column(String(100), nullable=True, unique=True)

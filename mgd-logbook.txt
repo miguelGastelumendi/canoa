@@ -26,6 +26,9 @@
         » ajax
         » Linux
             - check no x permission on run_validate Linux
+        » DB
+            - remove User.mgmt_sep_id (not used anymore)
+            - SchemaSEP
 
 
 ------- 2025 - April -------------
@@ -41,6 +44,13 @@
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
 -----------------------------------------------------------
+
+2025-04-04,07--10 β 4.04 issue #34 Part 1/4
+    1 Nova view vw_mgmt_sep_user
+    2 Novo Grid
+    3 Operações no grid
+    4 Salvar Operações e enviar emails
+
 2025-04-01--03 β 4.03 issue #32 Part 3/3b
     fixes: Mobile size overlap
     - TODO:

@@ -5,11 +5,9 @@ mgd
 Equipe da Canoa -- 2024
 """
 
-# cSpell:ignore ssep
-
 # Equipe da Canoa -- 2024
 #
-# cSpell:ignore: nullable sqlalchemy sessionmaker mgmt
+# cSpell:ignore: nullable sqlalchemy sessionmaker mgmt sep ssep scm
 
 from typing import Optional, Tuple
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text, select, and_
@@ -170,8 +168,12 @@ class UserDataFiles(Base):
 
 
 # --- Table ---
-class MgmtUserSep(Base):
+class MgmtUserSep_(Base):
     """
+    ** /!\ DEPRECATED **
+    ** This table is deprecated and will be removed in the future. **
+    ** use MgmtSepUser instead **
+
     `vw_mgmt_user_sep` is DB view which holds the necessary information
     to provide the app's admin a UI grid so the admin can assign or remove
     SEP to or from a user.
@@ -205,8 +207,8 @@ class MgmtUserSep(Base):
         """
 
         def _get_list(db_session: Session):
-            mus_recs = db_session.scalars(select(MgmtUserSep)).all()
-            users_sep = DBRecords(MgmtUserSep.__tablename__, mus_recs)
+            mus_recs = db_session.scalars(select(MgmtUserSep_)).all()
+            users_sep = DBRecords(MgmtUserSep_.__tablename__, mus_recs)
 
             ssep_recs = db_session.scalars(select(SchemaSEP)).all()
             sep_list = DBRecords(SchemaSEP.__tablename__, ssep_recs)
@@ -218,6 +220,75 @@ class MgmtUserSep(Base):
             raise e
 
         return users_sep, sep_list, msg_error
+
+
+# --- Table ---
+class SepUsers(Base):
+
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True)
+    id_role = Column(Integer)
+    username = Column(String(100), unique=True)
+    email = Column(String(64), unique=True)
+    disabled = Column(Boolean, default=False)
+
+
+# --- Table ---
+class MgmtSepUser(Base):
+    """
+    `vw_mgmt_user_sep` is a database view that contains the necessary
+    information to present a UI grid for the application's admin.
+    This grid allows the admin to efficiently assign or remove users
+    from a SEP.
+
+    The view has a trigger that saves the information on `users` table and
+    logs the action on `log_user_sep` table.
+    """
+
+    __tablename__ = "vw_mgmt_sep_user"
+
+    # https://docs.sqlalchemy.org/en/13/core/type_basics.html
+    sep_id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
+    sep_name = Column(String(100))
+    sep_fullname = Column(String(256))  # schema + sep_name
+    sep_fullname_lower = Column(String(256))
+    sep_icon_name = Column(String(120))
+    scm_id = Column(Integer)
+    scm_name = Column(String(100))
+    user_id = Column(Integer)
+    user_disabled = Column(Boolean)
+    user_curr = Column(String(100))
+    user_new = Column(String(100))
+    assigned_at = Column(DateTime)
+    assigned_by = Column(Integer)
+    batch_code = Column(String(10))  # trace_code
+
+    @staticmethod
+    def get_grid_view() -> Tuple[DBRecords, DBRecords, str]:
+        """
+        Returns
+        1) `vw_mgmt_user_sep` DB view that has the necessary columns to
+            provide the user with a UI grid to assign or remove SEP
+            to or from a user.
+        2) `vw_scm_sep` SEP list.
+        3) Error message if any action fails.
+        """
+
+        def _get_list(db_session: Session):
+            sep_recs = db_session.scalars(select(MgmtSepUser)).all()
+            sep_rows = DBRecords(MgmtSepUser.__tablename__, sep_recs)
+
+            usr_recs = db_session.scalars(select(SepUsers)).all()
+            usr_list = DBRecords(SepUsers.__tablename__, usr_recs)
+            return sep_rows, usr_list
+
+        e, msg_error, [sep_rows, usr_list] = db_fetch_rows(_get_list, 2)
+        # TODO, check all db_fetch_rows (or raise an error)
+        if e is not None:
+            raise e
+
+        return sep_rows, usr_list, msg_error
 
 
 # --- Table ---
@@ -242,8 +313,12 @@ class MgmtEmailSep(Base):
 
 
 # --- Table ---
+
+
 class SchemaSEP(Base):
     """
+    /!\ DEPRECATED
+
     SchemaSEP is app's interface for the
     DB view `vw_scm_sep` that provides a couple of
     columns

@@ -23,7 +23,7 @@ from ...helpers.js_grid_helper import (
 )
 from ...helpers.file_helper import change_file_ext
 from ...helpers.route_helper import get_private_form_data, init_form_vars
-from ...helpers.ui_texts_helper import UI_Texts_Key
+from ...helpers.ui_db_texts_helper import UITextsKeys
 from ...common.app_error_assistant import ModuleErrorCode
 
 
@@ -44,10 +44,10 @@ def download_rec() -> Response | None:
         rec_id, rec_type = rqst[:-1], rqst[-1]
         if request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 7
-            ui_texts[UI_Texts_Key.Msg.exception] = ui_texts["secKeyViolation"]
+            ui_texts[UITextsKeys.Msg.exception] = ui_texts["secKeyViolation"]
             # TODO internal_logout()
         elif not (rec_id.isdigit() and rec_type in [DNLD_R, DNLD_F]):
-            ui_texts[UI_Texts_Key.Msg.exception] = ui_texts["secKeyViolation"]  # TODO
+            ui_texts[UITextsKeys.Msg.exception] = ui_texts["secKeyViolation"]  # TODO
         else:
             task_code += 1  # 4
             no_sep = ui_texts["itemNone"]
@@ -56,11 +56,11 @@ def download_rec() -> Response | None:
                 download_file_name = change_file_ext(download_file_name, report_ext)
 
             if received_files.count != 1:
-                ui_texts[UI_Texts_Key.Msg.error] = ui_texts["noRecord"]
+                ui_texts[UITextsKeys.Msg.error] = ui_texts["noRecord"]
             elif path.isfile(download_file_name):
                 file_response = send_file(download_file_name)
             else:  # just deleted :-(
-                ui_texts[UI_Texts_Key.Msg.error] = ui_texts["fileNotFound"]
+                ui_texts[UITextsKeys.Msg.error] = ui_texts["fileNotFound"]
 
     except Exception as e:
         # TODO:

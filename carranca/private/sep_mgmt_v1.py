@@ -17,7 +17,7 @@ from flask import render_template, request
 from typing import TypeAlias, Tuple, List
 from sqlalchemy.orm import Session
 
-from .models import MgmtUserSep
+from .models import MgmtUserSep_
 from .SepIconConfig import SepIconConfig
 from .sep_icon import icon_prepare_for_html
 
@@ -30,11 +30,11 @@ from ..helpers.user_helper import get_batch_code
 from ..helpers.js_grid_helper import js_grid_constants, js_grid_sec_key, js_grid_rsp, js_grid_sec_value
 from ..helpers.email_helper import RecipientsListStr
 from ..helpers.route_helper import get_private_form_data, init_form_vars
-from ..helpers.hints_helper import UI_Texts
-from ..helpers.ui_texts_helper import (
+from ..helpers.types_helper import ui_db_texts
+from ..helpers.ui_db_texts_helper import (
     add_msg_fatal,
     format_ui_item,
-    UI_Texts_Key,
+    UITextsKeys,
 )
 
 # def returns
@@ -43,7 +43,7 @@ def_return: TypeAlias = Tuple[str, str, int]
 
 def sep_data_fetch(_item_none) -> Tuple[DBRecords, List[str], str]:
 
-    users_sep, sep_list, msg_error = MgmtUserSep.get_grid_view()
+    users_sep, sep_list, msg_error = MgmtUserSep_.get_grid_view()
     for record in users_sep.records:
         record.scm_sep_new = _item_none
         record.scm_sep_curr = _item_none if record.scm_sep_curr is None else record.scm_sep_curr
@@ -64,10 +64,10 @@ def do_sep_mgmt() -> str:
     tmpl = ""
     try:
         task_code += 1  # 1
-        template, is_get, ui_texts = get_private_form_data("sepMgmt")
+        template, is_get, ui_texts = get_private_form_data("sepMgmt_v1")
 
         task_code += 1  # 2
-        ui_texts[UI_Texts_Key.Form.icon] = SepIconConfig.set_url(SepIconConfig.none_file)
+        ui_texts[UITextsKeys.Form.icon] = SepIconConfig.set_url(SepIconConfig.none_file)
 
         task_code += 1  # 3
         col_names = ["user_id", "file_url", "user_name", "scm_sep_curr", "scm_sep_new", "when"]
@@ -76,11 +76,11 @@ def do_sep_mgmt() -> str:
         item_none = "(None)" if is_str_none_or_empty(ui_texts["itemNone"]) else ui_texts["itemNone"]
         if is_get:
             task_code += 1  # 6
-            users_sep, sep_fullname_list, ui_texts[UI_Texts_Key.Msg.error] = sep_data_fetch(item_none)
+            users_sep, sep_fullname_list, ui_texts[UITextsKeys.Msg.error] = sep_data_fetch(item_none)
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             # TODO: up_handler
             task_code += 2  # 7
-            ui_texts[UI_Texts_Key.Msg.exception] = ui_texts["secKeyViolation"]
+            ui_texts[UITextsKeys.Msg.exception] = ui_texts["secKeyViolation"]
             # TODO internal_logout()
         else:
             task_code += 3
@@ -89,11 +89,11 @@ def do_sep_mgmt() -> str:
             task_code += 1
             _, _, users_sep, sep_fullname_list, msg_error_read = sep_data_fetch(item_none)
             if is_str_none_or_empty(msg_error) and is_str_none_or_empty(msg_error_read):
-                ui_texts[UI_Texts_Key.Msg.success] = msg_success
+                ui_texts[UITextsKeys.Msg.success] = msg_success
             elif is_str_none_or_empty(msg_error):
-                ui_texts[UI_Texts_Key.Msg.error] = msg_error_read
+                ui_texts[UITextsKeys.Msg.error] = msg_error_read
             else:
-                ui_texts[UI_Texts_Key.Msg.error] = try_get_mgd_msg(
+                ui_texts[UITextsKeys.Msg.error] = try_get_mgd_msg(
                     msg_error, ui_texts["saveError"].format(task_code)
                 )
 
@@ -113,7 +113,7 @@ def do_sep_mgmt() -> str:
     return tmpl
 
 
-def _save_and_email(txtGridResponse: str, ui_texts: UI_Texts, task_code: int) -> def_return:
+def _save_and_email(txtGridResponse: str, ui_texts: ui_db_texts, task_code: int) -> def_return:
     """Saves data & sends emails"""
     task_code += 1
     jsonGridResponse = json.loads(txtGridResponse)
@@ -133,7 +133,7 @@ def _save_and_email(txtGridResponse: str, ui_texts: UI_Texts, task_code: int) ->
 
 
 def _save_data(
-    grid_response: dict[str, any], batch_code: str, ui_texts: UI_Texts, task_code: int
+    grid_response: dict[str, any], batch_code: str, ui_texts: ui_db_texts, task_code: int
 ) -> def_return:
     """saves user modifications to the DB via the view's trigger"""
     msg_success = None
@@ -158,7 +158,7 @@ def _save_data(
 
 
 def _prepare_data_to_save(
-    grid_response: dict[str, any], ui_texts: UI_Texts, task_code: int
+    grid_response: dict[str, any], ui_texts: ui_db_texts, task_code: int
 ) -> Tuple[str, ListOfDBRecords, ListOfDBRecords, int]:
     """Distributes the modifications in two groups: remove & assign"""
 
@@ -191,7 +191,7 @@ def _prepare_data_to_save(
 
 
 def _save_data_to_db(
-    remove: ListOfDBRecords, update: ListOfDBRecords, batch_code: str, ui_texts: UI_Texts, task_code: int
+    remove: ListOfDBRecords, update: ListOfDBRecords, batch_code: str, ui_texts: ui_db_texts, task_code: int
 ) -> def_return:
     """
     Saves user-made changes to the UI grid to the database
@@ -202,7 +202,7 @@ def _save_data_to_db(
     """
 
     from carranca import global_sqlalchemy_scoped_session
-    from .models import MgmtUserSep
+    from .models import MgmtUserSep_
 
     from ..common.app_context_vars import logged_user, sidekick
 
@@ -215,7 +215,7 @@ def _save_data_to_db(
         try:
 
             def __set_user_sep_new(id: int, sep_new: str):
-                user_sep = db_session.query(MgmtUserSep).filter_by(user_id=id).one_or_none()
+                user_sep = db_session.query(MgmtUserSep_).filter_by(user_id=id).one_or_none()
                 if user_sep:
                     user_sep.scm_sep_new = sep_new
                     user_sep.assigned_by = assigned_by
@@ -245,7 +245,7 @@ def _save_data_to_db(
     return "", msg_error, task_code
 
 
-def _send_email(batch_code: str, ui_texts: UI_Texts, task_code: int) -> def_return:
+def _send_email(batch_code: str, ui_texts: ui_db_texts, task_code: int) -> def_return:
     """
     Send an email for each user with a
     'new' SEP or if it was removed

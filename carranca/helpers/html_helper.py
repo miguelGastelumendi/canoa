@@ -9,7 +9,20 @@ import os
 from bs4 import BeautifulSoup
 from flask import current_app
 
-HTML_PATH_SEP: str = "/"
+URL_PATH_SEP: str = "/"
+
+
+def url_join(*args: str) -> str:
+    """
+    Joins URL components into a single URL path, ensuring proper formatting.
+
+    Args:
+        *args (str): URL components to be joined.
+
+    Returns:
+        str: The joined URL path.
+    """
+    return URL_PATH_SEP.join(arg.strip(URL_PATH_SEP) for arg in args)
 
 
 def icon_url(folder: str, file_name: str) -> str:
@@ -24,8 +37,7 @@ def icon_url(folder: str, file_name: str) -> str:
         str: The full URL path of the icon image.
     """
     base_path = os.path.basename(current_app.static_folder)
-    icon_path = os.path.join(os.path.sep, base_path, folder, file_name)
-    icon_url = icon_path.replace(os.sep, HTML_PATH_SEP)
+    icon_url = url_join(base_path, folder, file_name)
     return icon_url
 
 

@@ -11,10 +11,10 @@ mgd
 TODO Selected menu class-> active
 
 cSpell:ignore unselectable labelledby haspopup noopener noreferrer onclick
-cSpell:ignore semi-words: formul mgmt estrat gicos sess
+cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson
 --------------------------------------- #}
 <nav id="navbar-main" class="navbar fixed-top navbar-expand-sm shadow-sm px-2">
-    {% set menu_header = app_menu %}
+    {% set menu_header = app_menu('menuHeaders') %}
     <div class="container-fluid">
         <div class="navbar-brand mb-1">{{app_name}}</div>
         <button class="navbar-toggler" {{navButtonState}} type="button" data-bs-toggle="collapse"
@@ -52,11 +52,21 @@ cSpell:ignore semi-words: formul mgmt estrat gicos sess
                     </a>
                     <ul class="dropdown-menu">
                         <li>
+                            <a class="dropdown-item" href="{{ private_route('sep_mgmt_v1') }}"
+                                title="Abre o grid v1.0  de Gest&atilde;o de Setores Estrat&eacute;gicos">
+                                Gest&atilde;o v1.0
+                            </a>
+                        </li>
+                        <li>
                             <a class="dropdown-item" href="{{ private_route('sep_mgmt') }}"
                                 title="Abre o grid de Gest&atilde;o de Setores Estrat&eacute;gicos">
                                 Gest&atilde;o
                             </a>
                         </li>
+
+                        <li><a class="dropdown-item" href="{{ private_route('sep_edit') }}">Novo</a>
+                        </li>
+
                         <li>
                             <hr class="dropdown-divider">&nbsp;&nbsp;Edi&ccedil;&atilde;o
                         </li>
@@ -74,7 +84,7 @@ cSpell:ignore semi-words: formul mgmt estrat gicos sess
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-docs"
                         role="button" data-bs-toggle="dropdown">
-                        {{menu_header['document']}}
+                        {{menu_header['documents']}}
                     </a>
                     <ul class="dropdown-menu">
                         <li>

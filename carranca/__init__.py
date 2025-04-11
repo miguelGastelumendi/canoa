@@ -12,14 +12,16 @@ mgd
 # ============================================================================ #
 from flask_login import LoginManager
 from sqlalchemy.orm import scoped_session
+
+from .helpers.types_helper import ui_db_texts
 from .common.Sidekick import Sidekick
-from typing import Optional
+from typing import Optional, Dict
 
 # 4 App Global variables
 global_sidekick: Optional[Sidekick] = None
 global_login_manager: Optional[LoginManager] = None
 global_sqlalchemy_scoped_session: Optional[scoped_session] = None
-global_app_menu: dict = {}
+global_ui_texts_cache: dict = {}
 APP_DB_VERSION: str = "?"
 
 """
@@ -39,6 +41,7 @@ import time
 started = time.perf_counter()
 
 # Imports
+import json
 import jinja2
 import socket
 from flask import Flask
@@ -75,6 +78,8 @@ def _register_blueprint_events(app: Flask):
                     f"SqlAlchemySession is shutting down {('active' if global_sqlalchemy_scoped_session.is_active else 'inactive')} and clean."
                 )
 
+            cl = (int(r.headers.get("Content-Length", 0)) if r else 0) / 1000
+            app.logger.debug(f"Ending secession, sending  {cl:,.2f} Kb, with response status [{r.status}].")
             global_sqlalchemy_scoped_session.remove()
         except Exception as e:
             app.logger.error(
@@ -103,7 +108,7 @@ def _register_blueprint_routes(app: Flask):
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
 
-    def _get_jinja_user() -> Optional[JinjaUser]:
+    def __get_jinja_user() -> Optional[JinjaUser]:
         juser: JinjaUser = None
         if is_someone_logged():
             # 'import logged_user' only when a user is logged
@@ -113,19 +118,19 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
 
         return juser
 
-    def _get_app_menu() -> dict:
-        global global_app_menu
-        if not global_app_menu:
-            # from helpers.ui_texts_helper import get_menu_texts
+    def __get_app_menu(sub_menu_name: str) -> ui_db_texts:
+        sub_menu: dict = {}
+        if not is_someone_logged():
+            return sub_menu
 
-            # global_app_menu = get_menu_texts()
-            global_app_menu = {
-                "validate": "Valida&ccedil;&atilde;o",
-                "strategicSector": "Setor Estrat&eacute;gico",
-                "document": "Documentos",
-            }
+        from .helpers.ui_db_texts_helper import get_app_menu
 
-        return global_app_menu
+        _app_menu = get_app_menu()
+        if sub_menu_name in _app_menu:
+            sub_menu_str = _app_menu[sub_menu_name]
+            sub_menu = json.loads(sub_menu_str)
+
+        return sub_menu
 
     app.jinja_env.globals.update(
         app_name=app_name,
@@ -133,13 +138,8 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         static_route=static_route,
         private_route=private_route,
         public_route=public_route,
-        logged_user=_get_jinja_user,
-        # app_menu=_get_app_menu,
-        app_menu={
-            "validate": "Valida&ccedil;&atilde;o",
-            "strategicSector": "Setor Estrat&eacute;gico",
-            "document": "Documentos",
-        },
+        logged_user=__get_jinja_user,
+        app_menu=__get_app_menu,
     )
     if debugUndefined:
         # Enable DebugUndefined for better error messages in Jinja2 templates

@@ -34,12 +34,12 @@ mgd
 <div class="mb-3 row">
     <div class="col-auto">
         <button type="button" onclick="gridAdd()" class="form-main-btn">
-            {{(grdBtnAdd | default("Adicionar"))}}
+            {{grdBtnAdd | default("Add")}}
         </button>
     </div>
     <div class="col-auto">
         <button type="button" onclick="gridEdit()" class="form-main-btn">
-            {{(grdBtnEdit | default("Editar"))}}
+            {{grdBtnEdit | default("Edit")}}
         </button>
     </div>
     <div class="col-auto">
@@ -49,7 +49,7 @@ mgd
             <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
             {# <input type="submit" style="display:none;"> #}
             <button type="submit" class="form-main-btn" disabled id="{{grid_submit_id}}">
-                {{(grdBtnSave |default("Save"))}}
+                {{grdBtnSave | default("Save")}}
             </button>
         </form>
     </div>

@@ -21,23 +21,23 @@ from typing import Optional, Tuple
 
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.html_helper import icon_url
-from ..helpers.hints_helper import UI_Texts
+from ..helpers.types_helper import ui_db_texts
 from ..helpers.route_helper import get_template_name
 from ..config.local_ui_texts import local_ui_texts, local_form_texts
-from ..helpers.ui_texts_helper import get_section, UI_Texts_Key
+from ..helpers.ui_db_texts_helper import get_section, UITextsKeys
 from ..common.app_error_assistant import CanoeStumbled
 
 
 #  --------------------
 def ups_handler(
     error_code: int, user_msg: str, e: Exception, logout: bool = False
-) -> Tuple[dict, str, UI_Texts]:
+) -> Tuple[dict, str, ui_db_texts]:
     from ..common.app_context_vars import logged_user, sidekick
 
     try:
         ui_texts = get_section(f"Ups-{error_code}")
     except:
-        ui_texts = local_ui_texts(UI_Texts_Key.Error.no_db_conn)
+        ui_texts = local_ui_texts(UITextsKeys.Error.no_db_conn)
 
     if isinstance(e, CanoeStumbled):
         error_code = e.error_code
@@ -48,13 +48,13 @@ def ups_handler(
         error_msg = None
 
     context_texts = {
-        UI_Texts_Key.Msg.warn: user_msg,
-        UI_Texts_Key.Msg.error: error_msg,
-        UI_Texts_Key.Form.msg_only: True,
-        UI_Texts_Key.Form.icon: icon_url("icons", "ups_handler.svg"),
-        UI_Texts_Key.Error.code: error_code,
-        UI_Texts_Key.Error.where: inspect.stack()[1].function,
-        UI_Texts_Key.Error.http_code: 500,
+        UITextsKeys.Msg.warn: user_msg,
+        UITextsKeys.Msg.error: error_msg,
+        UITextsKeys.Form.msg_only: True,
+        UITextsKeys.Form.icon: icon_url("icons", "ups_handler.svg"),
+        UITextsKeys.Error.code: error_code,
+        UITextsKeys.Error.where: inspect.stack()[1].function,
+        UITextsKeys.Error.http_code: 500,
     }
 
     for key, value in context_texts.items():

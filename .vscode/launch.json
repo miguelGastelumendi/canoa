@@ -11,15 +11,15 @@
             "console": "integratedTerminal",
             "module": "flask",
             "env": {
-                "FLASK_APP": "main",
+                "FLASK_APP": "main.py",
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "true",
                 "CANOA_DEBUG": "true",
             },
             "args": [
                 "run",
+                "--no-debugger",
                 "--no-reload",
-                "--no-debugger"
             ],
             "jinja": true,
             "justMyCode": true,

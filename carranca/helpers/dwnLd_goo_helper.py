@@ -25,6 +25,7 @@ from google.oauth2.service_account import Credentials
 from .py_helper import is_str_none_or_empty, to_str
 from .file_helper import is_same_file_name, change_file_ext
 from ..common.app_context_vars import sidekick
+from ..helpers.html_helper import URL_PATH_SEP
 
 
 def is_url_valid(url: str) -> bool:
@@ -55,7 +56,7 @@ def get_file_id_from_url(url: str) -> str:
     """Extracts the file ID from a Google Drive shared link."""
     id = None
     surl = to_str(url)
-    parts = surl.split("/")
+    parts = surl.split(URL_PATH_SEP)
     if len(parts) < 3:
         return None
     try:

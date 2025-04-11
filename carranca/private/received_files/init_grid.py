@@ -17,7 +17,7 @@ from ...public.ups_handler import ups_handler
 from ...private.roles_abbr import RolesAbbr
 from ...helpers.route_helper import get_private_form_data, init_form_vars
 from ...helpers.js_grid_helper import js_grid_constants
-from ...helpers.ui_texts_helper import UI_Texts_Key, add_msg_fatal
+from ...helpers.ui_db_texts_helper import UITextsKeys, add_msg_fatal
 from ...common.app_error_assistant import ModuleErrorCode
 from ...common.app_context_vars import sidekick, logged_user
 
@@ -62,7 +62,7 @@ def init_grid(for_user: int) -> str:
             #     users_list.insert(0, ("", ui_texts["selectUser"], True))
 
             task_code += 1  # 6
-            ui_texts[UI_Texts_Key.Form.title] = ui_texts[UI_Texts_Key.Form.title + "Power"].format(
+            ui_texts[UITextsKeys.Form.title] = ui_texts[UITextsKeys.Form.title + "Power"].format(
                 request_user.user_name
             )
             user_id = request_user.user_id

@@ -1,15 +1,15 @@
 """
-    Grid HTML + js + py communication constants
+Grid HTML + js + py communication constants
 
-    Equipe da Canoa -- 2025
-    mgd 2025-01-19
+Equipe da Canoa -- 2025
+mgd 2025-01-19
 """
 
 # cSpell:ignore
 
 import json
 from typing import Tuple, List
-from .hints_helper import UI_Texts
+from .types_helper import ui_db_texts
 
 
 # === Global constants Keys for grid_const Jinja Dictionary for j2 grid ====
@@ -35,10 +35,10 @@ js_grid_submit_id = "grid_submit_id"
 js_grid_sec_value = "7298kaj0fk9dl-sd=)0y"
 
 
-def js_grid_constants(col_mi_txt: str, col_names: List[str]) -> Tuple[UI_Texts, int]:
+def js_grid_constants(col_mi_txt: str, col_names: List[str]) -> Tuple[ui_db_texts, int]:
 
     task_code = 1
-    grid_const: UI_Texts = {}
+    grid_const: ui_db_texts = {}
 
     col_mi = json.loads(col_mi_txt)
     col_meta_info = [{"n": key, "h": col_mi[key]} for key in col_mi]

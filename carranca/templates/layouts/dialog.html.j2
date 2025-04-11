@@ -58,18 +58,17 @@ mgd
             });
         });
     </script>
-    <div id="dlg-main-id" tabindex="-1" style="{{(dlg_var_style|default('display: block;'))|trim}}"
-        class="modal {% if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top | default('mt-5')|trim}}{% endif %}"
-        tabindex="-1">
-        <div class="modal-dialog {{ dlg_cls_size|default('')|trim }}
+    <div id="dlg-main-id" style="{{ dlg_var_style|default('display: block;') }}"
+        class="modal {% if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top | default('mt-5')|trim}}{% endif %}">
+        <div class="modal-dialog {{ dlg_cls_size|default('form-width') }}
                 {%+ if (dlg_var_v_centered|default(False)) %} modal-dialog-centered {% endif %}
                 {%+ if dlg_var_scroll %} modal-dialog-scrollable {% endif %}
                 {{ dlg_cls_dialog|default('')}} ">
-            <div class="modal-content {{ dlg_cls_content|default('')|trim }}">
-                <div class="modal-header {{ dlg_cls_header|default('dlg-header')|trim }}">
-                    <h5 class="modal-title {{ dlg_cls_title|default('dlg-title')|trim }}" inert>
+            <div class="modal-content {{dlg_cls_content|default('')}}">
+                <div class="modal-header {{ dlg_cls_header|default('dlg-header') }}">
+                    <h5 class="modal-title {{ dlg_cls_title|default('dlg-title') }}" inert>
                         {% if dlg_var_icon %}
-                        <img id="{{dlg_var_icon_id|default('dlg-var-icon-id')}})" src="{{dlg_var_icon}}" height="32px"
+                        <img id="{{dlg_var_icon_id|default('dlg-var-icon-id')}}" src="{{dlg_var_icon}}" height="32px"
                             width="32px" alt="[!]&nbsp;">
                         {% endif %}
                         {{formTitle|default(app_name)}}

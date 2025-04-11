@@ -75,6 +75,8 @@ class BaseConfig(Config):
     APP_MINIFIED: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
     APP_DISPLAY_DEBUG_MSG: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
     APP_MODE = "None"  # see below (enum)
+    # see main.py, uses package `watchfiles` if --no-reload is set in launch.json
+    APP_AUTO_RELOAD = True  # <- True if APP_PROPAGATE_DEBUG else False
 
     """ Helpers Configuration
         --------------------------

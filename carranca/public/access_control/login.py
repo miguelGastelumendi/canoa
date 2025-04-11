@@ -16,7 +16,7 @@ from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
 from ...private.roles_abbr import RolesAbbr
 from ...public.ups_handler import ups_handler
 from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.ui_texts_helper import add_msg_error, add_msg_fatal
+from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_fatal
 from ...helpers.route_helper import (
     home_route,
     redirect_to,

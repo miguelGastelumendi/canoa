@@ -14,7 +14,7 @@ from flask_login import current_user
 from ...public.models import persist_user
 from ...helpers.pw_helper import internal_logout, hash_pass
 from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.ui_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
+from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
 from ...helpers.route_helper import (
     redirect_to,
     login_route,

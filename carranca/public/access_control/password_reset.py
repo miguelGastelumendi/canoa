@@ -14,7 +14,7 @@ from ...public.models import persist_user
 from ...helpers.pw_helper import hash_pass
 from ...helpers.py_helper import now, to_str
 from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.ui_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
+from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
 from ...helpers.route_helper import (
     init_form_vars,
     get_input_text,

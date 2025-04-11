@@ -48,7 +48,7 @@ mgd
 {# display the if not Success or Exception (see carranca\helpers\ui_texts_helper.py[add_msg_success]) #}
 {% if not msgOnly %}
 {# { Form --> #}
-<form method="post" action="" id={{form_id}} class="mt-2" {{ formAttribute|default("") }}>
+<form method="post" action="" id={{form_id}} class="mt-2" {{ formAttribute|default('') }}>
     {{ form.hidden_tag() }}
 
     {% block frm_blc_content %}

@@ -47,11 +47,22 @@ sidekick.display.info(
 # the app is executed by
 # `canoa\.vscode\launch.json`
 
-if __name__ == "__main__":
-    app.run()
-    # TODO
-    # from werkzeug.serving import run_simple
-    # run_simple('localhost', 5000, app)
-    # #
+app_debug = sidekick.config.APP_DEBUG
+app_reload = sidekick.config.APP_AUTO_RELOAD
+
+if not __name__ == "__main__":
+    sidekick.display.warn("This module is not running as `__main__`, will not run the app.")
+
+else:
+    app.run(debug=app_debug)
+
+# TODO use wathcfiles to reload the app
+# elif if app_debug and not
+
+#     if sidekick.config.APP_AUTO_RERUN and app_debug:
+#         sidekick.display.warning(
+#             "You are running the app with both debug and auto-reload. This is not recommended."
+#         )
+#     app.run(debug=app_debug)
 
 # eof

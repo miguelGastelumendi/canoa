@@ -48,9 +48,14 @@ def home():
 
 
 @login_required
-@bp_private.route("/sep_mgmt", methods=["GET", "POST"])
-def sep_mgmt():
+@bp_private.route("/sep_mgmt_v1", methods=["GET", "POST"])
+def sep_mgmt_v1():
     """
+    ** /!\ DEPRECATED **
+    ** This version is deprecated and will be removed in the future. **
+    ** use sep_mgmt instead **
+
+    Version 1 of the SEP management page.
     Through this route, the admin user can manage which
     user is the 'owner' of a SEP
 
@@ -59,7 +64,24 @@ def sep_mgmt():
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .sep_mgmt import do_sep_mgmt
+        from .sep_mgmt_v1 import do_sep_mgmt
+
+        return do_sep_mgmt()
+
+
+@login_required
+@bp_private.route("/sep_mgmt", methods=["GET", "POST"])
+def sep_mgmt():
+    """
+    Through this route, the admin user can manage which
+    user is the 'owner' of each SEP
+
+    users
+    """
+    if nobody_is_logged():
+        return redirect_to(login_route())
+    else:
+        from .sep_mgmt_main import do_sep_mgmt
 
         return do_sep_mgmt()
 
@@ -111,9 +133,9 @@ def received_files_get() -> str:
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .received_files.received_files_mgmt import fetch_records
+        from .received_files.fetch_records import fetch_record_s
 
-        records, _ = fetch_records()
+        records, _ = fetch_record_s()
         json = records.to_json()
 
         return json

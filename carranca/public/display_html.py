@@ -22,14 +22,14 @@ from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.html_helper import img_filenames, img_change_src_path
 from ..helpers.jinja_helper import jinja_pre_template
-from ..helpers.ui_texts_helper import get_msg_error, get_section, UI_Texts_Key
+from ..helpers.ui_db_texts_helper import get_msg_error, get_section, UITextsKeys
 from ..common.app_context_vars import sidekick
 
 
 def __prepare_img_files(
     html_images: list[str], db_images: list[str], img_local_path: str, section: str
 ) -> bool:
-    from ..helpers.ui_texts_helper import get_text
+    from ..helpers.ui_db_texts_helper import get_text
 
     is_img_local_path_ready = os.path.exists(img_local_path)
     missing_files = html_images.copy()  # missing files from folder, assume all
@@ -86,8 +86,8 @@ def display_html(docName: str):
 
     ui_texts = get_section(section)
     # must exist
-    ui_texts[UI_Texts_Key.Page.title] = ui_texts.get(UI_Texts_Key.Page.title, "Display Document")
-    ui_texts[UI_Texts_Key.Form.title] = ui_texts.get(UI_Texts_Key.Form.title, "Document")
+    ui_texts[UITextsKeys.Page.title] = ui_texts.get(UITextsKeys.Page.title, "Display Document")
+    ui_texts[UITextsKeys.Form.title] = ui_texts.get(UITextsKeys.Form.title, "Document")
     ui_texts["documentStyle"] = ui_texts.get("documentStyle", "")
 
     # shortcuts

@@ -16,7 +16,7 @@ from ...public.models import persist_user
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.route_helper import get_account_form_data, get_input_text, init_form_vars
-from ...helpers.ui_texts_helper import add_msg_success, add_msg_error, add_msg_fatal
+from ...helpers.ui_db_texts_helper import add_msg_success, add_msg_error, add_msg_fatal
 
 from ..wtforms import RegisterForm
 from ..models import User

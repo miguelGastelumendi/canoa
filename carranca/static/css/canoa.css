@@ -25,7 +25,7 @@
 
 body {
     /* background: url(/static/img/pages/canoa_fundo.jpeg) no-repeat fixed; */
-    background: url(/static/img/pages/canoa_fundo-w.jpeg) no-repeat fixed;
+    background: url(/static/img/pages/canoa_fundo-w.jpeg) no-repeat center center fixed;
     background-size: cover;
 }
 
@@ -108,6 +108,13 @@ body {
 /* ============================================
  *  carranca\templates\layouts\form.html
  * ============================================ */
+.form-width {
+    /* https://getbootstrap.com/docs/4.2/components/modal/#optional-sizes */
+    /* this line gives error: "--bs-modal-lg is not set". So as --bs-modal-lg: 900px;
+    max-width: calc(var(--bs-modal-width) + (var(--bs-modal-lg) - var(--bs-modal-width)) / 2); */
+    max-width: calc(var(--bs-modal-width) + (900px - var(--bs-modal-width)) / 2);
+}
+
 .form-label {
     color: var(--canoa-form-label-color);
     font-weight: 500;

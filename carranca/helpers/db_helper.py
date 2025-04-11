@@ -16,6 +16,8 @@ from sqlalchemy.engine import CursorResult
 
 from psycopg2.errors import ProgrammingError as psycopg2_ProgrammingError
 
+from .types_helper import ui_db_texts
+
 from .. import global_sqlalchemy_scoped_session
 from ..config import BaseConfig
 from .py_helper import is_str_none_or_empty, to_str
@@ -158,7 +160,7 @@ def try_get_mgd_msg(error: object, default_msg: str = None) -> str:
 
 
 def db_fetch_rows(
-    func_or_query: str | Callable[[Session, Any], Any], *args, **kwargs
+    func_or_query: str | Callable[[Session, Any], Any], return_tuple_len: int = 1, *args, **kwargs
 ) -> Tuple[Optional[Exception], Optional[str], Tuple[Any, ...] | CursorResult]:
     """
     Executes a SQL query or a function within a database session.
@@ -180,13 +182,13 @@ def db_fetch_rows(
 
     """
 
-    def _prep_error(e: Exception, msg: str) -> Tuple[Exception, str, Tuple[None]]:
+    def _do_return_error(e: Exception, msg: str) -> Tuple[Exception, str, Tuple]:
         from ..common.app_context_vars import sidekick
 
         # TODO LOG to log
         err_code = f"[{e.code}]" if hasattr(e, "code") else ""
         sidekick.display.error(f"[{func_or_query}]: '{msg}': Error{err_code} details: {e}.")
-        return e, msg, (None,)
+        return e, msg, tuple([None] * return_tuple_len)
 
     try:
         db_session: Session
@@ -199,21 +201,21 @@ def db_fetch_rows(
                 cursor: CursorResult = db_session.execute(query)
                 return None, None, cursor
             else:
-                return _prep_error(
+                return _do_return_error(
                     TypeError(f"Invalid argument type in {__name__}"),
                     f"[{func_or_query}]: is not callable nor str.",
                 )
     # https://docs.sqlalchemy.org/en/13/errors.html
     # https://docs.sqlalchemy.org/en/13/errors.html#programmingerror
     except ProgrammingError as e:
-        return _prep_error(e, "Evaluating the SQL request.")
+        return _do_return_error(e, "Evaluating the SQL request.")
 
     # https://docs.sqlalchemy.org/en/13/errors.html#operationalerror
     except (OperationalError, DatabaseError) as e:
-        return _prep_error(e, "Database connection error.")
+        return _do_return_error(e, "Database connection error.")
 
     except Exception as e:
-        return _prep_error(e, "Error executing SQL.")
+        return _do_return_error(e, "Error executing SQL.")
 
 
 def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
@@ -278,15 +280,16 @@ def retrieve_dict(query: str):
 
     data = retrieve_data(query)
 
-    result = {}
+    result: ui_db_texts = {}
     try:
         if data and isinstance(data, tuple):
             # Check if data contains multiple rows of at least two columns
             if all(isinstance(row, tuple) and len(row) >= 2 for row in data):
                 result = {row[0]: row[1] for row in data}
             # Handle single row with multiple columns (if returned by retrieve_data)
-            elif isinstance(data[0], tuple) and len(data) == 2:
-                result = {data[0]: data[1]}
+            elif len(data) > 1 and not isinstance(data[0], tuple):
+                # result = {data[0]: data[1]}
+                result = {data[i]: data[i + 1] for i in range(0, len(data) - 1, 2)}
     except Exception as e:
         sidekick.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
         result = {}

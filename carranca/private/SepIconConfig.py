@@ -12,6 +12,7 @@ from flask import current_app
 from typing import TypeAlias
 
 from ..helpers.route_helper import static_route
+from ..helpers.html_helper import url_join
 
 SvgContent: TypeAlias = str
 
@@ -27,7 +28,8 @@ class SepIconConfig:
     none_file = "sep_icon-none.svg"
 
     def set_url(to: str) -> str:
-        return static_route(f"{SepIconConfig.folder}/{to}")
+        folder_and_name = url_join(SepIconConfig.folder, to)
+        return static_route(folder_and_name)
 
     def content_for(fill_color: str, text: str = "", stroke_width: int = 1) -> SvgContent:
         return (
