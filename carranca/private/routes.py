@@ -81,7 +81,7 @@ def sep_mgmt():
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .sep_mgmt_main import do_sep_mgmt
+        from .sep_mgmt.main import do_sep_mgmt
 
         return do_sep_mgmt()
 

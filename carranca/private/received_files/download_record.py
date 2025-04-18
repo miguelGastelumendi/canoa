@@ -23,8 +23,8 @@ from ...helpers.js_grid_helper import (
 )
 from ...helpers.file_helper import change_file_ext
 from ...helpers.route_helper import get_private_form_data, init_form_vars
-from ...helpers.ui_db_texts_helper import UITextsKeys
-from ...common.app_error_assistant import ModuleErrorCode
+from ...helpers.ui_db_texts_helper import UITextsKeys, add_msg_error
+from ...common.app_error_assistant import ModuleErrorCode, CanoeStumbled
 
 
 def download_rec() -> Response | None:
@@ -43,13 +43,15 @@ def download_rec() -> Response | None:
         rqst = request.form.get(js_grid_rsp)
         rec_id, rec_type = rqst[:-1], rqst[-1]
         if request.form.get(js_grid_sec_key) != js_grid_sec_value:
-            task_code += 2  # 7
-            ui_texts[UITextsKeys.Msg.exception] = ui_texts["secKeyViolation"]
-            # TODO internal_logout()
+            task_code += 1  # 3
+            msg = add_msg_error("secKeyViolation", ui_texts)
+            raise CanoeStumbled(msg, task_code, True, True)
         elif not (rec_id.isdigit() and rec_type in [DNLD_R, DNLD_F]):
-            ui_texts[UITextsKeys.Msg.exception] = ui_texts["secKeyViolation"]  # TODO
+            task_code += 2  # 4
+            msg = add_msg_error("secKeyViolation", ui_texts)
+            raise CanoeStumbled(msg, task_code, True, True)
         else:
-            task_code += 1  # 4
+            task_code += 3  # 5
             no_sep = ui_texts["itemNone"]
             received_files, download_file_name, report_ext = fetch_record_s(no_sep, rec_id, IGNORE_USER)
             if rec_type == DNLD_R:

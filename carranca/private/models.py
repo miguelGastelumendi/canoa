@@ -239,7 +239,7 @@ class MgmtSepUser(Base):
     """
     `vw_mgmt_user_sep` is a database view that contains the necessary
     information to present a UI grid for the application's admin.
-    This grid allows the admin to efficiently assign or remove users
+    This grid allows the admin to efficiently assign or remove a user
     from a SEP.
 
     The view has a trigger that saves the information on `users` table and
@@ -279,7 +279,7 @@ class MgmtSepUser(Base):
             sep_recs = db_session.scalars(select(MgmtSepUser)).all()
             sep_rows = DBRecords(MgmtSepUser.__tablename__, sep_recs)
 
-            usr_recs = db_session.scalars(select(SepUsers)).all()
+            usr_recs = db_session.scalars(select(SepUsers).order_by(SepUsers.username)).all()
             usr_list = DBRecords(SepUsers.__tablename__, usr_recs)
             return sep_rows, usr_list
 

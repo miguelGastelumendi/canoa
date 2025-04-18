@@ -97,7 +97,7 @@ def init_grid(for_user: int) -> str:
 
     except Exception as e:
         msg = add_msg_fatal("gridException", ui_texts, task_code)
-        _, template, ui_texts = ups_handler(task_code, msg, e, False)
+        _, template, ui_texts = ups_handler(task_code, msg, e)
         tmpl = render_template(template, **ui_texts)
 
     return tmpl

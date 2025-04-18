@@ -3,4 +3,10 @@
         "./carranca"
     ],
     "python.analysis.typeCheckingMode": "off",
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
 }

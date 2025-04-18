@@ -41,7 +41,7 @@ def receive_file() -> str:
     tmpl_form = ReceiveFileForm(request.form)
 
     def _result():
-        ui_texts[UITextsKeys.Form.icon] = None if logged_user.sep is None else logged_user.sep.icon_url
+        ui_texts[UITextsKeys.Form.icon_url] = None if logged_user.sep is None else logged_user.sep.icon_url
         tmpl = render_template(template, form=tmpl_form, **ui_texts)
         return tmpl
 

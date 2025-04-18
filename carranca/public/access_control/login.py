@@ -10,11 +10,13 @@ mgd
 
 from flask import render_template, request
 from flask_login import login_user
+
 from ...public.models import persist_user
 from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
 from ...private.roles_abbr import RolesAbbr
 from ...public.ups_handler import ups_handler
+from ...common.app_context_vars import sidekick
 from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_fatal
 from ...helpers.route_helper import (
@@ -24,7 +26,6 @@ from ...helpers.route_helper import (
     get_input_text,
     get_account_form_data,
 )
-from ...common.app_context_vars import sidekick
 from ..models import get_user_where, get_user_role_abbr
 from ..wtforms import LoginForm
 
@@ -35,7 +36,6 @@ def login():
     tmpl_form, template, is_get, ui_texts = init_form_vars()
 
     html = ""  # TODO init
-    logged_in = False
     try:
         task_code += 1  # 1
         tmpl_form = LoginForm(request.form)

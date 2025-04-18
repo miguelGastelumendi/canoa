@@ -26,20 +26,19 @@ dlg_cls_content
 dlg_cls_dialog
 dlg_cls_footer | default('dlg-footer')
 dlg_cls_header | default('dlg-header')
-dlg_cls_size | 'Default = 500px' modal-sm, modal-lg, modal-xl
-https://getbootstrap.com/docs/4.2/components/modal/#optional-sizes
+dlg_cls_size | modal-sm, 'Default = 500px', 'form-width (see canoa.css)', modal-lg, modal-xl
+// https://getbootstrap.com/docs/4.2/components/modal/#optional-sizes
 dlg_cls_title | default('dlg-title')
 dlg_cls_top | default('mt-6')
 
 
 
-dlg_var_icon // the url to an icon to set on the dialog header, if none, no icon is displayed
-dlg_var_icon_id //| 'dlg-var-icon-id' the id of the icon
+dlg_var_icon_url // the url to an icon to set on the dialog header, if none, no icon is displayed
+dlg_var_icon_id | 'dlg-var-icon-id' // the id of the icon
 dlg_var_style
 dlg_var_scroll
 dlg_var_close | default(True) // display Close button
 dlg_var_v_centered | default(False) // from is Vertical Centered
-
 mgd
 
 --------------------------------------- #}
@@ -48,10 +47,15 @@ mgd
 {% extends "./layouts/base.html.j2" %}
 
 {% block base_blc_content %}
+{% set btn_close_id = 'btn-close-id'%}
+{% set dlg_var_icon_id = dlg_var_icon_id | default('dlg-var-icon-id') %}
+{# {% if not dlg_var_icon_id %}
+{% set dlg_var_icon_id = 'dlg-var-icon-id' | Default() %}
+{% endif %} #}
 <section>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const closeButton = document.getElementById('btn-close-id');
+        document.addEventListener("DOMContentLoaded", () => {
+            const closeButton = document.getElementById("{{ btn_close_id }}");
             if (!closeButton) { return; }
             closeButton.addEventListener('click', () => {
                 window.location.href = "{{ public_route('login') }}";
@@ -59,7 +63,7 @@ mgd
         });
     </script>
     <div id="dlg-main-id" style="{{ dlg_var_style|default('display: block;') }}"
-        class="modal {% if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top | default('mt-5')|trim}}{% endif %}">
+        class="modal {% if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top | default('mt-5')}}{% endif %}">
         <div class="modal-dialog {{ dlg_cls_size|default('form-width') }}
                 {%+ if (dlg_var_v_centered|default(False)) %} modal-dialog-centered {% endif %}
                 {%+ if dlg_var_scroll %} modal-dialog-scrollable {% endif %}
@@ -67,15 +71,15 @@ mgd
             <div class="modal-content {{dlg_cls_content|default('')}}">
                 <div class="modal-header {{ dlg_cls_header|default('dlg-header') }}">
                     <h5 class="modal-title {{ dlg_cls_title|default('dlg-title') }}" inert>
-                        {% if dlg_var_icon %}
-                        <img id="{{dlg_var_icon_id|default('dlg-var-icon-id')}}" src="{{dlg_var_icon}}" height="32px"
-                            width="32px" alt="[!]&nbsp;">
+                        {% if dlg_var_icon_url %}
+                        <img id="{{dlg_var_icon_id}}" src="{{dlg_var_icon_url}}" height="32px" width="32px"
+                            alt="[!]&nbsp;">
                         {% endif %}
                         {{formTitle|default(app_name)}}
                     </h5>
                     {% if (dlg_var_close|default(True)) %}
-                    <button id="btn-close-id" class="btn-close {{ dlg_cls_btn_close | default('') }}" type="button"
-                        data-bs-dismiss="modal" aria-label="Close">
+                    <button id="{{ btn_close_id }}" class="btn-close {{ dlg_cls_btn_close | default('') }}"
+                        type="button" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                     {%endif%}
                 </div>

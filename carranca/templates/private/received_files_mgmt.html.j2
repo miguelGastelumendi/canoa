@@ -61,7 +61,7 @@ mgd
 {% block dlg_blc_javascript %}
 <script id="jsData">
     const usersList = {{ users_list | default ([]) | tojson}}
-    const rowData = ({{ files_rec | default ([]) | tojson}}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
+    const gridRows = ({{ files_rec | default ([]) | tojson}}).map(item => ({ ...item, when: item.when ? new Date(item.when) : null }));
     const listUser = ({{ users_list | default ([]) | tojson}})
     const colMeta = {{ grid_col_meta | tojson}};
 </script>

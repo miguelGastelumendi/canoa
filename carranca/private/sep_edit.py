@@ -43,14 +43,14 @@ def do_sep_edit() -> str:
             try:
                 sep, sep_fullname = MgmtSep.get_sep(logged_user.sep.id)
                 if sep is None or logged_user.sep.id is None:
-                    raise CanoeStumbled(add_msg_fatal("sepEditNotFound", ui_texts), task_code, True)
+                    raise CanoeStumbled(add_msg_fatal("sepEditNotFound", ui_texts), task_code)
                 task_code += 1  #
-                ui_texts[UITextsKeys.Form.icon] = logged_user.sep.icon_url
+                ui_texts[UITextsKeys.Form.icon_url] = logged_user.sep.icon_url
                 ui_texts[UITextsKeys.Msg.info] = ui_texts[UITextsKeys.Msg.info].format(sep_fullname)
             except CanoeStumbled:
                 raise
             except Exception:
-                raise CanoeStumbled(add_msg_fatal("sepEditSelectError", ui_texts), task_code, True)
+                raise CanoeStumbled(add_msg_fatal("sepEditSelectError", ui_texts), task_code)
 
             return sep, sep_fullname, task_code
 
@@ -90,11 +90,8 @@ def do_sep_edit() -> str:
             else:
                 task_code += 7  # 11+7 = 18
                 ext = SepIconConfig.ext.upper()
-                raise CanoeStumbled(
-                    add_msg_error("sepEditInvalidFormat", ui_texts, file_obj.filename, ext),
-                    task_code,
-                    False,
-                )
+                msg = add_msg_error("sepEditInvalidFormat", ui_texts, file_obj.filename, ext)
+                raise CanoeStumbled(msg, task_code)
 
             task_code += 19
             if not MgmtSep.set_sep(sep):

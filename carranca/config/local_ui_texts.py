@@ -29,7 +29,7 @@ local_texts = {
         default_section: {
             UITextsKeys.Form.title: "Situação Inesperada",
             UITextsKeys.Form.date_format: "pt-br",
-            UITextsKeys.Form.icon: "ups_handler.svg",
+            UITextsKeys.Form.icon_url: "ups_handler.svg",
         },
         UITextsKeys.Error.no_db_conn: {
             UITextsKeys.Msg.warn: "Houve um erro e não foi possível conectar ao banco de dados. Por favor, tente novamente mais tarde."
@@ -39,7 +39,7 @@ local_texts = {
         default_section: {
             UITextsKeys.Form.title: "Unexpected Situation",
             UITextsKeys.Form.date_format: "en",
-            UITextsKeys.Form.icon: "ups_handler.svg",
+            UITextsKeys.Form.icon_url: "ups_handler.svg",
         },
         UITextsKeys.Error.no_db_conn: {
             UITextsKeys.Msg.warn: "There was an error and it was not possible to connect to the database. Please try again later."
@@ -49,7 +49,7 @@ local_texts = {
         default_section: {
             UITextsKeys.Form.title: "Situación Inesperada",
             UITextsKeys.Form.date_format: "es",
-            UITextsKeys.Form.icon: "ups_handler.svg",
+            UITextsKeys.Form.icon_url: "ups_handler.svg",
         },
         UITextsKeys.Error.no_db_conn: {
             UITextsKeys.Msg.warn: "Hubo un error y no fue posible conectarse a la base de datos. Por favor, inténtelo de nuevo más tarde."
@@ -71,8 +71,8 @@ def local_ui_texts(section):
 def local_form_texts():
     locale = ui_texts_locale()
     ui_form_texts = local_texts.get(locale, {}).get(default_section, {})
-    icon = ui_form_texts[UITextsKeys.Form.icon]
-    ui_form_texts[UITextsKeys.Form.icon] = icon_url("home", icon)
+    icon = ui_form_texts[UITextsKeys.Form.icon_url]
+    ui_form_texts[UITextsKeys.Form.icon_url] = icon_url("home", icon)
 
     return ui_form_texts
 

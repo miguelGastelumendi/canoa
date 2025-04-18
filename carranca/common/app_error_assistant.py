@@ -22,13 +22,14 @@ def did_I_stumbled(e: Exception):
 class CanoeStumbled(Exception):
     """A specialized Exception for Canoa"""
 
-    def __init__(self, msg: str, error_code: int = 0, is_fatal: bool = False):
+    def __init__(self, msg: str, error_code: int = 0, logout: bool = False, is_fatal: bool = False):
         self.msg = msg
         self.error_code = error_code
+        self.logout = logout
         self.is_fatal = is_fatal
 
     def __str__(self):
-        return f"{self.msg} (Error Code: {self.error_code}, Fatal: {self.is_fatal})"
+        return f"{self.msg} (Error Code: {self.error_code}, Logout: {self.logout}, Fatal: {self.is_fatal})"
 
 
 class ModuleErrorCode(IntEnum):

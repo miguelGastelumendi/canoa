@@ -7,15 +7,13 @@ Managed & Displays a grid with sep «—» user
 Extends
 "./layouts/dialog.html.j2"
 
-v2 2024.04.01
 mgd
 --------------------------------------- #}
 {# cSpell:ignore mgmt onclick tojson onsubmit #}
 
 {# only specify if different from default #}
 {% set dlg_cls_size= 'modal-xl' %}
-{% set dlg_var_icon_url= iconFileUrl %}
-{% set dlg_var_icon_id = 'dlg-var-icon-id' %}
+{% set dlg_var_icon= iconFileUrl %}
 
 {% extends "./layouts/dialog.html.j2" %}
 
@@ -30,8 +28,20 @@ mgd
 {% include "./includes/grid-body.html.j2" %}
 {% endblock dlg_blc_body %}
 
+
+
 {% block dlg_blc_footer %}
 <div class="mb-3 row">
+    <div class="col-auto">
+        <button type="button" onclick="gridAdd()" class="form-main-btn">
+            {{grdBtnAdd | default("Add")}}
+        </button>
+    </div>
+    <div class="col-auto">
+        <button type="button" onclick="gridEdit()" class="form-main-btn">
+            {{grdBtnEdit | default("Edit")}}
+        </button>
+    </div>
     <div class="col-auto">
         <form id="hiddenForm" onsubmit="return gridCargo('{{grid_rsp}}')" method="POST"
             action="{{private_route('sep_mgmt')}}">
@@ -43,34 +53,30 @@ mgd
             </button>
         </form>
     </div>
-    <div class="col-auto">
-        <button type="button" onclick="gridCancel()" class="form-main-btn">
-            {{grdBtnCancel | default("Cancel")}}
-        </button>
-    </div>
 </div>
 {% endblock dlg_blc_footer %}
-
 {% block dlg_blc_javascript %}
-{# col_names = [0:"sep_id", 1:"sep_icon_name", 2:"sep_fullname", 3:"user_curr", 4:"assigned_at", 5:"user_new"] #}
 <script>
     const itemNone = '{{ itemNone }}';
     const itemRemove = '{{ itemRemove }}';
-    const gridRows = ({{ sep_data | tojson }}).map(item => {
-        item.assigned_at = item.assigned_at ? new Date(item.assigned_at) : null;
+    const gridRows = ({{ sepData | tojson }}).map(item => {
+        if (item.when) {
+            item.when = new Date(item.when);
+        }
         return item;
     });
-    const userList = {{ (user_list if user_list else '[]') | tojson }};
-    const cargoKeys = {{ cargo_keys | tojson | safe }};
+    const usedList = gridRows.map(item => item.sep);
+    const initialList = {{ (sepList if sepList else '[]') | tojson }};
     const gridID = '{{ grid_id }}';
-    const iconID = '{{ dlg_var_icon_id }}';
     const colMeta = {{ grid_col_meta | tojson | safe }};
     const colIconSrc = colMeta[1].n;
     const colUserCurr = colMeta[3].n;
-    const colUserNew = colMeta[5].n;
+    const colUserNew = colMeta[4].n;
     const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{grid_submit_id}}'));
     const dateFormat = '{{ user_date_format }}';
-
+    const formAdd = '{{ formAdd }}';
+    const formEdit = '{{ formEdit }}';
+    const formCantEdit = '{{ formCantEdit }}';
 </script>
 <script src="{{static_route('js/sep_mgmt.js')}}"></script>
 {% endblock dlg_blc_javascript %}

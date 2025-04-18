@@ -12,10 +12,16 @@ mgd 202-04-09
 
 from sqlalchemy.orm import Session
 
-from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.types_helper import ui_db_texts, sep_mgmt_rtn
-from ..helpers.email_helper import RecipientsListStr
-from ..helpers.ui_db_texts_helper import format_ui_item
+from ...helpers.py_helper import is_str_none_or_empty
+from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn
+from ...helpers.email_helper import RecipientsListStr
+from ...helpers.ui_db_texts_helper import format_ui_item
+
+from carranca import global_sqlalchemy_scoped_session
+from ..models import MgmtEmailSep
+from ...common.app_context_vars import sidekick
+from ...helpers.py_helper import now
+from ...helpers.sendgrid_helper import send_email
 
 
 def send_email(batch_code: str, ui_texts: ui_db_texts, task_code: int) -> sep_mgmt_rtn:
@@ -23,11 +29,6 @@ def send_email(batch_code: str, ui_texts: ui_db_texts, task_code: int) -> sep_mg
     Send an email for each user with a
     'new' SEP or if it was removed
     """
-    from carranca import global_sqlalchemy_scoped_session
-    from .models import MgmtEmailSep
-    from ..common.app_context_vars import sidekick
-    from ..helpers.py_helper import now
-    from ..helpers.sendgrid_helper import send_email
 
     task_code += 1
     msg_error = None

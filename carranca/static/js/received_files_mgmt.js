@@ -34,7 +34,7 @@ const gridOptions = {
             btnRprt.disabled = !activeRow.data.report_found;
         }
     },
-    rowData: rowData,
+    rowData: gridRows,
     columnDefs: [
         { field: colMeta[0].n, flex: 0, hide: true },
         { field: colMeta[1].n, flex: 0, hide: true },
@@ -80,6 +80,6 @@ const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
 /*
 fetch('https://www.ag-grid.com/example-assets/space-mission-data.json')
     .then(response => response.json())
-    .then((data: any) => gridApi.setGridOption('rowData', data))
+    .then((data: any) => gridApi.setGridOption('gridRows', data))
 */
 // eof

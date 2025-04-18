@@ -12,7 +12,7 @@ mgd 2025-02-04
 import os, time, platform
 from sys import argv
 from datetime import datetime
-from typing import Any, Type, Tuple, List, Optional
+from typing import Any, Type, Dict, Tuple, List, Optional
 
 from ..common.app_constants import APP_NAME
 
@@ -341,6 +341,22 @@ def copy_attributes(class_instance: Any, this_types: Tuple[Type] | Type = None) 
             setattr(copy_instance, key, value)
 
     return copy_instance
+
+
+def class_to_dict(from_class: Type) -> Dict[str, Any]:
+    """
+    Converts a class's non-callable, non-dunder attributes to a dictionary.
+    Args:
+        from_class (Type): The class whose attributes are to be converted.
+    Returns:
+        Dict[str, Any]: A dictionary containing the class's attribute names and their corresponding values,
+        excluding methods and special (dunder) attributes.
+    """
+    dic = {}
+    if from_class is not None:
+        dic = {k: v for k, v in from_class.__dict__.items() if not k.startswith("__") and not callable(v)}
+
+    return dic
 
 
 # eof

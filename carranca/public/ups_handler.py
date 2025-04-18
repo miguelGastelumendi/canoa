@@ -30,7 +30,7 @@ from ..common.app_error_assistant import CanoeStumbled
 
 #  --------------------
 def ups_handler(
-    error_code: int, user_msg: str, e: Exception, logout: bool = False
+    error_code: int, user_msg: str, e: Exception, logout: bool = None
 ) -> Tuple[dict, str, ui_db_texts]:
     from ..common.app_context_vars import logged_user, sidekick
 
@@ -42,18 +42,22 @@ def ups_handler(
     if isinstance(e, CanoeStumbled):
         error_code = e.error_code
         error_msg = e.msg
+        logout = e.logout
     elif logged_user.is_power if logged_user else False:
         error_msg = str(e)
     else:
         error_msg = None
 
+    # Get the name of the caller function
+    caller_function = inspect.stack()[1].function
+
     context_texts = {
         UITextsKeys.Msg.warn: user_msg,
         UITextsKeys.Msg.error: error_msg,
         UITextsKeys.Form.msg_only: True,
-        UITextsKeys.Form.icon: icon_url("icons", "ups_handler.svg"),
+        UITextsKeys.Form.icon_url: icon_url("icons", "ups_handler.svg"),
         UITextsKeys.Error.code: error_code,
-        UITextsKeys.Error.where: inspect.stack()[1].function,
+        UITextsKeys.Error.where: caller_function,
         UITextsKeys.Error.http_code: 500,
     }
 
@@ -66,7 +70,7 @@ def ups_handler(
             ui_texts[key] = value
 
     # TODO: send email
-    if logout and is_someone_logged():
+    if (False if logout is None else logout) and is_someone_logged():
         internal_logout()
 
     ups_template = get_template_name("ups_page", "home")

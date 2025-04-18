@@ -50,7 +50,7 @@ class DBRecord:
     A class that initializes an instance with attributes from a dictionary.
     """
 
-    name = "db_record"
+    # name = "db_record" use  return self.__class__.__name__
 
     def __init__(self, rec_dict: dict, field_types_filter: Optional[List[type]]):
         """
