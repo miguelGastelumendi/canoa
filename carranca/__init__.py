@@ -21,7 +21,7 @@ from typing import Optional, Dict
 global_sidekick: Optional[Sidekick] = None
 global_login_manager: Optional[LoginManager] = None
 global_sqlalchemy_scoped_session: Optional[scoped_session] = None
-global_ui_texts_cache: dict = {}
+global_ui_texts_cache: Dict = {}
 APP_DB_VERSION: str = "?"
 
 """
@@ -108,16 +108,6 @@ def _register_blueprint_routes(app: Flask):
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
 
-    def __get_jinja_user() -> Optional[JinjaUser]:
-        juser: JinjaUser = None
-        if is_someone_logged():
-            # 'import logged_user' only when a user is logged
-            from .common.app_context_vars import jinja_user
-
-            juser = jinja_user
-
-        return juser
-
     def __get_app_menu(sub_menu_name: str) -> ui_db_texts:
         sub_menu: dict = {}
         if not is_someone_logged():
@@ -132,13 +122,21 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
 
         return sub_menu
 
+    def __get_jinja_user() -> Optional[JinjaUser]:
+        if not is_someone_logged():
+            return None
+        else:  # 'import jinja_user' only when a user is logged
+            from .common.app_context_vars import jinja_user
+
+            return jinja_user
+
     app.jinja_env.globals.update(
         app_name=app_name,
         app_version=app_version,
         static_route=static_route,
         private_route=private_route,
         public_route=public_route,
-        logged_user=__get_jinja_user,
+        jinja_user=__get_jinja_user,
         app_menu=__get_app_menu,
     )
     if debugUndefined:
@@ -259,7 +257,7 @@ def create_app():
     # -- Jinja2
     _register_jinja(app, global_sidekick.config.DEBUG_TEMPLATES, APP_NAME, APP_VERSION)
     _info(
-        f"The Jinja functions of this app have been attached to 'jinja_env.globals' (with debug_templates {global_sidekick.config.DEBUG_TEMPLATES})."
+        f"The Jinja functions of this app have been attached to 'jinja_env.globals' (with debug_templates as {global_sidekick.config.DEBUG_TEMPLATES})."
     )
 
     # config sidekick.display

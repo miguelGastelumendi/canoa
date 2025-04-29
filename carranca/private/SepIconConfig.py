@@ -40,11 +40,11 @@ class SepIconConfig:
         )
 
     def empty_content() -> SvgContent:
-        # see canoa.css[.grd-item-none]
+        # see canoa.css[.grid-item-none]
         return SepIconConfig.content_for("darkgrey", "Falta")
 
     def error_content() -> SvgContent:
-        # see canoa.css[.grd-item-remove]
+        # see canoa.css[.grid-item-remove]
         return SepIconConfig.content_for("firebrick", "Erro")
 
     def none_content() -> SvgContent:

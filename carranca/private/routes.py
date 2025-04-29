@@ -8,6 +8,7 @@ mgd
 """
 
 # cSpell: ignore werkzeug wtforms tmpl mgmt
+from typing import Optional
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 
@@ -48,28 +49,6 @@ def home():
 
 
 @login_required
-@bp_private.route("/sep_mgmt_v1", methods=["GET", "POST"])
-def sep_mgmt_v1():
-    """
-    ** /!\ DEPRECATED **
-    ** This version is deprecated and will be removed in the future. **
-    ** use sep_mgmt instead **
-
-    Version 1 of the SEP management page.
-    Through this route, the admin user can manage which
-    user is the 'owner' of a SEP
-
-    users
-    """
-    if nobody_is_logged():
-        return redirect_to(login_route())
-    else:
-        from .sep_mgmt_v1 import do_sep_mgmt
-
-        return do_sep_mgmt()
-
-
-@login_required
 @bp_private.route("/sep_mgmt", methods=["GET", "POST"])
 def sep_mgmt():
     """
@@ -81,14 +60,14 @@ def sep_mgmt():
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .sep_mgmt.main import do_sep_mgmt
+        from .seps_mgmt.seps_grid import sep_mgmt
 
-        return do_sep_mgmt()
+        return sep_mgmt()
 
 
 @login_required
-@bp_private.route("/sep_edit", methods=["GET", "POST"])
-def sep_edit():
+@bp_private.route("/sep_edit", defaults={"sid": None}, methods=["GET", "POST"])
+def sep_edit(sid: Optional[str]):
     """
     Through this route, the user can edit a SEP data
     """
@@ -97,7 +76,7 @@ def sep_edit():
     else:
         from .sep_edit import do_sep_edit
 
-        return do_sep_edit()
+        return do_sep_edit(sid)
 
 
 @login_required

@@ -11,16 +11,46 @@ mgd
 
 # cSpell:ignore mgmt
 
+import datetime
 from enum import IntEnum
+
+from ..helpers.py_helper import crc16, now_as_iso
+
+
+def proper_user_exception(e: Exception, task_code: int) -> str:
+    """
+    Handles exceptions by logging the error and returning an appropriate message
+    based on the user's role.
+    Args:
+        e (Exception): The exception that occurred.
+        task_code (int): A code representing the task during which the exception occurred.
+    Returns:
+        str: A detailed error message for support/administrative users, or a
+             code (e-code) that is searchable in the log
+    """
+    from .app_context_vars import (
+        app_user,
+        sidekick,
+    )  # global_sidekick is not ready yet when this module is used
+
+    error_str = str(e)
+    code = crc16(error_str)
+    info_str = f"e-code: {code}, task: {task_code}, date: {now_as_iso()}"
+
+    sidekick.app_log.error(f"user: {app_user.id}, {info_str}, error: {error_str}")
+    if app_user and app_user.ready and (app_user.is_support or app_user.is_adm):
+        return error_str
+    else:
+        return info_str
 
 
 def did_I_stumbled(e: Exception):
     """Is it me who stumbled?"""
-    return isinstance(e, CanoeStumbled)
+    return isinstance(e, AppStumbled)
 
 
-class CanoeStumbled(Exception):
-    """A specialized Exception for Canoa"""
+class AppStumbled(Exception):
+    """A specialized Exception for the APP"""
 
     def __init__(self, msg: str, error_code: int = 0, logout: bool = False, is_fatal: bool = False):
         self.msg = msg

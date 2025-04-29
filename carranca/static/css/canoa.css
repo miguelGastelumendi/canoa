@@ -43,6 +43,10 @@ body {
     user-select: none;
 }
 
+.code-text {
+    font-family: var(--bs-font-monospace);
+}
+
 /* ============================================
  *  navigator.html.j2
  * ============================================ */
@@ -54,8 +58,16 @@ body {
 /* ============================================
  *  carranca\templates\layouts\dialog.tmpl
  * ============================================ */
+.dlg-width {
+    /* https://getbootstrap.com/docs/4.2/components/modal/#optional-sizes */
+    /* this line gives error: "--bs-modal-lg is not set". So as --bs-modal-lg: 900px;
+    max-width: calc(var(--bs-modal-width) + (var(--bs-modal-lg) - var(--bs-modal-width)) / 2); */
+    max-width: calc(var(--bs-modal-width) + (900px - var(--bs-modal-width)) / 2);
+}
+
 .dlg-header {
     background-color: var(--canoa-dlg-header-bg);
+    padding: 0.6rem 1rem 0.6rem 1rem
 }
 
 .dlg-title {
@@ -70,6 +82,7 @@ body {
 
 .dlg-footer {
     background-color: var(--canoa-form-footer-bg);
+    min-height: 2rem;
 }
 
 
@@ -83,41 +96,36 @@ body {
 /* ============================================
  *  carranca\templates\layouts\grid.html.j2
  * ============================================ */
-.grd-item-exist {
-    background: coral;
+/* .grid-col-sep_new {
+    background: inherit;
 }
 
+.grid-item-exist {
+    background: coral;
+} */
+
 /* if changed, see SepIconConfig.error_content() */
-.grd-item-remove {
+.grid-item-remove {
     color: firebrick;
 }
 
 /* if changed, see SepIconConfig.empty_content() */
-.grd-item-none {
+.grid-item-none {
     color: darkgrey;
 }
 
-.grd-item-added {
+.grid-item-changed {
     color: limegreen;
-}
-
-.grd-col-sep_new {
-    background-color: azure;
 }
 
 /* ============================================
  *  carranca\templates\layouts\form.html
  * ============================================ */
-.form-width {
-    /* https://getbootstrap.com/docs/4.2/components/modal/#optional-sizes */
-    /* this line gives error: "--bs-modal-lg is not set". So as --bs-modal-lg: 900px;
-    max-width: calc(var(--bs-modal-width) + (var(--bs-modal-lg) - var(--bs-modal-width)) / 2); */
-    max-width: calc(var(--bs-modal-width) + (900px - var(--bs-modal-width)) / 2);
-}
-
 .form-label {
     color: var(--canoa-form-label-color);
     font-weight: 500;
+    /* see bootstrap.form-label { margin-bottom: .5rem; } */
+    margin-bottom: 0px;
 }
 
 .form-text {
@@ -148,9 +156,11 @@ body {
     color: var(--canoa-form-button-color);
     font-size: 1.1rem;
     min-width: 8em;
+    border-radius: var(--bs-border-radius);
 }
 
 .form-main-btn:hover {
+    /* same as fillcolor of carranca\static\icons\ups_handler.svg */
     background-color: var(--canoa-form-button-bg);
     filter: brightness(130%);
 }

@@ -40,12 +40,20 @@
 
 ------- 2025 - March -------------
 ----------------------------------
+    <form method="post"  .../> hidden input in all forms (grids)
 
 -----------------------------------------------------------
   Logbook
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
 -----------------------------------------------------------
+2025-04-19,23--26  β 4.06 DB v 3.71.0 issue #34
+    1. Grid Management of SE Ready Part 3/4 2/4
+    2. new and redone all views related to [user 1->n sep]
+       new columns: sep.mgmt_users_id, sep.mgmt_ ...
+       removed columns: users.mgmt_seep_id, users.mgmt_...
+    3. app_user -> jinja_user, logged_user -> app_user
+
 
 2025-04-14--17 β 4.05 issue #34 Part 2/4
     2 Novo Grid, refactor sep_mgmt (db v)
@@ -54,7 +62,7 @@
     4 Salvar Operações e enviar emails
 
 2025-04-04,07--10 β 4.04 issue #34 Part 1/4
-    1 Nova view vw_mgmt_sep_user
+    1 Nova view vw_mgmt_seps_user
     :
     2 Novo Grid
     3 Operações no grid

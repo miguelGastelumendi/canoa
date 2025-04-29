@@ -19,7 +19,7 @@ from ...helpers.route_helper import get_private_form_data, init_form_vars
 from ...helpers.js_grid_helper import js_grid_constants
 from ...helpers.ui_db_texts_helper import UITextsKeys, add_msg_fatal
 from ...common.app_error_assistant import ModuleErrorCode
-from ...common.app_context_vars import sidekick, logged_user
+from ...common.app_context_vars import app_user
 
 from .constants import DNLD_R, DNLD_F
 from .fetch_users import fetch_user_s
@@ -38,7 +38,7 @@ def init_grid(for_user: int) -> str:
         task_code += 1  # 1
         template, is_get, ui_texts = get_private_form_data("receivedFilesMgmt")
         task_code += 1  # 2
-        if logged_user.is_power:
+        if app_user.is_power:
             task_code += 1  # 3
             users = fetch_user_s()
             task_code += 1  # 4
@@ -79,7 +79,7 @@ def init_grid(for_user: int) -> str:
         grid_const, _ = js_grid_constants(ui_texts["colMetaInfo"], col_names)
 
         task_code += 1  # 9
-        grid_const["user_is_power"] = logged_user.is_power
+        grid_const["user_is_power"] = app_user.is_power
         grid_const["dnld_R"] = DNLD_R
         grid_const["dnld_F"] = DNLD_F
         task_code += 1  # 10

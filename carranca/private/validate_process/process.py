@@ -29,9 +29,8 @@ from typing import Tuple
 
 from ..models import UserDataFiles
 
-from ..LoggedUser import LoggedUser
-from ...helpers.py_helper import is_str_none_or_empty
-from ...helpers.user_helper import now
+from ..AppUser import AppUser
+from ...helpers.py_helper import is_str_none_or_empty, now
 from ...common.app_error_assistant import ModuleErrorCode
 from ...config.ValidateProcessConfig import ValidateProcessConfig
 
@@ -46,7 +45,7 @@ from .register import register
 
 
 def process(
-    logged_user: LoggedUser,
+    app_user: AppUser,
     file_data: object | str,
     proc_data: ProcessData,
     received_at: datetime,
@@ -83,7 +82,7 @@ def process(
     cargo = Cargo(
         "2025.02.05",  # process version, 22 new column user_files.sep_id
         sidekick.debugging,
-        logged_user,
+        app_user,
         ValidateProcessConfig(sidekick.debugging),
         proc_data,
         received_at,

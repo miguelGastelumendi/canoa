@@ -1,8 +1,8 @@
 """
-    Current User information helpers
+Current User information helpers
 
-    mgd
-    Equipe da Canoa -- 2024
+mgd
+Equipe da Canoa -- 2024
 """
 
 # cSpell:ignore cuser mgmt
@@ -41,12 +41,6 @@ class UserFolders:
     base_downloaded = "downloaded"
     # this is a local for uploaded, downloaded & others users files
     base_user_files = "user_files"
-
-
-def now_as_text() -> str:
-    # current date time for user
-    ##- TODO: get config <- from ui_texts
-    return now().strftime("%d/%m/%Y às %H:%M")
 
 
 def get_user_code(id: int) -> str:

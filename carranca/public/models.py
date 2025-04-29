@@ -61,6 +61,7 @@ class User(Base, UserMixin):
     email_confirmed = Column(Boolean, Computed("email_confirmed", persisted=True))
 
     role = relationship("Role", back_populates="users")
+    debug = Column(Boolean, default=False)
 
     # Here's how to use role_mame in Python instead of user.role.name
     # @hybrid_property

@@ -1,0 +1,51 @@
+{# ------------------------------------
+_action_forms_and_btns.html.j2
+
+Macros for Action Forms and Buttons:
+- `action_form__close`: Closes the form and redirects to login().
+- `action_form__submit`: Closes the form (incomplete implementation).
+
+Buttons:
+- `btn_close`: [Close] | [X]
+- `btn_submit`: [Submit]
+
+Includes a cancel button for use with /templates/layouts/base.html.j2.
+Extends "./layouts/dialog.html.j2".
+
+v2 2024.04.01
+mgd
+
+Spell:ignore endmacro
+#}
+
+
+{# TODO, `body` is a difficult task
+
+{% macro action_form_submit(action_form__form_submit_id, action="action", body="") %}
+<form action="{{action}}" method="post" id="{{action_form__form_submit_id}}">
+    {{body}}
+</form>
+{% endmacro %}
+
+#}
+
+{# `action_form__form_close_id` is defined in templates\layouts\base.html.j2 #}
+{% macro action_form__close(action_form__form_close_id) %}
+<form action="{{public_route('login')}}" method="get" id="{{action_form__form_close_id}}"></form>
+{% endmacro %}
+
+{% macro
+btn_close(action_form__form_close_id, caption="OK", id="form_btn_close", class="form-main-btn form-cancel")
+%}
+<button type="submit" class="{{class}}" form="{{action_form__form_close_id}}" id="{{id}}">
+    {{caption}}
+</button>
+{% endmacro %}
+
+{% macro btn_submit(action_form__form_submit_id, caption="Save", id="btn_submit", attrib= "") %}
+<button type="submit" class="form-main-btn form-submit" form="{{action_form__form_submit_id}}" id="{{id}}" {{attrib}}>
+    {{caption}}
+</button>
+{% endmacro %}
+
+{# eof #}

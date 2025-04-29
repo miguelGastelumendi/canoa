@@ -11,12 +11,11 @@ mgd
 from flask import render_template, request
 from werkzeug.utils import secure_filename
 
-from ..common.app_context_vars import sidekick, logged_user
+from ..common.app_context_vars import sidekick, app_user
 from ..config.ValidateProcessConfig import ValidateProcessConfig
 
-from ..helpers.py_helper import is_str_none_or_empty
+from ..helpers.py_helper import is_str_none_or_empty, now
 from ..helpers.file_helper import folder_must_exist
-from ..helpers.user_helper import now
 from ..common.app_error_assistant import ModuleErrorCode
 from ..helpers.route_helper import get_private_form_data, get_input_text
 from ..helpers.ui_db_texts_helper import (
@@ -41,12 +40,12 @@ def receive_file() -> str:
     tmpl_form = ReceiveFileForm(request.form)
 
     def _result():
-        ui_texts[UITextsKeys.Form.icon_url] = None if logged_user.sep is None else logged_user.sep.icon_url
+        ui_texts[UITextsKeys.Form.icon_url] = None if app_user.sep is None else app_user.sep.icon_url
         tmpl = render_template(template, form=tmpl_form, **ui_texts)
         return tmpl
 
     if is_get:
-        sep_fullname = ui_texts["noSEassigned"] if logged_user.sep is None else logged_user.sep.full_name
+        sep_fullname = ui_texts["noSEassigned"] if app_user.sep is None else app_user.sep.full_name
         ui_texts[UITextsKeys.Msg.info] = ui_texts[UITextsKeys.Msg.info].format(sep_fullname)
         return _result()
 
@@ -97,8 +96,8 @@ def receive_file() -> str:
             receive_file_cfg = ValidateProcessConfig(sidekick.debugging)
             common_folder = sidekick.config.COMMON_PATH
             pd = ProcessData(
-                logged_user.code,
-                logged_user.folder,
+                app_user.code,
+                app_user.folder,
                 common_folder,
                 receive_file_cfg.dv_app.folder,
                 receive_file_cfg.dv_app.batch,
@@ -147,10 +146,10 @@ def receive_file() -> str:
         from .validate_process.process import process
 
         task_code += 1  # 22
-        error_code, msg_error, _ = process(logged_user, file_data, pd, received_at, valid_extensions)
+        error_code, msg_error, _ = process(app_user, file_data, pd, received_at, valid_extensions)
 
         if error_code == 0:
-            log_msg = add_msg_success("uploadFileSuccess", ui_texts, pd.user_receipt, logged_user.email)
+            log_msg = add_msg_success("uploadFileSuccess", ui_texts, pd.user_receipt, app_user.email)
             sidekick.display.debug(log_msg)
         else:
             log_msg = _log_error(msg_error, error_code, "", True)

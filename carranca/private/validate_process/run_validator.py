@@ -7,11 +7,11 @@ Equipe da Canoa -- 2024—2025
 mgd
 """
 
-# cSpell:ignore 
+# cSpell:ignore
 
 import asyncio
 
-from ..LoggedUser import LoggedUser
+from ..AppUser import AppUser
 from ...common.app_context_vars import sidekick
 from ...config.ValidateProcessConfig import DataValidateApp
 from ...helpers.py_helper import (
@@ -28,12 +28,12 @@ async def run_validator(
     input_folder: str,
     output_folder: str,
     file_name: str,
-    user: LoggedUser,
+    app_user: AppUser,
     debug_validator: bool = False,
 ):
     #  This function knows quite a lot of how to run [data_validate]
 
-    sep_full_name = "[None]" if user.sep is None else user.sep.full_name
+    sep_full_name = "[None]" if app_user.sep is None else app_user.sep.full_name
 
     run_command = [
         batch_full_name,
@@ -44,7 +44,7 @@ async def run_validator(
         d_v.na_out_folder,
         output_folder,  # param 3   Don't use " "
         d_v.na_user_name,
-        quote(user.name),  # param 4
+        quote(app_user.name),  # param 4
         d_v.na_file_name,
         quote(file_name),  # param 5
         d_v.na_schema_se,

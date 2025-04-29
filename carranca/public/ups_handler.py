@@ -15,7 +15,7 @@ mgd 2025-03-05
 
 # cSpell:ignore
 import inspect
-from typing import Optional, Tuple
+from typing import Tuple
 
 # TO USE from flask import render_template
 
@@ -25,25 +25,25 @@ from ..helpers.types_helper import ui_db_texts
 from ..helpers.route_helper import get_template_name
 from ..config.local_ui_texts import local_ui_texts, local_form_texts
 from ..helpers.ui_db_texts_helper import get_section, UITextsKeys
-from ..common.app_error_assistant import CanoeStumbled
+from ..common.app_error_assistant import AppStumbled
 
 
 #  --------------------
 def ups_handler(
     error_code: int, user_msg: str, e: Exception, logout: bool = None
 ) -> Tuple[dict, str, ui_db_texts]:
-    from ..common.app_context_vars import logged_user, sidekick
+    from ..common.app_context_vars import app_user, sidekick
 
     try:
         ui_texts = get_section(f"Ups-{error_code}")
     except:
         ui_texts = local_ui_texts(UITextsKeys.Error.no_db_conn)
 
-    if isinstance(e, CanoeStumbled):
+    if isinstance(e, AppStumbled):
         error_code = e.error_code
         error_msg = e.msg
         logout = e.logout
-    elif logged_user.is_power if logged_user else False:
+    elif app_user.is_power if app_user else False:
         error_msg = str(e)
     else:
         error_msg = None
@@ -56,6 +56,7 @@ def ups_handler(
         UITextsKeys.Msg.error: error_msg,
         UITextsKeys.Form.msg_only: True,
         UITextsKeys.Form.icon_url: icon_url("icons", "ups_handler.svg"),
+        UITextsKeys.Form.btn_close: "Entendi",  # TODO: uiTexts
         UITextsKeys.Error.code: error_code,
         UITextsKeys.Error.where: caller_function,
         UITextsKeys.Error.http_code: 500,

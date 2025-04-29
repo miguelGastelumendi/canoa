@@ -52,19 +52,36 @@ class DBRecord:
 
     # name = "db_record" use  return self.__class__.__name__
 
-    def __init__(self, rec_dict: dict, field_types_filter: Optional[List[type]]):
+    def __init__(
+        self,
+        rec_dict: Dict[str, Any],
+        field_names_filter: Optional[List[str]] = None,
+        field_types_filter: Optional[List[type]] = None,
+    ):
         """
         Args:
             rec_dict (dict): A dictionary containing the attributes to set on the instance.
+            field_names_filter (Optional[List[str]]): If provided, only sets attributes whose names are in this list
+                and return the keys in that order.
             field_types_filter (Optional[List[type]]): If provided, only sets attributes that match the types in this list.
-            rec_name (Optional[str]): The name of the class. Defaults to None.
 
         Note:
+            If `field_names_filter` is provided, only keys with names in the list will be set as attributes.
             If `field_types_filter` is provided, only keys with values matching the specified types will be set as attributes.
         """
-        for key, value in rec_dict.items():
+        if field_names_filter is None:
+            key_values = list(rec_dict.items())
+        else:
+            key_values: List[tuple[str, Any]] = []
+            for field in field_names_filter:
+                if field in rec_dict:
+                    key_values.append((field, rec_dict[field]))
+
+        for key, value in key_values:
             if isinstance(value, field_types_filter) if field_types_filter else True:
                 setattr(self, key, value)
+
+        k = 5
 
     def keys(self):
         return list(self.__dict__.keys())
@@ -85,17 +102,27 @@ class DBRecords:
         self,
         table_name: Optional[str] = "",
         slqaRecords: Optional[Sequence] = None,
+        field_names_filter: Optional[List[str]] = None,
         filter_types: Optional[Tuple[type, ...]] = None,
         includeNone: bool = True,
     ):
         self.records: ListOfDBRecords = []
         self.table_name = self.__class__.__name__ if is_str_none_or_empty(table_name) else table_name
+        self.field_names_filter = (
+            field_names_filter
+            if isinstance(field_names_filter, List) and len(field_names_filter) > 0
+            else None
+        )
         self.filter_types = filter_types if filter_types is not None else DBRecords.simple_types_filter
+
         if includeNone:
             self.filter_types += (type(None),)
 
         if slqaRecords is not None:
-            self.records = [DBRecord(record.__dict__, self.filter_types) for record in slqaRecords]
+            self.records = [
+                DBRecord(record.__dict__, self.field_names_filter, self.filter_types)
+                for record in slqaRecords
+            ]
 
     def __iter__(self):
         """make DBRecords iterable"""
@@ -110,20 +137,23 @@ class DBRecords:
         return self.records[index]
 
     @property
-    def count(self):
+    def count(self) -> int:
         return self.__len__()
 
-    def append(self, record_dict: Dict[str, Any]):
+    def append(self, record_dict: Dict[str, Any]) -> None:
         """Appends a new DBRecord object based on the given dictionary."""
-        new_record = DBRecord(record_dict, self.filter_types)
+        new_record = DBRecord(record_dict, self.field_names_filter, self.filter_types)
         self.records.append(new_record)
 
-    def to_json(self, exclude_fields: Optional[List[str]] = None):
+    def to_json(self, exclude_fields: Optional[List[str]] = None) -> Dict[str, Any]:
         exclude_fields = (exclude_fields or []) + ["__class__.__name__"]
         return [
             {key: value for key, value in record.__dict__.items() if key not in exclude_fields}
             for record in self.records
         ]
+
+    def keys(self):
+        return self.records[0].keys() if len(self.records) > 0 else []
 
     def __repr__(self):
         attrs = ", ".join(f"{key}={value}" for key, value in self.__dict__.items())
@@ -218,7 +248,7 @@ def db_fetch_rows(
         return _do_return_error(e, "Error executing SQL.")
 
 
-def retrieve_data(query: str) -> Optional[Union[Any, Tuple]]:
+def retrieve_rows(query: str) -> Optional[Union[Any, Tuple]]:
     """
     Executes the given SQL query and returns the result in 4 modes:
       1.  N rows c column
@@ -278,7 +308,7 @@ def retrieve_dict(query: str):
     """
     from ..common.app_context_vars import sidekick
 
-    data = retrieve_data(query)
+    data = retrieve_rows(query)
 
     result: ui_db_texts = {}
     try:
@@ -286,7 +316,7 @@ def retrieve_dict(query: str):
             # Check if data contains multiple rows of at least two columns
             if all(isinstance(row, tuple) and len(row) >= 2 for row in data):
                 result = {row[0]: row[1] for row in data}
-            # Handle single row with multiple columns (if returned by retrieve_data)
+            # Handle single row with multiple columns (if returned by retrieve_rows)
             elif len(data) > 1 and not isinstance(data[0], tuple):
                 # result = {data[0]: data[1]}
                 result = {data[i]: data[i + 1] for i in range(0, len(data) - 1, 2)}

@@ -10,7 +10,7 @@ Displays:
 
 - names:
 dlg «X» Name
-X => meaning
+X meaning:
 ---------------
 _var_ => VARiable
 _cls_ => CLaSs
@@ -18,7 +18,7 @@ dlg-name-id => ID
 _blc_ => BLoCk
 _js_ => JScript
 
-- Configuration (default is '', if not shown)
+- Configuration (default is empty '', if not shown (see canoa.css))
 dlg_cls_body | default('dlg-body')
 dlg_cls_btn_close
 dlg_cls_btn_ok
@@ -26,67 +26,62 @@ dlg_cls_content
 dlg_cls_dialog
 dlg_cls_footer | default('dlg-footer')
 dlg_cls_header | default('dlg-header')
-dlg_cls_size | modal-sm, 'Default = 500px', 'form-width (see canoa.css)', modal-lg, modal-xl
-// https://getbootstrap.com/docs/4.2/components/modal/#optional-sizes
+dlg_cls_size | default('dlg-width') | modal-sm, 'Default = 500px', modal-lg, modal-xl
 dlg_cls_title | default('dlg-title')
-dlg_cls_top | default('mt-6')
-
-
+dlg_cls_top | default('mt-5')
 
 dlg_var_icon_url // the url to an icon to set on the dialog header, if none, no icon is displayed
 dlg_var_icon_id | 'dlg-var-icon-id' // the id of the icon
+dlg_var_icon_size | '32px' // the icon size h=w
 dlg_var_style
 dlg_var_scroll
 dlg_var_close | default(True) // display Close button
+dlg_var_close_id | default('dlg-var-close-id') // id's
 dlg_var_v_centered | default(False) // from is Vertical Centered
-mgd
 
+
+mgd
 --------------------------------------- #}
 {# cSpell:ignore tabindex endfor elif #}
 
 {% extends "./layouts/base.html.j2" %}
 
+{% set dlg_var_icon_id = dlg_var_icon_id | default('dlg-icon-id') %}
+{% set dlg_var_icon_size = dlg_var_icon_size | default('32px') %}
+{% set dlg_var_close_id = dlg_var_close_id | default('dlg-close-id') %}
+{% set dlg_cls_btn_close = dlg_cls_btn_close | default('btn-close') %}
+{% set dlg_var_submit_id = dlg_var_submit_id | default('dlg-submit-id') %}
+{% set dlg_var_close = dlg_var_close | default(True) %}
+
 {% block base_blc_content %}
-{% set btn_close_id = 'btn-close-id'%}
-{% set dlg_var_icon_id = dlg_var_icon_id | default('dlg-var-icon-id') %}
-{# {% if not dlg_var_icon_id %}
-{% set dlg_var_icon_id = 'dlg-var-icon-id' | Default() %}
-{% endif %} #}
 <section>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const closeButton = document.getElementById("{{ btn_close_id }}");
-            if (!closeButton) { return; }
-            closeButton.addEventListener('click', () => {
-                window.location.href = "{{ public_route('login') }}";
-            });
-        });
-    </script>
     <div id="dlg-main-id" style="{{ dlg_var_style|default('display: block;') }}"
         class="modal {% if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top | default('mt-5')}}{% endif %}">
-        <div class="modal-dialog {{ dlg_cls_size|default('form-width') }}
+        <div class="modal-dialog {{ dlg_cls_size|default('dlg-width') }}
                 {%+ if (dlg_var_v_centered|default(False)) %} modal-dialog-centered {% endif %}
                 {%+ if dlg_var_scroll %} modal-dialog-scrollable {% endif %}
-                {{ dlg_cls_dialog|default('')}} ">
+                {{ dlg_cls_dialog|default('')}}">
             <div class="modal-content {{dlg_cls_content|default('')}}">
+                {# === Header === #}
                 <div class="modal-header {{ dlg_cls_header|default('dlg-header') }}">
                     <h5 class="modal-title {{ dlg_cls_title|default('dlg-title') }}" inert>
                         {% if dlg_var_icon_url %}
-                        <img id="{{dlg_var_icon_id}}" src="{{dlg_var_icon_url}}" height="32px" width="32px"
-                            alt="[!]&nbsp;">
+                        <img id="{{dlg_var_icon_id}}" src="{{dlg_var_icon_url}}" height="{{dlg_var_icon_size}}"
+                            width="{{dlg_var_icon_size}}" alt="[!]&nbsp;">
                         {% endif %}
                         {{formTitle|default(app_name)}}
                     </h5>
-                    {% if (dlg_var_close|default(True)) %}
-                    <button id="{{ btn_close_id }}" class="btn-close {{ dlg_cls_btn_close | default('') }}"
-                        type="button" data-bs-dismiss="modal" aria-label="Close">
-                    </button>
-                    {%endif%}
+                    {% if dlg_var_close %}
+                    {% from "includes/_action_forms_and_btns.html.j2" import btn_close %}
+                    {{btn_close(action_form__form_close_id, '', dlg_var_close_id, dlg_cls_btn_close)}}
+                    {% endif %}
                 </div>
+                {# === Body === #}
                 <div class="modal-body {{ dlg_cls_body|default('dlg-body') }}">
                     {% block dlg_blc_body %}
                     {% endblock dlg_blc_body %}
                 </div>
+                {# === Footer === #}
                 <div class="modal-footer justify-content-center {{ dlg_cls_footer|default('dlg-footer') }}">
                     {% block dlg_blc_footer %}
                     {% endblock dlg_blc_footer %}
@@ -101,4 +96,13 @@ mgd
 {% block dlg_blc_javascript %}
 {% endblock dlg_blc_javascript %}
 {% endblock base_blc_body_js %}
+
+
+
+{% block base_blc_forms %}
+{% from "includes/_action_forms_and_btns.html.j2" import action_form__close %}
+{{ action_form__close(action_form__form_close_id) }}
+
+{% endblock base_blc_forms %}
+
 {# eof #}

@@ -29,7 +29,7 @@ from .types_helper import ui_db_texts
 #  Key name const
 js_grid_sec_key = "grid_sec_key"
 js_grid_rsp = "grid_rsp"
-js_grid_submit_id = "grid_submit_id"
+js_grid_submit_id = "grid-submit-id"
 
 # TODO: create a real key with user_id and datetime
 js_grid_sec_value = "7298kaj0fk9dl-sd=)0y"

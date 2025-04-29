@@ -1,9 +1,9 @@
 """
-    *wtforms* HTML forms
-    Part of Private Access Control & `File Validation` Processes
+*wtforms* HTML forms
+Part of Private Access Control & `File Validation` Processes
 
-    Equipe da Canoa -- 2024
-    mgd 2024-04-09,27; 06-22
+Equipe da Canoa -- 2024
+mgd 2024-04-09,27; 06-22
 """
 
 # cSpell:ignore: wtforms urlname iconfilename
@@ -41,20 +41,27 @@ class ChangePassword(FlaskForm):
 
 
 class SepEdit(FlaskForm):
+
     name = StringField(
         "",
         validators=[InputRequired()],
-        render_kw={"class": "form-control", "id": "name", "readonly": True},
+        render_kw={"class": "form-control", "id": "name", "readonly": None},
     )  # TODO **max_name.wtf_val())],
     description = StringField(
         "",
         validators=[InputRequired(), Length(min=5, max=140)],
         render_kw={"class": "form-control", "id": "description"},
     )
-    # TODO **max_desc.wtf_val())],
     icon_filename = FileField(
         "", render_kw={"class": "form-control", "id": "iconfilename", "accept": ".svg"}
     )
+
+    # def __init__(self, *args, for_edit=False, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     if for_edit:
+    #         self.name.render_kw["readonly"] = True
+    #     else:
+    #         self.name.render_kw.pop("readonly", None)
 
 
 # eof

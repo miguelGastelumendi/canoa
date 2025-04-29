@@ -24,7 +24,7 @@ from ...helpers.js_grid_helper import (
 from ...helpers.file_helper import change_file_ext
 from ...helpers.route_helper import get_private_form_data, init_form_vars
 from ...helpers.ui_db_texts_helper import UITextsKeys, add_msg_error
-from ...common.app_error_assistant import ModuleErrorCode, CanoeStumbled
+from ...common.app_error_assistant import ModuleErrorCode, AppStumbled
 
 
 def download_rec() -> Response | None:
@@ -45,11 +45,11 @@ def download_rec() -> Response | None:
         if request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 1  # 3
             msg = add_msg_error("secKeyViolation", ui_texts)
-            raise CanoeStumbled(msg, task_code, True, True)
+            raise AppStumbled(msg, task_code, True, True)
         elif not (rec_id.isdigit() and rec_type in [DNLD_R, DNLD_F]):
             task_code += 2  # 4
             msg = add_msg_error("secKeyViolation", ui_texts)
-            raise CanoeStumbled(msg, task_code, True, True)
+            raise AppStumbled(msg, task_code, True, True)
         else:
             task_code += 3  # 5
             no_sep = ui_texts["itemNone"]

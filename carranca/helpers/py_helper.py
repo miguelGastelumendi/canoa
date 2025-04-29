@@ -38,6 +38,16 @@ def now() -> datetime:
     return datetime.now()
 
 
+def now_as_text() -> str:
+    # current date time for user
+    ##- TODO: get config <- from ui_texts
+    return datetime.now().strftime("%d/%m/%Y às %H:%M")
+
+
+def now_as_iso() -> str:
+    return datetime.now().isoformat()
+
+
 def as_str_strip(s: str) -> str:
     return (str(s) + "").strip()
 
@@ -118,7 +128,8 @@ def to_int(s: str, default=-1) -> int:
     Returns the argument as a integer or default if not a valid int
     """
     try:
-        return int(s)
+        # return default if s is None else int(s)
+        return default if s is None else int(s)
     except ValueError:
         return default
 

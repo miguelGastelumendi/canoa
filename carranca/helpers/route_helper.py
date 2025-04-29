@@ -128,7 +128,7 @@ def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, ui
     # a section of ui_itens
     ui_texts = get_form_texts(section)
     if not is_get:
-        ui_texts[UITextsKeys.Msg.info] = ""  # only get has info
+        ui_texts[UITextsKeys.Msg.info] = ""  # only GET has info
 
     return template, is_get, ui_texts
 

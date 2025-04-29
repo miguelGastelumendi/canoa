@@ -42,7 +42,7 @@ mgd
 <!-- Password }-->
 
 <!-- { RememberMe & ForgotPw -->
-<div class="form-group mt-3">
+<div class="form-group mt-2">
     <!-- { RememberMe -->
     <div class="">
         {{ form.remember_me(class="form-check-btn", id="rememberMe") }}
@@ -53,16 +53,20 @@ mgd
     <!-- RememberMe } -->
 </div>
 <!-- RememberMe & ForgotPw } -->
+
 {% endblock frm_blc_content %}
 
 {% block frm_blc_below %}
-<div class="row no-gutters mt-3">
+<div class="row no-gutters mt-2">
     <div class="col-6">
-        <a href="{{ public_route('docs', publicDocName='privacyPolicy') }}" class="form-link">{{ privacyPolicy
-            }}</a>
+        <a href="{{ public_route('docs', publicDocName='privacyPolicy') }}" class="form-link">
+            {{ privacyPolicy}}
+        </a>
     </div>
     <div class="col-6 text-end">
-        <a href="{{ public_route('password_recovery') }}" class="form-link">{{ forgotPassword }}</a>
+        <a href="{{ public_route('password_recovery') }}" class="form-link">
+            {{ forgotPassword }}
+        </a>
     </div>
     <div class="col-6">
         <a href="{{ public_route('docs', publicDocName='termsOfUse') }}" class="form-link">{{ termsOfUse }}</a>
@@ -70,7 +74,6 @@ mgd
     <div class="col-6 text-end">
         <a href="{{ public_route('register') }}" class="form-link">{{ gotoRegister }}</a>
     </div>
-</div>
 </div>
 {% endblock frm_blc_below %}
 {# eof #}

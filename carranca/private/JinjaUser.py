@@ -9,20 +9,26 @@ mgd
 
 # cSpell:ignore
 
-from .LoggedUser import LoggedUser
+from .AppUser import AppUser
 from ..common.app_constants import APP_LANG
 
 
 class JinjaUser:
-    def __init__(self, logged_user: LoggedUser):
+    """
+    A user object for use in Jinja2 templates, containing only
+    the essential information to ensure security.
+    """
+
+    def __init__(self, app_user: AppUser):
         from ..common.app_context_vars import sidekick
 
-        self.ready = logged_user.ready if logged_user else False
+        self.ready = app_user.ready if app_user else False
 
         if self.ready:
             sidekick.display.debug(f"{self.__class__.__name__} was created.")
-            self.lang = logged_user.lang
-            self.name = logged_user.name
+            self.lang = app_user.lang
+            self.name = app_user.name
+            self.debug = app_user.is_support or app_user.debug
         else:
             sidekick.display.debug(f"{self.__class__.__name__} was reset.")
             self.lang = APP_LANG  # locale.getdefaultlocale()[0]  # TODO, check if available

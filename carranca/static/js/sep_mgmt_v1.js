@@ -86,7 +86,7 @@ const gridOptions = {
                 }
                 if (oldValue === itemRemove) { removeCount--; }
                 if (newValue === itemRemove) { removeCount++; }
-                params.data[colUserNew] = newValue;
+                params.data[colUser] = newValue;
                 btnGridSubmit.disabled = (assignedList.length == 0) && (removeCount == 0)
                 return true;
             }

@@ -21,7 +21,7 @@ from .py_helper import is_str_none_or_empty, now
 from .types_helper import ui_db_texts
 
 from ..common.app_constants import APP_LANG
-from ..common.app_error_assistant import CanoeStumbled, ModuleErrorCode, RaiseIf
+from ..common.app_error_assistant import AppStumbled, ModuleErrorCode, RaiseIf
 from .. import global_ui_texts_cache
 
 # === Global 'constants' form HTML ui ========================
@@ -31,10 +31,13 @@ from .. import global_ui_texts_cache
 cache_key: TypeAlias = Tuple[str, str, Optional[str]]
 
 
-class UITexts_TableSearch:
+class UITexts_Cache:
     global global_ui_texts_cache
     _LAST_UPDATE_KEY = "last_update"
     _CACHE_INTERNAL_INFO_KEY: cache_key = (" ", "mgmt_data", "key")
+
+
+
     ## TODO SAVE is Cache _CACHE_INTERNAL_INFO_KEY
     _cfg_cache_lifetime_min = int(current_app.config.get("APP_UI_DB_TEXTS_CACHE_LIFETIME_MIN", 0))
 

@@ -9,17 +9,27 @@ Extends:
 mgd
 --------------------------------------- #}
 
-
 {% set dlg_var_icon_url= iconFileUrl %}
 {% extends "./layouts/form.html.j2" %}
 
+{% block frm_blc_above %}
+
+<!-- { SEP List -->
+<div class="form-group">
+    <label class="form-label" inert for="{{ sel_list_id }}">{{ sepName }}</label>
+    <div class="input-group">
+        
+    </div>
+</div>
+<!--  SEP List } -->
+{% endblock frm_blc_above %}
+
+
 
 {% block frm_blc_content %}
-{% if not msgOnly %}
-
 <!-- { Name -->
 <div class="form-group">
-    <label class="form-label" inert for={{ form.name.id }}>{{ nameLabel }}</label>
+    <label class="form-label" inert for="{{ form.name.id }}">{{ nameLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fa fa-id-badge" aria-hidden="true"></i>
@@ -31,7 +41,7 @@ mgd
 
 <!-- { Description -->
 <div class="form-group mt-3">
-    <label class="form-label" inert for={{ form.description.id }}>{{ descriptionLabel }}</label>
+    <label class="form-label" inert for="{{ form.description.id }}">{{ descriptionLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fa fa-tag" aria-hidden="true"></i>
@@ -42,7 +52,7 @@ mgd
 <!-- Description } -->
 
 <div class="form-group mt-3">
-    <label class="form-label" inert for={{ form.icon_filename.id }}>{{ fileLabel }}</label>
+    <label class="form-label" inert for="{{ form.icon_filename.id }}">{{ fileLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fa fa-image" aria-hidden="true"></i>
@@ -50,7 +60,7 @@ mgd
         {{ form.icon_filename() }}
     </div>
 </div>
-{% endif %}
+
 {% endblock frm_blc_content %}
 
 {# eof #}

@@ -10,7 +10,7 @@ mgd 2025-01-14 & 03-18
 from os import path
 from typing import Tuple, Optional
 from ..models import ReceivedFiles
-from ...common.app_context_vars import logged_user
+from ...common.app_context_vars import app_user
 from ...config.ValidateProcessConfig import ValidateProcessConfig
 
 from ...helpers.db_helper import DBRecords
@@ -51,7 +51,7 @@ def fetch_record_s(
 
         for record in received_files:
             folder = uf.uploaded if record.file_origin == "L" else uf.downloaded
-            file_full_name = path.join(folder, logged_user.folder, record.stored_file_name)
+            file_full_name = path.join(folder, app_user.folder, record.stored_file_name)
             # Copy specific fields to a new object 'row'
             row = {
                 "id": record.id,

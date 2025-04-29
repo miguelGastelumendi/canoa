@@ -1,12 +1,12 @@
 """
-    *User Roles*
-    This is a helper to facilitate
-    the selection of users by 'rol'
-    (users.id_role) via roles.role
+*User Roles*
+This is a helper to facilitate
+the selection of users by 'rol'
+(users.id_role) via roles.role
 
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore Setorista
@@ -23,9 +23,10 @@ from enum import Enum
 
 
 class RolesAbbr(Enum):
+    Void = "VOID"  # not initializer
     Admin = "ADM"
     Setorista = "SEP"
-    Suporte = "SPT"
+    Support = "SPT"
 
 
 # eof

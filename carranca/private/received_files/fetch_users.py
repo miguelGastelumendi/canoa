@@ -9,7 +9,7 @@ mgd 2025-01-14 & 03-18
 """
 
 from ..models import ReceivedFilesCount
-from ...common.app_context_vars import logged_user
+from ...common.app_context_vars import app_user
 
 from ...helpers.db_helper import DBRecords
 
@@ -23,7 +23,7 @@ def fetch_user_s(user_id: int = None) -> DBRecords:
     if user_id is not None:
         # read one record
         pass
-    elif logged_user.is_power if logged_user else False:
+    elif app_user.is_power if app_user else False:
         # read all records
         user_id = None
     else:

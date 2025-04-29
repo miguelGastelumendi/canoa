@@ -49,9 +49,10 @@ sidekick.display.info(
 
 app_debug = sidekick.config.APP_DEBUG
 app_reload = sidekick.config.APP_AUTO_RELOAD
-
-if not __name__ == "__main__":
-    sidekick.display.warn("This module is not running as `__main__`, will not run the app.")
+if __name__ != "__main__":
+    sidekick.display.warn(
+        "This module is not running as `__main__`, so the app will not automatically run."
+    )
 
 else:
     app.run(debug=app_debug)

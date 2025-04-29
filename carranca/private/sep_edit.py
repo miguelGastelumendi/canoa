@@ -8,26 +8,27 @@ mgd 2024-10-09, 11-12
 # cSpell: ignore mgmt tmpl wtforms werkzeug
 
 from flask import render_template, request
-from typing import Tuple
+from typing import Tuple, Optional
 from werkzeug.utils import secure_filename
 
 from .models import MgmtSep
 from .wtforms import SepEdit
 
-from ..helpers.py_helper import now
+from ..helpers.py_helper import now, to_int, is_str_none_or_empty
+from ..public.ups_handler import ups_handler
 from ..helpers.route_helper import get_private_form_data
 from ..helpers.route_helper import init_form_vars, get_input_text
-from ..common.app_error_assistant import ModuleErrorCode, CanoeStumbled, did_I_stumbled
+from ..common.app_error_assistant import ModuleErrorCode, AppStumbled, did_I_stumbled
 from ..helpers.ui_db_texts_helper import (
     UITextsKeys,
     add_msg_success,
     add_msg_error,
     add_msg_fatal,
 )
-from ..common.app_context_vars import logged_user
+from ..common.app_context_vars import app_user
 
 
-def do_sep_edit() -> str:
+def do_sep_edit(sid: Optional[str]) -> str:
     """SEP Edit Form"""
 
     from .SepIconConfig import SepIconConfig
@@ -35,23 +36,19 @@ def do_sep_edit() -> str:
     task_code = ModuleErrorCode.SEP_EDIT.value
     tmpl_form, template, is_get, ui_texts = init_form_vars()
 
-    sep_fullname = "" if logged_user.sep is None else logged_user.sep.full_name
+    sep_fullname = "<novo>" if app_user.sep is None else app_user.sep.full_name
     try:
         task_code += 1  # 1
 
         def _get_sep(task_code: int) -> Tuple[MgmtSep, str, int]:
-            try:
-                sep, sep_fullname = MgmtSep.get_sep(logged_user.sep.id)
-                if sep is None or logged_user.sep.id is None:
-                    raise CanoeStumbled(add_msg_fatal("sepEditNotFound", ui_texts), task_code)
-                task_code += 1  #
-                ui_texts[UITextsKeys.Form.icon_url] = logged_user.sep.icon_url
-                ui_texts[UITextsKeys.Msg.info] = ui_texts[UITextsKeys.Msg.info].format(sep_fullname)
-            except CanoeStumbled:
-                raise
-            except Exception:
-                raise CanoeStumbled(add_msg_fatal("sepEditSelectError", ui_texts), task_code)
+            sep, sep_fullname, msg_error = MgmtSep.get_sep(app_user.sep.id)
+            if not is_str_none_or_empty(msg_error):
+                raise AppStumbled(add_msg_fatal("sepEditSelectError", ui_texts), task_code)
+            elif sep is None or app_user.sep.id is None:
+                raise AppStumbled(add_msg_fatal("sepEditNotFound", ui_texts), task_code)
 
+            task_code += 1  #
+            ui_texts[UITextsKeys.Form.icon_url] = app_user.sep.icon_url
             return sep, sep_fullname, task_code
 
         task_code += 1  # 2
@@ -81,7 +78,7 @@ def do_sep_edit() -> str:
                 task_code += 1  # 12
                 sep.icon_original_name = secure_filename(file_obj.filename)
                 task_code += 1  # 13
-                sep.icon_file_name = f"{logged_user.code}u-{sep.id:03}sep.{SepIconConfig.ext}"
+                sep.icon_file_name = f"{app_user.code}u-{sep.id:03}sep.{SepIconConfig.ext}"
                 sep.icon_uploaded_at = now()
                 task_code += 1  # 14
                 sep.icon_svg = file_obj.read().decode("utf-8")
@@ -91,7 +88,7 @@ def do_sep_edit() -> str:
                 task_code += 7  # 11+7 = 18
                 ext = SepIconConfig.ext.upper()
                 msg = add_msg_error("sepEditInvalidFormat", ui_texts, file_obj.filename, ext)
-                raise CanoeStumbled(msg, task_code)
+                raise AppStumbled(msg, task_code)
 
             task_code += 19
             if not MgmtSep.set_sep(sep):
@@ -101,18 +98,12 @@ def do_sep_edit() -> str:
                 if new_icon:  # after post
                     from .sep_icon import icon_refresh
 
-                    icon_refresh(logged_user.sep)  # refresh this form icon
+                    icon_refresh(app_user.sep)  # refresh this form icon
 
     except Exception as e:
-        from ..common.app_context_vars import sidekick
-
-        msg = (
-            str(e)
-            if did_I_stumbled(e)
-            else add_msg_fatal("sepEditException", ui_texts, sep_fullname, task_code)
-        )
-        sidekick.display.error(msg)
-        sidekick.app_log.error(e)
+        msg = add_msg_fatal("sepEditException", ui_texts, sep_fullname, task_code)
+        _, template, ui_texts = ups_handler(task_code, msg, e)
+        tmpl = render_template(template, **ui_texts)
 
     tmpl = render_template(template, form=tmpl_form, **ui_texts)
     return tmpl

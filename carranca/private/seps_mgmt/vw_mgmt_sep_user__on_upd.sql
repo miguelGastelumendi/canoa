@@ -1,6 +1,6 @@
--- DROP FUNCTION canoa.vw_mgmt_sep_user__on_upd();
+-- DROP FUNCTION canoa.vw_mgmt_seps_user__on_upd();
 
-CREATE OR REPLACE FUNCTION canoa.vw_mgmt_sep_user__on_upd()
+CREATE OR REPLACE FUNCTION canoa.vw_mgmt_seps_user__on_upd()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
@@ -12,8 +12,9 @@ declare
 	-- fullname variable removed as it is unused
 begin
     -- spell:ignore mgmt plpgsql
-	-- adapted from `vw_mgmt_sep_user__on_upd` mgd 2024-10-25, 11-08
-    -- mgd 2025-04-17
+
+    -- mgd 2025-04-17--28
+	-- Keep a copy of this file updated in carranca\private\seps_mgmt\vw_mgmt_seps_user__on_upd.sql
 
     -- TODO:
     -- Get message string from vw_ui_texts
@@ -24,7 +25,7 @@ begin
  		raise exception '[^|ID do SEP não foi informado.|^]';
     end if;
     -- save the current sep's ID
-    select user_id into usr_curr_id from vw_mgmt_sep_user where sep_id = NEW.sep_id;
+    select user_id into usr_curr_id from vw_mgmt_seps_user where sep_id = NEW.sep_id;
 
 	if NEW.user_new is Null or trim(NEW.user_new) = '' then
 		-- remove user's SEP
@@ -67,5 +68,5 @@ $function$
 
 -- Permissions
 
-ALTER FUNCTION canoa.vw_mgmt_sep_user__on_upd() OWNER TO canoa_power;
-GRANT ALL ON FUNCTION canoa.vw_mgmt_sep_user__on_upd() TO canoa_power;
+ALTER FUNCTION canoa.vw_mgmt_seps_user__on_upd() OWNER TO canoa_power;
+GRANT ALL ON FUNCTION canoa.vw_mgmt_seps_user__on_upd() TO canoa_power;

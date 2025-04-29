@@ -22,9 +22,7 @@ mgd
 
 {# only specify if different from default #}
 {% set dlg_cls_footer= "collapse" %}
-{% set form_id = "id-form-main"%}
-{% if not base_js_head_list %}{%set base_js_head_list = []%} {% endif %}
-{# {% set _ = base_js_head_list.append(static_route("js/form_helper.js")) %} #}
+{% set form_post_id = "form-post-id"%}
 
 {% extends "./layouts/dialog.html.j2" %}
 
@@ -32,39 +30,36 @@ mgd
 {% block dlg_blc_body %}
 
 {% include "includes/backend-msg.html.j2" %}
+
+{# === start: display ONLY form messages === #}
 {% if msgOnly %}
-<div class="">
-    <form action="{{ public_route('login') }}" method="GET">
-        <button type="submit" class="form-control mt-4 form-main-btn">
-            {{ btnMsgOnly | default("OK") }}
-        </button>
-    </form>
-</div>
+
+<button type="submit" class="form-control mt-4 form-main-btn">
+    {{ btnCloseForm | default("OK") }}
+</button>
+
 {% endif %}
+{# === end: only msg === #}
+
+{# === start: NOT only display form messages === #}
+{% if not msgOnly %}
 
 {% block frm_blc_above %}
 {% endblock frm_blc_above %}
 
-{# display the if not Success or Exception (see carranca\helpers\ui_texts_helper.py[add_msg_success]) #}
-{% if not msgOnly %}
-{# { Form --> #}
-<form method="post" action="" id={{form_id}} class="mt-2" {{ formAttribute|default('') }}>
-    {{ form.hidden_tag() }}
 
+<form method="post" action="" id={{form_post_id}} {{ formAttribute | default('') }}>
+    {{ form.hidden_tag() }}
     {% block frm_blc_content %}
     {% endblock frm_blc_content %}
-
-    {# { Submit --> #}
-    <div class="d-grid mt-3">
-        {# see ./home/document.html.j2 #}
-        <button class="form-control form-main-btn" id='id_form_main_btn' type="submit">
-            {{ submitButton }}
-        </button>
-    </div>
-    {# <!-- Submit } --> #}
 </form>
-{% endif %}
 
+<div class="d-grid mt-0">
+    {% from "includes/_action_forms_and_btns.html.j2" import btn_submit %}
+    {{ btn_submit(form_post_id, submitButton) }}
+</div>
+{% endif %}
+{# === end: NOT only msg === #}
 
 {% block frm_blc_below %}
 {% endblock frm_blc_below %}

@@ -1,9 +1,9 @@
 """
-    *wtforms* HTML forms
-    Part of Public Access Control Processes
+*wtforms* HTML forms
+Part of Public Access Control Processes
 
-    Equipe da Canoa -- 2024
-    mgd 2024-04-09,27; 06-22
+Equipe da Canoa -- 2024
+mgd 2024-04-09,27; 06-22
 """
 
 # cSpell:ignore: wtforms
@@ -18,15 +18,15 @@ from ..common.app_context_vars import sidekick
 
 # Public forms
 # -------------------------------------------------------------
-# Text here ha no relevance, the ui_text table is actually used.
-
-max_name = LenValidate(
-    min(sidekick.config.DB_len_val_for_uname.min, sidekick.config.DB_len_val_for_email.min),
-    max(sidekick.config.DB_len_val_for_uname.max, sidekick.config.DB_len_val_for_email.max),
-)
+# Text here has no relevance, the ui_text table is actually used.
 
 
 class LoginForm(FlaskForm):
+    max_name = LenValidate(
+        min(sidekick.config.DB_len_val_for_uname.min, sidekick.config.DB_len_val_for_email.min),
+        max(sidekick.config.DB_len_val_for_uname.max, sidekick.config.DB_len_val_for_email.max),
+    )
+
     username = StringField(
         "",
         validators=[InputRequired(), Length(**max_name.wtf_val())],

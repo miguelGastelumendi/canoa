@@ -16,7 +16,7 @@ from ..helpers.file_helper import folder_must_exist
 from ..common.app_context_vars import sidekick
 
 from .models import MgmtSep
-from .User_sep import UserSEP
+from .UserSep import UserSEP
 from .SepIconConfig import SepIconConfig
 
 

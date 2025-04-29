@@ -43,13 +43,13 @@ const gridOptions = {
         {
             field: colMeta[4].n, headerName: colMeta[4].h, flex: 0,
             cellClassRules: {
-                'grd-item-none': params => params.value == itemNone
+                'grid-item-none': params => params.value == itemNone
             },
         },
         {
             field: colMeta[5].n, headerName: colMeta[5].h, flex: 1,
             cellClassRules: {
-                'grd-item-none': params => {
+                'grid-item-none': params => {
                     const rowNode = params.api.getRowNode(params.rowIndex);
                     return rowNode ? !(rowNode.data.report_found && rowNode.data.data_f_found) : false;
                 },

@@ -1,5 +1,5 @@
 """
- Basic information of a user SEP
+ Basic information of a user's SEP
 
 Equipe da Canoa -- 2024
 mgd

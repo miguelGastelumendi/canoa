@@ -1,8 +1,9 @@
 """
-SEP Management and User assignment
-Save data to the DB
+SEP Management and User Assignment
+Handles saving user-assigned cargo data from the front end to the database.
 
 Equipe da Canoa -- 2025
+Last modified: 2023-04-09
 mgd 202-04-09
 """
 
@@ -13,15 +14,15 @@ from typing import Dict, Tuple
 from sqlalchemy.orm import Session
 
 from ...helpers.py_helper import is_str_none_or_empty
-from ...helpers.db_helper import ListOfDBRecords, try_get_mgd_msg
-from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn
+from ...helpers.db_helper import try_get_mgd_msg
+from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list
 from ...helpers.ui_db_texts_helper import format_ui_item
 
-from .dict_keys import MgmtCol, CargoKeys
+from .seps_keys import MgmtCol, CargoKeys
 
 
 def save_data(
-    grid_response: Dict[str, str],
+    grid_response: cargo_list,
     batch_code: str,
     ui_texts: ui_db_texts,
     task_code: int,
@@ -49,32 +50,31 @@ def save_data(
 
 
 def _prepare_data_to_save(
-    grid_response: Dict[str, str],
+    grid_response: cargo_list,
     ui_texts: ui_db_texts,
     task_code: int,
-) -> Tuple[str, ListOfDBRecords, ListOfDBRecords, int]:
+) -> Tuple[str, cargo_list, cargo_list, int]:
     """Distributes grid's modifications in two groups: remove & assign"""
 
     msg_error = None
+    remove: cargo_list = []
+    assign: cargo_list = []
     try:
         actions = grid_response[CargoKeys.actions]
         task_code += 1
-        str_remove: str = actions[CargoKeys.remove]
-        task_code += 1
         str_none: str = actions[CargoKeys.none]
         task_code += 1
-        remove: ListOfDBRecords = []
-        assign: ListOfDBRecords = []
-        grid: ListOfDBRecords = grid_response[CargoKeys.grid]
+        grid: cargo_list = grid_response[CargoKeys.cargo]
         task_code += 1
         for item in grid:
             usr_new = item[MgmtCol.usr_new]
-            if usr_new == str_none:
+            usr_curr = item[MgmtCol.usr_curr]
+            if usr_new == usr_curr:
                 pass
-            elif usr_new != str_remove:  # new user
-                assign.append(item)
-            elif item[MgmtCol.usr_curr] != str_none:  # ignore remove none
+            elif usr_new == str_none:  # remove: usr_curr -> none
                 remove.append(item)
+            else:  # ignore remove none
+                assign.append(item)
 
     except Exception as e:
         msg_error = format_ui_item(ui_texts, "taskPrepare", task_code, str(e))
@@ -83,7 +83,7 @@ def _prepare_data_to_save(
 
 
 def _save_data_to_db(
-    remove: ListOfDBRecords, update: ListOfDBRecords, batch_code: str, ui_texts: ui_db_texts, task_code: int
+    remove: cargo_list, update: cargo_list, batch_code: str, ui_texts: ui_db_texts, task_code: int
 ) -> sep_mgmt_rtn:
     """
     Saves user-made changes to the UI grid to the database
@@ -96,10 +96,10 @@ def _save_data_to_db(
     from carranca import global_sqlalchemy_scoped_session
 
     from ..models import MgmtSepUser
-    from ...common.app_context_vars import logged_user, sidekick
+    from ...common.app_context_vars import app_user, sidekick
 
     msg_error = None
-    assigned_by = logged_user.id
+    assigned_by = app_user.id
     user_not_found = []
     task_code += 1
     db_session: Session
@@ -131,7 +131,7 @@ def _save_data_to_db(
             db_session.rollback()
             saveError = format_ui_item(ui_texts, "saveError", task_code)
             msg_error = try_get_mgd_msg(e, saveError)
-            sidekick.app_log.error(msg_error)
+            sidekick.app_log.error(str(e))
 
     return "", msg_error, task_code
 

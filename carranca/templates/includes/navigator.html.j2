@@ -11,13 +11,13 @@ mgd
 TODO Selected menu class-> active
 
 cSpell:ignore unselectable labelledby haspopup noopener noreferrer onclick
-cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson
+cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson jinja
 --------------------------------------- #}
 <nav id="navbar-main" class="navbar fixed-top navbar-expand-sm shadow-sm px-2">
     {% set menu_header = app_menu('menuHeaders') %}
     <div class="container-fluid">
-        <div class="navbar-brand mb-1">{{app_name}}</div>
-        <button class="navbar-toggler" {{navButtonState}} type="button" data-bs-toggle="collapse"
+        <div class="navbar-brand mb-1" inert>{{app_name}}</div>
+        <button class="navbar-toggler {{navButtonState}}" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarCollapsible" aria-controls="navbarCollapsible" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -44,6 +44,7 @@ cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson
                         </li>
                     </ul>
                 </li>
+
                 {# Setor Estratégico #}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-se"
@@ -52,18 +53,11 @@ cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a class="dropdown-item" href="{{ private_route('sep_mgmt_v1') }}"
-                                title="Abre o grid v1.0  de Gest&atilde;o de Setores Estrat&eacute;gicos">
-                                Gest&atilde;o v1.0
-                            </a>
-                        </li>
-                        <li>
                             <a class="dropdown-item" href="{{ private_route('sep_mgmt') }}"
                                 title="Abre o grid de Gest&atilde;o de Setores Estrat&eacute;gicos">
                                 Gest&atilde;o
                             </a>
                         </li>
-
                         <li><a class="dropdown-item" href="{{ private_route('sep_edit') }}">Novo</a>
                         </li>
 
@@ -78,7 +72,6 @@ cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson
                                 href="{{ private_route('sep_edit') }}">&#9657;&nbsp;<i>outros..</i></a></li>
                     </ul>
                 </li>
-
 
                 {# Documentos #}
                 <li class="nav-item dropdown">
@@ -116,12 +109,12 @@ cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson
                         </li>
                     </ul>
                 </li>
+
                 {# Usuário #}
-                {% if logged_user() %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-user"
                         role="button" data-bs-toggle="dropdown">
-                        {{logged_user().name}}
+                        {{jinja_user().name}}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
@@ -141,7 +134,6 @@ cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson
                         </li>
                     </ul>
                 </li>
-                {% endif %}
             </ul>
         </div>
     </div>

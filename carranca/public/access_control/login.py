@@ -27,10 +27,11 @@ from ...helpers.route_helper import (
     get_account_form_data,
 )
 from ..models import get_user_where, get_user_role_abbr
-from ..wtforms import LoginForm
 
 
 def login():
+
+    from ..wtforms import LoginForm
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
     tmpl_form, template, is_get, ui_texts = init_form_vars()

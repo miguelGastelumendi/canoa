@@ -21,7 +21,7 @@ from .py_helper import is_str_none_or_empty, now
 from .types_helper import ui_db_texts
 
 from ..common.app_constants import APP_LANG
-from ..common.app_error_assistant import CanoeStumbled, ModuleErrorCode, RaiseIf
+from ..common.app_error_assistant import AppStumbled, ModuleErrorCode, RaiseIf
 from .. import global_ui_texts_cache
 
 # === Global 'constants' form HTML ui ========================
@@ -48,7 +48,7 @@ class UITextsKeys:
         date_format = "user_date_format"
         # display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
         msg_only = "msgOnly"
-        btn_close = "btnMsgOnly"
+        btn_close = "btnCloseForm"  # This button is only visible when msg_only is True
 
     class Error:
         no_db_conn = "NoDBConnection"
@@ -88,7 +88,10 @@ class UITexts_TableSearch:
             global_ui_texts_cache[self.as_tuple] = texts
 
     def get_text(self) -> None:
-        return global_ui_texts_cache[self.as_tuple] if self.exists() else None
+        if not self.exists():
+            return None
+        value = global_ui_texts_cache[self.as_tuple]
+        return value.copy() if isinstance(value, dict) else value
 
     def set_info(self, key: str, info: any) -> None:
         cache_info = self.get_info_value()
@@ -138,10 +141,10 @@ def __get_ui_texts_query(cols: str, table_search: UITexts_TableSearch) -> str:
 # === Data Retrievers =======================================
 def __get_table_row(table_search: UITexts_TableSearch) -> tuple[str, str]:
     """returns tuple(text, title) for the item/section pair"""
-    from .db_helper import retrieve_data
+    from .db_helper import retrieve_rows
 
     query = __get_ui_texts_query("text, title", table_search)
-    result = retrieve_data(query)
+    result = retrieve_rows(query)
     return ("", "") if result is None else result
 
 
@@ -225,7 +228,7 @@ def get_section(section_name: str) -> ui_db_texts:
             # TODO process_pre_templates(items) # TODO: check if needed
             table_search.update(items)
         elif RaiseIf.no_ui_texts:
-            raise CanoeStumbled("Query: [query].", ModuleErrorCode.UI_TEXTS.value)
+            raise AppStumbled("Query: [query].", ModuleErrorCode.UI_TEXTS.value)
         else:
             items = {}
 

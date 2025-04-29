@@ -84,11 +84,20 @@ def display_html(docName: str):
     template = "./home/document.html.j2"
     section = docName
 
+    ui_defaults = get_section("DisplayDoc")
     ui_texts = get_section(section)
-    # must exist
-    ui_texts[UITextsKeys.Page.title] = ui_texts.get(UITextsKeys.Page.title, "Display Document")
-    ui_texts[UITextsKeys.Form.title] = ui_texts.get(UITextsKeys.Form.title, "Document")
-    ui_texts["documentStyle"] = ui_texts.get("documentStyle", "")
+
+    def _setValue(key: str, default: str) -> str:
+        value = ui_texts.get(key, None)
+        if value == None:
+            value = ui_defaults.get(key, default)
+            ui_texts[key] = value
+        return
+
+    _setValue(UITextsKeys.Page.title, "Display Document")
+    _setValue(UITextsKeys.Form.title, "Document")
+    _setValue(UITextsKeys.Form.btn_close, "Close")
+    _setValue("documentStyle", "")
 
     # shortcuts
     body_key = "documentBody"

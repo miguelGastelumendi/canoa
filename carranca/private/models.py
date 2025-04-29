@@ -9,7 +9,7 @@ Equipe da Canoa -- 2024
 #
 # cSpell:ignore: nullable sqlalchemy sessionmaker mgmt sep ssep scm
 
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text, select, and_
 from sqlalchemy.exc import DatabaseError, OperationalError
 from sqlalchemy.orm import defer, Session, declarative_base
@@ -246,7 +246,7 @@ class MgmtSepUser(Base):
     logs the action on `log_user_sep` table.
     """
 
-    __tablename__ = "vw_mgmt_sep_user"
+    __tablename__ = "vw_mgmt_seps_user"
 
     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
     sep_id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
@@ -265,7 +265,7 @@ class MgmtSepUser(Base):
     batch_code = Column(String(10))  # trace_code
 
     @staticmethod
-    def get_grid_view() -> Tuple[DBRecords, DBRecords, str]:
+    def get_grid_view(field_names: Optional[List[str]] = None) -> Tuple[DBRecords, DBRecords, str]:
         """
         Returns
         1) `vw_mgmt_user_sep` DB view that has the necessary columns to
@@ -277,7 +277,7 @@ class MgmtSepUser(Base):
 
         def _get_list(db_session: Session):
             sep_recs = db_session.scalars(select(MgmtSepUser)).all()
-            sep_rows = DBRecords(MgmtSepUser.__tablename__, sep_recs)
+            sep_rows = DBRecords(MgmtSepUser.__tablename__, sep_recs, field_names)
 
             usr_recs = db_session.scalars(select(SepUsers).order_by(SepUsers.username)).all()
             usr_list = DBRecords(SepUsers.__tablename__, usr_recs)
@@ -294,31 +294,30 @@ class MgmtSepUser(Base):
 # --- Table ---
 class MgmtEmailSep(Base):
     """
-    This read only DB view `view vw_mgmt_email_sep` exposes
-    columns to assist sending emails to users when their SEP
-    attribute is changed by an admin.
+    This *Updatable view `vw_mgmt_email_sep` exposes
+    columns to assist in sending emails to users when
+    the SEP assigned to them is changed by an admin.
+        .\private\sep_mgmt\send_email.py
+        updates email_at and email_error
     """
 
     __tablename__ = "vw_mgmt_email_sep"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, Computed(""))
-    user_name = Column(String, Computed(""))
-    user_email = Column(String, Computed(""))
-    sep_name_new = Column(String, Computed(""))
-    sep_name_old = Column(String, Computed(""))
+    new_user_name = Column(String, Computed(""))  # read only columns
+    new_user_email = Column(String, Computed(""))
+    old_user_name = Column(String, Computed(""))
+    old_user_email = Column(String, Computed(""))
+    sep_fullname = Column(String, Computed(""))
+    batch_code = Column(String(10))
     email_at = Column(DateTime)
     email_error = Column(String(400))
-    batch_code = Column(String(10), Computed(""))
 
 
 # --- Table ---
-
-
 class SchemaSEP(Base):
     """
-    /!\ DEPRECATED
-
+    Auxiliary View
     SchemaSEP is app's interface for the
     DB view `vw_scm_sep` that provides a couple of
     columns
@@ -339,6 +338,7 @@ class MgmtSep(Base):
     __tablename__ = "sep"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    users_id = Column("mgmt_users_id", Integer)
     name = Column(String(100), unique=True, nullable=False)
     description = Column(String(140), nullable=False)
     icon_file_name = Column(String(120), nullable=True)
@@ -367,17 +367,26 @@ class MgmtSep(Base):
             try:
                 # This block send as a function? (with an Exception msg)
                 stmt = select(MgmtSep).options(defer(MgmtSep.icon_svg)).where(MgmtSep.id == id)
-                _sep = db_session.execute(stmt).scalar_one_or_none()
-                stmt = select(SchemaSEP).where(SchemaSEP.id == _sep.id)
+                sep = db_session.execute(stmt).scalar_one_or_none()
+                stmt = select(SchemaSEP).where(SchemaSEP.id == sep.id)
                 row = db_session.execute(stmt).one_or_none()
-                sep_fullname = None if row is None else row[0].sep_fullname
-                sep = _sep
+                sep_fullname = None if row is None else row[0].sep_fullname  # None is a big problem
             except (OperationalError, DatabaseError) as e:
                 sidekick.app_log.error(f"Database connection error: {e}")
             except Exception as e:
                 sidekick.app_log.error(f"Error fetching user SEP info: {e}")
 
         return sep, sep_fullname
+
+        e, msg_error, [sep_rows, usr_list] = db_fetch_rows(_get_list, 2)
+        # TODO, check all db_fetch_rows (or raise an error)
+        if e is not None:
+            raise e
+
+        return sep_rows, usr_list, msg_error
+
+
+
 
     @staticmethod
     def icon_content(id: int) -> Optional[SvgContent]:

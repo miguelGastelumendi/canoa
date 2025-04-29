@@ -10,9 +10,8 @@ Part of Canoa `File Validation` Processes
 """
 from datetime import datetime
 
-from ..LoggedUser import LoggedUser
-from ...helpers.py_helper import is_str_none_or_empty
-from ...helpers.user_helper import now
+from ..AppUser import AppUser
+from ...helpers.py_helper import is_str_none_or_empty, now
 from ...common.app_constants import APP_VERSION
 from ...config.ValidateProcessConfig import ValidateProcessConfig
 
@@ -28,7 +27,7 @@ class Cargo:
         self,
         process_version: str,
         in_debug: bool,
-        user: LoggedUser,
+        user: AppUser,
         receive_file_cfg: ValidateProcessConfig,
         process_data: ProcessData,
         received_at: datetime,
@@ -38,11 +37,11 @@ class Cargo:
         Cargo is a class that helps to control the process loop.
 
         Args:
-            in_debug (bool):            app is in debug mode?
-            user (LoggedUser):          basic user info
-            upload_cfg (UploadConfig):  configuration of the file upload process modules
-            process_data (ProcessData): keeps info of the folder structure, file names, user info...
-            first (dict):               parameters for the `first` module
+            in_debug -> bool:            app is in debug mode?
+            user -> AppUser:             app user info
+            upload_cfg -> UploadConfig:  configuration of the file upload process modules
+            process_data -> ProcessData: keeps info of the folder structure, file names, user info...
+            first -> dict:               parameters for the `first` module
         """
         self.init()
         self.in_debug_mode = in_debug

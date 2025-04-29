@@ -10,27 +10,23 @@
 // cSpell:ignore mgmt Rprt
 // @ts-check
 
-//
 var agGrid = /** @type {Object} */ null;
 var gridID = /** @type {string} */ '';
 var iconID = /** @type {string} */ '';
 var colMeta = /** @type {Object[]} */[];
 var userList = /** @type {String[]} */[];
 var gridRows = /** @type {JSON} */ '';
-var cargoKeys = /** @type {Object[]} */ '';
+var cargoKeys = /** @type {Cargo} */{};
 var itemNone = /** @type {string} */ '';
-var itemRemove = /** @type {string} */ '';
+var itemNone = /** @type {string} */ '';
 var jsData = /** @type {HTMLScriptElement} */ '';
 
 var btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById("myb"));
 var dateFormat = /** @type {string} */ '';
 
-const colIconSrc = /** @type {string} */ '';
+const colIconUrl = /** @type {string} */ '';
 const colUserNew = /** @type {string} */ '';
 const colUserCurr = /** @type {string} */ '';
-const formAdd = /** @type {string} */ '';
-const formEdit = /** @type {string} */ '';
-const formCantEdit = /** @type {string} */ '';
 
 // received_files_mgmt.js
 const isPower = /** @type {bool} */ false;
