@@ -13,7 +13,7 @@ from flask_login import current_user
 
 # from werkzeug.local import LocalProxy
 
-from .roles_abbr import RolesAbbr
+from .RolesAbbr import RolesAbbr
 from ..common.app_constants import APP_LANG
 from ..helpers.user_helper import get_user_code, get_user_folder
 

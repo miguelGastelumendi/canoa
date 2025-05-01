@@ -9,15 +9,16 @@ Equipe da Canoa -- 2024
 
 import requests
 from os import path
-from typing import Tuple, Any
+from typing import Tuple
 from flask import redirect, request, url_for
 
 from .py_helper import is_str_none_or_empty, camel_to_snake, to_str
-from .types_helper import ui_db_texts
-from .ui_db_texts_helper import UITextsKeys
+from .html_helper import URL_PATH_SEP
+from .types_helper import ui_db_texts, template_file_full_name
+from .ui_db_texts_helper import UITextsKeys, get_form_texts
+
 from ..config import BaseConfig
 
-from .ui_db_texts_helper import get_form_texts
 
 base_route_private = "private"
 base_route_public = "public"
@@ -102,12 +103,12 @@ def get_input_text(name: str) -> str:
     return to_str(text)
 
 
-def get_template_name(tmplt: str, folder: str) -> str:
+def get_template_name(tmplt: str, folder: str) -> template_file_full_name:
     from ..common.app_context_vars import sidekick
 
     tmplt_file_name = f"{tmplt}.html.j2"
     # template *must* be with '/':
-    template = f"./{folder}/{tmplt_file_name}"
+    template: template_file_full_name = f".{URL_PATH_SEP}{folder}{URL_PATH_SEP}{tmplt_file_name}"
     tmplt_full_name = path.join(".", sidekick.config.TEMPLATES_FOLDER, folder, tmplt_file_name)
     if tmplt_full_name in templates_found:
         pass
@@ -119,10 +120,12 @@ def get_template_name(tmplt: str, folder: str) -> str:
     return template
 
 
-def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, ui_db_texts]:
+def _get_form_data(
+    section: str, tmplt: str, folder: str
+) -> Tuple[template_file_full_name, bool, ui_db_texts]:
 
     tmplt = camel_to_snake(section) if tmplt is None else tmplt
-    template = get_template_name(tmplt, folder)
+    template: template_file_full_name = get_template_name(tmplt, folder)
     is_get = is_method_get()
 
     # a section of ui_itens
@@ -133,15 +136,19 @@ def _get_form_data(section: str, tmplt: str, folder: str) -> Tuple[str, bool, ui
     return template, is_get, ui_texts
 
 
-def get_private_form_data(section: str, tmplt: str = None) -> Tuple[str, bool, ui_db_texts]:
+def get_private_form_data(
+    section: str, tmplt: str = None
+) -> Tuple[template_file_full_name, bool, ui_db_texts]:
     return _get_form_data(section, tmplt, base_route_private)
 
 
-def get_account_form_data(section: str, tmplt: str = None) -> Tuple[str, bool, ui_db_texts]:
+def get_account_form_data(
+    section: str, tmplt: str = None
+) -> Tuple[template_file_full_name, bool, ui_db_texts]:
     return _get_form_data(section, tmplt, "accounts")
 
 
-def init_form_vars() -> Tuple[dict, str, bool, ui_db_texts]:
+def init_form_vars() -> Tuple[dict, template_file_full_name, bool, ui_db_texts]:
     # tmplt_form, template, is_get, ui_texts
     return {}, "", True, {}
 

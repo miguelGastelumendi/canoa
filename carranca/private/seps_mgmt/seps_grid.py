@@ -140,13 +140,13 @@ def sep_mgmt() -> str:
 
 def _sep_data_fetch(_item_none: str, col_names: List[str]) -> Tuple[DBRecords, List[str], str]:
 
-    sep_data, user_data, msg_error = MgmtSepUser.get_grid_view(col_names)
+    sep_data, user_data, msg_error = MgmtSepUser.get_seps_and_users(None, col_names)
     for record in sep_data.records:
         record.user_curr = _item_none if record.user_curr is None else record.user_curr
         record.user_new = record.user_curr
-        record.icon_url = icon_prepare_for_html(record.sep_id)[0]  # url
+        record.icon_url = icon_prepare_for_html(record.sep_id).icon_url
 
-    users_list = [user.username for user in user_data.records]
+    users_list = [user.username for user in user_data]
 
     return sep_data, users_list, msg_error
 

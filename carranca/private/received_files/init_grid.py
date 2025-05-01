@@ -14,7 +14,7 @@ from flask import render_template
 from flask_login import current_user
 
 from ...public.ups_handler import ups_handler
-from ...private.roles_abbr import RolesAbbr
+from ..RolesAbbr import RolesAbbr
 from ...helpers.route_helper import get_private_form_data, init_form_vars
 from ...helpers.js_grid_helper import js_grid_constants
 from ...helpers.ui_db_texts_helper import UITextsKeys, add_msg_fatal

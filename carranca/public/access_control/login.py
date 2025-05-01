@@ -14,7 +14,7 @@ from flask_login import login_user
 from ...public.models import persist_user
 from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
-from ...private.roles_abbr import RolesAbbr
+from ...private.RolesAbbr import RolesAbbr
 from ...public.ups_handler import ups_handler
 from ...common.app_context_vars import sidekick
 from ...common.app_error_assistant import ModuleErrorCode

@@ -10,24 +10,27 @@ mgd
 
 from flask import render_template, request
 from werkzeug.utils import secure_filename
+from typing import Dict, List
 
 from ..common.app_context_vars import sidekick, app_user
+from ..common.app_error_assistant import ModuleErrorCode
 from ..config.ValidateProcessConfig import ValidateProcessConfig
 
-from ..helpers.py_helper import is_str_none_or_empty, now
+from .wtforms import ReceiveFileForm
+
 from ..helpers.file_helper import folder_must_exist
-from ..common.app_error_assistant import ModuleErrorCode
+from ..helpers.py_helper import is_str_none_or_empty, now
+from ..helpers.types_helper import template_file_full_name
 from ..helpers.route_helper import get_private_form_data, get_input_text
+from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 from ..helpers.ui_db_texts_helper import (
     UITextsKeys,
     add_msg_success,
     add_msg_error,
     add_msg_fatal,
 )
-from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
-
-from .wtforms import ReceiveFileForm
-
+from .models import MgmtSepUser
+from .sep_icon import icon_prepare_for_html
 from .validate_process.ProcessData import ProcessData
 
 RECEIVE_FILE_DEFAULT_ERROR: str = "uploadFileError"
@@ -35,19 +38,37 @@ RECEIVE_FILE_DEFAULT_ERROR: str = "uploadFileError"
 # link em gd de test em mgd account https://drive.google.com/file/d/1yn1fAkCQ4Eg1dv0jeV73U6-KETUKVI58/view?usp=sharing
 
 
-def receive_file() -> str:
+def receive_file() -> template_file_full_name:
     template, is_get, ui_texts = get_private_form_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
 
-    def _result():
-        ui_texts[UITextsKeys.Form.icon_url] = None if app_user.sep is None else app_user.sep.icon_url
-        tmpl = render_template(template, form=tmpl_form, **ui_texts)
+    def _result(seps_dic: Dict, icons: List) -> template_file_full_name:
+        ui_texts[UITextsKeys.Form.icon_url] = icons[0] if icons else None
+        tmpl: template_file_full_name = render_template(
+            template, form=tmpl_form, seps=seps_dic, icons=icons, **ui_texts
+        )
         return tmpl
 
     if is_get:
-        sep_fullname = ui_texts["noSEassigned"] if app_user.sep is None else app_user.sep.full_name
-        ui_texts[UITextsKeys.Msg.info] = ui_texts[UITextsKeys.Msg.info].format(sep_fullname)
-        return _result()
+        seps: Dict = {}
+        icons: List = []
+        filter = [
+            MgmtSepUser.sep_id.name,
+            MgmtSepUser.sep_fullname.name,
+            MgmtSepUser.sep_icon_name.name,
+        ]
+        sep_data, _, msg_error = MgmtSepUser.get_seps_and_users(app_user.id, filter)
+
+        if sep_data.count == 0:
+            ui_texts[UITextsKeys.Msg.warn] = ui_texts["noSEPassigned"]
+            ui_texts[UITextsKeys.Msg.info] = None
+            ui_texts[UITextsKeys.Form.msg_only] = True
+        else:
+
+            seps = [{"id": sep.sep_id, "label": sep.sep_fullname} for sep in sep_data]
+            icons = [icon_prepare_for_html(sep.sep_id).icon_url for sep in sep_data]
+            # TODO: check length
+        return _result(seps, icons)
 
     def _log_error(msg_id: str, code: int, msg: str = "", fatal: bool = False) -> int:
         e_code = ModuleErrorCode.RECEIVE_FILE_ADMIT.value + code
@@ -117,8 +138,8 @@ def receive_file() -> str:
             return _result()
         else:
             task_code += 3  # 14
-            # this is a placeholder for the real name (I yet don't know it)
-            # so pd.working_file_name() has the correct format to
+            # {0} Placeholder for the actual file name.
+            # Ensures pd.working_file_name() has the correct format.
             pd.received_file_name = "{0}"
             download_code, filename, md = download_public_google_file(
                 url_str,

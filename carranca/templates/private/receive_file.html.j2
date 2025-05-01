@@ -11,21 +11,32 @@ Extends:
 mgd
 
 --------------------------------------- #}
-{# cSpell:ignore urlname #}
+{# cSpell:ignore urlname tojson #}
 
 {% set btnCloseForm = successButton %}
 {% set dlg_var_icon_url= iconFileUrl %}
 {% extends "./layouts/form.html.j2" %}
 
 {% block frm_blc_content %}
-{% if not msgOnly %}
+
+<!-- { SEP  -->
+<div class="form-group">
+    <label class="form-label" inert for="{{form.schema_sep.id}}">{{ sepLabel }}</label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <i class="fas fa-vector-square fa-lg"></i>
+        </span>
+        {{ form.schema_sep() }}
+    </div>
+</div>
+<!-- SEP } -->
 
 <!-- { Load File -->
-<div class="form-group">
+<div class="form-group mt-3">
     <label class="form-label" inert for="{{form.filename.id}}">{{ fileLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
-            <i class="fa fa-upload fa-lg"></i>
+            <i class="fas fa-upload fa-lg"></i>
         </span>
         {{ form.filename() }}
     </div>
@@ -37,13 +48,38 @@ mgd
     <label class="form-label" inert for="{{form.urlname.id}}">{{ urlLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
-            <span class="fa fa-cloud-upload fa-lg"></span>
+            <i class="fas fa-cloud-upload fa-lg"></i>
         </span>
         {{ form.urlname(class="form-control") }}
     </div>
 </div>
 <!-- Google File } -->
 
-{% endif %}
 {% endblock frm_blc_content %}
+
+
+{% block dlg_blc_javascript %}
+<script>
+    const seps = {{ seps | tojson | safe }};
+    const icons = {{ icons | tojson | safe }};
+    const select = document.getElementById('{{ form.schema_sep.id }}');
+    const icon = document.getElementById('{{ dlg_var_icon_id }}');
+    seps.forEach(sep => {
+        const option = document.createElement('option');
+        option.value = sep.id;
+        option.textContent = sep.label;
+        select.appendChild(option);
+    });
+    select.selectedIndex = 0;
+    select.addEventListener('change', () => {
+        {% if True %}
+        if ((icons ? icons.length : -1) != (select ? select.options.length : -1)) {
+            console.error("Error: `icons` and `sep` lengths don't coincide.")
+        } else {% endif %}
+        icon.src = icons[select.selectedIndex];
+    });
+
+</script>
+{% endblock dlg_blc_javascript %}
+
 {# eof #}

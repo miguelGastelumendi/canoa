@@ -31,7 +31,7 @@ from flask_login import UserMixin
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
 from ..common.app_constants import APP_LANG
-from ..private.roles_abbr import RolesAbbr
+from ..private.RolesAbbr import RolesAbbr
 
 Base = declarative_base()
 

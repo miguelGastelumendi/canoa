@@ -265,7 +265,35 @@ class MgmtSepUser(Base):
     batch_code = Column(String(10))  # trace_code
 
     @staticmethod
-    def get_grid_view(field_names: Optional[List[str]] = None) -> Tuple[DBRecords, DBRecords, str]:
+    def get_sep_data_by_user(user_id: int) -> Tuple[DBRecords, str]:
+        """
+        Select all SEPs from a user
+        returns DBRecords
+        """
+        if user_id is None:
+            return [], ""
+
+        def _get_list(db_session: Session) -> DBRecords:
+            sep_recs = db_session.scalars(select(MgmtSepUser).where(MgmtSepUser.user_id == user_id)).all()
+            filter = [
+                MgmtSepUser.sep_id.name,
+                MgmtSepUser.sep_fullname.name,
+                MgmtSepUser.sep_icon_name.name,
+            ]
+            sep_rows = DBRecords(MgmtSepUser.__tablename__, sep_recs, filter)
+
+            return [sep_rows]
+
+        e, msg_error, [sep_rows] = db_fetch_rows(_get_list)
+        if e is not None:  # TODO
+            raise e
+
+        return sep_rows, msg_error
+
+    @staticmethod
+    def get_seps_and_users(
+        user_id: Optional[int] = None, field_names: Optional[List[str]] = None
+    ) -> Tuple[DBRecords, DBRecords, str]:
         """
         Returns
         1) `vw_mgmt_user_sep` DB view that has the necessary columns to
@@ -276,11 +304,18 @@ class MgmtSepUser(Base):
         """
 
         def _get_list(db_session: Session):
-            sep_recs = db_session.scalars(select(MgmtSepUser)).all()
+            stmt = select(MgmtSepUser)
+            if user_id is not None:
+                stmt = stmt.where(MgmtSepUser.user_id == user_id)
+                usr_list: DBRecords = []
+
+            sep_recs = db_session.scalars(stmt).all()
             sep_rows = DBRecords(MgmtSepUser.__tablename__, sep_recs, field_names)
 
-            usr_recs = db_session.scalars(select(SepUsers).order_by(SepUsers.username)).all()
-            usr_list = DBRecords(SepUsers.__tablename__, usr_recs)
+            if user_id is None:
+                usr_recs = db_session.scalars(select(SepUsers).order_by(SepUsers.username)).all()
+                usr_list = DBRecords(SepUsers.__tablename__, usr_recs)
+
             return sep_rows, usr_list
 
         e, msg_error, [sep_rows, usr_list] = db_fetch_rows(_get_list, 2)
@@ -325,6 +360,7 @@ class SchemaSEP(Base):
 
     __tablename__ = "vw_scm_sep"
     id = Column("sep_id", Integer, primary_key=True)
+    user_id = Column("user_id", Integer, primary_key=True)
     sep_fullname = Column(Text)
 
 
@@ -384,9 +420,6 @@ class MgmtSep(Base):
             raise e
 
         return sep_rows, usr_list, msg_error
-
-
-
 
     @staticmethod
     def icon_content(id: int) -> Optional[SvgContent]:

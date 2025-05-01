@@ -28,4 +28,6 @@ sep_mgmt_rtn: TypeAlias = Tuple[str, str, int]
 cargo_item: TypeAlias = Dict[str, str | Dict[str, str]]
 cargo_list: TypeAlias = List[cargo_item]
 
+template_file_full_name: TypeAlias = str
+
 # eof

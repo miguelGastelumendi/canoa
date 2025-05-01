@@ -39,7 +39,7 @@ from werkzeug.local import LocalProxy
 
 from carranca import global_sidekick
 from .Sidekick import Sidekick
-from ..private.UserSep import UserSEP
+from ..private.SepIcon import SepIcon, IgniteSepIcon
 from ..private.JinjaUser import JinjaUser
 from ..private.AppUser import AppUser
 
@@ -95,16 +95,16 @@ def _get_jinja_user() -> Optional[JinjaUser]:
 
 # User SEP /!\ Obsolete
 # -----------
-def do_user_sep() -> Optional[UserSEP]:
+def do_user_sep() -> Optional[SepIcon]:
     from ..private.sep_icon import icon_prepare_for_html
 
-    url, sep_fullname, sep = icon_prepare_for_html(current_user.mgmt_sep_id)
-    user_sep = UserSEP(url, sep_fullname, sep)
+    init: IgniteSepIcon = icon_prepare_for_html(current_user.mgmt_sep_id)
+    user_sep = SepIcon(init)
 
     return user_sep
 
 
-def _get_user_sep() -> Optional[UserSEP]:
+def _get_user_sep() -> Optional[SepIcon]:
     from ..helpers.pw_helper import is_someone_logged
 
     if is_someone_logged():
@@ -121,7 +121,7 @@ app_user: Optional[AppUser] = LocalProxy(_get_app_user)
 jinja_user: Optional[JinjaUser] = LocalProxy(_get_jinja_user)
 
 
-user_sep: Optional[UserSEP] = LocalProxy(_get_user_sep)
+user_sep: Optional[SepIcon] = LocalProxy(_get_user_sep)
 
 
 # eof

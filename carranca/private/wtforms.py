@@ -8,9 +8,9 @@ mgd 2024-04-09,27; 06-22
 
 # cSpell:ignore: wtforms urlname iconfilename
 
-from wtforms import PasswordField, FileField, StringField
+from wtforms import PasswordField, FileField, StringField, SelectField
 from flask_wtf import FlaskForm
-from wtforms.validators import InputRequired, Length, URL
+from wtforms.validators import InputRequired, DataRequired, Length, URL
 
 from ..common.app_context_vars import sidekick
 
@@ -20,9 +20,11 @@ from ..common.app_context_vars import sidekick
 
 # Private form
 class ReceiveFileForm(FlaskForm):
+    schema_sep = SelectField(
+        "", validators=[DataRequired()], render_kw={"class": "form-select", "id": "schema_sep"}
+    )
     filename = FileField("", render_kw={"class": "form-control", "id": "upload_file", "accept": ".zip"})
     urlname = StringField("", validators=[URL()], render_kw={"class": "form-control", "id": "link_file"})
-
 
 # Private & Public form
 class ChangePassword(FlaskForm):
