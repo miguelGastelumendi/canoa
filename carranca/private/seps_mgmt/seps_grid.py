@@ -21,7 +21,7 @@ The files involved are:
     carranca/static/js/
         seps_mgmt.js
     carranca/private/
-        models.py [MgmtSepUser]
+        models[MgmtUserSeps]
 
 Database objects:
     view:
@@ -39,13 +39,13 @@ Database objects:
 
 """
 
-# cSpell: ignore mgmt tmpl samp
+# cSpell: ignore tmpl samp
 
 import json
 from flask import render_template, request
 from typing import Tuple, List, Dict
 
-from ..models import MgmtSepUser
+from ..models import MgmtSepsUser
 from ..sep_icon import icon_prepare_for_html
 from ..SepIconConfig import SepIconConfig
 
@@ -99,7 +99,7 @@ def sep_mgmt() -> str:
         item_none = "(None)" if is_str_none_or_empty(item_none) else item_none
         if is_get:
             task_code += 1  # 4
-            sep_data, user_list, ui_texts[UITextsKeys.Msg.error] = _sep_data_fetch(item_none, col_names)
+            sep_data, user_list = _sep_data_fetch(item_none, col_names)
         elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
             task_code += 2  # 5
             msg = add_msg_error("secKeyViolation", ui_texts)
@@ -111,15 +111,13 @@ def sep_mgmt() -> str:
             msg_success, msg_error_save_and_email, task_code = _save_and_email(
                 json_response, ui_texts, task_code
             )
-            sep_data, user_list, msg_error_fetch = _sep_data_fetch(item_none, col_names)
+            sep_data, user_list = _sep_data_fetch(item_none, col_names)
 
             task_code += 1  # ?
             if is_str_none_or_empty(msg_error_save_and_email) and is_str_none_or_empty(msg_error_fetch):
                 ui_texts[UITextsKeys.Msg.success] = msg_success
             elif not is_str_none_or_empty(msg_error_save_and_email):
                 ui_texts[UITextsKeys.Msg.error] = msg_error_save_and_email
-            else:  # couldn't ready data.
-                ui_texts[UITextsKeys.Msg.error] = msg_error_fetch
 
         tmpl = render_template(
             template,
@@ -140,15 +138,15 @@ def sep_mgmt() -> str:
 
 def _sep_data_fetch(_item_none: str, col_names: List[str]) -> Tuple[DBRecords, List[str], str]:
 
-    sep_data, user_data, msg_error = MgmtSepUser.get_seps_and_users(None, col_names)
-    for record in sep_data.records:
+    sep_usr_rows, user_rows = MgmtSepsUser.get_sepsusr_and_usrlist(None, col_names)
+    for record in sep_usr_rows:
         record.user_curr = _item_none if record.user_curr is None else record.user_curr
         record.user_new = record.user_curr
         record.icon_url = icon_prepare_for_html(record.sep_id).icon_url
 
-    users_list = [user.username for user in user_data]
+    users_list = [user.username for user in user_rows]
 
-    return sep_data, users_list, msg_error
+    return sep_usr_rows, users_list
 
 
 def _save_and_email(grid_response: cargo_list, ui_texts: ui_db_texts, task_code: int) -> sep_mgmt_rtn:

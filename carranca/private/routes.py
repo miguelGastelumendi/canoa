@@ -8,10 +8,10 @@ mgd
 """
 
 # cSpell: ignore werkzeug wtforms tmpl mgmt
-from typing import Optional
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 
+from ..helpers.py_helper import to_int
 from ..helpers.pw_helper import internal_logout, nobody_is_logged
 from ..helpers.route_helper import (
     bp_name,
@@ -66,8 +66,8 @@ def sep_mgmt():
 
 
 @login_required
-@bp_private.route("/sep_edit", defaults={"sid": None}, methods=["GET", "POST"])
-def sep_edit(sid: Optional[str]):
+@bp_private.route("/sep_edit/<sid>", methods=["GET", "POST"])
+def sep_edit(sid=0):
     """
     Through this route, the user can edit a SEP data
     """
@@ -76,7 +76,8 @@ def sep_edit(sid: Optional[str]):
     else:
         from .sep_edit import do_sep_edit
 
-        return do_sep_edit(sid)
+        id = to_int(sid)
+        return do_sep_edit(id)
 
 
 @login_required

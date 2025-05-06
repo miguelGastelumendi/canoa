@@ -7,7 +7,7 @@
  * A dummy variable declarations files for @ts-check
  * As an example, see sep_mgmt.js
 */
-// cSpell:ignore mgmt Rprt
+// cSpell:ignore Rprt
 // @ts-check
 
 var agGrid = /** @type {Object} */ null;

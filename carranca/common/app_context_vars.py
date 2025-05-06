@@ -29,43 +29,77 @@ mgd
 
 """
 
-# cSpell:ignore mgmt
+# cSpell:ignore mgmt sepsusr usrlist
 
 from flask import has_request_context, g
-from typing import Callable, Any, Optional
+from typing import Callable, Optional, Any
 from threading import Lock
-from flask_login import current_user
 from werkzeug.local import LocalProxy
 
 from carranca import global_sidekick
 from .Sidekick import Sidekick
-from ..private.SepIcon import SepIcon, IgniteSepIcon
-from ..private.JinjaUser import JinjaUser
 from ..private.AppUser import AppUser
+from ..private.UserSep import user_seps_rtn, user_sep_dict, user_sep_list
+from ..private.JinjaUser import JinjaUser
+from ..helpers.types_helper import error_message
 
 # share global sidekick
 sidekick: Sidekick = global_sidekick
 
 
 # local lock control
+from threading import Lock
+
 _locks = {}
+_locks_lock = Lock()
+RUN_WITH_LOCKS = False  # debug _get_scoped_var
 
 
-def _get_scoped_var(var_name: str, func_creator: Callable[[], Any]) -> Optional[Any]:
+def _get_scoped_var(var_name: str, def_creator: Callable[[], Any]) -> Optional[Any]:
     """
-    Returns a variable from the current request context, creating it if necessary.
+    Returns a value, from the current request context (g) under the var_name , creating it if necessary.
     """
 
     if not has_request_context():  # no g
-        return None
-    elif var_name not in _locks:  # lock it, thread safety
-        _locks[var_name] = Lock()
+        raise RuntimeError(f"Request context is required to retrieve `{var_name}`.")
 
-    with _locks[var_name]:
-        if not hasattr(g, var_name):
-            setattr(g, var_name, func_creator())
+    _CREATION_FAILED = object()
 
-    return getattr(g, var_name, None)
+    var_value = None
+    if RUN_WITH_LOCKS:
+        with _locks_lock:
+            if var_name not in _locks:
+                _locks[var_name] = Lock()
+
+        with _locks[var_name]:
+            if hasattr(g, var_name):
+                var_value = getattr(g, var_name)
+                if var_value is _CREATION_FAILED:
+                    raise RuntimeError(f"Previous attempt to create `{var_name}` failed.")
+                return var_value
+            else:
+                try:
+                    var_value = def_creator()
+                    if var_value is None:
+                        raise ValueError(...)
+                    setattr(g, var_name, var_value)
+                    return var_value
+                except Exception as e:
+                    setattr(g, var_name, _CREATION_FAILED)
+                    raise RuntimeError(f"Scoped variable creator {def_creator} raised an exception [{e}].")
+    elif not hasattr(g, var_name):
+        try:
+            var_value = def_creator()
+            if var_value is None:
+                raise ValueError(f"{def_creator} returned None for `{var_name}`.")
+            setattr(g, var_name, var_value)
+        except Exception as e:
+            raise RuntimeError(f"Scoped variable creator {def_creator} raised an exception [{e}].")
+
+        return var_value
+    else:
+        var_value = getattr(g, var_name)
+        return var_value
 
 
 # App User
@@ -82,8 +116,8 @@ def _get_app_user() -> Optional[AppUser]:
         return None
 
 
-# Logged User
-# -----------
+# Jinja User (few attributes, as this user is exposed to HTML files via Jinja)
+# --------------
 def _get_jinja_user() -> Optional[JinjaUser]:
     def _do_jinja_user() -> JinjaUser:
         return JinjaUser(_get_app_user())
@@ -93,35 +127,72 @@ def _get_jinja_user() -> Optional[JinjaUser]:
     return jinja_user
 
 
-# User SEP /!\ Obsolete
+# User SEPs
 # -----------
-def do_user_sep() -> Optional[SepIcon]:
+def _prepare_user_seps() -> user_seps_rtn:
+    from ..private.models import MgmtSepsUser
+    from ..private.UserSep import UserSep
     from ..private.sep_icon import icon_prepare_for_html
+    from ..helpers.py_helper import class_to_dict
 
-    init: IgniteSepIcon = icon_prepare_for_html(current_user.mgmt_sep_id)
-    user_sep = SepIcon(init)
+    user_id: int = app_user.id
 
-    return user_sep
+    filter = [
+        MgmtSepsUser.sep_id.name,
+        MgmtSepsUser.sep_fullname.name,
+        MgmtSepsUser.sep_description.name,
+        MgmtSepsUser.sep_visible.name,
+        MgmtSepsUser.sep_icon_name.name,
+    ]
+    try:
+        sep_usr_rows, _ = MgmtSepsUser.get_sepsusr_and_usrlist(user_id, filter)
+    except Exception as e:
+        return str(e)
+
+    seps: list[user_sep_dict] = []
+    for sep_row in sep_usr_rows:
+        item = UserSep(
+            sep_row.sep_id,
+            sep_row.sep_fullname,
+            sep_row.sep_description,
+            sep_row.sep_visible,
+            sep_row.sep_icon_name,
+        )
+        sep_row.icon_file_name = item.icon_file_name  # fix? see ↓ (bellow)
+        icon = icon_prepare_for_html(sep_row)  # sep.icon_file_name is need in `icon_prepare_for_html`
+        item.icon_url = icon.icon_url if icon else ""
+        del sep_row.icon_file_name  # must be a UserSep instance (later will be converted again to UserSep)
+        dic = class_to_dict(item)  # only saves 'simple' classes, like Dict
+        seps.append(dic)
+
+    return seps
 
 
-def _get_user_sep() -> Optional[SepIcon]:
-    from ..helpers.pw_helper import is_someone_logged
+def _get_user_seps() -> user_seps_rtn:
+    from ..private.UserSep import UserSep
 
-    if is_someone_logged():
-        return _get_scoped_var("_user_sep", do_user_sep)
-    else:
-        return None
+    if app_user == None:
+        result: error_message = "No current user to retrieve SEP data."
+    else:  # convert simple dict to UserSep again
+        DEBUG_USER_SEPS = True
+        list_dic = (
+            _prepare_user_seps() if DEBUG_USER_SEPS else _get_scoped_var("_user_seps", _prepare_user_seps)
+        )
+        result: user_sep_list = [UserSep(**item) for item in list_dic]
+
+    return result
 
 
+# =========================================================
 # Proxies
-# -------
+# =========================================================
+
 app_user: Optional[AppUser] = LocalProxy(_get_app_user)
 
 
 jinja_user: Optional[JinjaUser] = LocalProxy(_get_jinja_user)
 
 
-user_sep: Optional[SepIcon] = LocalProxy(_get_user_sep)
-
+user_seps: user_seps_rtn = LocalProxy(_get_user_seps)
 
 # eof

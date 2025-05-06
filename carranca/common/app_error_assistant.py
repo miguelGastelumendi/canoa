@@ -9,9 +9,6 @@ Equipe da Canoa  2024 — 2025
 mgd
 """
 
-# cSpell:ignore mgmt
-
-import datetime
 from enum import IntEnum
 
 from ..helpers.py_helper import crc16, now_as_iso
@@ -87,6 +84,7 @@ class ModuleErrorCode(IntEnum):
 
     SEP_EDIT = 500
     SEP_MGMT = 550
+    DB_FETCH_ROWS = 560  # only
 
     RECEIVED_FILES_MGMT = 600
 

@@ -34,7 +34,7 @@ mgd 2025-03-05--15
 {% block dlg_blc_footer %}
 
 {% from "includes/_action_forms_and_btns.html.j2" import btn_close %}
-{{ btn_close(action_form__form_close_id, btnCloseForm) }}
+{{ btn_close(action_form__form_close_id, btnCloseForm | default('Fechar')) }}
 
 {% endblock dlg_blc_footer %}
 {# ==^ Dialog Body ^== #}

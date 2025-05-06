@@ -7,7 +7,7 @@
 */
 // @ts-check
 /* cSpell:locale en pt-br
- * cSpell:ignore mgmt Rprt
+ * cSpell:ignore Rprt
  */
 
 /// <reference path="./ts-check.js" />

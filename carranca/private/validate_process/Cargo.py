@@ -15,6 +15,7 @@ from ...helpers.py_helper import is_str_none_or_empty, now
 from ...common.app_constants import APP_VERSION
 from ...config.ValidateProcessConfig import ValidateProcessConfig
 
+from ..UserSep import UserSep
 from ..receive_file import RECEIVE_FILE_DEFAULT_ERROR
 from .ProcessData import ProcessData
 
@@ -28,24 +29,19 @@ class Cargo:
         process_version: str,
         in_debug: bool,
         user: AppUser,
+        sep_data: UserSep,
         receive_file_cfg: ValidateProcessConfig,
         process_data: ProcessData,
         received_at: datetime,
         first: dict,
     ):
         """
-        Cargo is a class that helps to control the process loop.
-
-        Args:
-            in_debug -> bool:            app is in debug mode?
-            user -> AppUser:             app user info
-            upload_cfg -> UploadConfig:  configuration of the file upload process modules
-            process_data -> ProcessData: keeps info of the folder structure, file names, user info...
-            first -> dict:               parameters for the `first` module
+        Cargo is a class that assists the process loop.
         """
         self.init()
         self.in_debug_mode = in_debug
         self.user = user
+        self.sep_data = sep_data
         self.receive_file_cfg = receive_file_cfg
         self.pd = process_data
         self.next = dict(first)
@@ -54,7 +50,7 @@ class Cargo:
         self.final = {}  # the process.py return values
         self.app_version = APP_VERSION
         self.process_version = process_version
-        """ When each process models begins """
+        """ Timestamp indicating when each process module begins its execution """
         self.received_at = received_at
         self.process_started_at = now()
         self.check_started_at = None

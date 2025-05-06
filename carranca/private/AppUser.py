@@ -11,14 +11,16 @@ mgd
 
 from flask_login import current_user
 
-# from werkzeug.local import LocalProxy
-
+from .UserSep import user_sep_list
 from .RolesAbbr import RolesAbbr
+
 from ..common.app_constants import APP_LANG
+from ..common.app_error_assistant import AppStumbled
 from ..helpers.user_helper import get_user_code, get_user_folder
+from ..helpers.types_helper import error_message
 
 
-# Basic information of the logged user.
+# App needed information of the logged user.
 class AppUser:
     def __init__(self):
         from ..common.app_context_vars import sidekick
@@ -40,8 +42,9 @@ class AppUser:
             self.role_abbr = RolesAbbr.Void.value
             self.role_name = ""
             self.is_adm = False
-            self.is_power = False
             self.is_support = False
+            self.is_power = False
+            # self.seps: user_sep_list= [] see @property below
         else:
             sidekick.display.debug(f"{self.__class__.__name__} was created.")
             self.lang = current_user.lang
@@ -58,27 +61,25 @@ class AppUser:
             self.is_adm: bool = self.role_abbr == RolesAbbr.Admin.value
             self.is_support: bool = self.role_abbr == RolesAbbr.Support.value
             self.is_power: bool = self.is_adm or (self.is_support and sidekick.debugging)
+            # self.seps: user_sep_list = [] see @property below
 
     @property
-    def sep(self):
-        if current_user.mgmt_sep_id is None:
-            return None
+    def seps(self) -> user_sep_list:
+        from ..common.app_context_vars import user_seps
+
+        result: user_sep_list = []
+        if not self.ready:
+            result = []
+        elif isinstance(us_list := user_seps, list):
+            result: user_sep_list = us_list
         else:
-            from ..common.app_context_vars import user_sep
+            msg: error_message = str(us_list) if isinstance(user_seps, str) else "Error loading user SEP."
+            raise AppStumbled(msg)
 
-            return user_sep
-
-            # from .sep_icon import icon_prepare_for_html
-
-            # TODO improve performance with cache (maybe session)
-            # def load_sep():
-            #     url, sep_fullname, sep = icon_prepare_for_html(current_user.mgmt_sep_id)
-            #     return UserSEP(self.path, url, sep_fullname, sep)
-
-            # self.sep = LocalProxy(load_sep)
+        return result
 
     def __repr__(self):
-        user_info = "Unknown" if not self.ready else f"{self.name} [{self.id}]"
+        user_info = "Unknown" if not self.ready else f"{self.name} [id:{self.id}]"
         return f"<{self.__class__.__name__}({user_info})>"
 
 

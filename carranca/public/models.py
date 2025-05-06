@@ -6,7 +6,7 @@ Equipe da Canoa -- 2024
 mgd
 """
 
-# cSpell:ignore nullable sqlalchemy mgmt joinedload
+# cSpell:ignore nullable sqlalchemy joinedload
 
 from carranca import global_sqlalchemy_scoped_session, global_login_manager
 
@@ -28,10 +28,11 @@ from sqlalchemy.orm import relationship, declarative_base, joinedload
 
 # from sqlalchemy.ext.hybrid import hybrid_property
 from flask_login import UserMixin
-from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import hash_pass
-from ..common.app_constants import APP_LANG
+from ..helpers.py_helper import is_str_none_or_empty
+from ..helpers.db_helper import db_fetch_rows, db_ups_error
 from ..private.RolesAbbr import RolesAbbr
+from ..common.app_constants import APP_LANG
 
 Base = declarative_base()
 
@@ -50,7 +51,7 @@ class User(Base, UserMixin):
     username_lower = Column(String(100), Computed(""))
     email = Column(String(64), unique=True)
     # OBSOLETE
-    mgmt_sep_id = Column(Integer, unique=True)
+    # mgmt_sep_id = Column(Integer, unique=True)
     last_login_at = Column(DateTime, nullable=True)
     recover_email_token = Column(String(100), nullable=True, unique=True)
     recover_email_token_at = Column(DateTime, Computed(""))
@@ -62,16 +63,6 @@ class User(Base, UserMixin):
 
     role = relationship("Role", back_populates="users")
     debug = Column(Boolean, default=False)
-
-    # Here's how to use role_mame in Python instead of user.role.name
-    # @hybrid_property
-    # def role_name(self):
-    #     return self.role.name if self.role else None
-
-    # Here's how to use role_mame in an expression in SQLALchemy SQL (eg .filter(User.role_abbr == “ADM”).all()
-    # @role_name.expression
-    # def role_name(cls):  # For querying
-    #     return Role.name
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():
@@ -89,6 +80,21 @@ class User(Base, UserMixin):
 
     def __repr__(self):
         return str(self.username)
+
+    def get_where(**filter: Any) -> "User":
+        """
+        Select a user by a unique filter
+        """
+
+        def _get_data(db_session: Session) -> "User":
+            user = db_session.query(User).options(joinedload(User.role)).filter_by(**filter).first()
+            return user
+
+        e, msg_error, user = db_fetch_rows(_get_data)
+        if e:
+            db_ups_error(e, msg_error, User.__tablename__)
+
+        return user
 
 
 def get_user_where(**filter: Any) -> User:
@@ -140,14 +146,15 @@ def persist_user(record: any, task_code: int = 1) -> None:
 @global_login_manager.user_loader
 def user_loader(id):
     # current_user #
-    user = get_user_where(id=id)
+    user = User.get_where(id=id)
     return user
 
 
+# TODO, seems that this make a user name before log process has finished
 @global_login_manager.request_loader
 def request_loader(request):
-    username = "" if len(request.form) == 0 else request.form.get("username")
-    user = None if is_str_none_or_empty(username) else get_user_where(username_lower=username.lower())
+    username = "" if len(request.form) == 0 else request.form.get("username", "")
+    user = None if is_str_none_or_empty(username) else User.get_where(username_lower=username.lower())
     return user
 
 

@@ -11,7 +11,7 @@ Extends:
 mgd
 
 --------------------------------------- #}
-{# cSpell:ignore urlname tojson #}
+{# cSpell:ignore urlname tojson uploadfile #}
 
 {% set btnCloseForm = successButton %}
 {% set dlg_var_icon_url= iconFileUrl %}
@@ -33,12 +33,12 @@ mgd
 
 <!-- { Load File -->
 <div class="form-group mt-3">
-    <label class="form-label" inert for="{{form.filename.id}}">{{ fileLabel }}</label>
+    <label class="form-label" inert for="{{form.uploadfile.id}}">{{ fileLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fas fa-upload fa-lg"></i>
         </span>
-        {{ form.filename() }}
+        {{ form.uploadfile() }}
     </div>
 </div>
 <!-- Load File } -->
@@ -50,36 +50,59 @@ mgd
         <span class="input-group-text">
             <i class="fas fa-cloud-upload fa-lg"></i>
         </span>
-        {{ form.urlname(class="form-control") }}
+        {{ form.urlname() }}
     </div>
 </div>
 <!-- Google File } -->
 
 {% endblock frm_blc_content %}
 
-
+{% if not msgOnly %}
 {% block dlg_blc_javascript %}
 <script>
     const seps = {{ seps | tojson | safe }};
-    const icons = {{ icons | tojson | safe }};
     const select = document.getElementById('{{ form.schema_sep.id }}');
     const icon = document.getElementById('{{ dlg_var_icon_id }}');
-    seps.forEach(sep => {
+    const add_item = (id, text) => {
         const option = document.createElement('option');
-        option.value = sep.id;
-        option.textContent = sep.label;
+        option.value = id < 1 ? "" : id
+        option.textContent = text;
         select.appendChild(option);
-    });
+    }
+    seps.forEach(sep => add_item(sep.id, sep.fullname));
     select.selectedIndex = 0;
-    select.addEventListener('change', () => {
-        {% if True %}
-        if ((icons ? icons.length : -1) != (select ? select.options.length : -1)) {
-            console.error("Error: `icons` and `sep` lengths don't coincide.")
-        } else {% endif %}
-        icon.src = icons[select.selectedIndex];
-    });
-
+    select.addEventListener('change', () => { icon.src = seps[select.selectedIndex].icon_url; });
 </script>
-{% endblock dlg_blc_javascript %}
 
+{#
+document.addEventListener('DOMContentLoaded', () => {
+const fileInput = document.getElementById('{{form.uploadfile.id}}');
+const urlInput = document.getElementById('{{form.uploadfile.id }}');
+const submitButton = document.querySelector('button[type="submit"]');
+
+// Function to validate inputs
+const validateInputs = () => {
+const hasFile = fileInput.files.length > 0; // Check if a file is selected
+const hasUrl = urlInput.value.trim() !== ''; // Check if the URL field is not empty
+
+// Enable the submit button only if one and only one input has a value
+if (hasFile && hasUrl) {
+alert('You can only provide either a file or a URL, not both.');
+submitButton.disabled = true;
+} else if (!hasFile && !hasUrl) {
+alert('You must provide either a file or a URL.');
+submitButton.disabled = true;
+} else {
+submitButton.disabled = false;
+}
+};
+
+// Add event listeners to both inputs
+fileInput.addEventListener('change', validateInputs);
+urlInput.addEventListener('input', validateInputs);
+});
+#}
+
+{% endblock dlg_blc_javascript %}
+{% endif %}
 {# eof #}

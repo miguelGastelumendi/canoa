@@ -5,16 +5,14 @@ Equipe da Canoa -- 2024
 mgd 2024-11-15
 """
 
-# cSpell: ignore mgmt tmpl lightgray darkgrey
+# cSpell: ignore tmpl lightgray darkgrey
 
 from os import path
 from flask import current_app
-from typing import TypeAlias
 
 from ..helpers.route_helper import static_route
 from ..helpers.html_helper import url_join
-
-SvgContent: TypeAlias = str
+from ..helpers.types_helper import svg_content
 
 
 class SepIconConfig:
@@ -31,7 +29,7 @@ class SepIconConfig:
         folder_and_name = url_join(SepIconConfig.folder, to)
         return static_route(folder_and_name)
 
-    def content_for(fill_color: str, text: str = "", stroke_width: int = 1) -> SvgContent:
+    def content_for(fill_color: str, text: str = "", stroke_width: int = 1) -> svg_content:
         return (
             "<svg width='62' height='62' xmlns='http://www.w3.org/2000/svg'>"
             f"<rect width='100%' height='100%' fill='{fill_color}' stroke='black' stroke-width='{stroke_width}' />"
@@ -39,15 +37,15 @@ class SepIconConfig:
             "</svg>"
         )
 
-    def empty_content() -> SvgContent:
+    def empty_content() -> svg_content:
         # see canoa.css[.grid-item-none]
         return SepIconConfig.content_for("darkgrey", "Falta")
 
-    def error_content() -> SvgContent:
+    def error_content() -> svg_content:
         # see canoa.css[.grid-item-remove]
         return SepIconConfig.content_for("firebrick", "Erro")
 
-    def none_content() -> SvgContent:
+    def none_content() -> svg_content:
         # when user has no sep assigned
         return SepIconConfig.content_for("none", "", 2)
 

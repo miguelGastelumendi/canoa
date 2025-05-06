@@ -65,7 +65,7 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         UserDataFiles.insert(
             user_dataFiles_key,
             id_users=cargo.user.id,
-            id_sep=(None if cargo.user.sep is None else cargo.user.sep.id),  # this is an FK
+            id_sep=cargo.sep_data.id,  # this is an FK
             user_receipt=cargo.pd.user_receipt,
             app_version=cargo.app_version,
             process_version=cargo.process_version,

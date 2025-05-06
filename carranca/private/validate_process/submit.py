@@ -141,7 +141,6 @@ def submit(cargo: Cargo) -> Cargo:
         result_ext = _cfg.output_file.ext  # /!\ keep always the same case (all lower)
         final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
         final_report_full_name = path.join(_path_read, final_report_file_name)
-
         try:
             task_code = 5  # 5
             std_out_str, std_err_str, exit_code = asyncio.run(
@@ -153,6 +152,7 @@ def submit(cargo: Cargo) -> Cargo:
                     _path_read,
                     cargo.pd.received_original_name,
                     cargo.user,
+                    cargo.sep_data,
                     cargo.in_debug_mode,
                 )
             )
@@ -194,7 +194,7 @@ def submit(cargo: Cargo) -> Cargo:
     except Exception as e:
         error_code = task_code + ModuleErrorCode.RECEIVE_FILE_SUBMIT.value
         msg_exception = str(e)
-        sidekick.error(msg_exception)
+        sidekick.display.error(msg_exception)
         sidekick.app_log.fatal(msg_exception, exc_info=error_code)
     finally:
         _store_report_result(
@@ -208,10 +208,13 @@ def submit(cargo: Cargo) -> Cargo:
                 shutil.rmtree(_path_read)
                 shutil.rmtree(_path_write)
             else:
+                sidekick.app_log.info("The communication folders contents was not removed, as requested.")
                 pass  # leave the files for debugging
 
         except:
-            sidekick.app_log.warning("The communication folders contents was *not* deleted.")
+            sidekick.app_log.warning(
+                "The communication folders contents were *not* removed because of an error."
+            )
 
     # goto email.py
     if error_code == 0:

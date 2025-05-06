@@ -12,6 +12,7 @@ mgd
 import asyncio
 
 from ..AppUser import AppUser
+from ..UserSep import UserSep
 from ...common.app_context_vars import sidekick
 from ...config.ValidateProcessConfig import DataValidateApp
 from ...helpers.py_helper import (
@@ -29,12 +30,10 @@ async def run_validator(
     output_folder: str,
     file_name: str,
     app_user: AppUser,
+    sep_data: UserSep,
     debug_validator: bool = False,
 ):
     #  This function knows quite a lot of how to run [data_validate]
-
-    sep_full_name = "[None]" if app_user.sep is None else app_user.sep.full_name
-
     run_command = [
         batch_full_name,
         data_validate_path,  # param 1: path do the data_validate main.py
@@ -48,7 +47,7 @@ async def run_validator(
         d_v.na_file_name,
         quote(file_name),  # param 5
         d_v.na_schema_se,
-        quote(sep_full_name),  # param 6
+        quote(sep_data.fullname),  # param 6
     ]
 
     if not is_str_none_or_empty(d_v.flags):

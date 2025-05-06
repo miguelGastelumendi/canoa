@@ -95,7 +95,7 @@ def _save_data_to_db(
 
     from carranca import global_sqlalchemy_scoped_session
 
-    from ..models import MgmtSepUser
+    from ..models import MgmtSepsUser
     from ...common.app_context_vars import app_user, sidekick
 
     msg_error = None
@@ -107,7 +107,7 @@ def _save_data_to_db(
         try:
 
             def __set_sep_new_user(id: int, usr_new: str | None):
-                user_sep = db_session.query(MgmtSepUser).filter_by(sep_id=id).one_or_none()
+                user_sep = db_session.query(MgmtSepsUser).filter_by(sep_id=id).one_or_none()
                 if user_sep:
                     user_sep.user_new = usr_new
                     user_sep.assigned_by = assigned_by

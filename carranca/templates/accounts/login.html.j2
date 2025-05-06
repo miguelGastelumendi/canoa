@@ -10,6 +10,7 @@ Extends:
 
 mgd
 --------------------------------------- #}
+{# cspell:ignore unselectable #}
 
 {% set dlg_var_close= False %}
 {% set dlg_cls_size= '' %} {# default size #}
@@ -19,40 +20,32 @@ mgd
 
 <!-- { User Name -->
 <div class="form-group">
-    <label class="form-label" inert for="user_name">{{ userLabel }}</label>
+    <label class="form-label" inert for="{{form.username.name}}">{{ userLabel }}</label>
     <div class="input-group">
-        <span class="input-group-text">
-            <i class="fas fa-user"></i>
-        </span>
-        {{ form.username(class="form-control", id="user_name") }}
+        <span class="input-group-text"> <i class="fas fa-user"></i></span>
+        {{ form.username() }}
     </div>
 </div>
 <!-- User Name } -->
 
 <!--{ Password  -->
 <div class="form-group mt-3">
-    <label class="form-label" inert for="pwd_login">{{ passwordLabel }}</label>
+    <label class="form-label" inert for="{{form.password.name}}">{{ passwordLabel }}</label>
     <div class="input-group">
-        <span class="input-group-text">
-            <i class="fas fa-unlock-alt"></i>
-        </span>
-        {{ form.password( id="pwd_login") }}
+        <span class="input-group-text"><i class="fas fa-unlock-alt"></i></span>
+        {{ form.password() }}
     </div>
 </div>
 <!-- Password }-->
 
-<!-- { RememberMe & ForgotPw -->
-<div class="form-group mt-2">
-    <!-- { RememberMe -->
-    <div class="">
-        {{ form.remember_me(class="form-check-btn", id="rememberMe") }}
-        <label class="form-check-label form-label" class="form-check-label mb-0" for="rememberMe">
-            {{ rememberMe}}
-        </label>
-    </div>
-    <!-- RememberMe } -->
+<!-- { RememberMe -->
+<div class="mt-2">
+    {{ form.remember_me() }}
+    <label class="unselectable-text form-check-label ms-0" for="{{form.remember_me.name}}">
+        {{ rememberMe }}
+    </label>
 </div>
-<!-- RememberMe & ForgotPw } -->
+<!-- RememberMe } -->
 
 {% endblock frm_blc_content %}
 

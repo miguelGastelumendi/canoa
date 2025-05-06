@@ -1,9 +1,9 @@
 """
-    *Password Recovery*
-    Part of Public Access Control Processes
+*Password Recovery*
+Part of Public Access Control Processes
 
-    Equipe da Canoa -- 2024
-    mgd
+Equipe da Canoa -- 2024
+mgd
 """
 
 # cSpell:ignore tmpl wtforms

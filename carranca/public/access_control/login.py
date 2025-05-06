@@ -26,7 +26,7 @@ from ...helpers.route_helper import (
     get_input_text,
     get_account_form_data,
 )
-from ..models import get_user_where, get_user_role_abbr
+from ..models import User, get_user_role_abbr
 
 
 def login():
@@ -55,9 +55,9 @@ def login():
             task_code += 1  # 6
             search_for = to_str(username).lower()
             task_code += 1  # 7
-            user = get_user_where(username_lower=search_for)  # by uname
+            user = User.get_where(username_lower=search_for)  # by uname
             task_code += 1  # 8
-            user = get_user_where(email=search_for) if user is None else user  # or by email
+            user = User.get_where(email=search_for) if user is None else user  # or by email
             user_role_abbr = None if user is None else get_user_role_abbr(user.id, user.id_role)
             task_code += 1  # 9
             if not user:
@@ -69,6 +69,9 @@ def login():
                 user.password_failures = user.password_failures + 1
                 add_msg_error("userOrPwdIsWrong", ui_texts)
                 persist_user(user, task_code)
+                # persist_user creates an Anonymous User, so lets logout it
+                user
+
             elif user.disabled:
                 task_code += 3  # 12
                 add_msg_error("userIsDisabled", ui_texts)
@@ -87,7 +90,6 @@ def login():
                 remember_me = not is_str_none_or_empty(request.form.get("remember_me"))
                 task_code += 1  # 17
                 login_user(user, remember_me)
-                logged_in = True
                 task_code += 1  # 18
                 msg = f"{user.username} (with id {user.id} & role '{user.role.name}') just logged in."
                 sidekick.display.info(msg)

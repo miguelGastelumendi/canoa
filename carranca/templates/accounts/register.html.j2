@@ -12,19 +12,17 @@ mgd
 --------------------------------------- #}
 
 {% set btnCloseForm = gotoLogin %}
+{% set dlg_cls_size= '' %}
 {% extends "./layouts/form.html.j2" %}
 
 {% block frm_blc_content %}
 {% if not msgOnly %} {# `show msg error and` + `display this block` if (msgError or not msgSuccess) else #}
-
 <!-- { User Name -->
 <div class="form-group">
-    <label class="form-label" inert for="userName">{{ userLabel }}</label>
+    <label class="form-label" inert for="{{form.username.name}}">{{ userLabel }}</label>
     <div class="input-group">
-        <span class="input-group-text">
-            <i class="fas fa-user"></i>
-        </span>
-        {{ form.username(class="form-control", id= "userName") }}
+        <span class="input-group-text"> <i class="fas fa-user"></i></span>
+        {{ form.username() }}
     </div>
 </div>
 <!-- User Name } -->
@@ -58,10 +56,9 @@ mgd
         <input class="form-check-btn" type="checkbox" id="id-termsAccepted" required>
     </div>
     <div class="col-8">
-        <label class="form-text form-line" class="form-check-label" for="id-termsAccepted"> {{ termsLabel
-            }}&nbsp;</label>
+        <label class="form-text form-line form-check-label" for="id-termsAccepted"> {{ termsLabel}}&nbsp;</label>
         <br>
-        <a class="form-link form-link" href="docs/termsOfUse">{{ termsOfUse }}</a>
+        <a class="form-link" href="docs/termsOfUse">{{ termsOfUse }}</a>
         &nbsp;e&nbsp;
         <a href="docs/privacyPolicy" class="form-link">{{ privacyPolicy }}</a>
     </div>

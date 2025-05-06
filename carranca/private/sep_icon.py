@@ -13,14 +13,15 @@ from typing import Optional, Tuple
 
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
+from ..helpers.types_helper import svg_content
 from ..common.app_context_vars import sidekick
 
-from .models import MgmtSep
+from .models import Sep
 from .SepIcon import SepIcon, IgniteSepIcon
 from .SepIconConfig import SepIconConfig
 
 
-def icon_refresh(sep: SepIcon | MgmtSep) -> bool:
+def icon_refresh(sep: SepIcon | Sep) -> bool:
 
     refreshed = False
     if is_str_none_or_empty(sep.icon_file_name):
@@ -38,20 +39,20 @@ def icon_refresh(sep: SepIcon | MgmtSep) -> bool:
     return refreshed
 
 
-def icon_prepare_for_html(sep_or_id: Optional[MgmtSep | int]) -> IgniteSepIcon:
+def icon_prepare_for_html(sep_or_id: Optional[Sep | int]) -> IgniteSepIcon:
     """
     Creates a file with the SEP's svg data (if necessary) and
     returns
-        url of the icon_file (can be to 'no_file')
-        , full name of the sep (schema/sep)
-        , sep record
+        initUserSEP
     """
 
     if sep_or_id is None:
         sep, sep_fullname = (None, "")
         icon_file_name = SepIconConfig.none_file
     else:
-        sep, sep_fullname = MgmtSep.get_sep(sep_or_id) if isinstance(sep_or_id, int) else (sep_or_id, "")
+        id_is_known = isinstance(sep_or_id, int)
+        sep, id = (None, sep_or_id) if id_is_known else (sep_or_id, -1)
+        sep, sep_fullname = Sep.get_sep(id if id_is_known else sep.id)
         icon_file_name = SepIconConfig.error_file if sep is None else sep.icon_file_name
 
     no_file = is_str_none_or_empty(icon_file_name)
@@ -75,7 +76,7 @@ def icon_prepare_for_html(sep_or_id: Optional[MgmtSep | int]) -> IgniteSepIcon:
             case SepIconConfig.none_file:
                 content = SepIconConfig.none_content()
             case _:
-                content = MgmtSep.icon_content(sep.id)
+                content._ = Sep.icon_content(sep.id)
 
         with open(file_full_name, "w", encoding="utf-8") as file:
             file.write(content)

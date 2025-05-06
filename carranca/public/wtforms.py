@@ -20,29 +20,34 @@ from ..common.app_context_vars import sidekick
 # -------------------------------------------------------------
 # Text here has no relevance, the ui_text table is actually used.
 
+max_name = LenValidate(
+    min(sidekick.config.DB_len_val_for_uname.min, sidekick.config.DB_len_val_for_email.min),
+    max(sidekick.config.DB_len_val_for_uname.max, sidekick.config.DB_len_val_for_email.max),
+)
+
 
 class LoginForm(FlaskForm):
-    max_name = LenValidate(
-        min(sidekick.config.DB_len_val_for_uname.min, sidekick.config.DB_len_val_for_email.min),
-        max(sidekick.config.DB_len_val_for_uname.max, sidekick.config.DB_len_val_for_email.max),
-    )
-
     username = StringField(
         "",
         validators=[InputRequired(), Length(**max_name.wtf_val())],
+        render_kw={"class": "form-control"},
     )
     password = PasswordField(
         "",
         validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_pw.wtf_val())],
-        render_kw={"class": "form-control", "id": "pwd_login"},
+        render_kw={"class": "form-control"},
     )
-    remember_me = BooleanField("Remember_me")
+    remember_me = BooleanField(
+        "",
+        render_kw={"class": "form-check-btn"},
+    )
 
 
 class RegisterForm(FlaskForm):
     username = StringField(
         "",
-        validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_uname.wtf_val())],
+        validators=[InputRequired(), Length(**max_name.wtf_val())],
+        render_kw={"class": "form-control"},
     )
     email = StringField(
         "",

@@ -11,7 +11,7 @@ mgd
 TODO Selected menu class-> active
 
 cSpell:ignore unselectable labelledby haspopup noopener noreferrer onclick
-cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson jinja
+cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
 --------------------------------------- #}
 <nav id="navbar-main" class="navbar fixed-top navbar-expand-sm shadow-sm px-2">
     {% set menu_header = app_menu('menuHeaders') %}
@@ -58,18 +58,15 @@ cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson jinja
                                 Gest&atilde;o
                             </a>
                         </li>
-                        <li><a class="dropdown-item" href="{{ private_route('sep_edit') }}">Novo</a>
+                        <li><a class="dropdown-item" href="{{ private_route('sep_edit', sid=0) }}">Novo</a>
                         </li>
-
-                        <li>
-                            <hr class="dropdown-divider">&nbsp;&nbsp;Edi&ccedil;&atilde;o
+                        {#
+                        <hr class="dropdown-divider">&nbsp;&nbsp;Edi&ccedil;&atilde;o #}
+                        <hr class="dropdown-divider">
+                        {% for sep in user_seps() %}
+                        <li><a class="dropdown-item" href="{{ private_route('sep_edit', sid=sep.id) }}">{{sep.name}}</a>
                         </li>
-                        <li><a class="dropdown-item" href="{{ private_route('sep_edit') }}">&#9657;&nbsp;teste/Novo</a>
-                        </li>
-                        <li><a class="dropdown-item" href="{{ private_route('sep_edit') }}">&#9657;&nbsp;teste/Cores</a>
-                        </li>
-                        <li><a class="dropdown-item"
-                                href="{{ private_route('sep_edit') }}">&#9657;&nbsp;<i>outros..</i></a></li>
+                        {% endfor %}
                     </ul>
                 </li>
 
@@ -117,6 +114,11 @@ cSpell:ignore semi-words: formul mgmt estrat gicos sess tojson jinja
                         {{jinja_user().name}}
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item disabled" href="#" title="O seu rol em {{ app_name }}">
+                                Rol:&nbsp{{jinja_user().role}}
+                            </a>
+                        </li>
                         <li>
                             <a class="dropdown-item" href="{{ private_route('change_password') }}"
                                 title="Abre o formul&aacute;rio para alterar sua senha">

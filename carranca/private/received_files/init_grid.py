@@ -7,7 +7,7 @@ Equipe da Canoa -- 2025
 mgd 2025-01-14 & 03-18
 """
 
-# cSpell: ignore mgmt tmpl samp rqst dnld rprt
+# cSpell: ignore tmpl samp rqst dnld rprt
 
 
 from flask import render_template

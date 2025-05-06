@@ -34,14 +34,13 @@ mgd
 {# === start: display ONLY form messages === #}
 {% if msgOnly %}
 
-<button type="submit" class="form-control mt-4 form-main-btn">
-    {{ btnCloseForm | default("OK") }}
-</button>
+{% from "includes/_action_forms_and_btns.html.j2" import btn_close %}
+{{ btn_close(action_form__form_close_id, btnCloseForm) }}
 
 {% endif %}
 {# === end: only msg === #}
 
-{# === start: NOT only display form messages === #}
+{# === start: display inputs === #}
 {% if not msgOnly %}
 
 {% block frm_blc_above %}
@@ -59,7 +58,7 @@ mgd
     {{ btn_submit(form_post_id, submitButton) }}
 </div>
 {% endif %}
-{# === end: NOT only msg === #}
+{# === end: display inputs === #}
 
 {% block frm_blc_below %}
 {% endblock frm_blc_below %}

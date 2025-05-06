@@ -15,7 +15,7 @@ from sqlalchemy.orm import scoped_session
 
 from .helpers.types_helper import ui_db_texts
 from .common.Sidekick import Sidekick
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 # 4 App Global variables
 global_sidekick: Optional[Sidekick] = None
@@ -123,12 +123,21 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         return sub_menu
 
     def __get_jinja_user() -> Optional[JinjaUser]:
-        if not is_someone_logged():
-            return None
-        else:  # 'import jinja_user' only when a user is logged
+        if is_someone_logged():  # 'import jinja_user' only when a user is logged
             from .common.app_context_vars import jinja_user
 
             return jinja_user
+        else:
+            return None
+
+    def __get_user_sep_list() -> List[Dict]:
+        sep_list: List[Dict] = []
+        if is_someone_logged():
+            from .common.app_context_vars import user_seps
+
+            sep_list = [{"id": user.id, "name": user.fullname} for user in user_seps]
+
+        return sep_list
 
     app.jinja_env.globals.update(
         app_name=app_name,
@@ -138,6 +147,7 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         public_route=public_route,
         jinja_user=__get_jinja_user,
         app_menu=__get_app_menu,
+        user_seps=__get_user_sep_list,
     )
     if debugUndefined:
         # Enable DebugUndefined for better error messages in Jinja2 templates

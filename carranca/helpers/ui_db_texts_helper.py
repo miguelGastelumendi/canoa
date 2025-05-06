@@ -6,6 +6,10 @@ Retrieve UI texts items, for current user language, from tha DB
 
 mgd 2024-04-03
 
+TODO:
+    - remove sections `secSuccess` & `secError`, just add the items on is on
+      section. They will be loaded always
+
 """
 
 # cSpell:ignore getDictResultset connstr adaptabrasil mgmt

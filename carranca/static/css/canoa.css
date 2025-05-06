@@ -22,6 +22,7 @@
     --canoa-form-link-color: #a25f1d;
     --canoa-form-label-color: #814c17;
     --canoa-form-button-color: white;
+    --canoa-label-margin-left: calc(var(--bs-border-radius) / 2);
 }
 
 body {
@@ -130,7 +131,7 @@ body {
 .form-label {
     color: var(--canoa-form-label-color);
     font-weight: 500;
-    margin-left: var(--bs-border-radius);
+    margin-left: var(--canoa-label-margin-left);
     /* see bootstrap.form-label { margin-bottom: .5rem; } */
     margin-bottom: .10rem;
 }
@@ -153,7 +154,14 @@ body {
     text-decoration: underline;
 }
 
+.form-check-label {
+    color: var(--canoa-form-label-color);
+    font-weight: 500;
+    cursor: pointer;
+}
+
 .form-check-btn {
+    margin-left: var(--canoa-label-margin-left);
     accent-color: var(--canoa-form-button-bg);
 }
 

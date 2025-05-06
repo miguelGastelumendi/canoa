@@ -30,6 +30,7 @@ from typing import Tuple
 from ..models import UserDataFiles
 
 from ..AppUser import AppUser
+from ..UserSep import UserSep
 from ...helpers.py_helper import is_str_none_or_empty, now
 from ...common.app_error_assistant import ModuleErrorCode
 from ...config.ValidateProcessConfig import ValidateProcessConfig
@@ -46,6 +47,7 @@ from .register import register
 
 def process(
     app_user: AppUser,
+    sep_data: UserSep,
     file_data: object | str,
     proc_data: ProcessData,
     received_at: datetime,
@@ -79,10 +81,12 @@ def process(
         return
 
     # Create Cargo, with the parameters for the first procedure (check) of the Loop Process
+    # "2025.02.05",  # process version, 22 new column user_files.sep_id
     cargo = Cargo(
-        "2025.02.05",  # process version, 22 new column user_files.sep_id
+        "2025.05.03",  # process version, user can have [0—n] sep.
         sidekick.debugging,
         app_user,
+        sep_data,
         ValidateProcessConfig(sidekick.debugging),
         proc_data,
         received_at,
@@ -125,7 +129,7 @@ def process(
             current_module_name = "UserDataFiles.update"
         msg_success = cargo.final.get("msg_success", None)
 
-        _display("Preparing to update the data validation process record")
+        _display("Preparing to update the data validation process db record.")
         process_ended = now()
         if is_str_none_or_empty(cargo.table_udf_key):
             _display("No record was inserted")

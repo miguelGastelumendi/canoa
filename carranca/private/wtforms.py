@@ -6,7 +6,7 @@ Equipe da Canoa -- 2024
 mgd 2024-04-09,27; 06-22
 """
 
-# cSpell:ignore: wtforms urlname iconfilename
+# cSpell:ignore: wtforms urlname iconfilename uploadfile
 
 from wtforms import PasswordField, FileField, StringField, SelectField
 from flask_wtf import FlaskForm
@@ -15,30 +15,37 @@ from wtforms.validators import InputRequired, DataRequired, Length, URL
 from ..common.app_context_vars import sidekick
 
 # -------------------------------------------------------------
-# Text here ha no relevance, the ui_text table is actually used.
+# Text here has no relevance, the ui_text table is actually used.
+
+
+# _ /!\ _________________________________________________
+#  Keep "name" and "id" the same string
+#  or don't specified "id"
+#
+#  Because {{ schema_sep.id }} will rendered the name
+#  But {{ schema_sep.render_kw.id }} will write the id.
+# ________________________________________________________
 
 
 # Private form
 class ReceiveFileForm(FlaskForm):
-    schema_sep = SelectField(
-        "", validators=[DataRequired()], render_kw={"class": "form-select", "id": "schema_sep"}
-    )
-    filename = FileField("", render_kw={"class": "form-control", "id": "upload_file", "accept": ".zip"})
-    urlname = StringField("", validators=[URL()], render_kw={"class": "form-control", "id": "link_file"})
+    schema_sep = SelectField("", validators=[DataRequired()], render_kw={"class": "form-select"})
+    uploadfile = FileField("", render_kw={"class": "form-control", "accept": ".zip"})
+    urlname = StringField("", validators=[URL()], render_kw={"class": "form-control"})
+
 
 # Private & Public form
 class ChangePassword(FlaskForm):
     password = PasswordField(
         "",
         validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_pw.wtf_val())],
-        render_kw={"class": "form-control", "id": "pwdCreate"},
+        render_kw={"class": "form-control"},
     )
-    # , EqualTo('confirm_password', message="As senhas não são iguais.") é no servidor.
 
     confirm_password = PasswordField(
         "",
         validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_pw.wtf_val())],
-        render_kw={"class": "form-control", "id": "pwdConfirm", "for": "pwdConfirm"},
+        render_kw={"class": "form-control"},
     )
 
 
@@ -46,24 +53,18 @@ class SepEdit(FlaskForm):
 
     name = StringField(
         "",
-        validators=[InputRequired()],
-        render_kw={"class": "form-control", "id": "name", "readonly": None},
-    )  # TODO **max_name.wtf_val())],
+        render_kw={
+            "class": "form-control",
+            "disabled": True,
+        },
+    )
+    # TODO **max_name.wtf_val())],
     description = StringField(
         "",
         validators=[InputRequired(), Length(min=5, max=140)],
         render_kw={"class": "form-control", "id": "description"},
     )
-    icon_filename = FileField(
-        "", render_kw={"class": "form-control", "id": "iconfilename", "accept": ".svg"}
-    )
-
-    # def __init__(self, *args, for_edit=False, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     if for_edit:
-    #         self.name.render_kw["readonly"] = True
-    #     else:
-    #         self.name.render_kw.pop("readonly", None)
+    icon_filename = FileField("", render_kw={"class": "form-control", "accept": ".svg"})
 
 
 # eof

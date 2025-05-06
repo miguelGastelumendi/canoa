@@ -14,13 +14,15 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import DatabaseError, OperationalError, ProgrammingError
 from sqlalchemy.engine import CursorResult
 
-from psycopg2.errors import ProgrammingError as psycopg2_ProgrammingError
+# from psycopg2.errors import ProgrammingError as psycopg2_ProgrammingError
 
+from .py_helper import is_str_none_or_empty, to_str
 from .types_helper import ui_db_texts
 
 from .. import global_sqlalchemy_scoped_session
 from ..config import BaseConfig
-from .py_helper import is_str_none_or_empty, to_str
+from ..common.app_context_vars import sidekick
+from ..common.app_error_assistant import AppStumbled, ModuleErrorCode
 
 # Array of table's rows as classes -> ListOfDBRecords
 ListOfDBRecords: TypeAlias = List["DBRecord"]
@@ -342,6 +344,15 @@ def get_str_field_length(table_model: object, field_name: str) -> int:
     """
     fields = table_model.__table__.columns
     return fields[field_name].type.length
+
+
+# TODO
+def db_ups_error(e: Exception, msg_error: str, table_name: str) -> None:
+    if not e is None:
+        sidekick.display.error(f"Fatal error while fetching rows in table [{table_name}]: {msg_error}")
+        raise AppStumbled(msg_error, ModuleErrorCode.DB_FETCH_ROWS, False, True)
+
+    return
 
 
 # eof
