@@ -138,11 +138,11 @@ def _prepare_user_seps() -> user_seps_rtn:
     user_id: int = app_user.id
 
     filter = [
-        MgmtSepsUser.sep_id.name,
-        MgmtSepsUser.sep_fullname.name,
-        MgmtSepsUser.sep_description.name,
-        MgmtSepsUser.sep_visible.name,
-        MgmtSepsUser.sep_icon_name.name,
+        MgmtSepsUser.id.name,
+        MgmtSepsUser.fullname.name,
+        MgmtSepsUser.description.name,
+        MgmtSepsUser.visible.name,
+        MgmtSepsUser.icon_file_name.name,
     ]
     try:
         sep_usr_rows, _ = MgmtSepsUser.get_sepsusr_and_usrlist(user_id, filter)
@@ -151,18 +151,10 @@ def _prepare_user_seps() -> user_seps_rtn:
 
     seps: list[user_sep_dict] = []
     for sep_row in sep_usr_rows:
-        item = UserSep(
-            sep_row.sep_id,
-            sep_row.sep_fullname,
-            sep_row.sep_description,
-            sep_row.sep_visible,
-            sep_row.sep_icon_name,
-        )
-        sep_row.icon_file_name = item.icon_file_name  # fix? see ↓ (bellow)
-        icon = icon_prepare_for_html(sep_row)  # sep.icon_file_name is need in `icon_prepare_for_html`
-        item.icon_url = icon.icon_url if icon else ""
-        del sep_row.icon_file_name  # must be a UserSep instance (later will be converted again to UserSep)
-        dic = class_to_dict(item)  # only saves 'simple' classes, like Dict
+        item = UserSep(**sep_row)
+        sep_data = icon_prepare_for_html(sep_row)
+        item.icon_url = sep_data.icon_url if sep_data else ""
+        dic = class_to_dict(item)  # as `g` only saves 'simple' classes convert it to a Dict
         seps.append(dic)
 
     return seps

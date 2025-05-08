@@ -83,10 +83,13 @@ class DBRecord:
             if isinstance(value, field_types_filter) if field_types_filter else True:
                 setattr(self, key, value)
 
-        k = 5
-
     def keys(self):
         return list(self.__dict__.keys())
+
+    def __getitem__(self, key):
+        if key in self.__dict__:
+            return self.__dict__[key]
+        raise KeyError(f"'{key}'")
 
     def __repr__(self):
         attrs = ", ".join(f"{key}={value}" for key, value in self.__dict__.items())

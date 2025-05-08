@@ -21,11 +21,11 @@ begin
 
 	usr_new_name = Null;
 	done_at = now();
-	if NEW.sep_id is Null then
+	if NEW.id is Null then
  		raise exception '[^|ID do SEP não foi informado.|^]';
     end if;
     -- save the current sep's ID
-    select user_id into usr_curr_id from vw_mgmt_seps_user where sep_id = NEW.sep_id;
+    select user_id into usr_curr_id from vw_mgmt_seps_user where id = NEW.id;
 
 	if NEW.user_new is Null or trim(NEW.user_new) = '' then
 		-- remove user's SEP
@@ -53,12 +53,12 @@ begin
         set mgmt_users_id = usr_new_id
             ,mgmt_users_at = done_at
             ,mgmt_batch_code = NEW.batch_code -- traceability, see log_user_sep
-        where id = NEW.sep_id;
+        where id = NEW.id;
 
 	-- register operation on the log table
 	insert into canoa.log_user_sep
-		   		(id_users,    id_sep,     id_users_prior, done_at, done_by,         batch_code)
-		 values (usr_new_id,  NEW.sep_id, usr_curr_id,    done_at, NEW.assigned_by, NEW.batch_code);
+		   		(id_users,    id_sep, id_users_prior, done_at, done_by,         batch_code)
+		 values (usr_new_id,  NEW.id, usr_curr_id,    done_at, NEW.assigned_by, NEW.batch_code);
 
 	return NEW;
 

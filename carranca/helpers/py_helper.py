@@ -10,6 +10,7 @@ mgd 2025-02-04
 # cSpell:ignore latin CCITT
 
 import os, time, platform
+import json
 from sys import argv
 from datetime import datetime
 from typing import Any, Type, Dict, Tuple, List, Optional
@@ -21,6 +22,12 @@ OS_NAME_IS = platform.system()
 OS_IS_WINDOWS = OS_NAME_IS == "Windows"
 OS_IS_LINUX = OS_NAME_IS == "Linux"
 OS_IS_MAC = OS_NAME_IS == "Darwin"
+
+
+class JSONObject:
+    def __init__(self, d: dict[str, any]):
+        for key, value in d.items():
+            setattr(self, key, value)
 
 
 def get_envvar_prefix() -> str:
@@ -250,6 +257,10 @@ def ms_since_midnight(toBase22: bool) -> int | str:
 
 
 def to_base(number: int, base: int) -> str:
+    """
+    base in [2, 36]
+    to convert back to int,, use `int(str_number, base )`
+    """
     if base < 2 or base > 36:
         raise ValueError("Base must be between 2 and 36.")
 
@@ -368,6 +379,16 @@ def class_to_dict(from_class: Type) -> Dict[str, Any]:
         dic = {k: v for k, v in from_class.__dict__.items() if not k.startswith("__") and not callable(v)}
 
     return dic
+
+
+def json_to_obj(json_str: str) -> Any:
+    data = json.loads(json_str)
+    return dict_to_obj(data)
+
+
+def dict_to_obj(dic: Dict) -> Any:
+    obj = JSONObject(dic)
+    return obj
 
 
 # eof

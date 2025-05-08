@@ -93,6 +93,12 @@ body {
     fill: var(--canoa-form-button-bg, red);
 }
 
+/* ============================================
+ *  carranca\templates\layouts\includes\navigator.html.j2
+ * ============================================ */
+.menu-item-disable-link-color {
+    color: var(--bs-dropdown-link-color) !important;
+}
 
 
 /* ============================================

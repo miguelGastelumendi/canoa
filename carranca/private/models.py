@@ -252,13 +252,13 @@ class MgmtSepsUser(Base):
     __tablename__ = "vw_mgmt_seps_user"
 
     # SEP table
-    sep_id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
-    sep_name = Column(String(100))
-    sep_fullname = Column(String(256))  # schema + sep_name
-    sep_fullname_lower = Column(String(256))
-    sep_icon_name = Column(String(120))
-    sep_description = Column(String(140))
-    sep_visible = Column(Boolean)
+    id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
+    name = Column(String(100))
+    fullname = Column(String(256))  # schema + sep_name
+    fullname_lower = Column(String(256))
+    icon_file_name = Column(String(120))
+    description = Column(String(140))
+    visible = Column(Boolean)
     # Schema table
     scm_id = Column(Integer)
     scm_name = Column(String(100))
@@ -267,7 +267,8 @@ class MgmtSepsUser(Base):
     user_disabled = Column(Boolean)
     user_curr = Column(String(100))
     user_new = Column(String(100))  #  pass through column: ' '
-    assigned_at = Column(DateTime)
+
+    assigned_at = Column(DateTime)  # sep.mgmt_users_at
     assigned_by = Column(Integer)  #  pass through column: 0
     batch_code = Column(String(10))  # pass through column: ' '
 
@@ -365,7 +366,7 @@ class Sep(Base):
     icon_svg = Column(Text, nullable=True)
 
     @staticmethod
-    def get_sep(id: int) -> Tuple[Optional["Sep"], str]:
+    def get_sep(id: int, load_icon: Optional[bool] = False) -> Tuple["Sep", str]:
         """
         Select a SEP by id, with deferred Icon content (useful for edition). It also
         returns the SEP's full name (schema +\+ SEP) from the view `vw_scm_sep`.
@@ -386,6 +387,10 @@ class Sep(Base):
                 stmt = select(SchemaSEP).where(SchemaSEP.id == sep_row.id)
                 row = db_session.execute(stmt).one_or_none()
                 sep_fullname = None if row is None else row[0].sep_fullname
+                if load_icon:
+                    db_session.refresh(
+                        sep_row, attribute_names=[Sep.icon_svg.name]
+                    )  # or  _ = sep_row.icon_svg
             else:
                 sep_fullname = ""
 
@@ -398,7 +403,7 @@ class Sep(Base):
         return sep_row, sep_fullname
 
     @staticmethod
-    def icon_content(id: int) -> Optional[svg_content]:
+    def get_content(id: int) -> Optional[svg_content]:
         """
         Returns the content of the icon_svg (useful for creating a file)
         """
@@ -414,45 +419,27 @@ class Sep(Base):
                 sidekick.app_log.error(f"Error retrieving icon content of SEP {id}: [{e}].")
             return icon_content
 
-        e, msg_error, [icon_content] = db_fetch_rows(_get_data, 1)
+        e, msg_error, icon_content = db_fetch_rows(_get_data)
         if e:
             db_ups_error(e, msg_error, Sep.__tablename__)
 
         return icon_content, msg_error
 
     @staticmethod
-    def set_sep(user_id: int, user_sep: UserSep) -> bool:
+    def set_sep(sep_row: "Sep") -> bool:
         """
         Saves a Sep record
         """
-        from ..common.app_context_vars import sidekick
-
-        sep = None
-        db_session: Session
-        with global_sqlalchemy_scoped_session() as db_session:
-            # AQUI
-            # mgmt_user_sep = MgmtUserSeps.get_seps_and_users( app)
-            # sep = db_session.execute(stmt).scalar_one_or_none()
-            # if sep is None:
-            #     raise ValueError(f"UserSep with id {user_sep.id} not found.")
-
-            # # Update attributes of sep with user_sep
-            # for attr, value in vars(user_sep).items():
-            #     if hasattr(sep, attr) and value is not None:
-            #         setattr(sep, attr, value)
-
-            db_session.commit()
         done = False
         db_session: Session
         with global_sqlalchemy_scoped_session() as db_session:
             try:
-                db_session.add(sep)
+                db_session.add(sep_row)
                 db_session.commit()
                 done = True
             except Exception as e:
                 db_session.rollback()
-                msg_error = f"Cannot update {Sep.__tablename__}.id = {user_sep} | Error {e}."
-                sidekick.app_log.error(msg_error)
+                # msg_error = f"Cannot update {Sep.__tablename__}.id = {user_sep} | Error {e}."
 
         return done
 

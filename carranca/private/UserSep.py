@@ -10,6 +10,7 @@ mgd
 # spell:ignore Mgmt
 
 from typing import TypeAlias, Optional, List, Dict, Any
+from ..helpers.py_helper import to_base
 from ..helpers.types_helper import error_message
 
 user_sep_list: TypeAlias = List["UserSep"]
@@ -27,6 +28,20 @@ class UserSep:
 
     see .models.MgmtUserSeps
     """
+
+    base: int = 13
+
+    @staticmethod
+    def to_id(code: str) -> int:
+        try:
+            id = int(int(code, UserSep.base) / UserSep.base)
+        except:
+            id = -1
+        return id
+
+    @property
+    def code(self) -> str:
+        return to_base(UserSep.base * self.id, UserSep.base)  # ;-)
 
     def __init__(
         self,
@@ -49,7 +64,7 @@ class UserSep:
     description: str
     visible: bool
     icon_file_name: str
-    icon_url: str  # expensive to 'calculate'
+    icon_url: Optional[str]  # expensive to 'calculate'
 
 
 # eof

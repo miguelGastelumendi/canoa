@@ -12,10 +12,10 @@ from os import path
 from ..helpers.py_helper import is_str_none_or_empty
 
 
-class IgniteSepIcon:
-    # circular from .models import MgmtSep
+class SepData:
+    from .models import Sep
 
-    def __init__(self, icon_url: str, sep_fullname: str, sep: "MgmtSep"):  # :MgmtSep):
+    def __init__(self, icon_url: str, sep_fullname: str, sep: Sep):
         self.icon_url = icon_url
         self.sep_fullname = sep_fullname
         self.sep = sep
@@ -23,13 +23,12 @@ class IgniteSepIcon:
 
 # SEP's icon info
 class SepIcon:
-    def __init__(self, ignite: IgniteSepIcon):
+    def __init__(self, sep_data: SepData):
         from .SepIconConfig import SepIconConfig
 
-        sep = ignite.sep
+        sep = sep_data.sep
         self.id = sep.id
-        self.icon_url = ignite.icon_url
-        #  self.full_name = ignite.sep_fullname
+        self.icon_url = sep_data.icon_url
 
         self.has_icon = not is_str_none_or_empty(sep.icon_file_name)
         self.icon_file_name = sep.icon_file_name

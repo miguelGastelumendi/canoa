@@ -11,7 +11,7 @@ mgd
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 
-from ..helpers.py_helper import to_int
+from .UserSep import UserSep
 from ..helpers.pw_helper import internal_logout, nobody_is_logged
 from ..helpers.route_helper import (
     bp_name,
@@ -67,7 +67,7 @@ def sep_mgmt():
 
 @login_required
 @bp_private.route("/sep_edit/<sid>", methods=["GET", "POST"])
-def sep_edit(sid=0):
+def sep_edit(sid: str = "0"):
     """
     Through this route, the user can edit a SEP data
     """
@@ -76,7 +76,7 @@ def sep_edit(sid=0):
     else:
         from .sep_edit import do_sep_edit
 
-        id = to_int(sid)
+        id = 0 if sid == "0" else UserSep.to_id(sid)
         return do_sep_edit(id)
 
 

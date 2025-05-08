@@ -130,12 +130,12 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         else:
             return None
 
-    def __get_user_sep_list() -> List[Dict]:
+    def __get_user_sep_menu_list() -> List[Dict]:
         sep_list: List[Dict] = []
         if is_someone_logged():
             from .common.app_context_vars import user_seps
 
-            sep_list = [{"id": user.id, "name": user.fullname} for user in user_seps]
+            sep_list = [{"code": user.code, "name": user.fullname} for user in user_seps]
 
         return sep_list
 
@@ -147,7 +147,7 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         public_route=public_route,
         jinja_user=__get_jinja_user,
         app_menu=__get_app_menu,
-        user_seps=__get_user_sep_list,
+        sep_menu=__get_user_sep_menu_list,
     )
     if debugUndefined:
         # Enable DebugUndefined for better error messages in Jinja2 templates

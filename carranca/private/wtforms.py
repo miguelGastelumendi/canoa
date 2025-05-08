@@ -50,7 +50,6 @@ class ChangePassword(FlaskForm):
 
 
 class SepEdit(FlaskForm):
-
     name = StringField(
         "",
         render_kw={

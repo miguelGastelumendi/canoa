@@ -58,13 +58,17 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
                                 Gest&atilde;o
                             </a>
                         </li>
-                        <li><a class="dropdown-item" href="{{ private_route('sep_edit', sid=0) }}">Novo</a>
+                        <li>
+                            <a class="dropdown-item" href="{{ private_route('sep_edit', sid=0) }}">Novo</a>
                         </li>
-                        {#
-                        <hr class="dropdown-divider">&nbsp;&nbsp;Edi&ccedil;&atilde;o #}
-                        <hr class="dropdown-divider">
-                        {% for sep in user_seps() %}
-                        <li><a class="dropdown-item" href="{{ private_route('sep_edit', sid=sep.id) }}">{{sep.name}}</a>
+                        <li class="dropdown-item disabled menu-item-disable-link-color" aria-disabled="true">
+                            Edi&ccedil;&atilde;o:
+                        </li>
+                        {% for sep in sep_menu() %}
+                        <li>
+                            <a class="dropdown-item" href="{{ private_route('sep_edit', sid=sep.code) }}">
+                                &nbsp;&nbsp;{{sep.name}}
+                            </a>
                         </li>
                         {% endfor %}
                     </ul>
