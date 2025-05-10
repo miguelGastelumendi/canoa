@@ -22,7 +22,7 @@ from .UserSep import UserSep
 from .SepIconConfig import SepIconConfig, svg_content
 from ..common.app_context_vars import sidekick
 from ..helpers.db_helper import DBRecords, db_fetch_rows, db_ups_error
-from ..helpers.py_helper import is_str_none_or_empty
+from ..helpers.py_helper import is_str_none_or_empty, to_int
 from ..helpers.user_helper import get_user_code
 
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
@@ -168,59 +168,29 @@ class UserDataFiles(Base):
         return None
 
 
-# # --- Table ---
-# class MgmtUserSep_(Base):
-#     """
-#     ** /!\ DEPRECATED **
-#     ** This table is deprecated and will be removed in the future. **
-#     ** use MgmtSepUser instead **
+# --- Table ---
+class Schema(Base):
 
-#     `vw_mgmt_user_sep` is DB view which holds the necessary information
-#     to provide the app's admin a UI grid so the admin can assign or remove
-#     SEP to or from a user.
+    __tablename__ = "vw_schema"
 
-#     The view has a trigger that saves the information on `users` table and
-#     logs the action on `log_user_sep` table.
-#     """
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100))
+    user_lower = Column(String(100), Computed(""))
+    description = Column(String(140))
 
-#     __tablename__ = "vw_mgmt_user_sep"
+    @staticmethod
+    def get_schemas() -> Tuple["Sep", str]:
+        def _get_data(db_session: Session):
+            stmt = select(Schema.name)
+            schema_recs = db_session.scalars(stmt).all()
+            # schema_rows = DBRecords(Schema.__tablename__, schema_recs)
+            return schema_recs
 
-#     # https://docs.sqlalchemy.org/en/13/core/type_basics.html
-#     user_id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
-#     sep_id = Column(Integer)
-#     user_name = Column(String(100))
-#     disabled = Column("user_disabled", Boolean)
-#     scm_sep_curr = Column(String(201))  # sep_name -> scm_sep_curr
-#     scm_sep_new = Column(String(201))  # sep_new -> scm_sep_new
-#     when = Column("assigned_at", DateTime)
-#     assigned_by = Column(Integer)
-#     batch_code = Column(String(10))  # trace_code
+        e, msg_error, schema_rows = db_fetch_rows(_get_data)
+        if e:
+            db_ups_error(e, msg_error, Schema.__tablename__)
 
-#     @staticmethod
-#     def get_grid_view() -> Tuple[DBRecords, DBRecords, str]:
-#         """
-#         Returns
-#         1) `vw_mgmt_user_sep` DB view that has the necessary columns to
-#             provide the user with a UI grid to assign or remove SEP
-#             to or from a user.
-#         2) `vw_scm_sep` SEP list.
-#         3) Error message if any action fails.
-#         """
-
-#         def _get_list(db_session: Session):
-#             mus_recs = db_session.scalars(select(MgmtUserSep_)).all()
-#             users_sep = DBRecords(MgmtUserSep_.__tablename__, mus_recs)
-
-#             ssep_recs = db_session.scalars(select(SchemaSEP)).all()
-#             sep_list = DBRecords(SchemaSEP.__tablename__, ssep_recs)
-#             return users_sep, sep_list
-
-#         e, msg_error, [users_sep, sep_list] = db_fetch_rows(_get_list)
-#         # TODO, check all db_fetch_rows (or raise an error)
-#         if e is not None:
-#             raise e
-
-#         return users_sep, sep_list, msg_error
+        return schema_rows
 
 
 # --- Table ---
@@ -297,7 +267,7 @@ class MgmtSepsUser(Base):
             if user_id is None:  # then get all users list, TODO: check 'disabled'?
                 stmt = select(SepUserData).order_by(SepUserData.username_lower)
                 usr_recs = db_session.scalars(stmt).all()
-                usr_list = DBRecords(SepUserData.users, usr_recs)
+                usr_list = DBRecords(SepUserData.__tablename__, usr_recs)
 
             return seps_user_rows, usr_list
 
@@ -345,6 +315,25 @@ class SchemaSEP(Base):
     user_id = Column("user_id", Integer, primary_key=True)
     sep_fullname = Column(Text)
 
+    @staticmethod
+    def _get_sep_fullname(db_session: Session, sep_id: int) -> str:
+
+        stmt = select(SchemaSEP).where(SchemaSEP.id == sep_id)
+        row = db_session.execute(stmt).one_or_none()
+        sep_fullname = None if row is None else row[0].sep_fullname
+        return sep_fullname
+
+    @staticmethod
+    def get_sep_fullname(sep_id: int) -> str:
+        if to_int(sep_id, -1) == -1:
+            return ""
+
+        e, msg_error, sep_fullname = db_fetch_rows(SchemaSEP._get_sep_fullname, sep_id)
+        if e:
+            db_ups_error(e, msg_error, Sep.__tablename__)
+
+        return sep_fullname
+
 
 # --- Table ---
 class Sep(Base):
@@ -384,13 +373,9 @@ class Sep(Base):
             sep_row = db_session.execute(stmt).scalar_one_or_none()
 
             if sep_row:  # then get fullname
-                stmt = select(SchemaSEP).where(SchemaSEP.id == sep_row.id)
-                row = db_session.execute(stmt).one_or_none()
-                sep_fullname = None if row is None else row[0].sep_fullname
+                sep_fullname = SchemaSEP._get_sep_fullname(db_session, sep_row.id)
                 if load_icon:
-                    db_session.refresh(
-                        sep_row, attribute_names=[Sep.icon_svg.name]
-                    )  # or  _ = sep_row.icon_svg
+                    db_session.refresh(sep_row, attribute_names=[Sep.icon_svg.name])
             else:
                 sep_fullname = ""
 

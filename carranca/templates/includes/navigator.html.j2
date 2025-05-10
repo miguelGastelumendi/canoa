@@ -14,7 +14,7 @@ cSpell:ignore unselectable labelledby haspopup noopener noreferrer onclick
 cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
 --------------------------------------- #}
 <nav id="navbar-main" class="navbar fixed-top navbar-expand-sm shadow-sm px-2">
-    {% set menu_header = app_menu('menuHeaders') %}
+    {% set menu_header= app_menu('menuHeaders') %}
     <div class="container-fluid">
         <div class="navbar-brand mb-1" inert>{{app_name}}</div>
         <button class="navbar-toggler {{navButtonState}}" type="button" data-bs-toggle="collapse"
@@ -59,14 +59,14 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ private_route('sep_edit', sid=0) }}">Novo</a>
+                            <a class="dropdown-item" href="{{ private_route('sep_edit', code='+') }}">Novo</a>
                         </li>
                         <li class="dropdown-item disabled menu-item-disable-link-color" aria-disabled="true">
                             Edi&ccedil;&atilde;o:
                         </li>
                         {% for sep in sep_menu() %}
                         <li>
-                            <a class="dropdown-item" href="{{ private_route('sep_edit', sid=sep.code) }}">
+                            <a class="dropdown-item" href="{{ private_route('sep_edit', code=sep.code) }}">
                                 &nbsp;&nbsp;{{sep.name}}
                             </a>
                         </li>
@@ -120,7 +120,7 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
                             <a class="dropdown-item disabled" href="#" title="O seu rol em {{ app_name }}">
-                                Rol:&nbsp{{jinja_user().role}}
+                                Usuário&nbsp{{jinja_user().role}}
                             </a>
                         </li>
                         <li>

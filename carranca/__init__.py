@@ -249,6 +249,7 @@ def create_app():
     app = _create_app_and_log_file(APP_NAME)
 
     # === 3/3 Global Jinja Login Manager
+    # https://flask-login.readthedocs.io/en/latest/
     global global_login_manager
     global_login_manager = LoginManager()
     global_login_manager.init_app(app)

@@ -25,29 +25,31 @@ class SepIconConfig:
     error_file = "sep_icon-error.svg"
     none_file = "sep_icon-none.svg"
 
-    def set_url(to: str) -> str:
-        folder_and_name = url_join(SepIconConfig.folder, to)
-        return static_route(folder_and_name)
+    def get_icon_url(icon_file_name: str) -> str:
+        folder_and_name = url_join(SepIconConfig.folder, icon_file_name)
+        url = static_route(folder_and_name)
+        return url
 
-    def content_for(fill_color: str, text: str = "", stroke_width: int = 1) -> svg_content:
+    def get_local_name(icon_file_name: str) -> str:
+        local_name = path.join(SepIconConfig.local_path, icon_file_name)
+        return local_name
+
+    def content_for(fill_color: str, text: str = "", stroke_width: int = 2) -> svg_content:
         return (
-            "<svg width='62' height='62' xmlns='http://www.w3.org/2000/svg'>"
+            "<svg width='64' height='64' xmlns='http://www.w3.org/2000/svg'>"
             f"<rect width='100%' height='100%' fill='{fill_color}' stroke='black' stroke-width='{stroke_width}' />"
             f"<text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='black'>{text}</text>"
             "</svg>"
         )
 
     def empty_content() -> svg_content:
-        # see canoa.css[.grid-item-none]
-        return SepIconConfig.content_for("darkgrey", "Falta")
+        return SepIconConfig.content_for("none", "", 1)
 
     def error_content() -> svg_content:
-        # see canoa.css[.grid-item-remove]
         return SepIconConfig.content_for("firebrick", "Erro")
 
     def none_content() -> svg_content:
-        # when user has no sep assigned
-        return SepIconConfig.content_for("none", "", 2)
+        return SepIconConfig.content_for("darkgrey", "Falta")
 
 
 # eof

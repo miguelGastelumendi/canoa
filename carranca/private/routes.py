@@ -66,18 +66,17 @@ def sep_mgmt():
 
 
 @login_required
-@bp_private.route("/sep_edit/<sid>", methods=["GET", "POST"])
-def sep_edit(sid: str = "0"):
+@bp_private.route("/sep_edit/<code>", methods=["GET", "POST"])
+def sep_edit(code: str = "?"):
     """
-    Through this route, the user can edit a SEP data
+    Through this route, the user can edit a SEP
     """
+    from .sep_new_edit import do_sep_edit
+
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .sep_edit import do_sep_edit
-
-        id = 0 if sid == "0" else UserSep.to_id(sid)
-        return do_sep_edit(id)
+        return do_sep_edit(code)
 
 
 @login_required

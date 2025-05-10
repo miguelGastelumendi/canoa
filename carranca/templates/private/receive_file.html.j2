@@ -13,8 +13,9 @@ mgd
 --------------------------------------- #}
 {# cSpell:ignore urlname tojson uploadfile #}
 
-{% set btnCloseForm = successButton %}
+{% set btnCloseForm= successButton %}
 {% set dlg_var_icon_url= iconFileUrl %}
+
 {% extends "./layouts/form.html.j2" %}
 
 {% block frm_blc_content %}
@@ -57,7 +58,7 @@ mgd
 
 {% endblock frm_blc_content %}
 
-{% if not msgOnly %}
+{% if form_display_ui %}
 {% block dlg_blc_javascript %}
 <script>
     const seps = {{ seps | tojson | safe }};
@@ -74,35 +75,8 @@ mgd
     select.addEventListener('change', () => { icon.src = seps[select.selectedIndex].icon_url; });
 </script>
 
-{#
-document.addEventListener('DOMContentLoaded', () => {
-const fileInput = document.getElementById('{{form.uploadfile.id}}');
-const urlInput = document.getElementById('{{form.uploadfile.id }}');
-const submitButton = document.querySelector('button[type="submit"]');
-
-// Function to validate inputs
-const validateInputs = () => {
-const hasFile = fileInput.files.length > 0; // Check if a file is selected
-const hasUrl = urlInput.value.trim() !== ''; // Check if the URL field is not empty
-
-// Enable the submit button only if one and only one input has a value
-if (hasFile && hasUrl) {
-alert('You can only provide either a file or a URL, not both.');
-submitButton.disabled = true;
-} else if (!hasFile && !hasUrl) {
-alert('You must provide either a file or a URL.');
-submitButton.disabled = true;
-} else {
-submitButton.disabled = false;
-}
-};
-
-// Add event listeners to both inputs
-fileInput.addEventListener('change', validateInputs);
-urlInput.addEventListener('input', validateInputs);
-});
-#}
-
 {% endblock dlg_blc_javascript %}
+
 {% endif %}
+
 {# eof #}

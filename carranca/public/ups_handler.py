@@ -37,7 +37,7 @@ def ups_handler(
     try:
         ui_texts = get_section(f"Ups-{error_code}")
     except:
-        ui_texts = local_ui_texts(UITextsKeys.Error.no_db_conn)
+        ui_texts = local_ui_texts(UITextsKeys.Fatal.no_db_conn)
 
     if isinstance(e, AppStumbled):
         error_code = e.error_code
@@ -57,9 +57,9 @@ def ups_handler(
         UITextsKeys.Form.msg_only: True,
         UITextsKeys.Form.icon_url: icon_url("icons", "ups_handler.svg"),
         UITextsKeys.Form.btn_close: "Entendi",  # TODO: uiTexts
-        UITextsKeys.Error.code: error_code,
-        UITextsKeys.Error.where: caller_function,
-        UITextsKeys.Error.http_code: 500,
+        UITextsKeys.Fatal.code: error_code,
+        UITextsKeys.Fatal.where: caller_function,
+        UITextsKeys.Fatal.http_code: 500,
     }
 
     for key, value in context_texts.items():

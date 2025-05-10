@@ -34,6 +34,7 @@ mgd
 from flask import has_request_context, g
 from typing import Callable, Optional, Any
 from threading import Lock
+from flask_login import current_user
 from werkzeug.local import LocalProxy
 
 from carranca import global_sidekick
@@ -132,10 +133,11 @@ def _get_jinja_user() -> Optional[JinjaUser]:
 def _prepare_user_seps() -> user_seps_rtn:
     from ..private.models import MgmtSepsUser
     from ..private.UserSep import UserSep
-    from ..private.sep_icon import icon_prepare_for_html
+    from ..private.sep_icon import do_icon_get_url
+    from ..helpers.pw_helper import is_someone_logged
     from ..helpers.py_helper import class_to_dict
 
-    user_id: int = app_user.id
+    user_id: int = current_user.id if is_someone_logged() else -1
 
     filter = [
         MgmtSepsUser.id.name,
@@ -152,8 +154,7 @@ def _prepare_user_seps() -> user_seps_rtn:
     seps: list[user_sep_dict] = []
     for sep_row in sep_usr_rows:
         item = UserSep(**sep_row)
-        sep_data = icon_prepare_for_html(sep_row)
-        item.icon_url = sep_data.icon_url if sep_data else ""
+        item.icon_url = do_icon_get_url(item.icon_file_name)
         dic = class_to_dict(item)  # as `g` only saves 'simple' classes convert it to a Dict
         seps.append(dic)
 

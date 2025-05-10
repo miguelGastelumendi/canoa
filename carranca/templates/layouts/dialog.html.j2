@@ -46,12 +46,12 @@ mgd
 
 {% extends "./layouts/base.html.j2" %}
 
-{% set dlg_var_icon_id = dlg_var_icon_id | default('dlg-icon-id') %}
-{% set dlg_var_icon_size = dlg_var_icon_size | default('32px') %}
-{% set dlg_var_close_id = dlg_var_close_id | default('dlg-close-id') %}
-{% set dlg_cls_btn_close = dlg_cls_btn_close | default('btn-close') %}
-{% set dlg_var_submit_id = dlg_var_submit_id | default('dlg-submit-id') %}
-{% set dlg_var_close = dlg_var_close | default(True) %}
+{% set dlg_var_icon_id= dlg_var_icon_id | default('dlg-icon-id') %}
+{% set dlg_var_icon_size= dlg_var_icon_size | default('32px') %} {# see SepIconConfig.content_for() size #}
+{% set dlg_var_close_id= dlg_var_close_id | default('dlg-close-id') %}
+{% set dlg_cls_btn_close= dlg_cls_btn_close | default('btn-close') %}
+{% set dlg_var_submit_id= dlg_var_submit_id | default('dlg-submit-id') %}
+{% set dlg_var_close= dlg_var_close | default(True) %}
 
 {% block base_blc_content %}
 <section>

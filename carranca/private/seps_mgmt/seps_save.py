@@ -18,7 +18,7 @@ from ...helpers.db_helper import try_get_mgd_msg
 from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list
 from ...helpers.ui_db_texts_helper import format_ui_item
 
-from .seps_keys import MgmtCol, CargoKeys
+from .seps_keys import SepMgmtGridCols, CargoKeys
 
 
 def save_data(
@@ -67,8 +67,8 @@ def _prepare_data_to_save(
         grid: cargo_list = grid_response[CargoKeys.cargo]
         task_code += 1
         for item in grid:
-            usr_new = item[MgmtCol.usr_new]
-            usr_curr = item[MgmtCol.usr_curr]
+            usr_new = item[SepMgmtGridCols.usr_new]
+            usr_curr = item[SepMgmtGridCols.usr_curr]
             if usr_new == usr_curr:
                 pass
             elif usr_new == str_none:  # remove: usr_curr -> none
@@ -119,11 +119,11 @@ def _save_data_to_db(
             # TODO auto remove reassignment
             task_code += 1  # 565
             for row in remove:  # first remove
-                __set_sep_new_user(row[MgmtCol.sep_id], None)
+                __set_sep_new_user(row[SepMgmtGridCols.sep_id], None)
 
             task_code += 1  # 566
             for row in update:  # then update
-                __set_sep_new_user(row[MgmtCol.sep_id], row[MgmtCol.usr_new])
+                __set_sep_new_user(row[SepMgmtGridCols.sep_id], row[SepMgmtGridCols.usr_new])
 
             task_code += 1
             db_session.commit()

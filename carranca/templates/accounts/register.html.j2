@@ -11,12 +11,12 @@ Extends:
 mgd
 --------------------------------------- #}
 
-{% set btnCloseForm = gotoLogin %}
+{% set btnCloseForm= gotoLogin %}
 {% set dlg_cls_size= '' %}
 {% extends "./layouts/form.html.j2" %}
 
 {% block frm_blc_content %}
-{% if not msgOnly %} {# `show msg error and` + `display this block` if (msgError or not msgSuccess) else #}
+{% if form_display_ui %}
 <!-- { User Name -->
 <div class="form-group">
     <label class="form-label" inert for="{{form.username.name}}">{{ userLabel }}</label>
@@ -44,7 +44,7 @@ mgd
     <label class="form-label" inert for="password">{{ passwordLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
-            <span class="fas fa-unlock-alt"></span>
+            <i class="fas fa-unlock-alt"></i>
         </span>
         {{ form.password(class="form-control", type="password", id="password") }}
     </div>

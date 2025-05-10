@@ -130,7 +130,9 @@ def _get_form_data(
 
     # a section of ui_itens
     ui_texts = get_form_texts(section)
-    if not is_get:
+    if  is_get:
+        ui_texts[UITextsKeys.Msg.error] = ""  # This is a Cache BUG to
+    else:
         ui_texts[UITextsKeys.Msg.info] = ""  # only GET has info
 
     return template, is_get, ui_texts

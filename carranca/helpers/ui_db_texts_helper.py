@@ -35,13 +35,14 @@ from .. import global_ui_texts_cache
 
 # ==== UI Texts Constants ====================================
 class UITextsKeys:
+
     class Msg:
         info = "msgInfo"
         warn = "msgWarn"
         error = "msgError"
         success = "msgSuccess"
 
-    # TODO   exception = "msgException"
+    # TODO   fatal = "msgFatal"
 
     class Page:
         title = "pageTitle"
@@ -50,11 +51,11 @@ class UITextsKeys:
         title = "formTitle"
         icon_url = "iconFileUrl"  # url of an png/svg icon dlg_var_icon_url = iconFileUrl, dlg-var-icon-id
         date_format = "user_date_format"
-        # display only message, not inputs/buttons (see .carranca\templates\layouts\form.html.j2)
+        # display only message, no form, inputs/buttons (see .carranca\templates\layouts\form.html.j2)
         msg_only = "msgOnly"
         btn_close = "btnCloseForm"  # This button is only visible when msg_only is True
 
-    class Error:
+    class Fatal:
         no_db_conn = "NoDBConnection"
         code = "ups_error_code"
         where = "ups_offending_def"
@@ -66,6 +67,9 @@ class UITextsKeys:
 
         error = "secError"
         success = "secSuccess"
+        # this is a special key that has the name of the section loaded in ui_db_Texts,
+        # see  get_section
+        name = "section name:"
 
 
 cache_key: TypeAlias = Tuple[str, str, Optional[str]]
@@ -128,7 +132,9 @@ def ui_texts_locale() -> str:
 def __get_ui_texts_query(cols: str, table_search: UITexts_TableSearch) -> str:
     # returns Select query for locale, section and, eventually, for only one item.
     # Use SQL lower(item) is better than item.lower because uses db locale.
-    item_filter = "" if table_search.item is None else f" and (item_lower = lower('{table_search.item}'))"
+    optional_item_filter = (
+        "" if table_search.item is None else f" and (item_lower = lower('{table_search.item}'))"
+    )
 
     # ** /!\ ******************************************************************
     #  don't use <schema>.table_name. Must set
@@ -136,7 +142,7 @@ def __get_ui_texts_query(cols: str, table_search: UITexts_TableSearch) -> str:
     query = (
         f"select {cols} from vw_ui_texts "
         f"where "
-        f"(locale = lower('{table_search.locale}')) and (section_lower = lower('{table_search.section}')){item_filter}"
+        f"(locale = lower('{table_search.locale}')) and (section_lower = lower('{table_search.section}')){optional_item_filter}"
         f"order by 1;"  # help debugging
     )
     return query
@@ -149,10 +155,10 @@ def __get_table_row(table_search: UITexts_TableSearch) -> tuple[str, str]:
 
     query = __get_ui_texts_query("text, title", table_search)
     result = retrieve_rows(query)
-    return ("", "") if result is None else result
+    return ("", "") if not result else result
 
 
-def _get_table_dict(query) -> ui_db_texts:
+def _get_query_as_dict(query) -> ui_db_texts:
     """returns UI_Texts for the item/section pair"""
     from .db_helper import retrieve_dict
 
@@ -162,7 +168,7 @@ def _get_table_dict(query) -> ui_db_texts:
 
 
 # === TODO use cache  ========================================
-def _msg_not_found() -> str:
+def _msg_not_found() -> str:  ## THIS IS OUTDATED ##
     if MsgNotFound.cache:
         return MsgNotFound.cache
 
@@ -177,7 +183,7 @@ def _msg_not_found() -> str:
     return mnf
 
 
-def _add_msg(item: str, section: str, name: str, texts=None, *args) -> str:
+def _add_msg(item: str, section: str, name: str, texts: Optional[ui_db_texts] = None, *args) -> str:
     """Retrieves text and optionally adds it to a dictionary.
 
     Args:
@@ -196,7 +202,7 @@ def _add_msg(item: str, section: str, name: str, texts=None, *args) -> str:
     except:
         value = s
 
-    if texts:  # add to texts
+    if texts and value:  # add or refresh
         texts[name] = value
 
     return value
@@ -222,15 +228,16 @@ def get_section(section_name: str) -> ui_db_texts:
     """
     if is_str_none_or_empty(section_name):
         items: ui_db_texts = {}
-    elif (table_search := UITexts_TableSearch(section_name)).exists():
-        items = table_search.get_text()
+    elif (table_cache := UITexts_TableSearch(section_name)).exists():
+        items = table_cache.get_text()
     else:
-        query = __get_ui_texts_query("item, text", table_search)
-        items = _get_table_dict(query)
+        query = __get_ui_texts_query("item, text", table_cache)
+        items = _get_query_as_dict(query)
 
         if items is not None:
             # TODO process_pre_templates(items) # TODO: check if needed
-            table_search.update(items)
+            items[UITextsKeys.Section.name] = section_name
+            table_cache.update(items)
         elif RaiseIf.no_ui_texts:
             raise AppStumbled("Query: [query].", ModuleErrorCode.UI_TEXTS.value)
         else:

@@ -281,22 +281,22 @@ def retrieve_rows(query: str) -> Optional[Union[Any, Tuple]]:
         rows = data_cursor.fetchall() if data_cursor else None
 
         if not rows:
-            return []
+            return tuple()
         elif len(rows) > 1 and len(rows[0]) > 1:
             # Multiple rows with multiple columns
             return tuple(tuple(row) for row in rows)
         elif len(rows) > 1:
-            # Multiple rows with one column each
+            # Multiple rows with one column
             return tuple(line[0] for line in rows)
         elif len(rows[0]) > 1:
             # Single row with multiple columns
             return tuple(rows[0])
         else:
             # Single row with a single column
-            return rows[0][0]
+            return (rows[0][0],)
     except Exception as e:
         sidekick.app_log.error(f"An error occurred retrieving db data [{query}]: {e}")
-        return []
+        return tuple()
 
 
 def retrieve_dict(query: str):

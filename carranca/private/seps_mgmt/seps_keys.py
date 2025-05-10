@@ -7,17 +7,18 @@ mgd 2025-04-17
 """
 
 # cSpell: ignore mgmt
+from ..models import MgmtSepsUser
 
 
-class MgmtCol:
-    # This class defines the columns that are sent to and
-    # used in `sp_mgmt``.
-    sep_id = "sep_id"  # 0
-    icon_url = "icon_url"  # 1
-    usr_curr = "user_curr"  # 2
-    sep_fn = "sep_fullname"  # 3
-    usr_new = "user_new"  # 4
-    set_at = "assigned_at"  # 5
+class SepMgmtGridCols:
+    # This class defines the columns that are sent to and used in `sp_mgmt``.
+    sep_id = MgmtSepsUser.id.name  # Column 0  - hidden
+    # computed col from icon_file_name, see private\seps_mgmt\seps_grid.py._sep_data_fetch
+    icon_url = MgmtSepsUser.icon_file_name.name  # 1 - hidden
+    usr_curr = MgmtSepsUser.user_curr.name  # 2 - hidden
+    sep_fn = MgmtSepsUser.fullname.name  # 3
+    usr_new = MgmtSepsUser.user_new.name  # 4
+    set_at = MgmtSepsUser.assigned_at.name  # 5
 
 
 class CargoKeys:

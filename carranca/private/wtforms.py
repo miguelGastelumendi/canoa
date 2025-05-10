@@ -50,6 +50,7 @@ class ChangePassword(FlaskForm):
 
 
 class SepEdit(FlaskForm):
+    schema = SelectField("", validators=[DataRequired()], render_kw={"class": "form-select"})
     name = StringField(
         "",
         render_kw={
@@ -57,13 +58,19 @@ class SepEdit(FlaskForm):
             "disabled": True,
         },
     )
-    # TODO **max_name.wtf_val())],
     description = StringField(
         "",
         validators=[InputRequired(), Length(min=5, max=140)],
         render_kw={"class": "form-control", "id": "description"},
     )
     icon_filename = FileField("", render_kw={"class": "form-control", "accept": ".svg"})
+
+
+class SepNew(SepEdit):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name.render_kw["disabled"] = False
 
 
 # eof

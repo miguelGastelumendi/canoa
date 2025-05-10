@@ -39,14 +39,14 @@ Database objects:
 
 """
 
-# cSpell: ignore tmpl samp
+# cSpell: ignore tmpl samp sepsusr usrlist
 
 import json
 from flask import render_template, request
 from typing import Tuple, List, Dict
 
 from ..models import MgmtSepsUser
-from ..sep_icon import icon_prepare_for_html
+from ..sep_icon import do_icon_get_url
 from ..SepIconConfig import SepIconConfig
 
 from ...public.ups_handler import ups_handler
@@ -63,7 +63,7 @@ from ...helpers.ui_db_texts_helper import add_msg_fatal, add_msg_error, UITextsK
 
 from .seps_save import save_data
 from .seps_email import send_email
-from .seps_keys import CargoKeys, MgmtCol
+from .seps_keys import CargoKeys, SepMgmtGridCols
 
 # TODO:
 #   - alter [Close] <—> [Cancel] buttons
@@ -82,11 +82,11 @@ def sep_mgmt() -> str:
         template, is_get, ui_texts = get_private_form_data("sepsMgmt")
 
         task_code += 1  # 2
-        ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.set_url(SepIconConfig.none_file)
+        ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.get_icon_url(SepIconConfig.none_file)
 
         task_code += 1  # 3
         # col_names = ["sep_id", "icon_url", "user_curr", "sep_fullname", user", "assigned_at"]
-        col_names: List[str] = list(class_to_dict(MgmtCol).values())
+        col_names: List[str] = list(class_to_dict(SepMgmtGridCols).values())
         grid_const, _ = js_grid_constants(ui_texts["colMetaInfo"], col_names)
         if grid_const == None:
             raise AppStumbled(
@@ -114,7 +114,7 @@ def sep_mgmt() -> str:
             sep_data, user_list = _sep_data_fetch(item_none, col_names)
 
             task_code += 1  # ?
-            if is_str_none_or_empty(msg_error_save_and_email) and is_str_none_or_empty(msg_error_fetch):
+            if is_str_none_or_empty(msg_error_save_and_email):
                 ui_texts[UITextsKeys.Msg.success] = msg_success
             elif not is_str_none_or_empty(msg_error_save_and_email):
                 ui_texts[UITextsKeys.Msg.error] = msg_error_save_and_email
@@ -142,7 +142,7 @@ def _sep_data_fetch(_item_none: str, col_names: List[str]) -> Tuple[DBRecords, L
     for record in sep_usr_rows:
         record.user_curr = _item_none if record.user_curr is None else record.user_curr
         record.user_new = record.user_curr
-        record.icon_url = icon_prepare_for_html(record.sep_id).icon_url
+        record.icon_file_name = do_icon_get_url(record.icon_file_name)  # this is file_name
 
     users_list = [user.username for user in user_rows]
 

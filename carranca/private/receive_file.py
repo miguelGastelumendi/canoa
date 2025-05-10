@@ -44,11 +44,11 @@ RECEIVE_FILE_DEFAULT_ERROR: str = "uploadFileError"
 
 
 def _do_sep_placeholderOption(fullname: str) -> UserSep:
-    from .sep_icon import icon_prepare_for_html
+    from .sep_icon import do_icon_get_url
     from .SepIconConfig import SepIconConfig
 
-    sep_fake = UserSep(-1, fullname, "", False, SepIconConfig.none_file)
-    sep_fake.icon_url = icon_prepare_for_html(sep_fake).icon_url
+    sep_fake = UserSep(0, fullname, "", False, SepIconConfig.none_file)
+    sep_fake.icon_url = do_icon_get_url("")  # empty
     return sep_fake
 
 
@@ -57,7 +57,7 @@ def receive_file() -> template_file_full_name:
     tmpl_form = ReceiveFileForm(request.form)
 
     # utils
-    def _result() -> template_file_full_name:
+    def _get_template() -> template_file_full_name:
         seps = [sep for sep in app_user.seps]
         if not seps:
             ui_texts[UITextsKeys.Msg.warn] = ui_texts["noSEPassigned"]
@@ -92,7 +92,7 @@ def receive_file() -> template_file_full_name:
         error_code = 0
 
         if is_get:
-            return _result()
+            return _get_template()
 
         received_at = now()
         # Find out what was kind of data was sent: an uploaded file or an URL (download)
@@ -116,16 +116,16 @@ def receive_file() -> template_file_full_name:
         sep_data = next((sep for sep in app_user.seps if sep.id == sep_id), None)
         if sep_data is None:
             error_code = _log_error("receiveFileAdmit_bad_sep", task_code + 1, sep_id)  # 7
-            return _result()
+            return _get_template()
         elif has_file and has_url:
             error_code = _log_error("receiveFileAdmit_both", task_code + 2)  # 8
-            return _result()
+            return _get_template()
         elif not (has_file or has_url):
             error_code = _log_error("receiveFileAdmit_none", task_code + 3)  # 9
-            return _result()
+            return _get_template()
         elif has_url and is_gd_url_valid(url_str) > 0:
             error_code = _log_error("receiveFileAdmit_bad_url", task_code + 4)  # 10
-            return _result()
+            return _get_template()
 
         # Instantiate Process Data helper
         task_code = 13
@@ -152,7 +152,7 @@ def receive_file() -> template_file_full_name:
         elif not folder_must_exist(pd.path.working_folder):
             task_code += 2  # 16
             error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code)
-            return _result()
+            return _get_template()
         else:
             task_code += 3  # 17
             # {0} Placeholder for the actual file name.
@@ -173,7 +173,7 @@ def receive_file() -> template_file_full_name:
                 fn = filename if filename else "<ainda sem nome>"
                 task_code += 2  # 19
                 error_code = _log_error("receiveFileAdmit_bad_dl", task_code, fn)
-                return _result()
+                return _get_template()
 
         pd.received_file_name = secure_filename(pd.received_original_name)
         task_code = 20  # 20
@@ -197,7 +197,7 @@ def receive_file() -> template_file_full_name:
         e_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code, "", True)
         sidekick.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {e_code}, Message: {e}.")
 
-    tmpl = _result()
+    tmpl = _get_template()
     return tmpl
 
 

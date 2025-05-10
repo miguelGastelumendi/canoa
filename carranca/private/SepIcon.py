@@ -33,8 +33,7 @@ class SepIcon:
         self.has_icon = not is_str_none_or_empty(sep.icon_file_name)
         self.icon_file_name = sep.icon_file_name
 
-        local_path = SepIconConfig.local_path
-        self.icon_full_name = path.join(local_path, sep.icon_file_name) if self.has_icon else ""
+        self.icon_full_name = SepIconConfig.get_local_name(sep.icon_file_name) if self.has_icon else ""
 
 
 # eof

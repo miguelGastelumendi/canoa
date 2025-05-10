@@ -13,8 +13,8 @@ from os.path import splitext
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
-from .models import Sep, MgmtSepsUser
-from .wtforms import SepEdit
+from .models import Sep, MgmtSepsUser, Schema
+from .wtforms import SepEdit, SepNew
 
 from .UserSep import UserSep
 from .SepIconConfig import SepIconConfig
@@ -39,25 +39,35 @@ from ..helpers.ui_db_texts_helper import (
 from ..common.app_context_vars import app_user
 
 
-def do_sep_edit(sep_id: int) -> str:
+def do_sep_edit(code: str) -> str:
     """SEP Edit Form"""
 
+    new_sep_code = "+"
+    new_sep_id = 0
+    is_new = code == new_sep_code
+    is_edit = not is_new
+    sep_id = new_sep_id if is_new else UserSep.to_id(code)
     if sep_id is None or sep_id < 0:
         return redirect_to(login_route())
 
     task_code = ModuleErrorCode.SEP_EDIT.value
     tmpl_form, template, is_get, ui_texts = init_form_vars()
-    sep_fullname = "?"
+    sep_fullname = f"SPC&#8209;{code}"  # &#8209 is nobreak-hyphen &hyphen does not work.
     try:
         task_code += 1  # 1
 
         def _get_sep_data(task_code: int, load_sep_content: bool) -> Tuple[UserSep, int]:
             task_code += 1
-
-            if sep_id == 0 and app_user.is_power:
-                sep_fake = json_to_obj('{"description": "", "icon_file_name": ""}')
+            if is_edit:
+                pass
+            elif app_user.is_power:
+                sep_fake = dict_to_obj({"description": "", "icon_file_name": SepIconConfig.empty_file})
+                ui_texts["schemaList"] = Schema.get_schemas()
                 return None, sep_fake, "", task_code + 5
+            else:
+                raise AppStumbled(add_msg_fatal("sepNewNotAllow", ui_texts), task_code)
 
+            # is_edit ->
             # is it in the internal list?
             usr_sep = next((sep for sep in app_user.seps if sep.id == sep_id), None)
             if usr_sep is None:
@@ -97,9 +107,11 @@ def do_sep_edit(sep_id: int) -> str:
             return None
 
         task_code += 1  # 2
-        template, is_get, ui_texts = get_private_form_data("sepEdit")
+        template, is_get, ui_texts = get_private_form_data("sepNewEdit")
+        ui_texts["formForNew"] = is_new
+        ui_texts["formTitle"] = ui_texts[f"formTitle{('Edit' if is_edit else 'New')}"]
         task_code += 1  # 3
-        tmpl_form = SepEdit(request.form)
+        tmpl_form = SepEdit(request.form) if is_edit else SepNew(request.form)
         task_code += 1  # 4
         usr_sep, sep_row, sep_fullname, task_code = _get_sep_data(task_code, not is_get)  # 5
         task_code += 1  # 10
@@ -150,6 +162,7 @@ def do_sep_edit(sep_id: int) -> str:
         _, template, ui_texts = ups_handler(task_code, msg, e)
         tmpl = render_template(template, **ui_texts)
 
+    # ??  import pdb; pdb.set_trace()  # Pause here to inspect `context`
     tmpl = render_template(template, form=tmpl_form, **ui_texts)
     return tmpl
 

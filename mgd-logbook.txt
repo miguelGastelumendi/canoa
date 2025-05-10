@@ -16,12 +16,19 @@
         » db_error_mgmt
     ui:
         » wait... background in 5s
+
+    cache:
+        » ui_texts is a item has {0}, it will be saved rendered
+          so it can only be used once. See
+          helpers\ui_db_texts_helper.py_add_msg
+        » ui_texts: ui_texts[UITextsKeys.Msg.error] stays fix
+
         » Dialog
             - ups_handler dependes of dialog.html.j2 (if it has error...)
         » Form
             - if is saving -> set flag not to leave
             - save form state, to enable/disable menu
-            - if [OK] -> disable [OK],[x], etc
+            - if [OK] -> disable form buttons (double click)
         » Change logout alert to Canoa form
         » About -> display db version
         » ajax
@@ -48,10 +55,14 @@
 -----------------------------------------------------------
 ------- 2025 - March -------------
 ----------------------------------
+
+2025-05-08--09 β 4.10 issue: #38 + fix
+    - Fix seps_mgmt module (seps_grid.py broke)
+
 2025-05-07 β 4.09 issues: #34, #39
     - issue #34 ready
     - issue #39 ready
-    - Editar setor estratégicos de um usuário (ver menu):
+    - Edit a user's strategic sectors (see menu):
 
 
 2025-05-02,03,05,06 β 4.08 issue #36 Ok, #34

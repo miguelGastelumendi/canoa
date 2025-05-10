@@ -22,7 +22,9 @@ mgd
 
 {# only specify if different from default #}
 {% set dlg_cls_footer= "collapse" %}
-{% set form_post_id = "form-post-id"%}
+{% set form_only_msg= msgOnly | default(False) %}
+{% set form_display_ui= not form_only_msg %}
+{% set form_post_id= "form-post-id"%}
 
 {% extends "./layouts/dialog.html.j2" %}
 
@@ -41,7 +43,7 @@ mgd
 {# === end: only msg === #}
 
 {# === start: display inputs === #}
-{% if not msgOnly %}
+{% if form_display_ui %}
 
 {% block frm_blc_above %}
 {% endblock frm_blc_above %}
