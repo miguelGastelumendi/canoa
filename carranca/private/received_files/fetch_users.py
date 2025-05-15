@@ -8,10 +8,10 @@ Equipe da Canoa -- 2025
 mgd 2025-01-14 & 03-18
 """
 
-from ..models import ReceivedFilesCount
+from ...models.private import ReceivedFilesCount
 from ...common.app_context_vars import app_user
 
-from ...helpers.db_helper import DBRecords
+from ...helpers.db_records.DBRecords import DBRecords
 
 
 def fetch_user_s(user_id: int = None) -> DBRecords:
@@ -29,9 +29,7 @@ def fetch_user_s(user_id: int = None) -> DBRecords:
     else:
         return DBRecords()
 
-    received_files_count = ReceivedFilesCount.get_records(user_id)
-    received_rows = DBRecords(received_files_count.table_name, received_files_count)
-
+    received_rows = ReceivedFilesCount.get_records(user_id)
     return received_rows
 
 

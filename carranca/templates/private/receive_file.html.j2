@@ -13,12 +13,12 @@ mgd
 --------------------------------------- #}
 {# cSpell:ignore urlname tojson uploadfile #}
 
-{% set btnCloseForm= successButton %}
+{% set form_close_btn_text= successButton %}
 {% set dlg_var_icon_url= iconFileUrl %}
 
 {% extends "./layouts/form.html.j2" %}
 
-{% block frm_blc_content %}
+{% block frm_blc_inputs %}
 
 <!-- { SEP  -->
 <div class="form-group">
@@ -56,9 +56,9 @@ mgd
 </div>
 <!-- Google File } -->
 
-{% endblock frm_blc_content %}
+{% endblock frm_blc_inputs %}
 
-{% if form_display_ui %}
+{% if form_bke_display_ui %}
 {% block dlg_blc_javascript %}
 <script>
     const seps = {{ seps | tojson | safe }};

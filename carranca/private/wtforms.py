@@ -53,6 +53,7 @@ class SepEdit(FlaskForm):
     schema = SelectField("", validators=[DataRequired()], render_kw={"class": "form-select"})
     name = StringField(
         "",
+        validators=[InputRequired(), Length(min=5, max=140)],  # TODO sidekick.config.DB_len_val_for_sep
         render_kw={
             "class": "form-control",
             "disabled": True,
@@ -71,6 +72,7 @@ class SepNew(SepEdit):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name.render_kw["disabled"] = False
+        self.schema.validators.append(InputRequired())
 
 
 # eof

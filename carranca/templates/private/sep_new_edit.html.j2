@@ -16,7 +16,7 @@ mgd
 {# {% if not msgOnly %} #}
 {#--vv-- not msgOnly --- #}
 
-{% block frm_blc_content %}
+{% block frm_blc_inputs %}
 
 {% if formForNew %}
 <!-- { Schema -->
@@ -68,7 +68,7 @@ mgd
 </div>
 <!-- Icon } -->
 
-{% endblock frm_blc_content %}
+{% endblock frm_blc_inputs %}
 
 {% if formForNew and not msgOnly %}
 
@@ -83,7 +83,7 @@ mgd
         select.appendChild(option);
     }
 
-    ({{ schemaList | tojson }}).forEach(sep => add_item(1, sep));
+    ({{ schemaList | tojson | safe }}).forEach(sep => add_item(sep.id, sep.name));
 </script>
 
 {% endblock dlg_blc_javascript %}

@@ -22,51 +22,55 @@ mgd
 
 {# only specify if different from default #}
 {% set dlg_cls_footer= "collapse" %}
-{% set form_only_msg= msgOnly | default(False) %}
-{% set form_display_ui= not form_only_msg %}
+{% set form_bke_only_msg= msgOnly | default(False) %}
+{% set form_bke_display_ui= not form_bke_only_msg %}
+{% set form_close_btn_text= form_close_btn_text | default('Fechar') %}
 {% set form_post_id= "form-post-id"%}
 
 {% extends "./layouts/dialog.html.j2" %}
 
-{# == Dialog Body == #}
+{# ╒════════ Dialog Body ════════╕ #}
 {% block dlg_blc_body %}
 
 {% include "includes/backend-msg.html.j2" %}
 
-{# === start: display ONLY form messages === #}
-{% if msgOnly %}
+{# ┌┄┄┄┄ form only for messages ┄┄┄┄┐ #}
+{% if form_bke_only_msg %}
 
 {% from "includes/_action_forms_and_btns.html.j2" import btn_close %}
-{{ btn_close(action_form__form_close_id, btnCloseForm) }}
+{{ btn_close(action_form__form_close_id, form_close_btn_text) }}
 
 {% endif %}
-{# === end: only msg === #}
+{# └┄┄┄┄ form only for messages ┄┄┄┄┘ #}
 
-{# === start: display inputs === #}
-{% if form_display_ui %}
 
 {% block frm_blc_above %}
 {% endblock frm_blc_above %}
 
+{# ┌┄┄┄┄ display inputs/ui ┄┄┄┄┐ #}
+{% if form_bke_display_ui %}
 
 <form method="post" action="" id={{form_post_id}} {{ formAttribute | default('') }}>
     {{ form.hidden_tag() }}
-    {% block frm_blc_content %}
-    {% endblock frm_blc_content %}
+
+    {% block frm_blc_inputs %}
+    {% endblock frm_blc_inputs %}
 </form>
 
 <div class="d-grid mt-0">
     {% from "includes/_action_forms_and_btns.html.j2" import btn_submit %}
     {{ btn_submit(form_post_id, submitButton) }}
 </div>
+
 {% endif %}
-{# === end: display inputs === #}
+{# └┄┄┄┄ display inputs/ui ┄┄┄┄┘ #}
 
 {% block frm_blc_below %}
 {% endblock frm_blc_below %}
 
 {% endblock dlg_blc_body %}
-{# ==^ Dialog Body ^== #}
+{# ╘════════ Dialog Body ════════╛ #}
+
 
 {% block frm_blc_script %}
 {% endblock frm_blc_script %}

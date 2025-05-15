@@ -9,10 +9,10 @@ Equipe da Canoa -- 2024
 
 import requests
 from os import path
-from typing import Tuple
+from typing import Tuple, Optional
 from flask import redirect, request, url_for
 
-from .py_helper import is_str_none_or_empty, camel_to_snake, to_str
+from .py_helper import is_str_none_or_empty, camel_to_snake, clean_text
 from .html_helper import URL_PATH_SEP
 from .types_helper import ui_db_texts, template_file_full_name
 from .ui_db_texts_helper import UITextsKeys, get_form_texts
@@ -98,9 +98,10 @@ def is_method_get() -> bool:
     return is_get
 
 
-def get_input_text(name: str) -> str:
+def get_input_text(name: str, not_allowed: Optional[str] = "") -> str:
     text = request.form.get(name)
-    return to_str(text)
+    # 2025.05.13 return to_str(text)
+    return clean_text(text, not_allowed)
 
 
 def get_template_name(tmplt: str, folder: str) -> template_file_full_name:
@@ -130,7 +131,7 @@ def _get_form_data(
 
     # a section of ui_itens
     ui_texts = get_form_texts(section)
-    if  is_get:
+    if is_get:
         ui_texts[UITextsKeys.Msg.error] = ""  # This is a Cache BUG to
     else:
         ui_texts[UITextsKeys.Msg.info] = ""  # only GET has info

@@ -7,7 +7,7 @@
 */
 // @ts-check
 /* cSpell:locale en pt-br
- * cSpell:ignore Rprt
+ * cSpell:ignore Rprt gridOptions
  */
 
 /// <reference path="./ts-check.js" />
@@ -42,9 +42,7 @@ const gridOptions = {
         { field: colMeta[3].n, headerName: colMeta[3].h, flex: 1, hide: true },
         {
             field: colMeta[4].n, headerName: colMeta[4].h, flex: 0,
-            cellClassRules: {
-                'grid-item-none': params => params.value == itemNone
-            },
+            cellClassRules: { 'grid-item-none': params => params.value == itemNone },
         },
         {
             field: colMeta[5].n, headerName: colMeta[5].h, flex: 1,
@@ -58,8 +56,8 @@ const gridOptions = {
         { field: colMeta[6].n, headerName: colMeta[6].h, flex: 1 },
         {
             field: colMeta[7].n, headerName: colMeta[7].h, flex: 1,
-            filter: true,
             valueFormatter: params => (params.value ? new Date(params.value).toLocaleString(dateFormat) : ''),
+            filter: true,
         },
         {
             field: colMeta[8].n, headerName: colMeta[8].h, flex: 1,

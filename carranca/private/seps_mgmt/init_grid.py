@@ -1,41 +1,6 @@
 """
 SEP Management and User assignment
-
-NB: SEP is an old acronym for
-    "Setor Estratégico de Planejamento" (Strategic Planning Sector)
-    so it was kept here until we find a better name.
-
-Equipe da Canoa -- 2024
-mgd 2024-10-09, 2025-04-09  v 1.0 One user <-> one SEP
-mgd 2025-04-03              v 2.0 One user -> several SEP
-mgd 2025-04-09--21                Refactor
-
-The files involved are:
-    carranca/private/seps_mgmt/
-        seps_grid.py   -- main
-        seps_save.py
-        seps_email.py
-        seps_keys.py
-    carranca/templates/private/
-        seps_mgmt.html.j2
-    carranca/static/js/
-        seps_mgmt.js
-    carranca/private/
-        models[MgmtUserSeps]
-
-Database objects:
-    view:
-        vw_mgmt_seps_user
-    trigger:
-        vw_mgmt_seps_user__upd (instead of update)
-    function:
-        vw_mgmt_seps_user__on_upd
-    table:
-        log_user_sep
-        sep.mgmt_sep_id
-        sep.mgmt_sep_at
-        sep.mgmt_batch_code
-
+    Main module
 
 """
 
@@ -45,7 +10,7 @@ import json
 from flask import render_template, request
 from typing import Tuple, List, Dict
 
-from ..models import MgmtSepsUser
+from ...models.private import MgmtSepsUser
 from ..sep_icon import do_icon_get_url
 from ..SepIconConfig import SepIconConfig
 
@@ -53,17 +18,17 @@ from ...public.ups_handler import ups_handler
 from ...common.app_error_assistant import ModuleErrorCode, AppStumbled
 
 from ...helpers.py_helper import is_str_none_or_empty, class_to_dict
-from ...helpers.db_helper import DBRecords, ListOfDBRecords
 from ...helpers.user_helper import get_batch_code
 from ...helpers.route_helper import get_private_form_data, init_form_vars
 from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list
 from ...helpers.js_grid_helper import js_grid_constants, js_grid_sec_key, js_grid_rsp, js_grid_sec_value
 from ...helpers.ui_db_texts_helper import add_msg_fatal, add_msg_error, UITextsKeys
+from ...helpers.db_records.DBRecords import DBRecords, ListOfDBRecords
 
 
-from .seps_save import save_data
-from .seps_email import send_email
-from .seps_keys import CargoKeys, SepMgmtGridCols
+from .save_to_db import save_data
+from .send_email import send_email
+from .keys_values import CargoKeys, SepMgmtGridCols
 
 # TODO:
 #   - alter [Close] <—> [Cancel] buttons
@@ -85,7 +50,7 @@ def sep_mgmt() -> str:
         ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.get_icon_url(SepIconConfig.none_file)
 
         task_code += 1  # 3
-        # col_names = ["sep_id", "icon_url", "user_curr", "sep_fullname", user", "assigned_at"]
+        # col_names = ["sep_id", "icon_file_name", "user_curr", "sep_fullname", user", "assigned_at"]
         col_names: List[str] = list(class_to_dict(SepMgmtGridCols).values())
         grid_const, _ = js_grid_constants(ui_texts["colMetaInfo"], col_names)
         if grid_const == None:
@@ -121,7 +86,7 @@ def sep_mgmt() -> str:
 
         tmpl = render_template(
             template,
-            sep_data=sep_data.to_json(),
+            sep_data=sep_data.to_list(),
             user_list=user_list,
             cargo_keys=class_to_dict(CargoKeys),
             **grid_const,
@@ -158,7 +123,7 @@ def _save_and_email(grid_response: cargo_list, ui_texts: ui_db_texts, task_code:
     if not is_str_none_or_empty(msg_error):
         return None, msg_error, task_code
 
-    task_code += 1
+    task_code += 1  # 567
     msg_success_email, msg_error, task_code = send_email(batch_code, ui_texts, task_code)
     if not is_str_none_or_empty(msg_error):
         return None, msg_error, task_code

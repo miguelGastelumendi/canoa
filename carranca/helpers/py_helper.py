@@ -35,7 +35,7 @@ def get_envvar_prefix() -> str:
     return f"{APP_NAME}_".upper()
 
 
-def get_envvar(name: str, default: str = "") -> str:
+def get_envvar(name: str, default: Optional[str] = "") -> str:
     value = "" if is_str_none_or_empty(name) else os.getenv(f"{get_envvar_prefix()}{name}")
     return default if is_str_none_or_empty(value) else value
 
@@ -59,7 +59,7 @@ def as_str_strip(s: str) -> str:
     return (str(s) + "").strip()
 
 
-def quote(s: str, always: bool = True) -> str:
+def quote(s: str, always: Optional[bool] = True) -> str:
     """
     Args:
         s: The string to be quoted.
@@ -155,7 +155,17 @@ def as_bool(val: Any, val_if_none: Optional[bool] = False) -> bool:
     # fmt: on
 
 
-def strip_and_ignore_empty(s: str, sep=",", max_split=-1) -> list[str]:
+def clean_text(name: str, not_allowed: Optional[str] = ""):
+    check_1 = as_str_strip(name)
+    check_2 = "".join(c for c in check_1 if ord(c) >= 32)  # Remove any char < 32
+    check_3 = " ".join(check_2.split())  # Remove extra spaces (left, right, and more than 2 consecutive)
+    exclude = str(not_allowed) + ""
+    # rem = as_str_strip(not_allowed) + ' ' if not_allowed.has
+    check_4 = "".join(c for c in check_3 if c not in exclude)  # Remove all chars from not_allowed
+    return check_4
+
+
+def strip_and_ignore_empty(s: str, sep: Optional[str] = ",", max_split: Optional[int] = -1) -> list[str]:
     """
     Returns a list of the striped items created by splitting s and ignoring empty items
     """
@@ -334,7 +344,7 @@ class EmptyClass:
     pass
 
 
-def copy_attributes(class_instance: Any, this_types: Tuple[Type] | Type = None) -> EmptyClass:
+def copy_attributes(class_instance: Any, this_types: Optional[Tuple[Type] | Type] = None) -> EmptyClass:
     """
     Copies the specified simple type attributes from a class_instance,
     of the ones specified in the second argument or the defaults
@@ -376,7 +386,7 @@ def class_to_dict(from_class: Type) -> Dict[str, Any]:
     """
     dic = {}
     if from_class is not None:
-        dic = {k: v for k, v in from_class.__dict__.items() if not k.startswith("__") and not callable(v)}
+        dic = {k: v for k, v in from_class.__dict__.items() if not k.startswith("_") and not callable(v)}
 
     return dic
 

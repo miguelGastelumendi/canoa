@@ -15,8 +15,8 @@ from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
 from ..common.app_context_vars import sidekick
 from ..common.app_error_assistant import AppStumbled
+from ..models.private import Sep, SchemaSEP
 
-from .models import Sep, SchemaSEP
 from .SepIcon import SepIcon, SepData
 from .SepIconConfig import SepIconConfig
 

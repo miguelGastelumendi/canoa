@@ -27,7 +27,7 @@ mgd
 from datetime import datetime
 from typing import Tuple
 
-from ..models import UserDataFiles
+from ...models.private import UserDataFiles
 
 from ..AppUser import AppUser
 from ..UserSep import UserSep

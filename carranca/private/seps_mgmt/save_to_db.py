@@ -18,7 +18,7 @@ from ...helpers.db_helper import try_get_mgd_msg
 from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list
 from ...helpers.ui_db_texts_helper import format_ui_item
 
-from .seps_keys import SepMgmtGridCols, CargoKeys
+from .keys_values import SepMgmtGridCols, CargoKeys
 
 
 def save_data(
@@ -38,9 +38,9 @@ def save_data(
         elif len(remove) + len(assign) == 0:
             return ui_texts["tasksNothing"], "", task_code
 
-        task_code += 1
+        task_code += 1  # 561
         _, msg_error, task_code = _save_data_to_db(remove, assign, batch_code, ui_texts, task_code)
-        task_code += 1
+        task_code += 1  # 565
         if is_str_none_or_empty(msg_error):
             msg_success = format_ui_item(ui_texts, "tasksSuccess", len(remove), len(assign))
     except Exception as e:
@@ -95,7 +95,7 @@ def _save_data_to_db(
 
     from carranca import global_sqlalchemy_scoped_session
 
-    from ..models import MgmtSepsUser
+    from ...models.private import MgmtSepsUser
     from ...common.app_context_vars import app_user, sidekick
 
     msg_error = None
@@ -107,7 +107,7 @@ def _save_data_to_db(
         try:
 
             def __set_sep_new_user(id: int, usr_new: str | None):
-                user_sep = db_session.query(MgmtSepsUser).filter_by(sep_id=id).one_or_none()
+                user_sep = db_session.query(MgmtSepsUser).filter_by(id=id).one_or_none()
                 if user_sep:
                     user_sep.user_new = usr_new
                     user_sep.assigned_by = assigned_by

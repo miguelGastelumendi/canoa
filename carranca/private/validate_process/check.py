@@ -19,7 +19,7 @@ from ...helpers.db_helper import get_str_field_length
 from ...helpers.file_helper import file_must_exist, folder_must_exist, is_same_file_name
 from ...common.app_error_assistant import ModuleErrorCode
 
-from ..models import UserDataFiles
+from ...models.private import UserDataFiles
 from .Cargo import Cargo
 
 

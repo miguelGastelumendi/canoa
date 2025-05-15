@@ -56,11 +56,6 @@ def init_grid(for_user: int) -> str:
             users_list.insert(
                 0, ("", ui_texts[("noneUser" if len(users_list) == 0 else "selectUser")], True)
             )
-            # if len(users_list) == 0:
-            #     users_list.append(("", ui_texts["noneUser"], True))
-            # else:
-            #     users_list.insert(0, ("", ui_texts["selectUser"], True))
-
             task_code += 1  # 6
             ui_texts[UITextsKeys.Form.title] = ui_texts[UITextsKeys.Form.title + "Power"].format(
                 request_user.user_name
@@ -73,15 +68,15 @@ def init_grid(for_user: int) -> str:
 
         # TODO check empty received_files
         task_code += 1  # 7
-        files_rec, _, _ = fetch_record_s(ui_texts["itemNone"], ALL_RECS, user_id)
-        col_names = files_rec[0].keys() if files_rec else []
+        file_recs, _, _ = fetch_record_s(ui_texts["itemNone"], ALL_RECS, user_id)
+        col_names = file_recs[0].keys() if file_recs else []
         task_code += 1  # 8
         grid_const, _ = js_grid_constants(ui_texts["colMetaInfo"], col_names)
 
         task_code += 1  # 9
         grid_const["user_is_power"] = app_user.is_power
-        grid_const["dnld_R"] = DNLD_R
-        grid_const["dnld_F"] = DNLD_F
+        grid_const["dnld_F"] = DNLD_F  # Download File
+        grid_const["dnld_R"] = DNLD_R  # Download Report
         task_code += 1  # 10
         bw = max(len(ui_texts["btnDwnLoadFile"]), len(ui_texts["btnDwnLoadRprt"])) + 1
         sw = "width:{}ch"
@@ -90,9 +85,9 @@ def init_grid(for_user: int) -> str:
         grid_const["sel_width"] = sw.format(max(bw, lw))
         grid_const["sel_id"] = "usrListID"
 
-        task_code += 1  # 11
+        task_code += 1  # 11 611
         tmpl = render_template(
-            template, files_rec=files_rec.to_json(), users_list=users_list, **grid_const, **ui_texts
+            template, files_rec=file_recs, users_list=users_list, **grid_const, **ui_texts
         )
 
     except Exception as e:

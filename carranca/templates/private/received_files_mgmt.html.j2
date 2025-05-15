@@ -7,17 +7,22 @@ Manages and displays a grid of received files
 Extends
 ./layouts/dialog.html.j2
 
+Expected backend vars:
+» List of the users, just when admin
+code, name, enabled in users_list
+
+
 mgd
 --------------------------------------- #}
 {# cSpell:ignore onclick tojson onsubmit dnld Rprt endfor onchange #}
 
 {# only specify if different from default #}
+
 {% set dlg_cls_size= 'modal-xl' %}
 
 {% extends "./layouts/dialog.html.j2" %}
 
-{% if not msgOnly %}
-{#--- msgOnly --- #}
+{% if dlg_bke_display_ui %}
 
 {% block base_blc_head_js %}
 {% include "./includes/grid-header.html.j2" %}
@@ -52,10 +57,6 @@ mgd
         </button>
     </div>
 </div>
-<form method="post" action="{{private_route('received_file_download')}}" id="{{grid_submit_id}}">
-    <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
-    <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
-</form>
 {% endblock dlg_blc_footer %}
 
 {% block dlg_blc_javascript %}
@@ -93,7 +94,14 @@ mgd
 <script src='{{static_route("js/received_files_mgmt.js")}}'></script>
 {% endblock dlg_blc_javascript %}
 
-{#--- msgOnly --- #}
+{% block dlg_blc_forms %}
+<form method="post" action="{{private_route('received_file_download')}}" id="{{grid_submit_id}}">
+    <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
+    <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
+</form>
+{% endblock dlg_blc_forms %}
+
 {% endif %}
+{#--- end » dlg_bke_display_ui --- #}
 
 {# eof #}

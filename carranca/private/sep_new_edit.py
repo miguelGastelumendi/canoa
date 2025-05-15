@@ -13,13 +13,13 @@ from os.path import splitext
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
-from .models import Sep, MgmtSepsUser, Schema
+from ..models.private import Sep, MgmtSepsUser, Schema
 from .wtforms import SepEdit, SepNew
 
 from .UserSep import UserSep
 from .SepIconConfig import SepIconConfig
 from ..public.ups_handler import ups_handler
-from ..helpers.py_helper import now, dict_to_obj, json_to_obj
+from ..helpers.py_helper import clean_text, now, dict_to_obj
 from ..helpers.types_helper import svg_content
 from ..helpers.route_helper import (
     get_private_form_data,
@@ -56,30 +56,33 @@ def do_sep_edit(code: str) -> str:
     try:
         task_code += 1  # 1
 
-        def _get_sep_data(task_code: int, load_sep_content: bool) -> Tuple[UserSep, int]:
+        def _get_sep_data(task_code: int, load_sep_content: bool) -> Tuple[UserSep, Sep, str, int]:
             task_code += 1
             if is_edit:
                 pass
             elif app_user.is_power:
-                sep_fake = dict_to_obj({"description": "", "icon_file_name": SepIconConfig.empty_file})
-                ui_texts["schemaList"] = Schema.get_schemas()
-                return None, sep_fake, "", task_code + 5
+                sep_ins = Sep.new_sep()
+                name_ = ui_texts["placeholderOption"]
+                ui_texts["schemaList"] = [{"id": -1, "name": name_}] + Schema.get_schemas().to_list()
+                return None, sep_ins, "", task_code + 5
             else:
                 raise AppStumbled(add_msg_fatal("sepNewNotAllow", ui_texts), task_code)
 
-            # is_edit ->
-            # is it in the internal list?
+            # is_edit:
+            #  is it in the internal list?
             usr_sep = next((sep for sep in app_user.seps if sep.id == sep_id), None)
             if usr_sep is None:
                 raise AppStumbled(add_msg_fatal("sepEditNotAllow", ui_texts), task_code)
 
+            # find the icon
             task_code += 1
             sep_fullname = usr_sep.fullname
             ui_texts[UITextsKeys.Form.icon_url] = usr_sep.icon_url
 
-            # is it in the db 'permission table'?
+            # is user in the db 'permission table'?
             sep_usr_rows, _ = MgmtSepsUser.get_sepsusr_and_usrlist(app_user.id)
 
+            # check permissions
             if sep_usr_rows is None:
                 raise AppStumbled(add_msg_fatal("sepEditNotAllow", ui_texts), task_code + 1)
             elif None == next((mus for mus in sep_usr_rows if mus.id == sep_id), None):
@@ -106,7 +109,7 @@ def do_sep_edit(code: str) -> str:
             add_msg_error("sepEditInvalidFormat", ui_texts, SepIconConfig.ext)
             return None
 
-        task_code += 1  # 2
+        task_code += 1  # 2 502
         template, is_get, ui_texts = get_private_form_data("sepNewEdit")
         ui_texts["formForNew"] = is_new
         ui_texts["formTitle"] = ui_texts[f"formTitle{('Edit' if is_edit else 'New')}"]
@@ -127,19 +130,23 @@ def do_sep_edit(code: str) -> str:
             description = get_input_text(tmpl_form.description.name)
             task_code += 1  # 14
             file_obj = request.files.get(tmpl_form.icon_filename.name)
-            # file_obj SHOULD by None when no file name, but not in may case (Firefox?)
+            # file_obj SHOULD be None when no file name, but not in may case (Firefox?)
             file_ready = bool(file_obj and file_obj.filename)
-            task_code += 1  # 15
-            if description == sep_row.description and not file_ready:  # nothing changed
+
+            if is_edit and description == sep_row.description and not file_ready:  # nothing changed
                 return redirect_to(login_route())
             # Note: `file_content` can be an empty string, indicating that the content is identical to the one in the database, so it should be ignored.
             elif file_ready and (file_content := _get_svg_content(file_obj, sep_row, task_code)) is None:
                 pass  # go show the raised error msg
             else:
-                task_code += 1  # 16
-                new_icon = bool(file_content)  # can be an empty string, not a new_icon
+                task_code += 1  # 15
                 sep_row.description = description
-                if new_icon:
+                if is_new:
+                    task_code += 1  # 16
+                    sep_row.schema_id = int(request.form.get(tmpl_form.schema.name, -1))
+                    sep_row.name = get_input_text(tmpl_form.name.name, ["/"])
+                if new_icon := bool(file_content):  # can be an empty string, not a new_icon
+                    task_code += 2  # 17
                     sep_row.icon_original_name = secure_filename(file_obj.filename)
                     sep_row.icon_file_name = f"{app_user.code}u-{sep_row.id:03}sep.{SepIconConfig.ext}"
                     sep_row.icon_uploaded_at = now()

@@ -2,12 +2,12 @@
 SEP Management and User assignment
 Database Column Names & Cargo Keys (data sent from the front-end)
 
-Equipe da Canoa -- 2025
+Equipe da Canoa — 2025
 mgd 2025-04-17
 """
 
 # cSpell: ignore mgmt
-from ..models import MgmtSepsUser
+from ...models.private import MgmtSepsUser
 
 
 class SepMgmtGridCols:

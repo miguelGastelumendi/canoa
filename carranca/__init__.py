@@ -133,9 +133,9 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
     def __get_user_sep_menu_list() -> List[Dict]:
         sep_list: List[Dict] = []
         if is_someone_logged():
-            from .common.app_context_vars import user_seps
+            from .common.app_context_vars import app_user
 
-            sep_list = [{"code": user.code, "name": user.fullname} for user in user_seps]
+            sep_list = [{"code": user.code, "name": user.fullname} for user in app_user.seps]
 
         return sep_list
 

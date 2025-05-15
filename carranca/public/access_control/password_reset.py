@@ -10,7 +10,7 @@ mgd
 
 from flask import render_template, request
 
-from ...public.models import persist_user
+from ...models.public import persist_user
 from ...helpers.pw_helper import hash_pass
 from ...helpers.py_helper import now, to_str
 from ...common.app_error_assistant import ModuleErrorCode
@@ -21,7 +21,7 @@ from ...helpers.route_helper import (
     get_account_form_data,
 )
 from ...private.wtforms import ChangePassword
-from ..models import get_user_where
+from ...models.public import get_user_where
 
 
 def password_reset(token):

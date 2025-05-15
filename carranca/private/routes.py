@@ -60,7 +60,7 @@ def sep_mgmt():
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .seps_mgmt.seps_grid import sep_mgmt
+        from .seps_mgmt.init_grid import sep_mgmt
 
         return sep_mgmt()
 

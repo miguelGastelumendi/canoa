@@ -53,7 +53,7 @@ from threading import Lock
 
 _locks = {}
 _locks_lock = Lock()
-RUN_WITH_LOCKS = False  # debug _get_scoped_var
+RUN_WITH_LOCKS = True  # debug _get_scoped_var
 
 
 def _get_scoped_var(var_name: str, def_creator: Callable[[], Any]) -> Optional[Any]:
@@ -128,10 +128,13 @@ def _get_jinja_user() -> Optional[JinjaUser]:
     return jinja_user
 
 
+count: int = 0
+
+
 # User SEPs
 # -----------
 def _prepare_user_seps() -> user_seps_rtn:
-    from ..private.models import MgmtSepsUser
+    from ..models.private import MgmtSepsUser
     from ..private.UserSep import UserSep
     from ..private.sep_icon import do_icon_get_url
     from ..helpers.pw_helper import is_someone_logged
@@ -139,7 +142,12 @@ def _prepare_user_seps() -> user_seps_rtn:
 
     user_id: int = current_user.id if is_someone_logged() else -1
 
-    filter = [
+    global count
+    count += 1
+    if count > 1:
+        raise Exception("Count!!")
+
+    fields = [
         MgmtSepsUser.id.name,
         MgmtSepsUser.fullname.name,
         MgmtSepsUser.description.name,
@@ -147,7 +155,7 @@ def _prepare_user_seps() -> user_seps_rtn:
         MgmtSepsUser.icon_file_name.name,
     ]
     try:
-        sep_usr_rows, _ = MgmtSepsUser.get_sepsusr_and_usrlist(user_id, filter)
+        sep_usr_rows, _ = MgmtSepsUser.get_sepsusr_and_usrlist(user_id, fields)
     except Exception as e:
         return str(e)
 
@@ -158,6 +166,7 @@ def _prepare_user_seps() -> user_seps_rtn:
         dic = class_to_dict(item)  # as `g` only saves 'simple' classes convert it to a Dict
         seps.append(dic)
 
+    count -= 1
     return seps
 
 
@@ -171,7 +180,13 @@ def _get_user_seps() -> user_seps_rtn:
         list_dic = (
             _prepare_user_seps() if DEBUG_USER_SEPS else _get_scoped_var("_user_seps", _prepare_user_seps)
         )
-        result: user_sep_list = [UserSep(**item) for item in list_dic]
+        if list_dic is None or not isinstance(list_dic, list):
+            sidekick.display.error(
+                f"An error occurred getting sep from user {app_user.id}: [{type(list_dic)}]->{list_dic}."
+            )
+            result = []
+        else:
+            result: user_sep_list = [UserSep(**item) for item in list_dic]
 
     return result
 

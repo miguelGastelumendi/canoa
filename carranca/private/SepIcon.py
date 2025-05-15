@@ -13,7 +13,7 @@ from ..helpers.py_helper import is_str_none_or_empty
 
 
 class SepData:
-    from .models import Sep
+    from ..models.private import Sep
 
     def __init__(self, icon_url: str, sep_fullname: str, sep: Sep):
         self.icon_url = icon_url

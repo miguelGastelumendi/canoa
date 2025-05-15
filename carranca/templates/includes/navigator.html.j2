@@ -17,20 +17,22 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
     {% set menu_header= app_menu('menuHeaders') %}
     <div class="container-fluid">
         <div class="navbar-brand mb-1" inert>{{app_name}}</div>
-        <button class="navbar-toggler {{navButtonState}}" type="button" data-bs-toggle="collapse"
+        <button class="navbar-toggler {{nav_button_state}}" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarCollapsible" aria-controls="navbarCollapsible" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarCollapsible">
             <ul class="navbar-nav me-auto mb-lg-0">
-                {# Validate #}
+
+                {# Menu: Validação #}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-receive"
-                        role="button" data-bs-toggle="dropdown">
+                    <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}}" href="#"
+                        id="menu-receive" role="button" data-bs-toggle="dropdown">
                         {{menu_header['validate']}}
 
                     </a>
+                    {% if nav_sub_menu %}
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ private_route('receive_file') }}"
                                 title="Abre o formulário para submeter um arquivo ZIP o do Google Drive ao processo de valida&ccedil;&atilde;o">
@@ -43,14 +45,16 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
                             </a>
                         </li>
                     </ul>
+                    {% endif %}
                 </li>
 
-                {# Setor Estratégico #}
+                {# Menu: Setor Estratégico #}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-se"
+                    <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}}" href="#" id="menu-se"
                         role="button" data-bs-toggle="dropdown">
                         {{menu_header['strategicSector']}}
                     </a>
+                    {% if nav_sub_menu %}
                     <ul class="dropdown-menu">
                         <li>
                             <a class="dropdown-item" href="{{ private_route('sep_mgmt') }}"
@@ -72,14 +76,16 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
                         </li>
                         {% endfor %}
                     </ul>
+                    {% endif %}
                 </li>
 
-                {# Documentos #}
+                {# Menu: Documentos #}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-docs"
+                    <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}}" href="#" id="menu-docs"
                         role="button" data-bs-toggle="dropdown">
                         {{menu_header['documents']}}
                     </a>
+                    {% if nav_sub_menu %}
                     <ul class="dropdown-menu">
                         <li>
                             <a class="dropdown-item"
@@ -109,14 +115,16 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
                             </a>
                         </li>
                     </ul>
+                    {% endif %}
                 </li>
 
-                {# Usuário #}
+                {# Menu: Usuário #}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle unselectable-text {{navButtonState}}" href="#" id="menu-user"
+                    <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}}" href="#" id="menu-user"
                         role="button" data-bs-toggle="dropdown">
                         {{jinja_user().name}}
                     </a>
+                    {% if nav_sub_menu %}
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
                             <a class="dropdown-item disabled" href="#" title="O seu rol em {{ app_name }}">
@@ -139,6 +147,7 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
                             </a>
                         </li>
                     </ul>
+                    {% endif %}
                 </li>
             </ul>
         </div>

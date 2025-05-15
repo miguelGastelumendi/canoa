@@ -1,5 +1,5 @@
 """
-Model of the table of files uploaded by users
+ Private Models
 
 mgd
 Equipe da Canoa -- 2024
@@ -7,30 +7,29 @@ Equipe da Canoa -- 2024
 
 # Equipe da Canoa -- 2024
 #
-# cSpell:ignore: nullable sqlalchemy sessionmaker sep ssep scm sepsusr usrlist
+# cSpell:ignore: nullable sqlalchemy sessionmaker sep ssep scm sepsusr usrlist SQLA
 
 from typing import List, Optional, Tuple
 from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text, select, and_
 from sqlalchemy.exc import DatabaseError
-from sqlalchemy.orm import defer, Session, declarative_base
+from sqlalchemy.orm import defer, Session
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
 from .. import global_sqlalchemy_scoped_session
 
-from .UserSep import UserSep
-from .SepIconConfig import SepIconConfig, svg_content
+from ..models import SQLABaseTable
+from ..models.public import User
+from ..private.SepIconConfig import SepIconConfig, svg_content
 from ..common.app_context_vars import sidekick
-from ..helpers.db_helper import DBRecords, db_fetch_rows, db_ups_error
+from ..helpers.db_helper import db_fetch_rows, db_ups_error
 from ..helpers.py_helper import is_str_none_or_empty, to_int
 from ..helpers.user_helper import get_user_code
-
-# https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
-Base = declarative_base()
+from ..helpers.db_records.DBRecords import DBRecords
 
 
 # --- Table ---
-class UserDataFiles(Base):
+class UserDataFiles(SQLABaseTable):
     """
     UserDataFiles is app's interface for the
     DB table `user_data_files` that works as a
@@ -169,7 +168,7 @@ class UserDataFiles(Base):
 
 
 # --- Table ---
-class Schema(Base):
+class Schema(SQLABaseTable):
 
     __tablename__ = "vw_schema"
 
@@ -179,11 +178,12 @@ class Schema(Base):
     description = Column(String(140))
 
     @staticmethod
-    def get_schemas() -> Tuple["Sep", str]:
+    def get_schemas() -> DBRecords:
         def _get_data(db_session: Session):
-            stmt = select(Schema.name)
-            schema_recs = db_session.scalars(stmt).all()
-            # schema_rows = DBRecords(Schema.__tablename__, schema_recs)
+            # When columns are selected, return is a record (List) of scalar
+            stmt = select(Schema.id, Schema.name).order_by(Schema.name)
+            schema_rows = db_session.execute(stmt).all()
+            schema_recs = DBRecords(stmt, schema_rows)
             return schema_recs
 
         e, msg_error, schema_rows = db_fetch_rows(_get_data)
@@ -193,21 +193,21 @@ class Schema(Base):
         return schema_rows
 
 
+# # --- Table --- Replaced by Public.User
+# class SepUserData(SQLABaseTable):
+
+#     __tablename__ = "users"
+
+#     id = Column(Integer, primary_key=True)
+#     id_role = Column(Integer)
+#     username = Column(String(100), unique=True)
+#     username_lower = Column(String(100), Computed(""))
+#     email = Column(String(64), unique=True)
+#     disabled = Column(Boolean, default=False)
+
+
 # --- Table ---
-class SepUserData(Base):
-
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True)
-    id_role = Column(Integer)
-    username = Column(String(100), unique=True)
-    username_lower = Column(String(100), Computed(""))
-    email = Column(String(64), unique=True)
-    disabled = Column(Boolean, default=False)
-
-
-# --- View ---
-class MgmtSepsUser(Base):
+class MgmtSepsUser(SQLABaseTable):
     """
     `vw_mgmt_user_sep` is a database view designed to provide the necessary
     information for displaying a UI grid in the application's admin panel.
@@ -256,30 +256,39 @@ class MgmtSepsUser(Base):
         """
 
         def _get_data(db_session: Session):
-            stmt = select(MgmtSepsUser)
+            def __cols() -> List[Column]:
+                all = MgmtSepsUser.__table__.columns
+                _cols = [col for col in all if col.name in field_names]
+                return _cols
+
+            cols = __cols() if field_names else None
+            stmt = select(*cols) if cols else select(MgmtSepsUser)
             if user_id is not None:  # then filter
                 stmt = stmt.where(MgmtSepsUser.user_id == user_id)
-                usr_list: DBRecords = []  # and no users list
+                usr_list: DBRecords = []  # and there is no users list
 
-            sep_recs = db_session.scalars(stmt).all()
-            seps_user_rows = DBRecords(MgmtSepsUser.__tablename__, sep_recs, field_names)
+            seps_rows = db_session.execute(stmt).all()
+            seps_recs = DBRecords(stmt, seps_rows)
 
             if user_id is None:  # then get all users list, TODO: check 'disabled'?
-                stmt = select(SepUserData).order_by(SepUserData.username_lower)
-                usr_recs = db_session.scalars(stmt).all()
-                usr_list = DBRecords(SepUserData.__tablename__, usr_recs)
+                # stmt = select(SepUserData).order_by(SepUserData.username_lower)
+                stmt = select(User.id, User.id_role, User.username, User.email, User.disabled).order_by(
+                    User.username_lower
+                )
+                usr_rows = db_session.execute(stmt).all()
+                usr_list = DBRecords(stmt, usr_rows)
 
-            return seps_user_rows, usr_list
+            return seps_recs, usr_list
 
-        e, msg_error, [seps_user_rows, usr_list] = db_fetch_rows(_get_data, 2)
+        e, msg_error, [seps_recs, usr_list] = db_fetch_rows(_get_data, 2)
         if e:
             db_ups_error(e, msg_error, MgmtSepsUser.__tablename__)
 
-        return seps_user_rows, usr_list
+        return seps_recs, usr_list
 
 
 # --- Table ---
-class MgmtEmailSep(Base):
+class MgmtEmailSep(SQLABaseTable):
     """
     This *Updatable view `vw_mgmt_email_sep` exposes
     columns to assist in sending emails to users when
@@ -302,7 +311,7 @@ class MgmtEmailSep(Base):
 
 
 # --- Table ---
-class SchemaSEP(Base):
+class SchemaSEP(SQLABaseTable):
     """
     Auxiliary View
     SchemaSEP is app's interface for the
@@ -318,9 +327,10 @@ class SchemaSEP(Base):
     @staticmethod
     def _get_sep_fullname(db_session: Session, sep_id: int) -> str:
 
-        stmt = select(SchemaSEP).where(SchemaSEP.id == sep_id)
-        row = db_session.execute(stmt).one_or_none()
-        sep_fullname = None if row is None else row[0].sep_fullname
+        stmt = select(SchemaSEP.sep_fullname).where(SchemaSEP.id == sep_id)
+        cell = db_session.execute(stmt).one_or_none()
+        sep_fullname = None if cell is None else cell
+        # AQUI
         return sep_fullname
 
     @staticmethod
@@ -336,7 +346,7 @@ class SchemaSEP(Base):
 
 
 # --- Table ---
-class Sep(Base):
+class Sep(SQLABaseTable):
     """
     Table `sep` keeps the basic information of
     each SEP
@@ -345,6 +355,7 @@ class Sep(Base):
     __tablename__ = "sep"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    id_schema = Column(Integer)
     users_id = Column("mgmt_users_id", Integer)
     name = Column(String(100), unique=True, nullable=False)
     description = Column(String(140), nullable=False)
@@ -424,13 +435,30 @@ class Sep(Base):
                 done = True
             except Exception as e:
                 db_session.rollback()
+                sidekick.display.error(f"Error saving SEP record: [{e}].")
                 # msg_error = f"Cannot update {Sep.__tablename__}.id = {user_sep} | Error {e}."
 
         return done
 
+    @staticmethod
+    def new_sep() -> "Sep":
+        """
+        Creates a new a Sep record
+        """
+        sep_new = Sep(
+            id=0,
+            id_schema=None,
+            name="",
+            description="",
+            icon_file_name="",
+            icon_svg=None,
+        )
+
+        return sep_new
+
 
 # --- Table ---
-class ReceivedFiles(Base):
+class ReceivedFiles(SQLABaseTable):
     """
     ReceivedFiles is app's interface for the
     DB view `vw_user_data_files` that provides the needed
@@ -466,10 +494,10 @@ class ReceivedFiles(Base):
 
     @staticmethod
     def get_records(
-        id: int, user_id: int, email_sent: bool = True, had_reception_error: bool = False
+        file_id: int, user_id: int, email_sent: bool = True, had_reception_error: bool = False
     ) -> DBRecords:
 
-        def _get_data(db_session: Session) -> DBRecords:
+        def _get_rows(db_session: Session) -> DBRecords:
             """----------------------------------------------
             /!\ Attention
             -------------------------------------------------
@@ -478,11 +506,13 @@ class ReceivedFiles(Base):
                 so if you are going change the where clause, be sure
                 to include these fields.
             """
-            stmt = None
-            if id is not None:
-                stmt = select(ReceivedFiles).where(ReceivedFiles.id == id)
+            stmt = select(ReceivedFiles)
+            if file_id is not None:
+                # For download, one file's id
+                stmt = stmt.where(ReceivedFiles.id == file_id)
             else:
-                stmt = select(ReceivedFiles).where(
+                # For grid
+                stmt = stmt.where(
                     and_(
                         ReceivedFiles.email_sent == email_sent,
                         ReceivedFiles.had_reception_error == had_reception_error,
@@ -491,12 +521,12 @@ class ReceivedFiles(Base):
                 if user_id is not None:
                     stmt = stmt.where(ReceivedFiles.user_id == user_id)
 
-            rows = db_session.scalars(stmt).all()
-            records = DBRecords(ReceivedFiles.__tablename__, rows)
+            rows = db_session.execute(stmt).all()
+            recs = DBRecords(stmt, rows)
 
-            return records
+            return recs
 
-        e, msg_error, received_files = db_fetch_rows(_get_data)
+        e, msg_error, received_files = db_fetch_rows(_get_rows)
         if e:
             db_ups_error(e, msg_error, ReceivedFiles.__tablename__)
 
@@ -504,7 +534,7 @@ class ReceivedFiles(Base):
 
 
 # --- Table ---
-class ReceivedFilesCount(Base):
+class ReceivedFilesCount(SQLABaseTable):
     """
     ReceivedFilesCount is app's interface for the
     DB view `vw_user_data_files_count` that provides the needed
@@ -513,12 +543,12 @@ class ReceivedFilesCount(Base):
 
     __tablename__ = "vw_user_data_files_count"
 
-    user_id = Column("id", Integer, primary_key=True)
-    user_name = Column("username", String(100))
-    user_email = Column("email", String(100))
-    rol_id = Column("id_role", Integer)
-    rol_abbr = Column("abbr", String(3))
-    rol_name = Column("name", String(64))
+    user_id = Column(Integer, primary_key=True)
+    user_name = Column(String(100))
+    user_email = Column(String(100))
+    rol_id = Column(Integer)
+    rol_abbr = Column(String(3))
+    rol_name = Column(String(64))
     files_count = Column(Integer)
 
     @hybrid_property
@@ -528,14 +558,14 @@ class ReceivedFilesCount(Base):
     @staticmethod
     def get_records(user_id: Optional[int] = None) -> DBRecords:
         def _get_data(db_session: Session) -> DBRecords:
-            stmt = select(ReceivedFilesCount)
+            stmt = select(ReceivedFilesCount)  # stmt : Select[Tuple[ReceivedFilesCount]] =
             if user_id is not None:
                 stmt = stmt.where(ReceivedFilesCount.user_id == user_id)
 
-            rows = db_session.scalars(stmt).all()
-            records = DBRecords(ReceivedFilesCount.__tablename__, rows)
+            rows = db_session.execute(stmt).all()
+            recs = DBRecords(stmt, rows)
 
-            return records
+            return recs
 
         e, msg_error, received_files_count = db_fetch_rows(_get_data)
         if e:

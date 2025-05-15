@@ -61,39 +61,57 @@ mgd
         const logout = () => { if (confirm("Confirma sair de Canoa?")) window.location.href = "./logout" };
     </script>
 
-    <!-- Page Script -->
+    {# ╒════════ Base Head JS ════════╕ #}
     {% block base_blc_head_js %}
     {% endblock base_blc_head_js %}
+    {# ╘════════ Base Head JS ════════╛ #}
 
-    <!-- Page Styles -->
+    {# ╒════════ Base Head CSS ═══════╕ #}
     {% block base_blc_head_css %}
     {% endblock base_blc_head_css %}
+    {# ╘════════ Base Head CSS ═══════╛ #}
 
 </head>
 
 <body>
     <main>
+        {# ┌┄┄┄┄ if user logged in ┄┄┄┄┐ #}
         {% if jinja_user() %}
-        {% set setNavButtonState= navButtonState | default('disabled') %}
-        {% with navButtonState = setNavButtonState %}
+        {# see 'carranca/templates/private/home.html.j2' #}
+        {% set _nav_button_state= nav_button_state | default('disabled') %}
+        {% set _nav_sub_menu = nav_sub_menu | default(False) %}
+        {# ┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈ #}
+        {% with nav_button_state = _nav_button_state, nav_sub_menu= _nav_sub_menu %}
         {% include 'includes/navigator.html.j2' %}
         {% endwith %}
-        {# see templates\includes\_form_and_buttons.html.j2 #}
+        {# ┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈ #}
+        {# see templates/includes/_form_and_buttons.html.j2 #}
         {% set action_form__form_close_id= action_form__form_close_id | default ('action-form-btn-close-id') %}
         {% endif %}
+        {# └┄┄┄┄ if user logged in ┄┄┄┄┘ #}
+
+        {# ╒═══════ Base Content ══════╕ #}
         {% block base_blc_content %}
         {% endblock base_blc_content %}
+        {# ╘═══════ Base Content ══════╛ #}
     </main>
 
-    {% block base_blc_htmlHelpers %}{% endblock base_blc_htmlHelpers %}
-
+    {# ╒═══════ Base HTML helpers ══════╕ #}
+    {% block base_blc_htmlHelpers %}
+    {% endblock base_blc_htmlHelpers %}
+    {# ╘═══════ Base HTML helpers ══════╛ #}
     {% include 'includes/scripts.html' %}
 
-    {% block base_blc_body_js %}{% endblock base_blc_body_js %}
-
+    {# ╒══════════ Base Body JS ════════╕ #}
+    {% block base_blc_body_js %}
+    {% endblock base_blc_body_js %}
+    {# ╘══════════ Base Body JS ════════╛ #}
 
     <div class="form-actions">
-        {% block base_blc_forms %}{% endblock base_blc_forms %}
+        {# ╒═══════ Base Forms ══════╕ #}
+        {% block base_blc_forms %}
+        {% endblock base_blc_forms %}
+        {# ╘═══════ Base Forms ══════╛ #}
     </div>
 
 </body>

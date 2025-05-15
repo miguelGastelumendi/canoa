@@ -11,7 +11,7 @@ mgd
 from flask import render_template, request
 import secrets
 
-from ...public.models import persist_user
+from ...models.public import persist_user
 from ...helpers.sendgrid_helper import send_email
 from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.email_helper import RecipientsListStr
@@ -24,7 +24,7 @@ from ...helpers.route_helper import (
     get_account_form_data,
     public_route__password_reset,
 )
-from ..models import get_user_where
+from ...models.public import get_user_where
 from ..wtforms import PasswordRecoveryForm
 
 

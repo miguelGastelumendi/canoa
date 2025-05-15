@@ -11,7 +11,7 @@ mgd
 from flask import render_template, request
 from flask_login import login_user
 
-from ...public.models import persist_user
+from ...models.public import persist_user
 from ...helpers.py_helper import is_str_none_or_empty, now, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
 from ...private.RolesAbbr import RolesAbbr
@@ -26,7 +26,7 @@ from ...helpers.route_helper import (
     get_input_text,
     get_account_form_data,
 )
-from ..models import User, get_user_role_abbr
+from ...models.public import User, get_user_role_abbr
 
 
 def login():

@@ -1,12 +1,12 @@
 """
-Tables related to users
+Public Tables
 Part of Public Access Control Processes
 
 Equipe da Canoa -- 2024
 mgd
 """
 
-# cSpell:ignore nullable sqlalchemy joinedload
+# cSpell:ignore nullable sqlalchemy joinedload, SQLA
 
 from carranca import global_sqlalchemy_scoped_session, global_login_manager
 
@@ -25,20 +25,18 @@ from sqlalchemy import (
     LargeBinary,
 )
 from sqlalchemy.orm import relationship, declarative_base, joinedload
-
-# from sqlalchemy.ext.hybrid import hybrid_property
 from flask_login import UserMixin
+
+from ..models import SQLABaseTable
 from ..helpers.pw_helper import hash_pass
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.db_helper import db_fetch_rows, db_ups_error
 from ..private.RolesAbbr import RolesAbbr
 from ..common.app_constants import APP_LANG
 
-Base = declarative_base()
-
 
 # --- Table ---
-class User(Base, UserMixin):
+class User(SQLABaseTable, UserMixin):
 
     __tablename__ = "users"
 
@@ -47,9 +45,11 @@ class User(Base, UserMixin):
     id_role = Column(Integer, ForeignKey("roles.id"))
     lang = Column(String(8), default=APP_LANG)
     username = Column(String(100), unique=True)
-    password = Column(LargeBinary)
     username_lower = Column(String(100), Computed(""))
     email = Column(String(64), unique=True)
+    disabled = Column(Boolean, default=False)
+
+    password = Column(LargeBinary)
     # OBSOLETE
     # mgmt_sep_id = Column(Integer, unique=True)
     last_login_at = Column(DateTime, nullable=True)
@@ -58,7 +58,6 @@ class User(Base, UserMixin):
     password_failures = Column(Integer, default=0)
     password_failed_at = Column(DateTime)
 
-    disabled = Column(Boolean, default=False)
     email_confirmed = Column(Boolean, Computed("email_confirmed", persisted=True))
 
     role = relationship("Role", back_populates="users")
@@ -95,6 +94,40 @@ class User(Base, UserMixin):
             db_ups_error(e, msg_error, User.__tablename__)
 
         return user
+
+
+# --- Table ---
+class Role(SQLABaseTable):
+    """
+    User's role in Canoa
+    """
+
+    __tablename__ = "roles"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(200))
+    abbr = Column(String(3))  # see user_roles.py
+    users = relationship("User", back_populates="role")
+
+
+def get_user_role_abbr(user_id: int, user_role_id: int) -> RolesAbbr:
+    """
+    Retrieves and checks a user role against enum
+    """
+
+    abbr = None
+    if not user_role_id is None:
+        with global_sqlalchemy_scoped_session() as db_session:
+            try:
+                row = db_session.query(Role).filter_by(id=user_role_id).first()
+                abbr = None if row is None else row.abbr
+            except Exception as e:
+                from ..common.app_context_vars import sidekick
+
+                sidekick.app_log.error(f"Error retrieving user {user_id} role {user_role_id}: [{e}].")
+
+    return abbr
+
+
 
 
 def get_user_where(**filter: Any) -> User:
@@ -157,37 +190,6 @@ def request_loader(request):
     user = None if is_str_none_or_empty(username) else User.get_where(username_lower=username.lower())
     return user
 
-
-# --- Table ---
-class Role(Base):
-    """
-    User's role in Canoa
-    """
-
-    __tablename__ = "roles"
-    id = Column(Integer, primary_key=True)
-    name = Column(String(200))
-    abbr = Column(String(3))  # see user_roles.py
-    users = relationship("User", back_populates="role")
-
-
-def get_user_role_abbr(user_id: int, user_role_id: int) -> RolesAbbr:
-    """
-    Retrieves and checks a user role against enum
-    """
-
-    abbr = None
-    if not user_role_id is None:
-        with global_sqlalchemy_scoped_session() as db_session:
-            try:
-                row = db_session.query(Role).filter_by(id=user_role_id).first()
-                abbr = None if row is None else row.abbr
-            except Exception as e:
-                from ..common.app_context_vars import sidekick
-
-                sidekick.app_log.error(f"Error retrieving user {user_id} role {user_role_id}: [{e}].")
-
-    return abbr
 
 
 # eof

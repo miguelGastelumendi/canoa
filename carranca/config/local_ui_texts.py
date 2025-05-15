@@ -26,6 +26,10 @@ class Locale:
 
 local_texts = {
     Locale.br: {
+        # icon_text: {
+        #     missing_sep: 'Falta',
+        #     error_sep: 'Erro',
+        # },
         default_section: {
             UITextsKeys.Form.title: "Situação Inesperada",
             UITextsKeys.Form.date_format: "pt-br",

@@ -1,7 +1,7 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
 #spell:ignore venv ccedil atilde receivefile datetime saude uix
-#spell:ignore Setorista sendgrid linux cnpq ajax mgmt
+#spell:ignore Setorista sendgrid linux cnpq ajax mgmt SQLA
 
 
 
@@ -55,6 +55,12 @@
 -----------------------------------------------------------
 ------- 2025 - March -------------
 ----------------------------------
+
+2025-05-12--15 β 4.11
+    - Fix seps_mgmt module (seps_grid.py broke)
+    - New folder: carranca/modules
+      for SQLAlchemy (now: private & public uses same SQLABaseTable)
+
 
 2025-05-08--09 β 4.10 issue: #38 + fix
     - Fix seps_mgmt module (seps_grid.py broke)

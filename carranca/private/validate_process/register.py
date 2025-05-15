@@ -15,7 +15,7 @@ import os
 from zlib import crc32
 
 from .Cargo import Cargo
-from ..models import UserDataFiles
+from ...models.private import UserDataFiles
 from ...helpers.py_helper import OS_IS_WINDOWS, now
 from ...common.app_context_vars import sidekick
 from ...common.app_error_assistant import ModuleErrorCode

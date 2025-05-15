@@ -34,22 +34,28 @@ class SepIconConfig:
         local_name = path.join(SepIconConfig.local_path, icon_file_name)
         return local_name
 
-    def content_for(fill_color: str, text: str = "", stroke_width: int = 2) -> svg_content:
+    def content_for(
+        fill_color: str,
+        text: str = "",
+        stroke_width: int = 2,
+        fill_opacity: str = "1",
+        stroke_opacity: str = "1",
+    ) -> svg_content:
         return (
             "<svg width='64' height='64' xmlns='http://www.w3.org/2000/svg'>"
-            f"<rect width='100%' height='100%' fill='{fill_color}' stroke='black' stroke-width='{stroke_width}' />"
+            f"<rect width='100%' height='100%' fill='{fill_color}' fill-opacity='{fill_opacity}' stroke='black' stroke-opacity='{stroke_opacity}' stroke-width='{stroke_width}' />"
             f"<text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='black'>{text}</text>"
             "</svg>"
         )
 
     def empty_content() -> svg_content:
-        return SepIconConfig.content_for("none", "", 1)
+        return SepIconConfig.content_for("white", "", 1, "0.1", "0.1")
 
     def error_content() -> svg_content:
         return SepIconConfig.content_for("firebrick", "Erro")
 
     def none_content() -> svg_content:
-        return SepIconConfig.content_for("darkgrey", "Falta")
+        return SepIconConfig.content_for("darkgrey", "Falta", stroke_opacity="0.45")
 
 
 # eof

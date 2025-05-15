@@ -11,12 +11,12 @@ Extends:
 mgd
 --------------------------------------- #}
 
-{% set btnCloseForm= gotoLogin %}
+{% set form_close_btn_text= gotoLogin %}
 {% set dlg_cls_size= '' %}
 {% extends "./layouts/form.html.j2" %}
 
-{% block frm_blc_content %}
-{% if form_display_ui %}
+{% block frm_blc_inputs %}
+{% if form_bke_display_ui %}
 <!-- { User Name -->
 <div class="form-group">
     <label class="form-label" inert for="{{form.username.name}}">{{ userLabel }}</label>
@@ -69,6 +69,6 @@ mgd
 </div>
 
 {% endif %}
-{% endblock frm_blc_content %}
+{% endblock frm_blc_inputs %}
 
 {# eof #}

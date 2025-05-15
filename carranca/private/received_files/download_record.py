@@ -57,7 +57,7 @@ def download_rec() -> Response | None:
             if rec_type == DNLD_R:
                 download_file_name = change_file_ext(download_file_name, report_ext)
 
-            if received_files.count != 1:
+            if len(received_files) != 1:
                 ui_texts[UITextsKeys.Msg.error] = ui_texts["noRecord"]
             elif path.isfile(download_file_name):
                 file_response = send_file(download_file_name)

@@ -9,13 +9,13 @@ mgd 2025-01-14 & 03-18
 
 from os import path
 from typing import Tuple, Optional
-from ..models import ReceivedFiles
+from ...models.private import ReceivedFiles
 from ...common.app_context_vars import app_user
 from ...config.ValidateProcessConfig import ValidateProcessConfig
 
-from ...helpers.db_helper import DBRecords
 from ...helpers.user_helper import UserFolders
 from ...helpers.file_helper import change_file_ext
+from ...helpers.db_records.DBRecords import DBRecords
 
 ALL_RECS = None
 IGNORE_USER = None
@@ -40,16 +40,15 @@ def fetch_record_s(
     if rec_id is ALL_RECS and user_id is IGNORE_USER:
         return DBRecords(), None, None
 
-    received_files = ReceivedFiles.get_records(id=rec_id, user_id=user_id)
-    received_rows = DBRecords(received_files.table_name)
+    received_recs = ReceivedFiles.get_records(file_id=rec_id, user_id=user_id)
     file_full_name: str = None
     report_ext = ValidateProcessConfig(False).output_file.ext
-
-    if received_files:
+    grid_rows = []
+    if received_recs:
         """Adapt the records to the local environment"""
         uf = UserFolders()
 
-        for record in received_files:
+        for record in received_recs:
             folder = uf.uploaded if record.file_origin == "L" else uf.downloaded
             file_full_name = path.join(folder, app_user.folder, record.stored_file_name)
             # Copy specific fields to a new object 'row'
@@ -65,9 +64,9 @@ def fetch_record_s(
                 "errors": record.report_errors,
                 "warns": record.report_warns,
             }
-            received_rows.append(row)
+            grid_rows.append(row)
 
-    return received_rows, file_full_name, report_ext
+    return grid_rows, file_full_name, report_ext
 
 
 # eof

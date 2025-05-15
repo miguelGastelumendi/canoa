@@ -17,6 +17,7 @@ _cls_ => CLaSs
 dlg-name-id => ID
 _blc_ => BLoCk
 _js_ => JScript
+_bke_ => send from the back-end
 
 - Configuration (default is empty '', if not shown (see canoa.css))
 dlg_cls_body | default('dlg-body')
@@ -49,9 +50,12 @@ mgd
 {% set dlg_var_icon_id= dlg_var_icon_id | default('dlg-icon-id') %}
 {% set dlg_var_icon_size= dlg_var_icon_size | default('32px') %} {# see SepIconConfig.content_for() size #}
 {% set dlg_var_close_id= dlg_var_close_id | default('dlg-close-id') %}
-{% set dlg_cls_btn_close= dlg_cls_btn_close | default('btn-close') %}
 {% set dlg_var_submit_id= dlg_var_submit_id | default('dlg-submit-id') %}
 {% set dlg_var_close= dlg_var_close | default(True) %}
+{% set dlg_cls_btn_close= dlg_cls_btn_close | default('btn-close') %}
+{% set dlg_bke_only_msg= msgOnly | default(False) %}
+{% set dlg_bke_display_ui= not dlg_only_msg %}
+
 
 {% block base_blc_content %}
 <section>
@@ -78,13 +82,17 @@ mgd
                 </div>
                 {# === Body === #}
                 <div class="modal-body {{ dlg_cls_body|default('dlg-body') }}">
+                    {# ╒═════════ Dialog Body ═════════╕ #}
                     {% block dlg_blc_body %}
                     {% endblock dlg_blc_body %}
+                    {# ╘═════════ Dialog Body ═════════╛ #}
                 </div>
                 {# === Footer === #}
                 <div class="modal-footer justify-content-center {{ dlg_cls_footer|default('dlg-footer') }}">
+                    {# ╒═════════ Dialog Footer ═════════╕ #}
                     {% block dlg_blc_footer %}
                     {% endblock dlg_blc_footer %}
+                    {# ╘═════════ Dialog Footer ═════════╛ #}
                 </div>
             </div>
         </div>
@@ -92,16 +100,23 @@ mgd
 </section>
 {% endblock base_blc_content %}
 
+
 {% block base_blc_body_js %}
+{# ╒═════════ Dialog JS ═════════╕ #}
 {% block dlg_blc_javascript %}
 {% endblock dlg_blc_javascript %}
+{# ╘═════════ Dialog JS ═════════╛ #}
 {% endblock base_blc_body_js %}
 
-
-
 {% block base_blc_forms %}
+
 {% from "includes/_action_forms_and_btns.html.j2" import action_form__close %}
 {{ action_form__close(action_form__form_close_id) }}
+
+{# ╒═════════ Dialog Forms ═════════╕ #}
+{% block dlg_blc_forms %}
+{% endblock dlg_blc_forms %}
+{# ╘═════════ Dialog Forms ═════════╛ #}
 
 {% endblock base_blc_forms %}
 

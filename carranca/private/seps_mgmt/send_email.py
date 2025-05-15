@@ -18,7 +18,7 @@ from typing import Tuple
 from sqlalchemy.orm import Session
 
 from carranca import global_sqlalchemy_scoped_session
-from ..models import MgmtEmailSep
+from ...models.private import MgmtEmailSep
 from ...helpers.py_helper import now
 from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn
 from ...helpers.email_helper import RecipientsListStr
@@ -34,7 +34,7 @@ def send_email(batch_code: str, ui_texts: ui_db_texts, task_code: int) -> sep_mg
     'new' SEP or if it was removed
     """
 
-    task_code += 1
+    task_code += 1  # 568
     msg_error = None
     db_session: Session
     with global_sqlalchemy_scoped_session() as db_session:
