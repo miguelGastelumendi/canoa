@@ -211,9 +211,6 @@ def crc16(data: bytes | str) -> int:
     data = 'Hello, World!'
     crc16 = crc16(data) -> 0x67DA
     max: 0xFFFF
-
-
-
     Args:
         data: The data to calculate CRC16 for (either bytes or string).
 

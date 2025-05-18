@@ -6,6 +6,12 @@
 Displays a html page to the user with
 relevant information about the error.
 
+    Ups Files
+    ---------
+    /public/ups_handler.py
+    /static/icons/ups_handler.svg
+    /templates/home/ups_page.html.j2
+
 TODO
 It logs the error and sends an e-mail to the admin.
 
@@ -63,8 +69,8 @@ def ups_handler(
     }
 
     for key, value in context_texts.items():
-        if key not in ui_texts:
-            ui_texts[key] = value
+        # override if key not in ui_texts:
+        ui_texts[key] = value
 
     for key, value in local_form_texts().items():
         if key not in ui_texts:

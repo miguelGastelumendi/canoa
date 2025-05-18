@@ -22,7 +22,7 @@ mgd
 
 {# only specify if different from default #}
 {% set dlg_cls_footer= "collapse" %}
-{% set form_bke_only_msg= msgOnly | default(False) %}
+{% set form_bke_only_msg= msgOnly | default(False) %}e1
 {% set form_bke_display_ui= not form_bke_only_msg %}
 {% set form_close_btn_text= form_close_btn_text | default('Fechar') %}
 {% set form_post_id= "form-post-id"%}
@@ -34,14 +34,14 @@ mgd
 
 {% include "includes/backend-msg.html.j2" %}
 
-{# ┌┄┄┄┄ form only for messages ┄┄┄┄┐ #}
+{# ┌┄ form only for backend messages ┄┐ #}
 {% if form_bke_only_msg %}
 
 {% from "includes/_action_forms_and_btns.html.j2" import btn_close %}
 {{ btn_close(action_form__form_close_id, form_close_btn_text) }}
 
 {% endif %}
-{# └┄┄┄┄ form only for messages ┄┄┄┄┘ #}
+{# └┄ form only for backend messages ┄┘ #}
 
 
 {% block frm_blc_above %}

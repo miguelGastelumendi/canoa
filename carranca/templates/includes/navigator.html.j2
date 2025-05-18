@@ -10,11 +10,23 @@ mgd
 
 TODO Selected menu class-> active
 
-cSpell:ignore unselectable labelledby haspopup noopener noreferrer onclick
-cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
+cSpell:ignore unselectable labelledby haspopup noopener noreferrer onclick elif
+cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_user
 --------------------------------------- #}
 <nav id="navbar-main" class="navbar fixed-top navbar-expand-sm shadow-sm px-2">
     {% set menu_header= app_menu('menuHeaders') %}
+    {% set sep_menu= sep_menu() %}
+    {% set sep_menu_class= '' %}
+    {% set sep_indent= '' %}
+    {% set j_user= jinja_user() %}
+
+    {% if j_user.power %}
+    {# -- #}{% set sep_menu_class= '' %}
+    {# -- #}{% set sep_indent = '&nbsp;&nbsp;&#9702;&nbsp;' %} {# ◦ #}
+    {% elif not sep_menu %}
+    {# -- #}{% set sep_menu_class= 'disabled' %}
+    {% endif %}
+
     <div class="container-fluid">
         <div class="navbar-brand mb-1" inert>{{app_name}}</div>
         <button class="navbar-toggler {{nav_button_state}}" type="button" data-bs-toggle="collapse"
@@ -25,7 +37,8 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
         <div class="collapse navbar-collapse" id="navbarCollapsible">
             <ul class="navbar-nav me-auto mb-lg-0">
 
-                {# Menu: Validação #}
+
+                {# ╒════════════════════ Menu: Validação ═════════════════════════════╕ #}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}}" href="#"
                         id="menu-receive" role="button" data-bs-toggle="dropdown">
@@ -48,38 +61,41 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
                     {% endif %}
                 </li>
 
-                {# Menu: Setor Estratégico #}
+                {# ╒════════════════════ Menu: Setor Estratégico ═════════════════════╕ #}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}}" href="#" id="menu-se"
-                        role="button" data-bs-toggle="dropdown">
+                    <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}} {{sep_menu_class}}"
+                        href="#" id="menu-se" role="button" data-bs-toggle="dropdown">
                         {{menu_header['strategicSector']}}
                     </a>
                     {% if nav_sub_menu %}
                     <ul class="dropdown-menu">
+                        {# ╒════════ admin sep menu ═══════╕ #}
+                        {% if j_user.power %}
                         <li>
                             <a class="dropdown-item" href="{{ private_route('sep_mgmt') }}"
                                 title="Abre o grid de Gest&atilde;o de Setores Estrat&eacute;gicos">
                                 Gest&atilde;o
                             </a>
                         </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ private_route('sep_edit', code='+') }}">Novo</a>
-                        </li>
+                        <li> <a class="dropdown-item" href="{{ private_route('sep_edit', code='add') }}">Novo</a> </li>
                         <li class="dropdown-item disabled menu-item-disable-link-color" aria-disabled="true">
                             Edi&ccedil;&atilde;o:
                         </li>
-                        {% for sep in sep_menu() %}
+                        {% endif %}
+                        {# ╘════════ admin sep menu ═══════╛ #}
+                        {# ╒════════ user sep menu ════════╕ #}
+                        {% for sep in sep_menu %}
                         <li>
-                            <a class="dropdown-item" href="{{ private_route('sep_edit', code=sep.code) }}">
-                                &nbsp;&nbsp;{{sep.name}}
-                            </a>
+                            <a class="dropdown-item"
+                                href="{{ private_route('sep_edit', code=sep.code) }}">{{sep_indent}}{{sep.name}}</a>
                         </li>
                         {% endfor %}
+                        {# ╘════════ user sep menu ════════╛ #}
                     </ul>
                     {% endif %}
                 </li>
 
-                {# Menu: Documentos #}
+                {# ╒════════════════════ Menu: Documentos ════════════════════════════╕ #}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}}" href="#" id="menu-docs"
                         role="button" data-bs-toggle="dropdown">
@@ -118,17 +134,17 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor
                     {% endif %}
                 </li>
 
-                {# Menu: Usuário #}
+                {# ╒════════════════════ Menu: Usuário ═══════════════════════════════╕ #}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}}" href="#" id="menu-user"
                         role="button" data-bs-toggle="dropdown">
-                        {{jinja_user().name}}
+                        {{j_user.name}}
                     </a>
                     {% if nav_sub_menu %}
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
                             <a class="dropdown-item disabled" href="#" title="O seu rol em {{ app_name }}">
-                                Usuário&nbsp{{jinja_user().role}}
+                                Usuário&nbsp{{j_user.role}}
                             </a>
                         </li>
                         <li>

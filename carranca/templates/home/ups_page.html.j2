@@ -5,6 +5,14 @@
 This is a generic error/exception/ups
 display page
 
+Ups Files
+---------
+/public/ups_handler.py
+/static/icons/ups_handler.svg
+/templates/home/ups_page.html.j2
+
+
+
 Extends:
 ./layouts/form.html.j2
 
@@ -14,11 +22,12 @@ mgd 2025-03-05--15
 {% set dlg_var_close= False %}
 {% set dlg_var_icon_url= iconFileUrl %}
 {% set dlg_var_svg= iconSvgUrl %}
+{% set form_close_btn_text= btnCloseForm %}
 {# see canoa.css #}
 
 {% extends "./layouts/dialog.html.j2" %}
 
-{# == Dialog Body == #}
+{# ╒═════════ Dialog Body ═════════╕ #}
 {% block dlg_blc_body %}
 
 {% include "includes/backend-msg.html.j2" %}
@@ -30,7 +39,7 @@ mgd 2025-03-05--15
 {% endblock frm_blc_below %}
 
 {% endblock dlg_blc_body %}
-{# ==^ Dialog Body ^== #}
+{# ╘═════════ Dialog Body ═════════╛ #}
 
 {% block dlg_blc_footer %}
 

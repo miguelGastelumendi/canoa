@@ -6,6 +6,9 @@ Retrieve ui texts item for current language
 (refactored from helper.py)
 mgd 2024-04-03
 
+     UNDER DEVELOPMENT
+
+
 """
 
 # cSpell:ignore getDictResultset connstr adaptabrasil mgmt
@@ -35,8 +38,6 @@ class UITexts_Cache:
     global global_ui_texts_cache
     _LAST_UPDATE_KEY = "last_update"
     _CACHE_INTERNAL_INFO_KEY: cache_key = (" ", "mgmt_data", "key")
-
-
 
     ## TODO SAVE is Cache _CACHE_INTERNAL_INFO_KEY
     _cfg_cache_lifetime_min = int(current_app.config.get("APP_UI_DB_TEXTS_CACHE_LIFETIME_MIN", 0))

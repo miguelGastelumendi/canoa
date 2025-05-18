@@ -46,6 +46,7 @@ class UserSep:
     def __init__(
         self,
         id: int,
+        scm_name: str,
         fullname: str,
         description: str,
         visible: bool,
@@ -53,6 +54,7 @@ class UserSep:
         icon_url: Optional[str] = None,
     ):
         self.id = id
+        self.scm_name = scm_name
         self.fullname = fullname
         self.description = description
         self.visible = visible
@@ -60,11 +62,12 @@ class UserSep:
         self.icon_url = icon_url
 
     id: int
+    scm_name: str
     fullname: str
     description: str
     visible: bool
     icon_file_name: str
-    icon_url: Optional[str]  # expensive to 'calculate'
+    icon_url: Optional[str]  # expensive to 'calculate', so it is optional
 
 
 # eof

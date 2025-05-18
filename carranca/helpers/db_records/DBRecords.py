@@ -22,7 +22,20 @@ ListOfDBRecords: TypeAlias = List["DBRecord"]
 
 class DBRecords:
     """
-    A class that converts a SQLAlchemy query result into a list of DBRecord instances.
+    A class that converts a SQLAlchemy query result into a list of DBRecord instances,
+    standardized representation of database records
+        1. Determine the table/view name
+        2. Can filter by field names.
+            It allows to specify a list of field names to include in the
+            resulting DBRecord objects.
+        3. Can Filter by data types.
+            It enables to restrict the data types of the fields included.
+            Default is set of "simple types" and the option to include None values.
+            `simple_types_filter`
+        4. Handle different SQLAlchemy result formats.
+            It gracefully processes both SQLAlchemy Row objects
+            and potentially other types of objects by converting them to
+            a list of DBRecord objects
     """
 
     from .DBRecord_types import SQLAStatement, SQLABaseRecords
@@ -37,13 +50,17 @@ class DBRecords:
         allowed_field_types: Optional[Tuple[type, ...]] = None,
         includeNone: bool = True,
     ):
-        # Find the table Name
         self.records: ListOfDBRecords = []
-        if sqla_stmt.is_select:
+        self.table_name = ""
+        self.is_select = sqla_stmt.is_select
+
+        # Find the table Name
+        if self.is_select:
             froms = sqla_stmt.columns_clause_froms
             self.table_name = froms[0].name if len(froms) == 1 else ",".join([f.name for f in froms])
-        elif sqla_stmt.is_table:
-            self.table_name = sqla_stmt.name
+
+        if sqla_records is None:
+            return
 
         # Fields names filter required?
         self.allowed_field_names = (
@@ -58,10 +75,6 @@ class DBRecords:
 
         if includeNone:
             self.allowed_field_types += (type(None),)
-
-        self.records = []
-        if sqla_records is None:
-            return
 
         first_record = sqla_records[0]
         if isinstance(first_record, Row):
@@ -122,7 +135,7 @@ class DBRecords:
 
     @property
     def count(self) -> int:
-        return self.__len__()
+        return self.__len__(self)
 
     def append(self, record_dict: Dict[str, Any]) -> None:
         """Appends a new DBRecord object based on records list."""

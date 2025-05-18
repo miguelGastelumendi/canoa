@@ -144,11 +144,12 @@ def _prepare_user_seps() -> user_seps_rtn:
 
     global count
     count += 1
-    if count > 1:
-        raise Exception("Count!!")
+    # if count > 1:
+    #     raise Exception("Count!!")
 
     fields = [
         MgmtSepsUser.id.name,
+        MgmtSepsUser.scm_name.name,
         MgmtSepsUser.fullname.name,
         MgmtSepsUser.description.name,
         MgmtSepsUser.visible.name,
@@ -162,11 +163,13 @@ def _prepare_user_seps() -> user_seps_rtn:
     seps: list[user_sep_dict] = []
     for sep_row in sep_usr_rows:
         item = UserSep(**sep_row)
-        item.icon_url = do_icon_get_url(item.icon_file_name)
+        item.icon_url = do_icon_get_url(item.icon_file_name, item.id)
         dic = class_to_dict(item)  # as `g` only saves 'simple' classes convert it to a Dict
         seps.append(dic)
 
     count -= 1
+
+    print(count)
     return seps
 
 

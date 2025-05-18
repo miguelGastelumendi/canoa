@@ -13,33 +13,34 @@ mgd
 {% set dlg_var_icon_url= iconFileUrl %}
 {% extends "./layouts/form.html.j2" %}
 
-{# {% if not msgOnly %} #}
-{#--vv-- not msgOnly --- #}
-
+{# ╒═════════════════════ Inputs ═════════════════════════╕ #}
 {% block frm_blc_inputs %}
 
-{% if formForNew %}
-<!-- { Schema -->
-<div class="form-group">
-    <label class="form-label" inert for="{{ form.schema.id }}">{{ schemaLabel }}</label>
+<!-- { Schema: Select (new) | Input (edit) -->
+{% set schema_id= form.schema_list.id if formForNew else form.schema_name.id %}
+<div class="form-group mb-3">
+    <label class="form-label" inert for="{{ schema_id }}">{{ schemaLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fas fa-vector-square" aria-hidden="true"></i>
         </span>
-        {{ form.schema() }}
+        {% if formForNew %}
+        {{ form.schema_list() }}
+        {% else %}
+        {{ form.schema_name() }}
+        {% endif %}
     </div>
 </div>
 <!-- Schema } -->
-{% endif %}
 
 <!-- { Name -->
-<div class="form-group mt-3">
-    <label class="form-label" inert for="{{ form.name.id }}">{{ sepLabel }}</label>
+<div class="form-group">
+    <label class="form-label" inert for="{{ form.sep_name.id }}">{{ sepLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fas fa-id-badge" aria-hidden="true"></i>
         </span>
-        {{ form.name() }}
+        {{ form.sep_name() }}
     </div>
 </div>
 <!-- Name } -->
@@ -69,25 +70,28 @@ mgd
 <!-- Icon } -->
 
 {% endblock frm_blc_inputs %}
+{# ╘═════════════════════ Inputs ═════════════════════════╛ #}
 
-{% if formForNew and not msgOnly %}
+
+{# ╒══════════════ If: New & display -> JS ═══════════════╕ #}
 
 {% block dlg_blc_javascript %}
 
+{% if formForNew and form_bke_display_ui %}
 <script>
-    const select = document.getElementById('{{ form.schema.id }}');
+    const select = document.getElementById('{{ form.schema_list.id }}');
     const add_item = (id, text) => {
         const option = document.createElement('option');
-        option.value = id < 1 ? "" : id
+        option.value = id
         option.textContent = text;
         select.appendChild(option);
     }
-
-    ({{ schemaList | tojson | safe }}).forEach(sep => add_item(sep.id, sep.name));
+    ({{ schemaList | tojson | safe }}).forEach(schema => add_item(schema.id, schema.name));
+    select.value = '{{ schemaListValue }}';
 </script>
+{% endif %}
 
 {% endblock dlg_blc_javascript %}
 
-{% endif %}
-{#--^^-- not msgOnly --- #}
+{# ╘══════════════ If: New & display -> JS ═══════════════╛ #}
 {# eof #}

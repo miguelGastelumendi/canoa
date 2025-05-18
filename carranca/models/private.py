@@ -10,7 +10,19 @@ Equipe da Canoa -- 2024
 # cSpell:ignore: nullable sqlalchemy sessionmaker sep ssep scm sepsusr usrlist SQLA
 
 from typing import List, Optional, Tuple
-from sqlalchemy import Boolean, Column, Computed, DateTime, Integer, String, Text, select, and_
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Computed,
+    DateTime,
+    Integer,
+    String,
+    Text,
+    select,
+    func,
+    and_,
+    exists,
+)
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import defer, Session
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -23,7 +35,7 @@ from ..models.public import User
 from ..private.SepIconConfig import SepIconConfig, svg_content
 from ..common.app_context_vars import sidekick
 from ..helpers.db_helper import db_fetch_rows, db_ups_error
-from ..helpers.py_helper import is_str_none_or_empty, to_int
+from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_user_code
 from ..helpers.db_records.DBRecords import DBRecords
 
@@ -257,12 +269,12 @@ class MgmtSepsUser(SQLABaseTable):
 
         def _get_data(db_session: Session):
             def __cols() -> List[Column]:
-                all = MgmtSepsUser.__table__.columns
-                _cols = [col for col in all if col.name in field_names]
+                all_cols = MgmtSepsUser.__table__.columns
+                _cols = [col for col in all_cols if col.name in field_names]
                 return _cols
 
-            cols = __cols() if field_names else None
-            stmt = select(*cols) if cols else select(MgmtSepsUser)
+            sel_cols = __cols() if field_names else None
+            stmt = select(*sel_cols) if sel_cols else select(MgmtSepsUser)
             if user_id is not None:  # then filter
                 stmt = stmt.where(MgmtSepsUser.user_id == user_id)
                 usr_list: DBRecords = []  # and there is no users list
@@ -324,25 +336,27 @@ class SchemaSEP(SQLABaseTable):
     user_id = Column("user_id", Integer, primary_key=True)
     sep_fullname = Column(Text)
 
-    @staticmethod
-    def _get_sep_fullname(db_session: Session, sep_id: int) -> str:
+    # 2025.06.16
+    # not needed anymore
+    # @staticmethod
+    # def _get_sep_fullname(db_session: Session, sep_id: int) -> str:
 
-        stmt = select(SchemaSEP.sep_fullname).where(SchemaSEP.id == sep_id)
-        cell = db_session.execute(stmt).one_or_none()
-        sep_fullname = None if cell is None else cell
-        # AQUI
-        return sep_fullname
+    #     stmt = select(SchemaSEP.sep_fullname).where(SchemaSEP.id == sep_id)
+    #     cell = db_session.execute(stmt).one_or_none()
+    #     sep_fullname = None if cell is None else cell
+    #     # AQUI
+    #     return sep_fullname
 
-    @staticmethod
-    def get_sep_fullname(sep_id: int) -> str:
-        if to_int(sep_id, -1) == -1:
-            return ""
+    # @staticmethod
+    # def get_sep_fullname(sep_id: int) -> str:
+    #     if to_int(sep_id, -1) == -1:
+    #         return ""
 
-        e, msg_error, sep_fullname = db_fetch_rows(SchemaSEP._get_sep_fullname, sep_id)
-        if e:
-            db_ups_error(e, msg_error, Sep.__tablename__)
+    #     e, msg_error, sep_fullname = db_fetch_rows(SchemaSEP._get_sep_fullname, sep_id)
+    #     if e:
+    #         db_ups_error(e, msg_error, Sep.__tablename__)
 
-        return sep_fullname
+    #     return sep_fullname
 
 
 # --- Table ---
@@ -357,7 +371,10 @@ class Sep(SQLABaseTable):
     id = Column(Integer, primary_key=True, autoincrement=True)
     id_schema = Column(Integer)
     users_id = Column("mgmt_users_id", Integer)
+    ins_by = Column(Integer)
+    ins_at = Column(DateTime)
     name = Column(String(100), unique=True, nullable=False)
+    name_lower = Column(String(100), Computed(""), unique=True)
     description = Column(String(140), nullable=False)
     icon_file_name = Column(String(120), nullable=True)
     icon_uploaded_at = Column(DateTime, nullable=True)
@@ -366,7 +383,7 @@ class Sep(SQLABaseTable):
     icon_svg = Column(Text, nullable=True)
 
     @staticmethod
-    def get_sep(id: int, load_icon: Optional[bool] = False) -> Tuple["Sep", str]:
+    def get_sep(id: int, load_icon: Optional[bool] = False) -> "Sep":
         """
         Select a SEP by id, with deferred Icon content (useful for edition). It also
         returns the SEP's full name (schema +\+ SEP) from the view `vw_scm_sep`.
@@ -377,26 +394,22 @@ class Sep(SQLABaseTable):
             using quotes around a type in type hints is known as a forward reference.
         """
         if id is None:
-            return None, None
+            return None
 
-        def _get_data(db_session: Session) -> Tuple[Optional[Sep], Optional[str]]:
+        def _get_data(db_session: Session) -> Sep:
             stmt = select(Sep).options(defer(Sep.icon_svg)).where(Sep.id == id)
             sep_row = db_session.execute(stmt).scalar_one_or_none()
 
-            if sep_row:  # then get fullname
-                sep_fullname = SchemaSEP._get_sep_fullname(db_session, sep_row.id)
-                if load_icon:
-                    db_session.refresh(sep_row, attribute_names=[Sep.icon_svg.name])
-            else:
-                sep_fullname = ""
+            if sep_row and load_icon:
+                db_session.refresh(sep_row, attribute_names=[Sep.icon_svg.name])
 
-            return sep_row, sep_fullname
+            return sep_row
 
-        e, msg_error, [sep_row, sep_fullname] = db_fetch_rows(_get_data, 2)
+        e, msg_error, sep_row = db_fetch_rows(_get_data)
         if e:
             db_ups_error(e, msg_error, Sep.__tablename__)
 
-        return sep_row, sep_fullname
+        return sep_row
 
     @staticmethod
     def get_content(id: int) -> Optional[svg_content]:
@@ -441,20 +454,18 @@ class Sep(SQLABaseTable):
         return done
 
     @staticmethod
-    def new_sep() -> "Sep":
-        """
-        Creates a new a Sep record
-        """
-        sep_new = Sep(
-            id=0,
-            id_schema=None,
-            name="",
-            description="",
-            icon_file_name="",
-            icon_svg=None,
-        )
+    def this_name_exists(sep_name: str) -> bool:
 
-        return sep_new
+        def _get_data(db_session: Session) -> svg_content:
+            stmt = select(Sep.name_lower).where(Sep.name_lower == func.lower(sep_name))
+            name_exists = db_session.query(exists(stmt)).scalar()
+            return name_exists
+
+        e, msg_error, name_exists = db_fetch_rows(_get_data)
+        if e:
+            db_ups_error(e, msg_error, Sep.__tablename__)
+
+        return name_exists
 
 
 # --- Table ---

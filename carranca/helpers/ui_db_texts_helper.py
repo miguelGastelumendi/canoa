@@ -50,16 +50,17 @@ class UITextsKeys:
     class Form:  # & dialog
         title = "formTitle"
         icon_url = "iconFileUrl"  # url of an png/svg icon dlg_var_icon_url = iconFileUrl, dlg-var-icon-id
-        date_format = "user_date_format"
-        # display only message, no form, inputs/buttons (see .carranca\templates\layouts\form.html.j2)
+        date_format = "userDateFormat"
+        # This button is only visible when msg_only is True OR is a Dialog/Document (see document.html.j2)
+        btn_close = "btnCloseForm"
+        # display only message, no form, inputs/buttons (see .carranca\templates\layouts\form.html.j2 & dialog.html.j2)
         msg_only = "msgOnly"
-        btn_close = "btnCloseForm"  # This button is only visible when msg_only is True
 
     class Fatal:
         no_db_conn = "NoDBConnection"
-        code = "ups_error_code"
-        where = "ups_offending_def"
-        http_code = "ups_http_code"
+        code = "UpsErrorCode"
+        where = "UpsOffendingDef"
+        http_code = "UpsHttpCode"
 
     class Section:
         """See table ui_sections.nameThis two sections are special (id=1 & id=2):
@@ -184,7 +185,7 @@ def _msg_not_found() -> str:  ## THIS IS OUTDATED ##
 
 
 def _add_msg(item: str, section: str, name: str, texts: Optional[ui_db_texts] = None, *args) -> str:
-    """Retrieves text and optionally adds it to a dictionary.
+    """Retrieves text and adds it to a dictionary.
 
     Args:
         item: The item identifier.
@@ -283,6 +284,14 @@ def get_form_texts(section_name: str) -> ui_db_texts:
         items[UITextsKeys.Form.date_format] = ui_texts_locale()
 
     return items
+
+
+def add_msg_warning(item: str, texts: ui_db_texts = {}, *args) -> str:
+    """
+    returns text for the [item/'sec_Error'] pair
+    and adds pair to texts => texts.add( text, 'msgError')
+    """
+    return _add_msg(item, UITextsKeys.Section.error, UITextsKeys.Msg.error, texts, *args)
 
 
 def add_msg_error(item: str, texts: ui_db_texts = {}, *args) -> str:

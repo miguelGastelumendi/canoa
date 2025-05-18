@@ -138,5 +138,11 @@ class BaseConfig(Config):
     LOG_FILE_NAME: str = None  # defaults to APP_NAME.datetime.log
     LOG_FILE_STATUS = "?"  # internal set
 
+    """ Database constant
+        --------------------------
+    """
+    # see canoa.vw_scm_sep
+    SCM_SEP_SEPARATOR = "/"
+
 
 # eof
