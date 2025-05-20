@@ -47,8 +47,7 @@ def _do_sep_placeholderOption(fullname: str) -> UserSep:
     from .sep_icon import do_icon_get_url
     from .SepIconConfig import SepIconConfig
 
-    sep_fake = UserSep(0, fullname, "", False, SepIconConfig.none_file)
-    sep_fake.icon_url = do_icon_get_url("")  # empty
+    sep_fake = UserSep(0, "", fullname, "", False, SepIconConfig.none_file, do_icon_get_url(""))  # empty
     return sep_fake
 
 

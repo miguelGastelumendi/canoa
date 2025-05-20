@@ -44,7 +44,6 @@ def do_sep_edit(code: str) -> str:
     IconData = namedtuple("IconData", ["content", "file_name", "ready", "crc", "error_code"])
 
     ICON_MIN_SIZE = 267
-    sep_sep = sidekick.config.SCM_SEP_SEPARATOR
     new_sep_code = "add"
     new_sep_id = 0
     is_new = code == new_sep_code
@@ -58,13 +57,13 @@ def do_sep_edit(code: str) -> str:
     sep_fullname = f"SPC&#8209;{code}"  # &#8209 is a `nobreak-hyphen`, &hyphen does not work.
     try:
 
-        def _file_sent() -> Tuple[bool, str]:
+        def _icon_file_sent() -> Tuple[bool, FileStorage | None]:
             file_input_name = tmpl_form.icon_filename.name
             file_storage: FileStorage = (
                 request.files[file_input_name] if file_input_name in request.files else None
             )
-            file_sent = file_storage is not None and file_storage.content_length > ICON_MIN_SIZE
-            return file_sent, file_storage
+            icon_file_sent = file_storage is not None and file_storage.content_length > ICON_MIN_SIZE
+            return icon_file_sent, file_storage
 
         def _get_sep_data(load_sep_content: bool, task_code: int) -> Tuple[UserSep, Sep, int, str]:
             if is_edit:
@@ -115,24 +114,28 @@ def do_sep_edit(code: str) -> str:
             return usr_sep, sep_row, task_code, sep_user_row.fullname
 
         def _form_modified(is_new: bool, sep_row: Sep) -> bool:
-            sep_name = get_input_text(tmpl_form.sep_name.name, [sep_sep])
-            description = get_input_text(tmpl_form.description.name)
+            # remove schema/sep separator sep+sep
+            inp_description = get_input_text(tmpl_form.description.name)
+            inp_sep_name = get_input_text(tmpl_form.sep_name.name, [Sep.scm_sep])
 
             if is_new:
-                same_form = False
-            else:
-                file_sent, _ = _file_sent()
-                same_form = (
-                    (sep_name == sep_row.name) and (description == sep_row.description) and not file_sent
+                id = tmpl_form.schema_list.value
+                form_modified = id or inp_description or inp_sep_name or _icon_file_sent()[0]
+            else:  # is_edit and maybe user cannot modified sep_name
+                sep_name = sep_row.name if inp_sep_name is None else inp_sep_name
+                tmpl_form.sep_name.data = sep_name
+                form_modified = (
+                    (sep_name != sep_row.name)
+                    or (inp_description != sep_row.description)
+                    or _icon_file_sent()[0]  # keep it last test
                 )
 
-            # remove spaces & '/' (sep_sep)  so the user see its modified values
-            tmpl_form.sep_name.data = sep_name
-            tmpl_form.description.data = description
-            return not same_form
+            # remove spaces & '/' (scm_sep) so the user see its modified values (see get_input_text)
+            tmpl_form.description.data = inp_description
+            return form_modified
 
         def _get_icon_data(is_edit: bool, sep_row: Sep) -> IconData:
-            file_sent, file_storage = _file_sent()
+            file_sent, file_storage = _icon_file_sent()
             icon_data = IconData(content="", file_name="", crc=0, ready=False, error_code=0)
 
             if not file_sent:
@@ -144,7 +147,7 @@ def do_sep_edit(code: str) -> str:
             elif file_storage.content_type.find("svg") < 0:
                 icon_data.error_code = 3
             # fmt: off
-            elif not ((data:= file_obj.read().decode("utf-8")) and len(data:= data.strip()) > ICON_MIN_SIZE):
+            elif not ((data:= file_obj.read().decode("utf-8")) and len(data:= data.strip()) < ICON_MIN_SIZE):
                 icon_data.error_code = 4
             elif (start := data.find("<svg>")) < 0 or (end := data.find("</svg>")) < 0 or (end - start) < ICON_MIN_SIZE:
                 # fmt: on
@@ -162,9 +165,20 @@ def do_sep_edit(code: str) -> str:
         template, is_get, ui_texts = get_private_form_data("sepNewEdit")
         ui_texts["formForNew"] = is_new
         ui_texts["formTitle"] = ui_texts[f"formTitle{('Edit' if is_edit else 'New')}"]
-        ui_texts["schemaLabel"] = ui_texts[("schemaLabel" if is_edit else "schemasLabel")]
+        AQUI
+        ui_texts["schemaLabel"] = ui_texts[
+            ("schemasLabel" if is_new and app_user.is_power else "schemaLabel")
+        ]
         task_code += 1  # 2
-        tmpl_form = SepEdit(request.form) if is_edit else SepNew(request.form)
+        tmpl_form = SepNew(request.form) if is_new else SepEdit(request.form)
+        # Personalized template for this user:
+         AQUI
+        input_disabled = not app_user.is_power
+        tmpl_form.sep_name.render_kw["required"] = not input_disabled
+        tmpl_form.sep_name.render_kw["disabled"] = input_disabled
+        tmpl_form.schema_name.render_kw["disabled"] = input_disabled
+        tmpl_form.sep_name.render_kw["lang"] = app_user.lang
+        tmpl_form.description.render_kw["lang"] = app_user.lang
 
         task_code += 1  # 3
         usr_sep, sep_row, task_code, sep_fullname = _get_sep_data(not is_get, task_code)
@@ -191,10 +205,10 @@ def do_sep_edit(code: str) -> str:
                 )
                 sep_row.name = sep_name
                 sep_row.id = None
-                # get sep_fullname in case of error
                 scm_list = ui_texts["schemaList"]
                 scm_name = next((scms["name"] for scms in scm_list if scms["id"] == sep_row.id_schema), "?")
-                sep_fullname = f"{scm_name}{sep_sep}{sep_row.name}"
+                sep_fullname = Sep.get_fullname(scm_name, sep_row.name)
+                # get sep_fullname in case of error
 
             if new_icon := icon_data.ready:
                 task_code += 2
@@ -206,7 +220,7 @@ def do_sep_edit(code: str) -> str:
                 sep_row.icon_version = iv + 1 if to_int(iv, 0) > 0 else 1
                 ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.get_icon_url(sep_row.icon_file_name)
 
-            if not Sep.set_sep(sep_row):
+            if not Sep.save(sep_row):
                 task_code += 3  # 18
                 item = f"sepFailed{'Edit' if is_edit else 'New'}"
                 add_msg_fatal(item, ui_texts, sep_fullname, task_code)

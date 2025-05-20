@@ -100,8 +100,8 @@ def is_method_get() -> bool:
 
 def get_input_text(name: str, not_allowed: Optional[str] = "") -> str:
     text = request.form.get(name)
-    # 2025.05.13 return to_str(text)
-    return clean_text(text, not_allowed)
+    # 2025.05.13 return clean_text(text)
+    return None if text is None else clean_text(text, not_allowed)
 
 
 def get_template_name(tmplt: str, folder: str) -> template_file_full_name:

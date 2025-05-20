@@ -322,41 +322,41 @@ class MgmtEmailSep(SQLABaseTable):
     email_error = Column(String(400))
 
 
-# --- Table ---
-class SchemaSEP(SQLABaseTable):
-    """
-    Auxiliary View
-    SchemaSEP is app's interface for the
-    DB view `vw_scm_sep` that provides a couple of
-    columns
-    """
+# # --- Table ---
+# class SchemaSEP(SQLABaseTable):
+#     """
+#     Auxiliary View
+#     SchemaSEP is app's interface for the
+#     DB view `vw_scm_sep` that provides a couple of
+#     columns
+#     """
 
-    __tablename__ = "vw_scm_sep"
-    id = Column("sep_id", Integer, primary_key=True)
-    user_id = Column("user_id", Integer, primary_key=True)
-    sep_fullname = Column(Text)
+#     __tablename__ = "vw_scm_sep"
+#     id = Column("sep_id", Integer, primary_key=True)
+#     user_id = Column("user_id", Integer, primary_key=True)
+#     sep_fullname = Column(Text)
 
-    # 2025.06.16
-    # not needed anymore
-    # @staticmethod
-    # def _get_sep_fullname(db_session: Session, sep_id: int) -> str:
+#     # 2025.06.16
+#     # not needed anymore
+#     # @staticmethod
+#     # def _get_sep_fullname(db_session: Session, sep_id: int) -> str:
 
-    #     stmt = select(SchemaSEP.sep_fullname).where(SchemaSEP.id == sep_id)
-    #     cell = db_session.execute(stmt).one_or_none()
-    #     sep_fullname = None if cell is None else cell
-    #     # AQUI
-    #     return sep_fullname
+#     #     stmt = select(SchemaSEP.sep_fullname).where(SchemaSEP.id == sep_id)
+#     #     cell = db_session.execute(stmt).one_or_none()
+#     #     sep_fullname = None if cell is None else cell
+#     #     # AQUI
+#     #     return sep_fullname
 
-    # @staticmethod
-    # def get_sep_fullname(sep_id: int) -> str:
-    #     if to_int(sep_id, -1) == -1:
-    #         return ""
+#     # @staticmethod
+#     # def get_sep_fullname(sep_id: int) -> str:
+#     #     if to_int(sep_id, -1) == -1:
+#     #         return ""
 
-    #     e, msg_error, sep_fullname = db_fetch_rows(SchemaSEP._get_sep_fullname, sep_id)
-    #     if e:
-    #         db_ups_error(e, msg_error, Sep.__tablename__)
+#     #     e, msg_error, sep_fullname = db_fetch_rows(SchemaSEP._get_sep_fullname, sep_id)
+#     #     if e:
+#     #         db_ups_error(e, msg_error, Sep.__tablename__)
 
-    #     return sep_fullname
+#     #     return sep_fullname
 
 
 # --- Table ---
@@ -381,6 +381,13 @@ class Sep(SQLABaseTable):
     icon_version = Column(Integer, nullable=False)
     icon_original_name = Column(String(120), nullable=True)
     icon_svg = Column(Text, nullable=True)
+
+    # const
+    scm_sep = sidekick.config.SCM_SEP_SEPARATOR
+
+    @staticmethod
+    def get_fullname(scm_name: str, sep_name: str) -> str:
+        return f"{scm_name}{Sep.scm_sep}{sep_name}"
 
     @staticmethod
     def get_sep(id: int, load_icon: Optional[bool] = False) -> "Sep":
@@ -435,7 +442,7 @@ class Sep(SQLABaseTable):
         return icon_content, msg_error
 
     @staticmethod
-    def set_sep(sep_row: "Sep") -> bool:
+    def save(sep_row: "Sep") -> bool:
         """
         Saves a Sep record
         """

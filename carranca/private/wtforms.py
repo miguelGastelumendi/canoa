@@ -6,7 +6,7 @@ Equipe da Canoa -- 2024
 mgd 2024-04-09,27; 06-22
 """
 
-# cSpell:ignore: wtforms urlname iconfilename uploadfile
+# cSpell:ignore: wtforms urlname iconfilename uploadfile tmpl
 
 from wtforms import PasswordField, FileField, StringField, SelectField
 from flask_wtf import FlaskForm
@@ -51,49 +51,50 @@ class ChangePassword(FlaskForm):
 
 # Private form
 class SepEdit(FlaskForm):
+    """
+    ------------------------------------------------------------
+       /!\
+        Don't defined here mutable render_kw, they persist
+        set value to those that will not change throw tha app
+        see:
+            carranca\private\sep_new_edit.py
+                tmpl_form = SepNew(request.form) if is_new
+                            else SepEdit(request.form)
+    ------------------------------------------------------------
+        like:
+          lang, disabled, readonly, required
+    """
+
     schema_list = SelectField("", validators=[DataRequired()], render_kw={"class": "form-select"})
+
     schema_name = StringField(
         "",
         validators=[Length(min=5, max=140)],  # TODO sidekick.config.DB_len_val_for_sep
-        render_kw={
-            "class": "form-control",
-            "required": False,
-            "disabled": True,
-            "autocomplete": "off",
-        },
+        render_kw={"class": "form-control", "autocomplete": "off"},
     )
+
     sep_name = StringField(
         "",
         validators=[Length(min=5, max=140)],  # TODO sidekick.config.DB_len_val_for_sep
-        render_kw={
-            "class": "form-control",
-            "required": False,
-            "disabled": True,
-            "autocomplete": "off",
-            "spellcheck": "true",
-            "lang": f"{app_user.lang}",
-        },
+        render_kw={"class": "form-control", "autocomplete": "off", "spellcheck": "true", "lang": ""},
     )
     description = StringField(
         "",
         validators=[InputRequired(), Length(min=5, max=140)],
         render_kw={
             "class": "form-control",
-            "id": "description",
             "autocomplete": "off",
             "spellcheck": "true",
-            "lang": f"{app_user.lang}",
+            "lang": "",  # /!\ Don't defined here, they persist. See below SepNew
         },
     )
     icon_filename = FileField("", render_kw={"class": "form-control", "accept": ".svg"})
 
 
 class SepNew(SepEdit):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.sep_name.render_kw["required"] = True
-        self.sep_name.render_kw["disabled"] = False
+
         self.schema_list.validators.append(InputRequired())
 
 

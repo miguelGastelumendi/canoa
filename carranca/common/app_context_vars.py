@@ -144,8 +144,8 @@ def _prepare_user_seps() -> user_seps_rtn:
 
     global count
     count += 1
-    # if count > 1:
-    #     raise Exception("Count!!")
+    if count > 1:
+        print(f"Count: {count}  !!")
 
     fields = [
         MgmtSepsUser.id.name,
@@ -168,8 +168,6 @@ def _prepare_user_seps() -> user_seps_rtn:
         seps.append(dic)
 
     count -= 1
-
-    print(count)
     return seps
 
 

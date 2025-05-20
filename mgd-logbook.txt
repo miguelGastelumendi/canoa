@@ -60,6 +60,13 @@
 -----------------------------------------------------------
 ------- 2025 - March -------------
 ----------------------------------
+
+2025-05-16,18,9 β 4.13
+    - sep_new_edit.py:
+      Resolved wtForms mutable render_kw
+
+
+wtForms mutável render_kw resolvido
 2025-05-12--15 β 4.12 pre
     - sep_new_edit.py ready for tests
 
