@@ -19,7 +19,7 @@ mgd
 <!-- { Schema: Select (new) | Input (edit) -->
 {% set schema_id= form.schema_list.id if formForNew else form.schema_name.id %}
 <div class="form-group mb-3">
-    <label class="form-label" inert for="{{ schema_id }}">{{ schemaLabel }}</label>
+    <label class="form-label" inert for="{{ schema_id }}">{{ schemasLabel if formForNew else schemaLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fas fa-vector-square" aria-hidden="true"></i>

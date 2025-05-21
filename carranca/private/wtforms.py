@@ -22,7 +22,7 @@ from ..common.app_context_vars import sidekick, app_user
 #  Keep "name" and "id" the same string
 #  or don't specified "id"
 #
-#  Because {{ schema_sep.id }} will rendered the name
+#  Because {{ schema_sep.id }} will render the name
 #  But {{ schema_sep.render_kw.id }} will write the id.
 # ________________________________________________________
 
@@ -65,12 +65,10 @@ class SepEdit(FlaskForm):
           lang, disabled, readonly, required
     """
 
-    schema_list = SelectField("", validators=[DataRequired()], render_kw={"class": "form-select"})
-
     schema_name = StringField(
         "",
         validators=[Length(min=5, max=140)],  # TODO sidekick.config.DB_len_val_for_sep
-        render_kw={"class": "form-control", "autocomplete": "off"},
+        render_kw={"class": "form-control", "disabled": True},  # always disabled
     )
 
     sep_name = StringField(
@@ -78,6 +76,7 @@ class SepEdit(FlaskForm):
         validators=[Length(min=5, max=140)],  # TODO sidekick.config.DB_len_val_for_sep
         render_kw={"class": "form-control", "autocomplete": "off", "spellcheck": "true", "lang": ""},
     )
+
     description = StringField(
         "",
         validators=[InputRequired(), Length(min=5, max=140)],
@@ -92,6 +91,10 @@ class SepEdit(FlaskForm):
 
 
 class SepNew(SepEdit):
+    schema_list = SelectField(
+        "", validators=[DataRequired()], coerce=int, render_kw={"class": "form-select"}
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

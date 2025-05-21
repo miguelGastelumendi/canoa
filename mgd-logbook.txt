@@ -61,12 +61,14 @@
 ------- 2025 - March -------------
 ----------------------------------
 
-2025-05-16,18,9 β 4.13
+2025-05-20--21 β 4.14
+    - sep_new_edit.py ready, edit + insert SEPs
+    - TODO: Admin: edit any Sep
+
+2025-05-16,18,19 β 4.13
     - sep_new_edit.py:
       Resolved wtForms mutable render_kw
 
-
-wtForms mutável render_kw resolvido
 2025-05-12--15 β 4.12 pre
     - sep_new_edit.py ready for tests
 
@@ -78,7 +80,6 @@ wtForms mutável render_kw resolvido
     - Don't create submenus when not needed
       (so app_user.seps are not created)
 
-
 2025-05-08--09 β 4.10 issue: #38 + fix
     - Fix seps_mgmt module (seps_grid.py broke)
 
@@ -86,7 +87,6 @@ wtForms mutável render_kw resolvido
     - issue #34 ready
     - issue #39 ready
     - Edit a user's strategic sectors (see menu):
-
 
 2025-05-02,03,05,06 β 4.08 issue #36 Ok, #34
     - issue #36 ready
@@ -103,7 +103,6 @@ wtForms mutável render_kw resolvido
        new columns: sep.mgmt_users_id, sep.mgmt_ ...
        removed columns: users.mgmt_seep_id, users.mgmt_...
     3. app_user -> jinja_user, logged_user -> app_user
-
 
 2025-04-14--17 β 4.05 issue #34 Part 2/4
     2 Novo Grid, refactor sep_mgmt (db v)

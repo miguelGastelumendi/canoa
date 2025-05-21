@@ -56,7 +56,7 @@ def now_as_iso() -> str:
 
 
 def as_str_strip(s: str) -> str:
-    return (str(s) + "").strip()
+    return "" if s is None else (str(s) + "").strip()
 
 
 def quote(s: str, always: Optional[bool] = True) -> str:
@@ -148,21 +148,26 @@ def to_str(s: str) -> str:
     return "" if is_str_none_or_empty(s) else as_str_strip(s)
 
 
-# initialize special attributes
 def as_bool(val: Any, val_if_none: Optional[bool] = False) -> bool:
+    # initialize special attributes
     # fmt: off
     return (val_if_none if val is None else str(val).lower() in ["1", "t", str(True).lower(),])
     # fmt: on
 
 
 def clean_text(name: str, not_allowed: Optional[str] = ""):
-    check_1 = as_str_strip(name)
+    # - Strip leading and trailing whitespace
+    # - Remove not_allowed chars (optional)
+    # - Exclude all chars < 32
+    # - Leave only one space between words
+
+    check_0 = as_str_strip(name)
+    exclude = as_str_strip(not_allowed)
+    # Remove not_allowed
+    check_1 = "".join(c for c in check_0 if c not in exclude)
     check_2 = "".join(c for c in check_1 if ord(c) >= 32)  # Remove any char < 32
     check_3 = " ".join(check_2.split())  # Remove extra spaces (left, right, and more than 2 consecutive)
-    exclude = str(not_allowed) + ""
-    # rem = as_str_strip(not_allowed) + ' ' if not_allowed.has
-    check_4 = "".join(c for c in check_3 if c not in exclude)  # Remove all chars from not_allowed
-    return check_4
+    return check_3
 
 
 def strip_and_ignore_empty(s: str, sep: Optional[str] = ",", max_split: Optional[int] = -1) -> list[str]:
