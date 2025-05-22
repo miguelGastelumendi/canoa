@@ -27,14 +27,17 @@ window.addEventListener('beforeunload', (event) => {
 //-------------
 // == Basic Grid
 const gridOptions = {
+    rowSelection: 'single',
+    onGridReady: (params) => {
+        const api = params.api
+        const firstRowNode = api.getDisplayedRowAtIndex(0);
+        if (firstRowNode) { setTimeout(() => { firstRowNode.setSelected(true); }, 20); }
+        setTimeout(() => { api.setFocusedCell(0, colUserNew); }, 40);
+    },
     onCellFocused: (event) => {
         activeRow = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex);
         if (activeRow && (icon.src != activeRow.data[colIconUrl]))
             icon.src = activeRow.data[colIconUrl];
-    },
-    onGridReady: (params) => {
-        const col_0 = params.api.getAllDisplayedColumns()[0];
-        params.api.setFocusedCell(0, col_0.getColId());
     }
     , rowData: gridRows
     , columnDefs: [

@@ -101,16 +101,43 @@ body {
 }
 
 
+/* =+===========================================
+ *  ag-grid override
+ *  see
+ * carranca\templates\includes\grid-body.html.j2
+ *
+ * 2025-05-21
+ * by ChatPGT
+ * ============================================ */
+/* Focus: */
+/* .ag-theme-quartz.ag-has-focus .ag-row.ag-row-selected {
+    background-color: #971556;
+} */
+
+/*A. Selected row when grid does *not* have focus
+/* .ag-theme-quartz :not(.ag-has-focus) .ag-row.ag-row-selected {
+    background-color: color-mix(in srgb, var(--ag-selected-row-background-color) 10%, red 90%) !important;
+} */
+
+
+/* B. Selected row when grid have focus* */
+.ag-theme-quartz .ag-has-focus .ag-row.ag-row-selected {
+    background-color: var(--ag-selected-row-background-color);
+}
+
+.ag-cell-focus {
+    border: 0 !important;
+}
+
+/* Make it soft */
+.ag-row {
+    transition: background-color 0.2s ease;
+}
+
 /* ============================================
  *  carranca\templates\layouts\grid.html.j2
  * ============================================ */
-/* .grid-col-sep_new {
-    background: inherit;
-}
 
-.grid-item-exist {
-    background: coral;
-} */
 
 /* if changed, see SepIconConfig.error_content() */
 .grid-item-remove {
@@ -124,6 +151,11 @@ body {
 
 .grid-item-changed {
     color: limegreen;
+}
+
+.ag-cell-focus.ag-cell-not-inline-editing.grd-col-sep_new {
+    border: 1px solid var(--ag-range-selection-border-color) !important;
+    /* initial  */
 }
 
 /* ============================================

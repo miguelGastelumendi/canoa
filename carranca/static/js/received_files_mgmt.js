@@ -24,7 +24,11 @@ window.addEventListener('beforeunload', (event) => {
 //-------------
 // == Basic Grid
 const gridOptions = {
-    onFirstDataRendered: () => {
+    rowSelection: 'single',
+    onGridReady: (params) => {
+        const api = params.api
+        const firstRowNode = api.getDisplayedRowAtIndex(0);
+        if (firstRowNode) { setTimeout(() => { firstRowNode.setSelected(true); }, 20); }
     },
     onCellFocused: (event) => {
         activeRow = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex);

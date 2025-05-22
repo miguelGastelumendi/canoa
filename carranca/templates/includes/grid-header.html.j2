@@ -7,15 +7,10 @@ mgd
 --------------------------------------- #}
 
 {#
-{% block base_blc_head_js %}
-
 Jinja does not process {% block %} definitions inside an included file.
 To ensure blocks are properly expanded, define them in the main template
 and place {% include %} inside the block."
-
 #}
 <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
-
-{# {% endblock base_blc_head_js %} #}
 
 {# eof #}

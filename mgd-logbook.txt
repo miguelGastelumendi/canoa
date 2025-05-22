@@ -60,8 +60,12 @@
 -----------------------------------------------------------
 ------- 2025 - March -------------
 ----------------------------------
+2025-05-21 β 4.15 UI improvements in the two grids
+    - Deploy v β 4.14
+    - The first row of the grid is selected at the start.
+    - The grid selection row retains the selection color if it loses focus.
 
-2025-05-20--21 β 4.14
+2025-05-20--21 β 4.14  = Published
     - sep_new_edit.py ready, edit + insert SEPs
     - TODO: Admin: edit any Sep
 
