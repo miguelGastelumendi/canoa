@@ -28,9 +28,6 @@ from ..common.app_error_assistant import AppStumbled, ModuleErrorCode, RaiseIf
 from .. import global_ui_texts_cache
 
 # === Global 'constants' form HTML ui ========================
-#  For more info, see table ui_items.name
-#  from ui_texts is loaded ( init_form_vars() )
-
 cache_key: TypeAlias = Tuple[str, str, Optional[str]]
 
 

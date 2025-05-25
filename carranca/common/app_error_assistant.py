@@ -84,9 +84,10 @@ class ModuleErrorCode(IntEnum):
 
     SEP_EDIT = 500
     SEP_MGMT = 550
-    DB_FETCH_ROWS = 560  # only
+    SEP_CRUD = 600
+    DB_FETCH_ROWS = 590  # only on
 
-    RECEIVED_FILES_MGMT = 600
+    RECEIVED_FILES_MGMT = 700
 
 
 class RaiseIf:
@@ -95,7 +96,6 @@ class RaiseIf:
     """
 
     ignite_no_sql_conn = True
-    no_ui_texts = True
 
 
 # eof

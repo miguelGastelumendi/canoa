@@ -48,12 +48,15 @@ class SepIconConfig:
             "</svg>"
         )
 
+    @property
     def empty_content() -> svg_content:
         return SepIconConfig.content_for("white", "", 1, "0.1", "0.1")
 
+    @property
     def error_content() -> svg_content:
         return SepIconConfig.content_for("firebrick", "Erro")
 
+    @property
     def none_content() -> svg_content:
         return SepIconConfig.content_for("darkgrey", "Falta", stroke_opacity="0.45")
 

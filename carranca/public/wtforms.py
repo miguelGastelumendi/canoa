@@ -30,7 +30,7 @@ class LoginForm(FlaskForm):
     username = StringField(
         "",
         validators=[InputRequired(), Length(**max_name.wtf_val())],
-        render_kw={"class": "form-control"},
+        render_kw={"class": "form-control", "autofocus": "true"},
     )
     password = PasswordField(
         "",
@@ -47,7 +47,7 @@ class RegisterForm(FlaskForm):
     username = StringField(
         "",
         validators=[InputRequired(), Length(**max_name.wtf_val())],
-        render_kw={"class": "form-control"},
+        render_kw={"class": "form-control", "autofocus": "true"},
     )
     email = StringField(
         "",
@@ -65,7 +65,11 @@ class RegisterForm(FlaskForm):
 
 
 class PasswordRecoveryForm(FlaskForm):
-    user_email = StringField("", validators=[InputRequired(), Email()])
+    user_email = StringField(
+        "",
+        validators=[InputRequired(), Email()],
+        render_kw={"class": "form-control", "autofocus": "true"},
+    )
 
 
 # eof

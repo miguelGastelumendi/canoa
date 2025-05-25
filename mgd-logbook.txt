@@ -13,6 +13,10 @@
 ----------------------------------
     sidekick:
         » log to file
+
+    security:
+        » real secKeyViolation for forms
+
     db:
         » user_data_files
             - set elapsed time, no datetime
@@ -60,6 +64,13 @@
 -----------------------------------------------------------
 ------- 2025 - March -------------
 ----------------------------------
+2025-05-22--24 β 4.16 New Grid for SEP Admin (part 1/2)
+    - Fix a problem with Windows server Remote Desktop
+    - Fix a bug en warn message stuck in the form
+      (see msg @pedro 23/05/2025)
+    - New grid "Administration of SEPS"
+
+
 2025-05-21 β 4.15 UI improvements in the two grids
     - Deploy v β 4.14
     - The first row of the grid is selected at the start.

@@ -69,28 +69,32 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_us
                     </a>
                     {% if nav_sub_menu %}
                     <ul class="dropdown-menu">
-                        {# ╒════════ admin sep menu ═══════╕ #}
                         {% if j_user.power %}
+                        {# ╒════════ admin sep menu ═══════╕ #}
                         <li>
                             <a class="dropdown-item" href="{{ private_route('sep_mgmt') }}"
                                 title="Abre o grid de Gest&atilde;o de Setores Estrat&eacute;gicos">
                                 Gest&atilde;o
                             </a>
                         </li>
-                        <li> <a class="dropdown-item" href="{{ private_route('sep_edit', code='add') }}">Novo</a> </li>
-                        <li class="dropdown-item disabled menu-item-disable-link-color" aria-disabled="true">
-                            Edi&ccedil;&atilde;o:
+                        <li>
+                            <a class="dropdown-item" href="{{ private_route('sep_crud') }}">Administração</a>
                         </li>
-                        {% endif %}
+                        <li>
+                            <a class="dropdown-item" href="{{ private_route('sep_edit', code='add') }}">Novo</a>
+                        </li>
                         {# ╘════════ admin sep menu ═══════╛ #}
-                        {# ╒════════ user sep menu ════════╕ #}
+                        {% else %}
+                        {# ╒═════ user with seps menu ═════╕ #}
                         {% for sep in sep_menu %}
                         <li>
                             <a class="dropdown-item"
-                                href="{{ private_route('sep_edit', code=sep.code) }}">{{sep_indent}}{{sep.name}}</a>
+                                href="{{ private_route('sep_edit', code=sep.code) }}">{{sep_indent}}{{sep.name}}
+                            </a>
                         </li>
                         {% endfor %}
                         {# ╘════════ user sep menu ════════╛ #}
+                        {% endif %}
                     </ul>
                     {% endif %}
                 </li>

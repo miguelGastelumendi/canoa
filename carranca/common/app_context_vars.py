@@ -143,7 +143,6 @@ def _prepare_user_seps() -> user_seps_rtn:
     user_id: int = current_user.id if is_someone_logged() else -1
 
     global count
-    count += 1
     if count > 1:
         print(f"Count: {count}  !!")
 
@@ -156,7 +155,7 @@ def _prepare_user_seps() -> user_seps_rtn:
         MgmtSepsUser.icon_file_name.name,
     ]
     try:
-        sep_usr_rows, _ = MgmtSepsUser.get_sepsusr_and_usrlist(user_id, fields)
+        sep_usr_rows = MgmtSepsUser.get_seps_usr(fields, user_id)
     except Exception as e:
         return str(e)
 
@@ -177,7 +176,7 @@ def _get_user_seps() -> user_seps_rtn:
     if app_user == None:
         result: error_message = "No current user to retrieve SEP data."
     else:  # convert simple dict to UserSep again
-        DEBUG_USER_SEPS = True
+        DEBUG_USER_SEPS = False
         list_dic = (
             _prepare_user_seps() if DEBUG_USER_SEPS else _get_scoped_var("_user_seps", _prepare_user_seps)
         )

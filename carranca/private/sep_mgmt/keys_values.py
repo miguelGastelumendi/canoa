@@ -11,9 +11,9 @@ from ...models.private import MgmtSepsUser
 
 
 class SepMgmtGridCols:
-    # This class defines the columns that are sent to and used in `sp_mgmt``.
+    # This class defines the columns that are sent to and used in `sep_mgmt``.
     sep_id = MgmtSepsUser.id.name  # Column 0  - hidden
-    # computed col from icon_file_name, see private\seps_mgmt\seps_grid.py._sep_data_fetch
+    # computed col from icon_file_name, see private\sep_mgmt\seps_grid.py._sep_data_fetch
     icon_url = MgmtSepsUser.icon_file_name.name  # 1 - hidden
     usr_curr = MgmtSepsUser.user_curr.name  # 2 - hidden
     sep_fn = MgmtSepsUser.fullname.name  # 3

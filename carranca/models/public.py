@@ -13,7 +13,7 @@ from carranca import global_sqlalchemy_scoped_session, global_login_manager
 from typing import Any
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import Session
-
+from sqlalchemy.sql.expression import ColumnExpressionArgument
 from sqlalchemy import (
     Column,
     Computed,
@@ -23,9 +23,12 @@ from sqlalchemy import (
     DateTime,
     Boolean,
     LargeBinary,
+    select,
 )
 from sqlalchemy.orm import relationship, declarative_base, joinedload
 from flask_login import UserMixin
+
+from ..helpers.db_records.DBRecords import DBRecords
 
 from ..models import SQLABaseTable
 from ..helpers.pw_helper import hash_pass
@@ -95,6 +98,30 @@ class User(SQLABaseTable, UserMixin):
 
         return user
 
+    @staticmethod
+    def get_all_users(where: ColumnExpressionArgument[bool]) -> DBRecords:
+        """
+        Fetches a list of all users (id, id_role, username, email, disabled)
+        from the `users` table.
+        """
+
+        def _get_data(db_session: Session):
+            stmt = (
+                select(User.id, User.id_role, User.username, User.email, User.disabled)
+                .where(where)
+                .order_by(User.username_lower)
+            )
+
+            usr_rows = db_session.execute(stmt).all()
+            usr_list = DBRecords(stmt, usr_rows)
+            return usr_list
+
+        e, msg_error, seps_recs = db_fetch_rows(_get_data)
+        if e:
+            db_ups_error(e, msg_error, User.__tablename__)
+
+        return seps_recs
+
 
 # --- Table ---
 class Role(SQLABaseTable):
@@ -126,8 +153,6 @@ def get_user_role_abbr(user_id: int, user_role_id: int) -> RolesAbbr:
                 sidekick.app_log.error(f"Error retrieving user {user_id} role {user_role_id}: [{e}].")
 
     return abbr
-
-
 
 
 def get_user_where(**filter: Any) -> User:
@@ -189,7 +214,6 @@ def request_loader(request):
     username = "" if len(request.form) == 0 else request.form.get("username", "")
     user = None if is_str_none_or_empty(username) else User.get_where(username_lower=username.lower())
     return user
-
 
 
 # eof

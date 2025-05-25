@@ -16,9 +16,9 @@ from ...helpers.py_helper import now, to_str
 from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
 from ...helpers.route_helper import (
-    init_form_vars,
     get_input_text,
-    get_account_form_data,
+    init_response_vars,
+    get_account_response_data,
 )
 from ...private.wtforms import ChangePassword
 from ...models.public import get_user_where
@@ -36,12 +36,12 @@ def password_reset(token):
         return 0 <= days <= max
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_RESET.value
-    tmpl_form, template, is_get, texts = init_form_vars()
+    flask_form, tmpl_ffn, is_get, texts = init_response_vars()
     # TODO test, fake form?
 
     try:
         task_code += 1  # 1
-        template, is_get, texts = get_account_form_data("passwordreset", "password_reset_or_change")
+        tmpl_ffn, is_get, texts = get_account_response_data("passwordreset", "password_reset_or_change")
         token_str = to_str(token)
         password = "" if is_get else get_input_text("password")
         task_code += 1  # 2
@@ -49,7 +49,7 @@ def password_reset(token):
 
         # If you need the password pwd=  hash_pass(password);
         task_code += 1  # 3
-        tmpl_form = ChangePassword(request.form)
+        flask_form = ChangePassword(request.form)
         if len(token_str) < 12:
             add_msg_error("invalidToken", texts)
         elif is_get:
@@ -78,8 +78,8 @@ def password_reset(token):
         sidekick.app_log.debug(msg)
 
     return render_template(
-        template,
-        form=tmpl_form,
+        tmpl_ffn,
+        form=flask_form,
         **texts,
     )
 

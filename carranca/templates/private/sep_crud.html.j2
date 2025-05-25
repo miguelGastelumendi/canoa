@@ -1,0 +1,55 @@
+{# ------------------------------------
+
+sep_crud.html.j2
+-----------------
+CRUD por seps
+
+Extends
+"./layouts/grid.html.j2"
+
+2025.05.23
+mgd
+--------------------------------------- #}
+{# cSpell:ignore onclick tojson onsubmit #}
+
+{% extends "./layouts/grid.html.j2" %}
+
+{# only specify if different from default #}
+{% set dlg_cls_size= 'modal-lg' %}
+{% set grid_submit_id= 'grd-submit-id' %}
+
+
+
+{% block grid_blc_footer %}
+<div class="mb-2 row">
+    <div class="col-auto">
+        {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
+        {{ btn_action(dlg_var_submit_id, grdBtnInsert) }}
+    </div>
+    <div class="col-auto">
+        {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
+        {{ btn_action(dlg_var_submit_id, grdBtnEdit) }}
+    </div>
+    <div class="col-auto">
+        {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
+        {{ btn_action(dlg_var_submit_id, grdBtnDelete) }}
+    </div>
+
+</div>
+{% endblock grid_blc_footer %}
+
+{% block grid_blc_javascript %}
+<script>
+    const colMeta = {{ grid_col_meta | tojson | safe }};
+    const colIconUrl = colMeta[1].n;
+
+    const gridRows = {{ sep_data | tojson | safe }}
+    const gridID = '{{ grid_id }}';
+    const iconID = '{{ dlg_var_icon_id }}';
+
+</script>
+<script src="{{static_route('js/sep_crud.js')}}"></script>
+{% endblock grid_blc_javascript %}
+
+
+{# eof #}

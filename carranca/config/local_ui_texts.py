@@ -6,10 +6,8 @@ case the database connection fails
 
 Equipe Canoa -- 2025
 
-mgd 2025-03-15
+mgd 2025-03-15, 5-23
 """
-
-# cSpell:ignore Situación
 
 from ..helpers.html_helper import icon_url
 from ..helpers.ui_db_texts_helper import ui_texts_locale, UITextsKeys
@@ -19,6 +17,7 @@ default_section = "Form"
 
 
 class Locale:
+    # text in lower case
     br = "pt-br"
     en = "en"
     es = "es"
@@ -26,10 +25,6 @@ class Locale:
 
 local_texts = {
     Locale.br: {
-        # icon_text: {
-        #     missing_sep: 'Falta',
-        #     error_sep: 'Erro',
-        # },
         default_section: {
             UITextsKeys.Form.title: "Situação Inesperada",
             UITextsKeys.Form.date_format: "pt-br",
@@ -51,6 +46,7 @@ local_texts = {
     },
     Locale.es: {
         default_section: {
+            # cSpell:ignore posible conectarse datos  inténtelo nuevo Situación
             UITextsKeys.Form.title: "Situación Inesperada",
             UITextsKeys.Form.date_format: "es",
             UITextsKeys.Form.icon_url: "ups_handler.svg",
@@ -62,19 +58,31 @@ local_texts = {
 }
 
 
-def local_ui_texts(section):
-    locale = ui_texts_locale()
-    ui_texts = local_texts.get(locale, {}).get(section, {})
+def _get_ui_texts(section):
+    locale = ui_texts_locale().lower()
+    ui_sections = local_texts.get(locale, {})
 
-    if not ui_texts:
-        ui_texts = local_texts.get(default_locale, {}).get(section, {})
+    if not ui_sections:
+        locale_mayor = ui_texts_locale().split("-")[0]
+        ui_sections = local_texts.get(locale_mayor, {})
+
+    if not ui_sections:
+        ui_sections = local_texts.get(default_locale, {})
+
+    ui_texts = ui_sections.get(section, {})
+    return ui_texts
+
+
+# generic
+def local_ui_texts(section):
+    ui_texts = _get_ui_texts(section)
 
     return ui_texts
 
 
+# for ui_form_texts()
 def local_form_texts():
-    locale = ui_texts_locale()
-    ui_form_texts = local_texts.get(locale, {}).get(default_section, {})
+    ui_form_texts = _get_ui_texts(default_section) or {}
     icon = ui_form_texts[UITextsKeys.Form.icon_url]
     ui_form_texts[UITextsKeys.Form.icon_url] = icon_url("home", icon)
 

@@ -194,7 +194,7 @@ def retrieve_dict(query: str):
     #     # We expect at least two columns (key, value) for dictionary creation
     #     return {row[0]: row[1] for row in data}
 
-    return result.copy()  # there is a very strange error
+    return result  # ui_texts v2 .copy()  # there is a very strange error
 
 
 def get_str_field_length(table_model: object, field_name: str) -> int:

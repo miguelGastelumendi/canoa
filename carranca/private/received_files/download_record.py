@@ -22,14 +22,14 @@ from ...helpers.js_grid_helper import (
     js_grid_sec_value,
 )
 from ...helpers.file_helper import change_file_ext
-from ...helpers.route_helper import get_private_form_data, init_form_vars
+from ...helpers.route_helper import get_private_response_data, init_response_vars
 from ...helpers.ui_db_texts_helper import UITextsKeys, add_msg_error
 from ...common.app_error_assistant import ModuleErrorCode, AppStumbled
 
 
 def download_rec() -> Response | None:
     task_code = ModuleErrorCode.RECEIVED_FILES_MGMT.value
-    _, _, is_get, ui_texts = init_form_vars()
+    _, _, is_get, ui_texts = init_response_vars()
 
     if not is_get:
         return None  # TODO: error
@@ -37,7 +37,7 @@ def download_rec() -> Response | None:
     file_response = None
     try:
         task_code += 1  # 1
-        _, is_get, ui_texts = get_private_form_data("receivedFilesMgmt")
+        _, is_get, ui_texts = get_private_response_data("receivedFilesMgmt")
 
         task_code += 1  # 2
         rqst = request.form.get(js_grid_rsp)

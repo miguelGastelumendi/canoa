@@ -27,7 +27,7 @@ from ..helpers.py_helper import (
 )  # Ensure this module contains the function
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.types_helper import template_file_full_name
-from ..helpers.route_helper import get_private_form_data, get_input_text
+from ..helpers.route_helper import get_private_response_data, get_input_text
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 from ..helpers.ui_db_texts_helper import (
     UITextsKeys,
@@ -52,7 +52,7 @@ def _do_sep_placeholderOption(fullname: str) -> UserSep:
 
 
 def receive_file() -> template_file_full_name:
-    template, is_get, ui_texts = get_private_form_data("receiveFile")
+    template, is_get, ui_texts = get_private_response_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
 
     # utils
@@ -61,7 +61,7 @@ def receive_file() -> template_file_full_name:
         if not seps:
             ui_texts[UITextsKeys.Msg.warn] = ui_texts["noSEPassigned"]
             ui_texts[UITextsKeys.Msg.info] = None
-            ui_texts[UITextsKeys.Form.msg_only] = True
+            ui_texts[UITextsKeys.Msg.display_only_msg] = True
             seps: user_sep_list = []
         elif len(seps) > 1:
             sep_placeholder_option = _do_sep_placeholderOption(ui_texts["placeholderOption"])

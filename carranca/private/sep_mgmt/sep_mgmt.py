@@ -10,7 +10,9 @@ import json
 from flask import render_template, request
 from typing import Tuple, List, Dict
 
+from ...models.public import User
 from ...models.private import MgmtSepsUser
+
 from ..sep_icon import do_icon_get_url
 from ..SepIconConfig import SepIconConfig
 
@@ -19,7 +21,7 @@ from ...common.app_error_assistant import ModuleErrorCode, AppStumbled
 
 from ...helpers.py_helper import is_str_none_or_empty, class_to_dict
 from ...helpers.user_helper import get_batch_code
-from ...helpers.route_helper import get_private_form_data, init_form_vars
+from ...helpers.route_helper import get_private_response_data, init_response_vars
 from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list
 from ...helpers.js_grid_helper import js_grid_constants, js_grid_sec_key, js_grid_rsp, js_grid_sec_value
 from ...helpers.ui_db_texts_helper import add_msg_fatal, add_msg_error, UITextsKeys
@@ -30,13 +32,10 @@ from .save_to_db import save_data
 from .send_email import send_email
 from .keys_values import CargoKeys, SepMgmtGridCols
 
-# TODO:
-#   - alter [Close] <—> [Cancel] buttons
-
 
 def sep_mgmt() -> str:
     task_code = ModuleErrorCode.SEP_MGMT.value
-    _, template, is_get, ui_texts = init_form_vars()
+    _, tmpl_ffn, is_get, ui_texts = init_response_vars()
 
     sep_data: ListOfDBRecords = []
     user_list = []
@@ -44,7 +43,7 @@ def sep_mgmt() -> str:
     tmpl = ""
     try:
         task_code += 1  # 1
-        template, is_get, ui_texts = get_private_form_data("sepsMgmt")
+        tmpl_ffn, is_get, ui_texts = get_private_response_data("sepMgmt")
 
         task_code += 1  # 2
         ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.get_icon_url(SepIconConfig.none_file)
@@ -52,12 +51,7 @@ def sep_mgmt() -> str:
         task_code += 1  # 3
         # col_names = ["sep_id", "icon_file_name", "user_curr", "sep_fullname", user", "assigned_at"]
         col_names: List[str] = list(class_to_dict(SepMgmtGridCols).values())
-        grid_const, _ = js_grid_constants(ui_texts["colMetaInfo"], col_names)
-        if grid_const == None:
-            raise AppStumbled(
-                f"Invalid MetaInfo columns mapping: `{ui_texts['colMetaInfo']}` <> [{', '.join(col_names)}].",
-                task_code,
-            )
+        grid_const = js_grid_constants(ui_texts["colMetaInfo"], col_names, task_code)
 
         sep_data = []
         item_none = ui_texts["itemNone"]
@@ -85,7 +79,7 @@ def sep_mgmt() -> str:
                 ui_texts[UITextsKeys.Msg.error] = msg_error_save_and_email
 
         tmpl = render_template(
-            template,
+            tmpl_ffn,
             sep_data=sep_data.to_list(),
             user_list=user_list,
             cargo_keys=class_to_dict(CargoKeys),
@@ -95,20 +89,21 @@ def sep_mgmt() -> str:
 
     except Exception as e:
         msg = add_msg_fatal("gridException", ui_texts, task_code)
-        _, template, ui_texts = ups_handler(task_code, msg, e)
-        tmpl = render_template(template, **ui_texts)
+        _, tmpl_ffn, ui_texts = ups_handler(task_code, msg, e)
+        tmpl = render_template(tmpl_ffn, **ui_texts)
 
     return tmpl
 
 
 def _sep_data_fetch(_item_none: str, col_names: List[str]) -> Tuple[DBRecords, List[str], str]:
 
-    sep_usr_rows, user_rows = MgmtSepsUser.get_sepsusr_and_usrlist(None, col_names)
+    sep_usr_rows = MgmtSepsUser.get_seps_usr(col_names)
     for record in sep_usr_rows:
         record.user_curr = _item_none if record.user_curr is None else record.user_curr
         record.user_new = record.user_curr
         record.icon_file_name = do_icon_get_url(record.icon_file_name)  # this is file_name
 
+    user_rows = User.get_all_users(User.disabled == False)
     users_list = [user.username for user in user_rows]
 
     return sep_usr_rows, users_list

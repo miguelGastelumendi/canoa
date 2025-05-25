@@ -22,9 +22,9 @@ from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_fatal
 from ...helpers.route_helper import (
     home_route,
     redirect_to,
-    init_form_vars,
+    init_response_vars,
     get_input_text,
-    get_account_form_data,
+    get_account_response_data,
 )
 from ...models.public import User, get_user_role_abbr
 
@@ -34,14 +34,14 @@ def login():
     from ..wtforms import LoginForm
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
-    tmpl_form, template, is_get, ui_texts = init_form_vars()
+    flask_form, tmpl_ffn, is_get, ui_texts = init_response_vars()
 
     html = ""  # TODO init
     try:
         task_code += 1  # 1
-        tmpl_form = LoginForm(request.form)
+        flask_form = LoginForm(request.form)
         task_code += 1  # 2
-        template, is_get, ui_texts = get_account_form_data("login")
+        tmpl_ffn, is_get, ui_texts = get_account_response_data("login")
         task_code += 1  # 3
         if is_get and is_someone_logged():
             internal_logout()
@@ -102,17 +102,17 @@ def login():
                 return redirect_to(home_route())
 
         html = render_template(
-            template,
-            form=tmpl_form,
+            tmpl_ffn,
+            form=flask_form,
             **ui_texts,
         )
     except Exception as e:
         error_code = task_code
         msg = add_msg_fatal("errorLogin", ui_texts, task_code)
-        tmpl_form, template, ui_texts = ups_handler(error_code, msg, e, True)
+        flask_form, tmpl_ffn, ui_texts = ups_handler(error_code, msg, e, True)
         html = render_template(
-            template,
-            form=tmpl_form,
+            tmpl_ffn,
+            form=flask_form,
             **ui_texts,
         )
 

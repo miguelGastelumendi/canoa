@@ -74,7 +74,13 @@ class SepEdit(FlaskForm):
     sep_name = StringField(
         "",
         validators=[Length(min=5, max=140)],  # TODO sidekick.config.DB_len_val_for_sep
-        render_kw={"class": "form-control", "autocomplete": "off", "spellcheck": "true", "lang": ""},
+        render_kw={
+            "class": "form-control",
+            "autofocus": "true",
+            "autocomplete": "off",
+            "spellcheck": True,
+            "lang": "",
+        },
     )
 
     description = StringField(
@@ -83,7 +89,7 @@ class SepEdit(FlaskForm):
         render_kw={
             "class": "form-control",
             "autocomplete": "off",
-            "spellcheck": "true",
+            "spellcheck": True,
             "lang": "",  # /!\ Don't defined here, they persist. See below SepNew
         },
     )
@@ -92,7 +98,10 @@ class SepEdit(FlaskForm):
 
 class SepNew(SepEdit):
     schema_list = SelectField(
-        "", validators=[DataRequired()], coerce=int, render_kw={"class": "form-select"}
+        "",
+        validators=[DataRequired()],
+        coerce=int,
+        render_kw={"class": "form-select"},
     )
 
     def __init__(self, *args, **kwargs):

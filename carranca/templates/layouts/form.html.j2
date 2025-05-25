@@ -29,27 +29,26 @@ mgd
 
 {% extends "./layouts/dialog.html.j2" %}
 
-{# ╒════════ Dialog Body ════════╕ #}
+{# ╒════════════════ Dialog Body ════════════════╕ #}
 {% block dlg_blc_body %}
 
 {% include "includes/backend-msg.html.j2" %}
 
-{# ┌┄ form only for backend messages ┄┐ #}
 {% if form_bke_only_msg %}
+{# ╒══════════ Display Message Only ══════════╕ #}
 
 {% from "includes/_action_forms_and_btns.html.j2" import btn_close %}
 {{ btn_close(action_form__form_close_id, form_close_btn_text) }}
 
+{# ╘══════════ Display Message Only ══════════╛ #}
 {% endif %}
-{# └┄ form only for backend messages ┄┘ #}
-
 
 {% block frm_blc_above %}
 {% endblock frm_blc_above %}
 
-{# ┌┄┄┄┄ display inputs/ui ┄┄┄┄┐ #}
-{% if form_bke_display_ui %}
 
+{% if form_bke_display_ui %}
+{# ╒═══════════════ Display UI ═══════════════╕ #}
 <form method="post" action="" id={{form_post_id}} {{ formAttribute | default('') }}>
     {{ form.hidden_tag() }}
 
@@ -61,18 +60,28 @@ mgd
     {% from "includes/_action_forms_and_btns.html.j2" import btn_submit %}
     {{ btn_submit(form_post_id, submitButton) }}
 </div>
-
+{# ╘═══════════════ Display UI ═══════════════╛ #}
 {% endif %}
-{# └┄┄┄┄ display inputs/ui ┄┄┄┄┘ #}
 
 {% block frm_blc_below %}
 {% endblock frm_blc_below %}
 
 {% endblock dlg_blc_body %}
-{# ╘════════ Dialog Body ════════╛ #}
+{# ╘════════════════ Dialog Body ════════════════╛ #}
 
+
+{% if form_bke_display_ui %}
+{# ╒═══════════════ Display UI ═══════════════╕ #}
+{# ╒══════ Override dialog ══════╕ #}
+{% block dlg_blc_javascript %}
+{{ super() }}
 
 {% block frm_blc_script %}
 {% endblock frm_blc_script %}
+
+{% endblock dlg_blc_javascript %}
+{# ╘══════ Override dialog ══════╛ #}
+{# ╘═══════════════ Display UI ═══════════════╛ #}
+{% endif %}
 
 {# eof #}

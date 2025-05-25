@@ -6,12 +6,22 @@
 
 from flask import current_app
 
+from ..helpers.types_helper import jinja_template
+
+
 # mark a string as a jinja text, a text that will be parsed before rendering
 _jinja_pre_template_mark = "^"
 
 
-def jinja_pre_template(val: str) -> str:
+def prepare_template(tepmt: jinja_template)-> jinja_template:
+    prepared = tpmt.strip()
 
+
+    return prepared
+
+
+def jinja_pre_template(val: str) -> str:
+    # mgd 2024-06-21, not ready
     text = val
     try:
         # Create a template from the value

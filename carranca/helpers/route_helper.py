@@ -5,7 +5,7 @@ mgd 2024-05-13
 Equipe da Canoa -- 2024
 """
 
-# cSpell:ignore werkzeug tmplt
+# cSpell:ignore werkzeug tmpl
 
 import requests
 from os import path
@@ -15,7 +15,7 @@ from flask import redirect, request, url_for
 from .py_helper import is_str_none_or_empty, camel_to_snake, clean_text
 from .html_helper import URL_PATH_SEP
 from .types_helper import ui_db_texts, template_file_full_name
-from .ui_db_texts_helper import UITextsKeys, get_form_texts
+from .ui_db_texts_helper import get_form_texts
 
 from ..config import BaseConfig
 
@@ -104,55 +104,77 @@ def get_input_text(name: str, not_allowed: Optional[str] = "") -> str:
     return None if text is None else clean_text(text, not_allowed)
 
 
-def get_template_name(tmplt: str, folder: str) -> template_file_full_name:
+def get_tmpl_full_file_name(tmpl: str, folder: str) -> template_file_full_name:
     from ..common.app_context_vars import sidekick
 
-    tmplt_file_name = f"{tmplt}.html.j2"
+    tmpl_file_name = f"{tmpl}.html.j2"
     # template *must* be with '/':
-    template: template_file_full_name = f".{URL_PATH_SEP}{folder}{URL_PATH_SEP}{tmplt_file_name}"
-    tmplt_full_name = path.join(".", sidekick.config.TEMPLATES_FOLDER, folder, tmplt_file_name)
-    if tmplt_full_name in templates_found:
+    tmpl_full_file_name: template_file_full_name = f".{URL_PATH_SEP}{folder}{URL_PATH_SEP}{tmpl_file_name}"
+    tmpl_full_name = path.join(".", sidekick.config.TEMPLATES_FOLDER, folder, tmpl_file_name)
+    if tmpl_full_name in templates_found:
         pass
-    elif path.isfile(tmplt_full_name):
-        templates_found.append(tmplt_full_name)
+    elif path.isfile(tmpl_full_name):
+        templates_found.append(tmpl_full_name)
     else:
-        raise FileNotFoundError(f"The requested template '{tmplt_full_name}' was not found.")
+        raise FileNotFoundError(f"The requested template '{tmpl_full_name}' was not found.")
 
-    return template
+    return tmpl_full_file_name
 
 
-def _get_form_data(
-    section: str, tmplt: str, folder: str
+def _get_response_data(
+    section: str, tmpl: str, folder: str
 ) -> Tuple[template_file_full_name, bool, ui_db_texts]:
 
-    tmplt = camel_to_snake(section) if tmplt is None else tmplt
-    template: template_file_full_name = get_template_name(tmplt, folder)
+    tmpl = camel_to_snake(section) if tmpl is None else tmpl
+    tmpl_full_file_name: template_file_full_name = get_tmpl_full_file_name(tmpl, folder)
     is_get = is_method_get()
 
     # a section of ui_itens
     ui_texts = get_form_texts(section)
-    if is_get:
-        ui_texts[UITextsKeys.Msg.error] = ""  # This is a Cache BUG to
-    else:
-        ui_texts[UITextsKeys.Msg.info] = ""  # only GET has info
+    # texts v2
+    # if is_get:
+    #     ui_texts[UITextsKeys.Msg.error] = ""  # This is a Cache BUG to
+    # else:
+    #     ui_texts[UITextsKeys.Msg.info] = ""  # only GET has info
 
-    return template, is_get, ui_texts
+    return tmpl_full_file_name, is_get, ui_texts
 
 
-def get_private_form_data(
-    section: str, tmplt: str = None
+def get_private_response_data(
+    ui_texts_section: str, tmpl_base_name: str = None
 ) -> Tuple[template_file_full_name, bool, ui_db_texts]:
-    return _get_form_data(section, tmplt, base_route_private)
+    """
+    if tmpl_base_name is none is created based on ui_texts_section name
+    eg:  receivedFilesMgmt -> received_files_mgmt.html.j2
+
+    returns:
+        - template_file_full_name, assumes that is in the `private` folder
+        - is_get true when the request method is GET, false when is POST
+        - ui_db_texts the DB ui texts for this Form/Grid etc.
+    """
+    return _get_response_data(ui_texts_section, tmpl_base_name, base_route_private)
 
 
-def get_account_form_data(
-    section: str, tmplt: str = None
+def get_account_response_data(
+    ui_texts_section: str, tmpl_base_name: str = None
 ) -> Tuple[template_file_full_name, bool, ui_db_texts]:
-    return _get_form_data(section, tmplt, "accounts")
+    """
+    if tmpl_base_name is none is created based on ui_texts_section name
+    eg:  receivedFilesMgmt -> received_files_mgmt.html.j2
+
+    returns:
+        - template_file_full_name, assumes that is in the `accounts` folder
+        - is_get true when the request method is GET, false when is POST
+        - ui_db_texts the DB ui texts for this Form/Grid etc.
+    """
+
+    return _get_response_data(ui_texts_section, tmpl_base_name, "accounts")
 
 
-def init_form_vars() -> Tuple[dict, template_file_full_name, bool, ui_db_texts]:
-    # tmplt_form, template, is_get, ui_texts
+def init_response_vars() -> Tuple[dict, template_file_full_name, bool, ui_db_texts]:
+    """
+    returns empty flask_form, template_full_file_name, is_get, ui_texts
+    """
     return {}, "", True, {}
 
 

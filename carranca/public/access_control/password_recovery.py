@@ -18,10 +18,10 @@ from ...helpers.email_helper import RecipientsListStr
 from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
 from ...helpers.route_helper import (
     public_route,
-    init_form_vars,
     get_input_text,
+    init_response_vars,
     is_external_ip_ready,
-    get_account_form_data,
+    get_account_response_data,
     public_route__password_reset,
 )
 from ...models.public import get_user_where
@@ -32,12 +32,12 @@ def password_recovery():
     from ...common.app_context_vars import sidekick
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_RECOVERY.value
-    tmpl_form, template, tmpl_form, texts = init_form_vars()
+    flask_form, tmpl_ffn, is_get, texts = init_response_vars()
     try:
         task_code += 1  # 1
-        tmpl_form = PasswordRecoveryForm(request.form)
+        flask_form = PasswordRecoveryForm(request.form)
         task_code += 1  # 2
-        template, is_get, texts = get_account_form_data("passwordRecovery")
+        tmpl_ffn, is_get, texts = get_account_response_data("passwordRecovery")
         task_code += 1  # 3
         requested_email = "" if is_get else get_input_text("user_email").lower()
         task_code += 1  # 4
@@ -68,7 +68,7 @@ def password_recovery():
         sidekick.app_log.error(e)
         sidekick.app_log.debug(msg)
 
-    return render_template(template, form=tmpl_form, **texts)
+    return render_template(tmpl_ffn, form=flask_form, **texts)
 
 
 # eof

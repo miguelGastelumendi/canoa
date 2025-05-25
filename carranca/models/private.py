@@ -254,17 +254,58 @@ class MgmtSepsUser(SQLABaseTable):
     assigned_by = Column(Integer)  #  pass through column: 0
     batch_code = Column(String(10))  # pass through column: ' '
 
+    # @staticmethod
+    # def get_sepsusr_and_usrlist(
+    #     field_names: Optional[List[str]], user_id: Optional[int] = None
+    # ) -> Tuple[DBRecords, DBRecords]:
+    #     """
+    #     Returns
+    #     1) `vw_mgmt_seps_user` DB view that has the necessary columns to
+    #         provide the adm with a UI grid to assign or remove SEP
+    #         to or from a user.
+    #     2) list if users from `users`
+    #     3) Error message if any action fails.
+    #     """
+
+    #     def _get_data(db_session: Session):
+    #         def __cols() -> List[Column]:
+    #             all_cols = MgmtSepsUser.__table__.columns
+    #             _cols = [col for col in all_cols if col.name in field_names]
+    #             return _cols
+
+    #         sel_cols = __cols() if field_names else None
+    #         stmt = select(*sel_cols) if sel_cols else select(MgmtSepsUser)
+    #         if user_id is not None:  # then filter
+    #             stmt = stmt.where(MgmtSepsUser.user_id == user_id)
+    #             usr_list: DBRecords = []  # and there is no users list
+
+    #         seps_rows = db_session.execute(stmt).all()
+    #         seps_recs = DBRecords(stmt, seps_rows)
+
+    #         if user_id is None:  # then get all users list, TODO: check 'disabled'?
+    #             # stmt = select(SepUserData).order_by(SepUserData.username_lower)
+    #             stmt = select(User.id, User.id_role, User.username, User.email, User.disabled).order_by(
+    #                 User.username_lower
+    #             )
+    #             usr_rows = db_session.execute(stmt).all()
+    #             usr_list = DBRecords(stmt, usr_rows)
+
+    #         return seps_recs, usr_list
+
+    #     e, msg_error, [seps_recs, usr_list] = db_fetch_rows(_get_data, 2)
+    #     if e:
+    #         db_ups_error(e, msg_error, MgmtSepsUser.__tablename__)
+
+    #     return seps_recs, usr_list
+
     @staticmethod
-    def get_sepsusr_and_usrlist(
-        user_id: Optional[int] = None, field_names: Optional[List[str]] = None
-    ) -> Tuple[DBRecords, DBRecords]:
+    def get_seps_usr(field_names: Optional[List[str]], user_id: Optional[int] = None) -> DBRecords:
         """
         Returns
         1) `vw_mgmt_seps_user` DB view that has the necessary columns to
             provide the adm with a UI grid to assign or remove SEP
             to or from a user.
-        2) list if users from `users`
-        3) Error message if any action fails.
+        2) Error message if any action fails.
         """
 
         def _get_data(db_session: Session):
@@ -277,26 +318,16 @@ class MgmtSepsUser(SQLABaseTable):
             stmt = select(*sel_cols) if sel_cols else select(MgmtSepsUser)
             if user_id is not None:  # then filter
                 stmt = stmt.where(MgmtSepsUser.user_id == user_id)
-                usr_list: DBRecords = []  # and there is no users list
 
             seps_rows = db_session.execute(stmt).all()
             seps_recs = DBRecords(stmt, seps_rows)
+            return seps_recs
 
-            if user_id is None:  # then get all users list, TODO: check 'disabled'?
-                # stmt = select(SepUserData).order_by(SepUserData.username_lower)
-                stmt = select(User.id, User.id_role, User.username, User.email, User.disabled).order_by(
-                    User.username_lower
-                )
-                usr_rows = db_session.execute(stmt).all()
-                usr_list = DBRecords(stmt, usr_rows)
-
-            return seps_recs, usr_list
-
-        e, msg_error, [seps_recs, usr_list] = db_fetch_rows(_get_data, 2)
+        e, msg_error, seps_recs = db_fetch_rows(_get_data)
         if e:
             db_ups_error(e, msg_error, MgmtSepsUser.__tablename__)
 
-        return seps_recs, usr_list
+        return seps_recs
 
 
 # --- Table ---
@@ -429,9 +460,9 @@ class Sep(SQLABaseTable):
                 stmt = select(Sep).where(Sep.id == id)
                 sep = db_session.execute(stmt).scalar_one_or_none()
                 is_empty = is_str_none_or_empty(sep.icon_svg)
-                icon_content = SepIconConfig.empty_content() if is_empty else sep.icon_svg
+                icon_content = SepIconConfig.empty_content if is_empty else sep.icon_svg
             except Exception as e:
-                icon_content = SepIconConfig.error_content()
+                icon_content = SepIconConfig.error_content
                 sidekick.app_log.error(f"Error retrieving icon content of SEP {id}: [{e}].")
             return icon_content
 

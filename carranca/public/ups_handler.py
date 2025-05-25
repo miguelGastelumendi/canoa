@@ -28,7 +28,7 @@ from typing import Tuple
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.html_helper import icon_url
 from ..helpers.types_helper import ui_db_texts
-from ..helpers.route_helper import get_template_name
+from ..helpers.route_helper import get_tmpl_full_file_name
 from ..config.local_ui_texts import local_ui_texts, local_form_texts
 from ..helpers.ui_db_texts_helper import get_section, UITextsKeys
 from ..common.app_error_assistant import AppStumbled
@@ -60,7 +60,7 @@ def ups_handler(
     context_texts = {
         UITextsKeys.Msg.warn: user_msg,
         UITextsKeys.Msg.error: error_msg,
-        UITextsKeys.Form.msg_only: True,
+        UITextsKeys.Msg.display_only_msg: True,
         UITextsKeys.Form.icon_url: icon_url("icons", "ups_handler.svg"),
         UITextsKeys.Form.btn_close: "Entendi",  # TODO: uiTexts
         UITextsKeys.Fatal.code: error_code,
@@ -80,7 +80,7 @@ def ups_handler(
     if (False if logout is None else logout) and is_someone_logged():
         internal_logout()
 
-    ups_template = get_template_name("ups_page", "home")
+    ups_template = get_tmpl_full_file_name("ups_page", "home")
 
     sidekick.app_log.error(e)
     sidekick.app_log.debug(error_msg)

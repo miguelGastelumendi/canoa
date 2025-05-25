@@ -15,7 +15,7 @@ from ...common.app_context_vars import sidekick
 from ...models.public import persist_user
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.route_helper import get_account_form_data, get_input_text, init_form_vars
+from ...helpers.route_helper import get_account_response_data, get_input_text, init_response_vars
 from ...helpers.ui_db_texts_helper import add_msg_success, add_msg_error, add_msg_fatal
 
 from ..wtforms import RegisterForm
@@ -29,13 +29,13 @@ def register():
         return user is not None
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_REGISTER.value
-    tmpl_form, template, is_get, texts = init_form_vars()
+    flask_form, tmpl_ffn, is_get, texts = init_response_vars()
 
     try:
         task_code += 1  # 1
-        tmpl_form = RegisterForm(request.form)
+        flask_form = RegisterForm(request.form)
         task_code += 1  # 2
-        template, is_get, texts = get_account_form_data("register")
+        tmpl_ffn, is_get, texts = get_account_response_data("register")
         user_name = "" if is_get else get_input_text("username")
         task_code += 1  # 3
 
@@ -70,13 +70,14 @@ def register():
             add_msg_success("welcome", texts)
 
     except Exception as e:
+        # TODO: ups
         msg = add_msg_fatal("errorRegister", texts, task_code)
         sidekick.app_log.error(e)
         sidekick.app_log.debug(msg)
 
     return render_template(
-        template,
-        form=tmpl_form,
+        tmpl_ffn,
+        form=flask_form,
         **texts,
     )
 

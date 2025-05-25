@@ -25,11 +25,11 @@
 
 ### 📂 Jinja
 > carranca/templates/private/
-- `seps_mgmt.html.j2`
+- `sep_mgmt.html.j2`
 
 ### 📂 Java Script
 > carranca/static/js/
-- `seps_mgmt.js`
+- `sep_mgmt.js`
 
 ### 📂 SQLAlchemy
 > carranca/private/

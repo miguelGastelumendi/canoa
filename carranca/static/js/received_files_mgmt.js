@@ -1,6 +1,6 @@
 /**
  * @preserve
- * sep_mgmt.js
+ * received_files_mgmt.js
  * version 0.4
  * 2024.10.18 -- 31, 2025.03
  * Miguel Gastelumendi -- mgd

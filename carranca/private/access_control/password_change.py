@@ -18,9 +18,9 @@ from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_ms
 from ...helpers.route_helper import (
     redirect_to,
     login_route,
-    init_form_vars,
+    init_response_vars,
     get_input_text,
-    get_account_form_data,
+    get_account_response_data,
 )
 from ...common.app_context_vars import sidekick
 from ...models.public import get_user_where
@@ -29,21 +29,18 @@ from ..wtforms import ChangePassword
 
 def do_password_change():
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_CHANGE.value
-    tmpl_form, template, is_get, ui_texts = init_form_vars()
-    # TODO test, fake form?
+    flask_form, tmpl_ffn, is_get, ui_texts = init_response_vars()
 
     try:
         task_code += 1  # 1
-        template, is_get, ui_texts = get_account_form_data(
-            "passwordChange", "password_reset_or_change"
-        )
+        tmpl_ffn, is_get, ui_texts = get_account_response_data("passwordChange", "password_reset_or_change")
         password = "" if is_get else get_input_text("password")
         task_code += 1  # 2
         confirm_password = "" if is_get else get_input_text("confirm_password")
         task_code += 1  # 3
         user = None if is_get else get_user_where(id=current_user.id)
         task_code += 1  # 4
-        tmpl_form = ChangePassword(request.form)
+        flask_form = ChangePassword(request.form)
 
         if is_get:
             pass
@@ -74,7 +71,7 @@ def do_password_change():
         sidekick.app_log.info(msg)
         sidekick.app_log.error(str(e))
 
-    tmpl = render_template(template, form=tmpl_form, **ui_texts)
+    tmpl = render_template(tmpl_ffn, form=flask_form, **ui_texts)
     return tmpl
 
 

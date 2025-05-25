@@ -1,0 +1,63 @@
+{# ------------------------------------
+
+layouts\grid.html.j2
+----------------------
+Highly configurable template to display ag-grid
+
+mgd 2025-05-23
+#}
+
+
+{% extends "./layouts/dialog.html.j2" %}
+
+{% set dlg_cls_size= dlg_cls_size | default('modal-xl') %}
+{% set dlg_var_icon_url= iconFileUrl %}
+{% set dlg_var_icon_id= 'dlg-icon-id' %}
+
+
+{% if dlg_bke_display_ui %}
+{# ╒════════════ Display UI ══════════════╕ #}
+
+{% block base_blc_head_js %}
+{% include "./includes/grid-header.html.j2" %}
+{% endblock base_blc_head_js %}
+
+{% block dlg_blc_body %}
+{% include "./includes/grid-body.html.j2" %}
+{% endblock dlg_blc_body %}
+
+{# ╒══════ Override dialog ══════╕ #}
+
+{# ┌┄┄┄┄┄┄┄ footer ┄┄┄┄┄┄┄┐ #}
+{% block dlg_blc_footer %}
+
+{% block grid_blc_footer %}
+{% endblock grid_blc_footer %}
+
+{% endblock dlg_blc_footer %}
+{# └┄┄┄┄┄┄┄ footer ┄┄┄┄┄┄┄┘ #}
+
+{# ┌┄┄┄┄┄ javascript ┄┄┄┄┄┐ #}
+{% block dlg_blc_javascript %}
+
+{% block grid_blc_javascript %}
+{% endblock grid_blc_javascript %}
+
+{% endblock dlg_blc_javascript %}
+
+{# └┄┄┄┄┄ javascript ┄┄┄┄┄┘ #}
+
+{# ┌┄┄┄┄┄ base forms ┄┄┄┄┄┐ #}
+{% block base_blc_forms %}
+{{ super() }}
+
+{% block grid_blc_forms %}
+{% endblock grid_blc_forms %}
+
+{% endblock base_blc_forms %}
+{# └┄┄┄┄┄ base forms ┄┄┄┄┄┘ #}
+
+{# ╘══════ Override dialog ══════╛ #}
+
+{# ╘════════════ Display UI ══════════════╛ #}
+{% endif %}

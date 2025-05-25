@@ -28,9 +28,7 @@ from ..common.app_constants import APP_LANG
 from ..common.app_error_assistant import AppStumbled, ModuleErrorCode, RaiseIf
 from .. import global_ui_texts_cache
 
-# === Global 'constants' form HTML ui ========================
-#  For more info, see table ui_items.name
-#  from ui_texts is loaded ( init_form_vars() )
+# === Global 'constants' for HTML ui flask forms =============
 
 
 # ==== UI Texts Constants ====================================
@@ -41,8 +39,9 @@ class UITextsKeys:
         warn = "msgWarn"
         error = "msgError"
         success = "msgSuccess"
-
-    # TODO   fatal = "msgFatal"
+        fatal = "msgFatal"
+        # display only message, no form, inputs/buttons (see .carranca\templates\layouts\form.html.j2 & dialog.html.j2)
+        display_only_msg = "msgOnly"
 
     class Page:
         title = "pageTitle"
@@ -53,8 +52,6 @@ class UITextsKeys:
         date_format = "userDateFormat"
         # This button is only visible when msg_only is True OR is a Dialog/Document (see document.html.j2)
         btn_close = "btnCloseForm"
-        # display only message, no form, inputs/buttons (see .carranca\templates\layouts\form.html.j2 & dialog.html.j2)
-        msg_only = "msgOnly"
 
     class Fatal:
         no_db_conn = "NoDBConnection"
@@ -70,7 +67,7 @@ class UITextsKeys:
         success = "secSuccess"
         # this is a special key that has the name of the section loaded in ui_db_Texts,
         # see  get_section
-        name = "section name:"
+        name = "__section_name__"
 
 
 cache_key: TypeAlias = Tuple[str, str, Optional[str]]
@@ -83,24 +80,27 @@ class UITexts_TableSearch:
     ## TODO SAVE is Cache _CACHE_INTERNAL_INFO_KEY
     _cfg_cache_lifetime_min = 0  # int(current_app.config.get("APP_UI_DB_TEXTS_CACHE_LIFETIME_MIN", 0))
 
-    def __init__(self, section: str, item: Optional[str] = None):
-        self.locale = ui_texts_locale().lower()
+    def __init__(self, locale: str, section: str, item: Optional[str] = None):
+        self.locale = locale
+        self._locale = self.locale.lower()
         # avoid a " " section (see CACHE_INTERNAL_INFO_KEY)
         self.section = section.strip().lower()
         self.item = item.lower() if item else None
+        self.value_is_str = self.item is not None
+        self.value_is_dict = self.item is None
 
     def exists(self) -> bool:
         return self.as_tuple in global_ui_texts_cache
 
-    def update(self, texts: ui_db_texts) -> None:
+    def update(self, texts: ui_db_texts | str) -> None:
         if self._cfg_cache_lifetime_min == 0:
             global_ui_texts_cache[self.as_tuple] = texts
 
-    def get_text(self) -> None:
+    def get_text(self) -> Optional[ui_db_texts | str]:
         if not self.exists():
             return None
-        value = global_ui_texts_cache[self.as_tuple]
-        return value.copy() if isinstance(value, dict) else value
+        value: dict | str = global_ui_texts_cache[self.as_tuple]
+        return value.copy() if self.value_is_dict else value
 
     def set_info(self, key: str, info: any) -> None:
         cache_info = self.get_info_value()
@@ -113,8 +113,10 @@ class UITexts_TableSearch:
 
     @property
     def as_tuple(self) -> cache_key:
-        """Returns a tuple of all three attributes."""
-        return (self.section, self.locale, self.item)
+        """Returns a tuple of all three 'indexed' attributes.
+        If item is None, the entry contains a dict, else a str.
+        """
+        return (self.section, self._locale, self.item)
 
 
 # TODO: refactor it into
@@ -125,7 +127,7 @@ class MsgNotFound:
 
 # === current user's locale  ================================
 def ui_texts_locale() -> str:
-    locale = (current_user.lang if is_someone_logged() else APP_LANG).lower()
+    locale = current_user.lang if is_someone_logged() else APP_LANG
     return locale
 
 
@@ -143,7 +145,7 @@ def __get_ui_texts_query(cols: str, table_search: UITexts_TableSearch) -> str:
     query = (
         f"select {cols} from vw_ui_texts "
         f"where "
-        f"(locale = lower('{table_search.locale}')) and (section_lower = lower('{table_search.section}')){optional_item_filter}"
+        f"(locale = lower('{table_search.locale}')) and (section_lower = lower('{table_search.section}')){optional_item_filter} "
         f"order by 1;"  # help debugging
     )
     return query
@@ -228,30 +230,28 @@ def get_section(section_name: str) -> ui_db_texts:
     returns a UI_Texts of the 'section_name' from table vw_ui_texts
     """
     if is_str_none_or_empty(section_name):
-        items: ui_db_texts = {}
-    elif (table_cache := UITexts_TableSearch(section_name)).exists():
-        items = table_cache.get_text()
-    else:
+        return {}
+
+    table_cache = UITexts_TableSearch(ui_texts_locale(), section_name)
+
+    if table_cache.exists():
+        return table_cache.get_text()
+    else:  # not in cache, retrieve section
         query = __get_ui_texts_query("item, text", table_cache)
-        items = _get_query_as_dict(query)
+        items = _get_query_as_dict(query) or {}
 
-        if items is not None:
-            # TODO process_pre_templates(items) # TODO: check if needed
-            items[UITextsKeys.Section.name] = section_name
-            table_cache.update(items)
-        elif RaiseIf.no_ui_texts:
-            raise AppStumbled("Query: [query].", ModuleErrorCode.UI_TEXTS.value)
-        else:
-            items = {}
-
-    return items
+        # TODO process_pre_templates(items) # TODO: check if needed
+        items[UITextsKeys.Section.name] = section_name
+        items[UITextsKeys.Form.date_format] = table_cache.locale
+        table_cache.update(items)
+        return items.copy()  # Ensures caller gets a copy, preventing cache pollution
 
 
 def get_text(item: str, section: str, default: str = None) -> str:
     """
     returns text for the item/section pair. if not found, a `warning message`
     """
-    table_search = UITexts_TableSearch(section, item)
+    table_search = UITexts_TableSearch(ui_texts_locale(), section, item)
     if table_search.exists():
         text = table_search.get_text()
         return text
@@ -280,9 +280,16 @@ def get_form_texts(section_name: str) -> ui_db_texts:
     items = get_section(section_name)
     if items:
         # items = process_pre_templates(items) # TODO:
-        items[UITextsKeys.Form.msg_only] = False
-        items[UITextsKeys.Form.date_format] = ui_texts_locale()
-
+        # delete leftover messages, now I'm sure why they're stuck.
+        for k in [
+            UITextsKeys.Msg.success,
+            UITextsKeys.Msg.warn,
+            UITextsKeys.Msg.error,
+            UITextsKeys.Msg.fatal,
+            UITextsKeys.Msg.display_only_msg,
+        ]:
+            if k in items:  # DEBUG
+                print(f"Unexpected item en section {section_name}: {k}.")
     return items
 
 
@@ -304,12 +311,13 @@ def add_msg_error(item: str, texts: ui_db_texts = {}, *args) -> str:
 
 def add_msg_fatal(item: str, texts: ui_db_texts = {}, *args) -> str:
     """
+    TODO: fatal
     Same as add_msg_error, but sets
-    texts[UITxtKey.Form.msg_only] = True,
+    texts[UITxtKey.Msg.display_only_msg] = True,
     so the form only displays the message (no other form inputs)
     """
     msg = add_msg_error(item, texts, *args)
-    texts[UITextsKeys.Form.msg_only] = True
+    texts[UITextsKeys.Msg.display_only_msg] = True
     return msg
 
 
@@ -319,12 +327,12 @@ def add_msg_success(item: str, texts: ui_db_texts = None, *args) -> str:
     (of the vw_ui_texts wonderful view)
     and adds the pair to `texts` => texts.add(text, 'msgSuccess')
 
-    Finally sets texts[UITxtKey.Form.msg_only] = True, so the form only displays
+    Finally sets texts[UITxtKey.Msg.display_only_msg] = True, so the form only displays
     the message (no other form inputs)
 
     """
     msg = _add_msg(item, UITextsKeys.Section.success, UITextsKeys.Msg.success, texts, *args)
-    texts[UITextsKeys.Form.msg_only] = True
+    texts[UITextsKeys.Msg.display_only_msg] = True
     return msg
 
 

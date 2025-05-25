@@ -16,7 +16,8 @@ from ..helpers.pw_helper import internal_logout, nobody_is_logged
 from ..helpers.route_helper import (
     bp_name,
     base_route_private,
-    get_private_form_data,
+    get_private_response_data,
+    is_method_get,
     login_route,
     redirect_to,
 )
@@ -44,7 +45,7 @@ def home():
     if nobody_is_logged():
         return redirect_to(login_route(), None)
 
-    template, _, texts = get_private_form_data("home")
+    template, _, texts = get_private_response_data("home")
     return render_template(template, **texts)
 
 
@@ -53,16 +54,31 @@ def home():
 def sep_mgmt():
     """
     Through this route, the admin user can manage which
-    user is the 'owner' of each SEP
+    user is the manager of a SEP
 
-    users
     """
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .seps_mgmt.init_grid import sep_mgmt
+        from .sep_mgmt.sep_mgmt import sep_mgmt
 
         return sep_mgmt()
+
+
+@login_required
+@bp_private.route("/sep_crud", methods=["GET", "POST"])
+def sep_crud():
+    """
+    Through this route, the admin user can CRUD seps
+    """
+    if nobody_is_logged():
+        return redirect_to(login_route())
+    elif not is_method_get():
+        return redirect_to(login_route())
+
+    from .sep_crud import sep_crud
+
+    return sep_crud()
 
 
 @login_required
@@ -121,7 +137,7 @@ def received_files_get() -> str:
 
 
 @login_required
-@bp_private.route("/received_files_mgmt", methods=["GET"])
+@bp_private.route("/received_files_mgmt", methods=["GET", "POST"])
 def received_files_mgmt():
     """
     Through this route, the user gets a grid that allows
@@ -132,6 +148,8 @@ def received_files_mgmt():
     """
 
     if nobody_is_logged():
+        return redirect_to(login_route())
+    elif not is_method_get():
         return redirect_to(login_route())
     else:
         rid = request.args.get("id", type=int)  # Get 'id' from Request
