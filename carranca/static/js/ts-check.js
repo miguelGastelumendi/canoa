@@ -13,6 +13,8 @@
 var agGrid = /** @type {Object} */ null;
 var gridID = /** @type {string} */ '';
 var iconID = /** @type {string} */ '';
+var formID = /** @type {string} */ '';
+var respID = /** @type {string} */ '';
 var colMeta = /** @type {Object[]} */[];
 var userList = /** @type {String[]} */[];
 var gridRows = /** @type {JSON} */ '';
@@ -21,12 +23,13 @@ var itemNone = /** @type {string} */ '';
 var itemNone = /** @type {string} */ '';
 var jsData = /** @type {HTMLScriptElement} */ '';
 
-var btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById("myb"));
+var btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById("fake"));
 var dateFormat = /** @type {string} */ '';
 
 const colIconUrl = /** @type {string} */ '';
 const colUserNew = /** @type {string} */ '';
 const colUserCurr = /** @type {string} */ '';
+const colCode = /** @type {string} */ '';
 
 // received_files_mgmt.js
 const isPower = /** @type {bool} */ false;

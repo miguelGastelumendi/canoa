@@ -36,7 +36,7 @@ from ..common.app_error_assistant import AppStumbled
 
 #  --------------------
 def ups_handler(
-    error_code: int, user_msg: str, e: Exception, logout: bool = None
+    error_code: int, user_msg: str, e: Exception = None, logout: bool = None
 ) -> Tuple[dict, str, ui_db_texts]:
     from ..common.app_context_vars import app_user, sidekick
 
@@ -45,36 +45,44 @@ def ups_handler(
     except:
         ui_texts = local_ui_texts(UITextsKeys.Fatal.no_db_conn)
 
-    if isinstance(e, AppStumbled):
+    if not e:
+        error_msg = None  # no error, just a message for the user
+    elif isinstance(e, AppStumbled):
         error_code = e.error_code
         error_msg = e.msg
         logout = e.logout
     elif app_user.is_power if app_user else False:
         error_msg = str(e)
-    else:
+    else:  # don't show to the common user a strange str
         error_msg = None
 
     # Get the name of the caller function
     caller_function = inspect.stack()[1].function
 
+    # default texts that can be use in the form (see ups_page)
     context_texts = {
         UITextsKeys.Msg.warn: user_msg,
         UITextsKeys.Msg.error: error_msg,
         UITextsKeys.Msg.display_only_msg: True,
-        UITextsKeys.Form.icon_url: icon_url("icons", "ups_handler.svg"),
-        UITextsKeys.Form.btn_close: "Entendi",  # TODO: uiTexts
         UITextsKeys.Fatal.code: error_code,
         UITextsKeys.Fatal.where: caller_function,
         UITextsKeys.Fatal.http_code: 500,
     }
 
+    # add `context texts` if not found in section: "Ups-{error_code}"
     for key, value in context_texts.items():
         # override if key not in ui_texts:
-        ui_texts[key] = value
+        if key not in ui_texts:
+            ui_texts[key] = value
 
+    # add `local texts` if not found in "context_texts" nor in "Ups-{error_code}"
     for key, value in local_form_texts().items():
         if key not in ui_texts:
             ui_texts[key] = value
+
+    # set the url for the icon IF a file name exists
+    if (file := ui_texts.get(UITextsKeys.Form.icon_file)) and not ui_texts.get(UITextsKeys.Form.icon_url):
+        ui_texts[UITextsKeys.Form.icon_url] = icon_url("icons", file)
 
     # TODO: send email
     if (False if logout is None else logout) and is_someone_logged():

@@ -299,7 +299,20 @@ class MgmtSepsUser(SQLABaseTable):
     #     return seps_recs, usr_list
 
     @staticmethod
-    def get_seps_usr(field_names: Optional[List[str]], user_id: Optional[int] = None) -> DBRecords:
+    def get_user_sep_list(user_id: Optional[int] = None) -> DBRecords:
+        field_names = [
+            MgmtSepsUser.id.name,
+            MgmtSepsUser.scm_name.name,
+            MgmtSepsUser.fullname.name,
+            MgmtSepsUser.description.name,
+            MgmtSepsUser.visible.name,
+            MgmtSepsUser.icon_file_name.name,
+        ]
+
+        return MgmtSepsUser.get_seps_usr(field_names, user_id)
+
+    @staticmethod
+    def get_seps_usr(field_names: List[str], user_id: Optional[int] = None) -> DBRecords:
         """
         Returns
         1) `vw_mgmt_seps_user` DB view that has the necessary columns to

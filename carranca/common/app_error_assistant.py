@@ -46,8 +46,21 @@ def did_I_stumbled(e: Exception):
     return isinstance(e, AppStumbled)
 
 
+def code_interrupted(e: Exception):
+    """Is it me who stumbled?"""
+    return isinstance(e, JumpOut)
+
+
+class JumpOut(Exception):
+    """A specialized Exception to jump out from current route/code and give a message"""
+
+    def __init__(self, msg: str, error_code: int = 0):
+        self.msg = msg
+        self.error_code = error_code
+
+
 class AppStumbled(Exception):
-    """A specialized Exception for the APP"""
+    """A specialized Exception for Bug or Security Issue (logout)"""
 
     def __init__(self, msg: str, error_code: int = 0, logout: bool = False, is_fatal: bool = False):
         self.msg = msg
@@ -84,7 +97,7 @@ class ModuleErrorCode(IntEnum):
 
     SEP_EDIT = 500
     SEP_MGMT = 550
-    SEP_CRUD = 600
+    SEP_GRID = 600
     DB_FETCH_ROWS = 590  # only on
 
     RECEIVED_FILES_MGMT = 700

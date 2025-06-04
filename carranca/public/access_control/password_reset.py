@@ -14,7 +14,7 @@ from ...models.public import persist_user
 from ...helpers.pw_helper import hash_pass
 from ...helpers.py_helper import now, to_str
 from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
+from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_final
 from ...helpers.route_helper import (
     get_input_text,
     init_response_vars,
@@ -73,7 +73,7 @@ def password_reset(token):
                 persist_user(record_to_update, task_code)
                 add_msg_success("resetPwSuccess", texts)
     except Exception as e:
-        msg = add_msg_fatal("errorPasswordReset", texts, task_code)
+        msg = add_msg_final("errorPasswordReset", texts, task_code)
         sidekick.app_log.error(e)
         sidekick.app_log.debug(msg)
 

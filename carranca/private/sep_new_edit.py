@@ -5,7 +5,7 @@ Equipe da Canoa -- 2024
 mgd 2024-10-09, 11-12
 """
 
-# cSpell: ignore tmpl wtforms werkzeug sepsusr usrlist scms
+# cSpell: ignore tmpl wtforms werkzeug sepsusr usrlist scms nsert
 
 from flask import render_template, request
 from typing import Tuple
@@ -18,6 +18,8 @@ from ..models.private import Sep, Schema, MgmtSepsUser
 from .wtforms import SepEdit, SepNew
 
 from .UserSep import UserSep
+from .sep_icon import icon_refresh
+from .sep_constants import SEP_CMD_GRD, SEP_CMD_INS, ACTION_CODE_SEPARATOR
 from .SepIconConfig import SepIconConfig
 from ..public.ups_handler import ups_handler
 from ..helpers.py_helper import now, to_int, crc16
@@ -26,25 +28,25 @@ from ..helpers.route_helper import (
     init_response_vars,
     get_input_text,
     login_route,
+    private_route,
     redirect_to,
 )
 
-from ..common.app_context_vars import app_user, sidekick
-from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
+from ..common.app_context_vars import app_user
+from ..common.app_error_assistant import ModuleErrorCode, AppStumbled, JumpOut
 from ..helpers.ui_db_texts_helper import (
     UITextsKeys,
     add_msg_success,
     add_msg_error,
-    add_msg_fatal,
+    add_msg_final,
 )
 
 
-def do_sep_edit(code: str) -> str:
+def do_sep_edit(data: str) -> str:
     """SEP Edit Form"""
 
     SVG_MIME = "image/svg+xml"
     SVG_MIN_LEN = 267
-    NEW_SEP_CODE = "add"
 
     @dataclass
     class IconData:
@@ -55,11 +57,45 @@ def do_sep_edit(code: str) -> str:
         error_code: int = 0
 
     new_sep_id = 0
-    is_new_form = code == NEW_SEP_CODE
+
+    if ACTION_CODE_SEPARATOR in data:
+        """
+        action:code
+        -----------
+        `action` can be:
+            » None: is a call from the menu, no action.
+              After edit or insert, return to standard login()
+                or
+            » [C]reate, [I]nsert, [E]dit
+            It is the first char of the button that trigger the action in
+                `private\sep_grid.html.j2`
+            and routed here via
+                `private/rout("/sep_grid/<code>")`
+            See sep_grid.html.j2  { -- Action Triggers -- }
+            After edit or insert, return to the calling grid & select this row
+        """
+        action = data.split(ACTION_CODE_SEPARATOR)[0]
+
+        """
+        `code` is:
+            » SEP_CMD_INS : insert a new SEP or
+            » The obfuscate ID of the SEP to edit
+        """
+        code = data.split(ACTION_CODE_SEPARATOR)[1]
+        goto = private_route("sep_grid", code=SEP_CMD_GRD)
+        on_close = {"action_form__form_on_close": goto}
+
+    else:
+        code = data
+        action = None
+        goto = login_route()
+        on_close = {}
+
+    is_new_form = code == SEP_CMD_INS
     is_edit_form = not is_new_form
     sep_id = new_sep_id if is_new_form else UserSep.to_id(code)
     if sep_id is None or sep_id < 0:
-        return redirect_to(login_route())
+        return redirect_to(goto)
 
     task_code = ModuleErrorCode.SEP_EDIT.value
     flask_form, tmpl_ffn, is_get, ui_texts = init_response_vars()
@@ -79,7 +115,7 @@ def do_sep_edit(code: str) -> str:
             if is_edit_form:
                 task_code += 1  # 1
             elif not app_user.is_power:  # and is_new_form
-                raise AppStumbled(add_msg_fatal("sepNewNotAllow", ui_texts), task_code)
+                raise AppStumbled(add_msg_final("sepNewNotAllow", ui_texts), task_code, True)
             else:  # is_new_form
                 # prepare the Select Schema (available for power in insertion)
                 task_code += 1  # 1
@@ -94,24 +130,24 @@ def do_sep_edit(code: str) -> str:
             # --------------------
             task_code += 1  # 2
             usr_sep = next((sep for sep in app_user.seps if sep.id == sep_id), None)
+            if usr_sep is not None or app_user.is_power:
+                sep_usr_rows = MgmtSepsUser.get_user_sep_list(None if app_user.is_power else app_user.id)
+            else:
+                raise JumpOut(add_msg_final("sepEditNotAllow", ui_texts, sep_fullname), task_code)
+
             if usr_sep is None:
-                raise AppStumbled(add_msg_fatal("sepEditNotAllow", ui_texts), task_code)
-
-            # set the icon
-            task_code += 1  # 3
-            ui_texts[UITextsKeys.Form.icon_url] = usr_sep.icon_url
-
-            # is user in the db 'permission table'?
-            task_code += 1  # 4
-            sep_usr_rows = MgmtSepsUser.get_seps_usr([], app_user.id)
+                _sep = next((sep for sep in sep_usr_rows if sep.id == sep_id), None)
+                usr_sep = UserSep(**_sep)
 
             # check permissions
-            if sep_usr_rows is None:
-                raise AppStumbled(add_msg_fatal("sepEditNotAllow", ui_texts), task_code + 1)  # 5
+            if (
+                sep_usr_rows is None
+            ):  # This condition seems unlikely to be met if get_user_sep_list returns a list or None as per its likely contract. Consider if this check is necessary or if the next one covers it.
+                raise JumpOut(add_msg_final("sepEditNotAllow", ui_texts), task_code + 1)  # 5
             elif None == (sep_user_row := next((mus for mus in sep_usr_rows if mus.id == sep_id), None)):
-                raise AppStumbled(add_msg_fatal("sepEditNotAllow", ui_texts), task_code + 2)  # 6
+                raise JumpOut(add_msg_final("sepEditNotAllow", ui_texts), task_code + 2)  # 6
             elif (sep_row := Sep.get_sep(sep_id, load_sep_icon_content)) is None:
-                raise AppStumbled(add_msg_fatal("sepEditNotFound", ui_texts), task_code + 3)  # 7
+                raise JumpOut(add_msg_final("sepEditNotFound", ui_texts), task_code + 3)  # 7
             elif is_get:
                 # set the form's data row for edition
                 flask_form.schema_name.data = usr_sep.scm_name  # readonly
@@ -119,6 +155,10 @@ def do_sep_edit(code: str) -> str:
                 flask_form.description.data = sep_row.description
                 flask_form.icon_filename.data = None
                 task_code += 8  # 515
+
+            # set the icon
+            # task_code += 1  # 3
+            # ui_texts[UITextsKeys.Form.icon_url] = usr_sep.icon_url
 
             return usr_sep, sep_row, task_code, sep_user_row.fullname
 
@@ -191,7 +231,7 @@ def do_sep_edit(code: str) -> str:
             task_code += 1
         elif not _form_modified(sep_row):
             # TODO: nothing modified, add_msg_warn("nothingChanged", ui_texts)
-            return redirect_to(login_route())
+            return redirect_to(goto)
         elif is_new_form and Sep.this_name_exists(sep_name := flask_form.sep_name.data):
             add_msg_error("sepNameRepeated", ui_texts, sep_name)
         elif (icon_data := _get_icon_data(sep_row)).error_code > 0:
@@ -200,12 +240,11 @@ def do_sep_edit(code: str) -> str:
             task_code += 1
             sep_row.description = get_input_text(flask_form.description.name)
             if is_new_form:
+                lst_name = flask_form.schema_list.name
                 task_code += 1  #
                 sep_row.visible = True
                 sep_row.ins_by = app_user.id
-                sep_row.id_schema = (
-                    int(request.form.get(flask_form.schema_list.name, -1)) if is_new_form else None
-                )
+                sep_row.id_schema = int(request.form.get(lst_name, -1)) if is_new_form else None
                 sep_row.name = sep_name
                 sep_row.id = None
                 scm_list = ui_texts["schemaList"]
@@ -223,26 +262,29 @@ def do_sep_edit(code: str) -> str:
                 sep_row.icon_version = iv + 1 if to_int(iv, 0) > 0 else 1
                 ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.get_icon_url(sep_row.icon_file_name)
 
-            if not Sep.save(sep_row):
+            if Sep.save(sep_row):  # Success  :—)
                 task_code += 3  # 18
-                item = f"sepFailed{'Edit' if is_edit_form else 'New'}"
-                add_msg_fatal(item, ui_texts, sep_fullname, task_code)
-            else:
-                task_code += 4  # 19
                 add_msg_success("sepEditSuccess", ui_texts, sep_fullname)
                 if new_icon and usr_sep:  # after post
-                    from .sep_icon import icon_refresh
-
                     icon_refresh(usr_sep)  # refresh this form icon
 
+                if action:
+                    return redirect_to(goto)
+
+            else:  # :—(
+                task_code += 4  # 19
+                item = f"sepFailed{'Edit' if is_edit_form else 'New'}"
+                add_msg_final(item, ui_texts, sep_fullname, task_code)
+
+    except JumpOut as e:
+        pass
     except Exception as e:
-        # task_code +=
-        item = add_msg_fatal("sepEditException", ui_texts, sep_fullname, task_code)
+        item = add_msg_final("sepEditException", ui_texts, sep_fullname, task_code)
         _, tmpl_ffn, ui_texts = ups_handler(task_code, item, e)
         tmpl = render_template(tmpl_ffn, **ui_texts)
 
     # ??  import pdb; pdb.set_trace()  # Pause here to inspect `context`
-    tmpl = render_template(tmpl_ffn, form=flask_form, **ui_texts)
+    tmpl = render_template(tmpl_ffn, form=flask_form, **ui_texts, **on_close)
     return tmpl
 
 

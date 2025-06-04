@@ -15,7 +15,7 @@ from ...models.public import persist_user
 from ...helpers.sendgrid_helper import send_email
 from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.email_helper import RecipientsListStr
-from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
+from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_final
 from ...helpers.route_helper import (
     public_route,
     get_input_text,
@@ -64,7 +64,7 @@ def password_recovery():
             add_msg_success("emailSent", texts)
             task_code = 0
     except Exception as e:  # TODO: log
-        msg = add_msg_fatal("errorPasswordRecovery", texts, task_code)
+        msg = add_msg_final("errorPasswordRecovery", texts, task_code)
         sidekick.app_log.error(e)
         sidekick.app_log.debug(msg)
 

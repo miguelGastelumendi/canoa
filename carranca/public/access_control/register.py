@@ -16,7 +16,7 @@ from ...models.public import persist_user
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.route_helper import get_account_response_data, get_input_text, init_response_vars
-from ...helpers.ui_db_texts_helper import add_msg_success, add_msg_error, add_msg_fatal
+from ...helpers.ui_db_texts_helper import add_msg_success, add_msg_error, add_msg_final
 
 from ..wtforms import RegisterForm
 from ...models.public import User
@@ -71,7 +71,7 @@ def register():
 
     except Exception as e:
         # TODO: ups
-        msg = add_msg_fatal("errorRegister", texts, task_code)
+        msg = add_msg_final("errorRegister", texts, task_code)
         sidekick.app_log.error(e)
         sidekick.app_log.debug(msg)
 

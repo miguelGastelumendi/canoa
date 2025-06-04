@@ -146,16 +146,8 @@ def _prepare_user_seps() -> user_seps_rtn:
     if count > 1:
         print(f"Count: {count}  !!")
 
-    fields = [
-        MgmtSepsUser.id.name,
-        MgmtSepsUser.scm_name.name,
-        MgmtSepsUser.fullname.name,
-        MgmtSepsUser.description.name,
-        MgmtSepsUser.visible.name,
-        MgmtSepsUser.icon_file_name.name,
-    ]
     try:
-        sep_usr_rows = MgmtSepsUser.get_seps_usr(fields, user_id)
+        sep_usr_rows = MgmtSepsUser.get_user_sep_list(user_id)
     except Exception as e:
         return str(e)
 

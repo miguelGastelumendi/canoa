@@ -8,19 +8,24 @@ mgd
 """
 
 # cSpell: ignore werkzeug wtforms tmpl mgmt
+import json
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 
-from .UserSep import UserSep
 from ..helpers.pw_helper import internal_logout, nobody_is_logged
+from ..public.ups_handler import ups_handler
+from ..helpers.js_grid_helper import js_grid_rsp
 from ..helpers.route_helper import (
     bp_name,
     base_route_private,
     get_private_response_data,
     is_method_get,
     login_route,
+    private_route,
     redirect_to,
 )
+from .sep_constants import SEP_CMD_NUL, SEP_CMD_GRD, ACTION_CODE_SEPARATOR
+
 
 # === module variables ====================================
 bp_private = Blueprint(bp_name(base_route_private), base_route_private, url_prefix="")
@@ -66,19 +71,43 @@ def sep_mgmt():
 
 
 @login_required
-@bp_private.route("/sep_crud", methods=["GET", "POST"])
-def sep_crud():
+@bp_private.route("/sep_grid/<code>", methods=["GET", "POST"])
+def sep_grid(code: str = SEP_CMD_NUL):
     """
     Through this route, the admin user can CRUD seps
     """
+    from .sep_grid import get_sep_grid, ResponseKeys
+    from .sep_new_edit import do_sep_edit
+    from .sep_constants import SEP_CMD_INS
+
+    def _goto(code: str) -> str:
+        url = private_route("sep_edit", code=code)
+        return redirect_to(url)
+
     if nobody_is_logged():
         return redirect_to(login_route())
     elif not is_method_get():
-        return redirect_to(login_route())
+        pass
+    elif code == SEP_CMD_GRD:
+        return get_sep_grid()
+    elif code == js_grid_rsp:
+        cmd_text = request.args.get(code, "")
+        cmd_json = json.loads(cmd_text)
+        action = f"{cmd_json[ResponseKeys.action]} "[0]
+        # redirect action
+        match action:
+            case ResponseKeys.insert:
+                return _goto(SEP_CMD_INS)
+            case ResponseKeys.edit:
+                data = f"{action}:{cmd_json[ResponseKeys.code]}"
+                return _goto(data)
+            case ResponseKeys.delete:
+                # TODO Remove all
+                pass
 
-    from .sep_crud import sep_crud
-
-    return sep_crud()
+    _, tmpl_ffn, ui_texts = ups_handler(0, "Unexpected route parameter.")
+    tmpl = render_template(tmpl_ffn, **ui_texts)
+    return tmpl
 
 
 @login_required

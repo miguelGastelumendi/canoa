@@ -87,7 +87,8 @@ mgd
         {% endwith %}
         {# ┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈ #}
         {# see templates/includes/_form_and_buttons.html.j2 #}
-        {% set action_form__form_close_id= action_form__form_close_id | default ('action-form-btn-close-id') %}
+        {% set action_form__form_close_id= action_form__form_close_id | default('action-form-btn-close-id') %}
+        {% set action_form__form_on_close= action_form__form_on_close | default(public_route('login')) %}
         {% endif %}
         {# └┄┄┄┄ if user logged in ┄┄┄┄┘ #}
 

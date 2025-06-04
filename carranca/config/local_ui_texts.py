@@ -9,6 +9,8 @@ Equipe Canoa -- 2025
 mgd 2025-03-15, 5-23
 """
 
+# cspell:words Entendí
+
 from ..helpers.html_helper import icon_url
 from ..helpers.ui_db_texts_helper import ui_texts_locale, UITextsKeys
 
@@ -28,7 +30,9 @@ local_texts = {
         default_section: {
             UITextsKeys.Form.title: "Situação Inesperada",
             UITextsKeys.Form.date_format: "pt-br",
-            UITextsKeys.Form.icon_url: "ups_handler.svg",
+            UITextsKeys.Form.btn_close: "Entendi",
+            UITextsKeys.Form.icon_file: "ups_handler.svg",
+            UITextsKeys.Form.icon_file: "ups_handler.svg",
         },
         UITextsKeys.Fatal.no_db_conn: {
             UITextsKeys.Msg.warn: "Houve um erro e não foi possível conectar ao banco de dados. Por favor, tente novamente mais tarde."
@@ -38,7 +42,8 @@ local_texts = {
         default_section: {
             UITextsKeys.Form.title: "Unexpected Situation",
             UITextsKeys.Form.date_format: "en",
-            UITextsKeys.Form.icon_url: "ups_handler.svg",
+            UITextsKeys.Form.btn_close: "OK",
+            UITextsKeys.Form.icon_file: "ups_handler.svg",
         },
         UITextsKeys.Fatal.no_db_conn: {
             UITextsKeys.Msg.warn: "There was an error and it was not possible to connect to the database. Please try again later."
@@ -49,7 +54,8 @@ local_texts = {
             # cSpell:ignore posible conectarse datos  inténtelo nuevo Situación
             UITextsKeys.Form.title: "Situación Inesperada",
             UITextsKeys.Form.date_format: "es",
-            UITextsKeys.Form.icon_url: "ups_handler.svg",
+            UITextsKeys.Form.btn_close: "Entendí",
+            UITextsKeys.Form.icon_file: "ups_handler.svg",
         },
         UITextsKeys.Fatal.no_db_conn: {
             UITextsKeys.Msg.warn: "Hubo un error y no fue posible conectarse a la base de datos. Por favor, inténtelo de nuevo más tarde."
@@ -83,8 +89,8 @@ def local_ui_texts(section):
 # for ui_form_texts()
 def local_form_texts():
     ui_form_texts = _get_ui_texts(default_section) or {}
-    icon = ui_form_texts[UITextsKeys.Form.icon_url]
-    ui_form_texts[UITextsKeys.Form.icon_url] = icon_url("home", icon)
+    # icon = ui_form_texts[UITextsKeys.Form.icon_url]
+    # ui_form_texts[UITextsKeys.Form.icon_url] = icon_url("icons", icon)
 
     return ui_form_texts
 

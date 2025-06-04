@@ -11,7 +11,7 @@ mgd
 TODO Selected menu class-> active
 
 cSpell:ignore unselectable labelledby haspopup noopener noreferrer onclick elif
-cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_user
+cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_user inser
 --------------------------------------- #}
 <nav id="navbar-main" class="navbar fixed-top navbar-expand-sm shadow-sm px-2">
     {% set menu_header= app_menu('menuHeaders') %}
@@ -73,15 +73,21 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_us
                         {# ╒════════ admin sep menu ═══════╕ #}
                         <li>
                             <a class="dropdown-item" href="{{ private_route('sep_mgmt') }}"
-                                title="Abre o grid de Gest&atilde;o de Setores Estrat&eacute;gicos">
+                                title="Abre o grid de atribuiç&atilde;o de gestores a Setores Estrat&eacute;gicos">
                                 Gest&atilde;o
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ private_route('sep_crud') }}">Administração</a>
+                            <a class="dropdown-item" href="{{ private_route('sep_grid', code=sep_cmd_grd) }}"
+                                title="Abra o grid para adicionar, editar e remover Setores Estrat&eacute;gicos">
+                                Edi&ccedil;&atilde;o
+                            </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ private_route('sep_edit', code='add') }}">Novo</a>
+                            <a class="dropdown-item" href="{{ private_route('sep_edit', code=sep_cmd_add) }}"
+                                title="Abre o formul&aacute;rio para adicionar um Setor Estrat&eacute;gico">
+                                Inser&ccedil;&atilde;o
+                            </a>
                         </li>
                         {# ╘════════ admin sep menu ═══════╛ #}
                         {% else %}

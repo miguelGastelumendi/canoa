@@ -18,8 +18,6 @@ mgd
 {% set dlg_cls_size= 'modal-lg' %}
 {% set grid_submit_id= 'grd-submit-id' %}
 
-
-
 {% block grid_blc_footer %}
 <div class="mb-2 row">
     <div class="col-auto">
@@ -34,8 +32,7 @@ mgd
 {% endblock grid_blc_footer %}
 
 {% block grid_blc_forms %}
-<form method="post" action="{{private_route('sep_mgmt')}}" id={{dlg_var_submit_id}}
-    onsubmit="return gridCargo('{{grid_rsp}}')">
+<form method="post" action="{{private_route('sep_mgmt')}}" id={{dlg_var_submit_id}} onsubmit="return doGridCargo()">
     <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
     <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
 </form>
@@ -71,6 +68,7 @@ Create a copy of user_list(or empty array), then add (itemNone)
     const cargoKeys = {{ cargo_keys | tojson }};
     const gridID = '{{ grid_id }}';
     const iconID = '{{ dlg_var_icon_id }}';
+    const respID = '{{ grid_rsp }}';
     const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{grid_submit_id}}'));
     const dateFormat = '{{ userDateFormat }}';
 

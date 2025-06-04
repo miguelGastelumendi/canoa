@@ -18,7 +18,7 @@ from ...private.RolesAbbr import RolesAbbr
 from ...public.ups_handler import ups_handler
 from ...common.app_context_vars import sidekick
 from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_fatal
+from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_final
 from ...helpers.route_helper import (
     home_route,
     redirect_to,
@@ -108,7 +108,7 @@ def login():
         )
     except Exception as e:
         error_code = task_code
-        msg = add_msg_fatal("errorLogin", ui_texts, task_code)
+        msg = add_msg_final("errorLogin", ui_texts, task_code)
         flask_form, tmpl_ffn, ui_texts = ups_handler(error_code, msg, e, True)
         html = render_template(
             tmpl_ffn,

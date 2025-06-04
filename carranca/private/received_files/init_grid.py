@@ -17,7 +17,7 @@ from ...public.ups_handler import ups_handler
 from ...helpers.route_helper import get_private_response_data, init_response_vars
 from ...helpers.types_helper import jinja_template
 from ...helpers.js_grid_helper import js_grid_constants
-from ...helpers.ui_db_texts_helper import UITextsKeys, add_msg_fatal
+from ...helpers.ui_db_texts_helper import UITextsKeys, add_msg_final
 from ...common.app_error_assistant import ModuleErrorCode
 from ...common.app_context_vars import app_user
 
@@ -93,7 +93,7 @@ def init_grid(for_user: int) -> jinja_template:
         )
 
     except Exception as e:
-        msg = add_msg_fatal("gridException", ui_texts, task_code)
+        msg = add_msg_final("gridException", ui_texts, task_code)
         _, tmpl_ffn, ui_texts = ups_handler(task_code, msg, e)
         tmpl = render_template(tmpl_ffn, **ui_texts)
 

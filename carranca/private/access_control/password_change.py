@@ -14,7 +14,7 @@ from flask_login import current_user
 from ...models.public import persist_user
 from ...helpers.pw_helper import internal_logout, hash_pass
 from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_fatal
+from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_final
 from ...helpers.route_helper import (
     redirect_to,
     login_route,
@@ -67,7 +67,7 @@ def do_password_change():
             internal_logout()
 
     except Exception as e:
-        msg = add_msg_fatal("errorPasswordChange", ui_texts, task_code)
+        msg = add_msg_final("errorPasswordChange", ui_texts, task_code)
         sidekick.app_log.info(msg)
         sidekick.app_log.error(str(e))
 

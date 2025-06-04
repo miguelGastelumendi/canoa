@@ -10,8 +10,9 @@ mgd
 # spell:ignore Mgmt
 
 from typing import TypeAlias, Optional, List, Dict, Any
-from ..helpers.py_helper import to_base
 from ..helpers.types_helper import error_message
+
+from .IdToCode import IdToCode
 
 user_sep_list: TypeAlias = List["UserSep"]
 user_sep_dict: TypeAlias = Dict[str, Any]
@@ -29,19 +30,16 @@ class UserSep:
     see .models.MgmtUserSeps
     """
 
-    base: int = 13
+    # obfuscate the id when is public
+    idToCode = IdToCode()
 
     @staticmethod
     def to_id(code: str) -> int:
-        try:
-            id = int(int(code, UserSep.base) / UserSep.base)
-        except:
-            id = -1
-        return id
+        return UserSep.idToCode.decode(code)
 
     @property
     def code(self) -> str:
-        return to_base(UserSep.base * self.id, UserSep.base)  # ;-)
+        return UserSep.idToCode.encode(self.id)
 
     def __init__(
         self,

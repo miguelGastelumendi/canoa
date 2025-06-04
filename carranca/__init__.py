@@ -52,6 +52,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from .private.JinjaUser import JinjaUser
 from .helpers.pw_helper import is_someone_logged
+from .helpers.py_helper import crc16, to_base
 from .helpers.route_helper import private_route, public_route, static_route
 
 
@@ -107,6 +108,7 @@ def _register_blueprint_routes(app: Flask):
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
+    from .private.sep_constants import SEP_CMD_INS, SEP_CMD_GRD
 
     def __get_app_menu(sub_menu_name: str) -> ui_db_texts:
         sub_menu: dict = {}
@@ -139,15 +141,23 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
 
         return sep_list
 
+    def __do_hash(data: str) -> str:
+        i: int = crc16(data)
+        hash = format(i, "04x")
+        return hash
+
     app.jinja_env.globals.update(
         app_name=app_name,
         app_version=app_version,
         static_route=static_route,
         private_route=private_route,
         public_route=public_route,
+        hash=__do_hash,
         jinja_user=__get_jinja_user,
         app_menu=__get_app_menu,
         sep_menu=__get_user_sep_menu_list,
+        sep_cmd_add=SEP_CMD_INS,
+        sep_cmd_grd=SEP_CMD_GRD,
     )
     if debugUndefined:
         # Enable DebugUndefined for better error messages in Jinja2 templates

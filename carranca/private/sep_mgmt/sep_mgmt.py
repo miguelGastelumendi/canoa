@@ -24,7 +24,7 @@ from ...helpers.user_helper import get_batch_code
 from ...helpers.route_helper import get_private_response_data, init_response_vars
 from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list
 from ...helpers.js_grid_helper import js_grid_constants, js_grid_sec_key, js_grid_rsp, js_grid_sec_value
-from ...helpers.ui_db_texts_helper import add_msg_fatal, add_msg_error, UITextsKeys
+from ...helpers.ui_db_texts_helper import add_msg_final, add_msg_error, UITextsKeys
 from ...helpers.db_records.DBRecords import DBRecords, ListOfDBRecords
 
 
@@ -88,7 +88,7 @@ def sep_mgmt() -> str:
         )
 
     except Exception as e:
-        msg = add_msg_fatal("gridException", ui_texts, task_code)
+        msg = add_msg_final("gridException", ui_texts, task_code)
         _, tmpl_ffn, ui_texts = ups_handler(task_code, msg, e)
         tmpl = render_template(tmpl_ffn, **ui_texts)
 

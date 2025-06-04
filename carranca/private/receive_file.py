@@ -33,7 +33,7 @@ from ..helpers.ui_db_texts_helper import (
     UITextsKeys,
     add_msg_success,
     add_msg_error,
-    add_msg_fatal,
+    add_msg_final,
 )
 from .validate_process.ProcessData import ProcessData
 from .UserSep import UserSep, user_sep_list, user_sep_dict
@@ -79,7 +79,7 @@ def receive_file() -> template_file_full_name:
         e_code = ModuleErrorCode.RECEIVE_FILE_ADMIT.value + code
 
         log_error = (
-            add_msg_fatal(msg_id, ui_texts, e_code, msg)
+            add_msg_final(msg_id, ui_texts, e_code, msg)
             if fatal
             else add_msg_error(msg_id, ui_texts, e_code, msg)
         )

@@ -13,8 +13,8 @@
 /// <reference path="./ts-check.js" />
 
 let activeRow = null;
-let assignedList = [];
 let removeCount = 0
+let assignedList = [];
 const ignoreList = [itemNone];
 const icon = /** @type {HTMLImageElement} */(document.getElementById(iconID))
 
@@ -100,9 +100,9 @@ const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
 
 //-------------
 // == Actions
-const gridCargo = ( /** @type {string} */ id) => {
+const doGridCargo = () => {
     api.stopEditing();
-    const elResponse = /** @type {HTMLInputElement} */(document.getElementById(id));
+    const elResponse = /** @type {HTMLInputElement} */(document.getElementById(respID));
     if (!elResponse) { return false; }
     // TODO Error msg
     const gridCargo = [];

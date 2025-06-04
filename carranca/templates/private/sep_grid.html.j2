@@ -1,6 +1,6 @@
 {# ------------------------------------
 
-sep_crud.html.j2
+sep_grid.html.j2
 -----------------
 CRUD por seps
 
@@ -22,33 +22,47 @@ mgd
 
 {% block grid_blc_footer %}
 <div class="mb-2 row">
+    {# ----------- Action Triggers --------- #}
+    {# Removed 2025.06.03
     <div class="col-auto">
         {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
-        {{ btn_action(dlg_var_submit_id, grdBtnInsert) }}
+        {{ btn_action(dlg_var_submit_id, grdBtnInsert, cargo_keys.add ) }}
+    </div> #}
+    <div class="col-auto">
+        {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
+        {{ btn_action(dlg_var_submit_id, grdBtnEdit, cargo_keys.edit) }}
     </div>
     <div class="col-auto">
         {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
-        {{ btn_action(dlg_var_submit_id, grdBtnEdit) }}
-    </div>
-    <div class="col-auto">
-        {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
-        {{ btn_action(dlg_var_submit_id, grdBtnDelete) }}
+        {{ btn_action(dlg_var_submit_id, grdBtnDelete, cargo_keys.delete) }}
     </div>
 
 </div>
 {% endblock grid_blc_footer %}
 
+{% block grid_blc_forms %}
+<form method="get" action="{{private_route('sep_grid', code=grid_rsp)}}" id={{dlg_var_submit_id}}>
+    <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
+    <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
+</form>
+{% endblock grid_blc_forms %}
+
+
 {% block grid_blc_javascript %}
 <script>
     const colMeta = {{ grid_col_meta | tojson | safe }};
+    const colCode = colMeta[0].n;
     const colIconUrl = colMeta[1].n;
 
     const gridRows = {{ sep_data | tojson | safe }}
+    const cargoKeys = {{ cargo_keys | tojson }};
     const gridID = '{{ grid_id }}';
     const iconID = '{{ dlg_var_icon_id }}';
+    const formID = '{{ dlg_var_submit_id }}';
+    const respID = '{{ grid_rsp }}';
 
 </script>
-<script src="{{static_route('js/sep_crud.js')}}"></script>
+<script src="{{static_route('js/sep_grid.js')}}"></script>
 {% endblock grid_blc_javascript %}
 
 

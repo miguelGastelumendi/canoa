@@ -48,6 +48,7 @@ class UITextsKeys:
 
     class Form:  # & dialog
         title = "formTitle"
+        icon_file = "iconFile"  # only the icon's name
         icon_url = "iconFileUrl"  # url of an png/svg icon dlg_var_icon_url = iconFileUrl, dlg-var-icon-id
         date_format = "userDateFormat"
         # This button is only visible when msg_only is True OR is a Dialog/Document (see document.html.j2)
@@ -309,7 +310,7 @@ def add_msg_error(item: str, texts: ui_db_texts = {}, *args) -> str:
     return _add_msg(item, UITextsKeys.Section.error, UITextsKeys.Msg.error, texts, *args)
 
 
-def add_msg_fatal(item: str, texts: ui_db_texts = {}, *args) -> str:
+def add_msg_final(item: str, texts: ui_db_texts = {}, *args) -> str:
     """
     TODO: fatal
     Same as add_msg_error, but sets

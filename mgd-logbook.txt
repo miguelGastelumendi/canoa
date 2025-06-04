@@ -64,7 +64,26 @@
 -----------------------------------------------------------
 ------- 2025 - March -------------
 ----------------------------------
-2025-05-22--24 β 4.16 New Grid for SEP Admin (part 1/2)
+2025-05-2--3 β 4.19 New Grid for SEP Admin (part 4/4a)
+    - Include manager's name in Edit form when call from Grid (by Adm)
+    - Return to grid after close the [x]`
+    - TODO: select the row
+
+
+2025-05-30 β 4.18 New Grid for SEP Admin (part 3/4)
+    - Demo to Pedro:
+        . Window & Menu name: ' ~Manutenção~ "Edição de Setores Estratégicos"
+        . [Criar] remove
+        . [Edit] Button calls standard Edit SEP window, after delete return to grid/
+        . [Remove] is confirmed with type the name of the SEP before deleting.
+
+
+2025-05-26--29 β 4.17 New Grid for SEP Admin (part 2/4)
+    - Ativar: Novo e Edição de SEP desde da janela
+      ~Administration~"Manutenção de Setores Estratégicos
+
+
+2025-05-22--24 β 4.16 New Grid for SEP Admin (part 1/4)
     - Fix a problem with Windows server Remote Desktop
     - Fix a bug en warn message stuck in the form
       (see msg @pedro 23/05/2025)

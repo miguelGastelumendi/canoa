@@ -111,7 +111,7 @@ mgd
 {% block base_blc_forms %}
 
 {% from "includes/_action_forms_and_btns.html.j2" import action_form__close %}
-{{ action_form__close(action_form__form_close_id) }}
+{{ action_form__close( action_form__form_on_close, action_form__form_close_id) }}
 
 {# ╒═════════ Dialog Forms ═════════╕ #}
 {% block dlg_blc_forms %}
