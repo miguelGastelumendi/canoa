@@ -130,19 +130,26 @@ def do_sep_edit(data: str) -> str:
             # --------------------
             task_code += 1  # 2
             usr_sep = next((sep for sep in app_user.seps if sep.id == sep_id), None)
-            if usr_sep is not None or app_user.is_power:
-                sep_usr_rows = MgmtSepsUser.get_user_sep_list(None if app_user.is_power else app_user.id)
-            else:
+            if usr_sep is not None:
+                sep_usr_rows = MgmtSepsUser.get_user_sep_list(app_user.id)
+            elif not app_user.is_power:
                 raise JumpOut(add_msg_final("sepEditNotAllow", ui_texts, sep_fullname), task_code)
-
-            if usr_sep is None:
-                _sep = next((sep for sep in sep_usr_rows if sep.id == sep_id), None)
-                usr_sep = UserSep(**_sep)
+            elif (sep_usr_rows := MgmtSepsUser.get_sep(sep_id)) is None or (sep_usr_rows.count == 0):
+                raise JumpOut(add_msg_final("sepEditNotFound", ui_texts), task_code + 2)  # 7
+            else:
+                edit_dict = dict(sep_usr_rows[0])
+                # AQUI
+                # Remove 'user_curr'  edit_dict, because is not needed in UserSep(..)
+                sep_manager = edit_dict.pop("user_curr", None)
+                usr_sep = UserSep(**edit_dict)
 
             # check permissions
-            if (
-                sep_usr_rows is None
-            ):  # This condition seems unlikely to be met if get_user_sep_list returns a list or None as per its likely contract. Consider if this check is necessary or if the next one covers it.
+            if sep_usr_rows is None:
+                """
+                This condition seems unlikely to be met if get_user_sep_list returns
+                a list or None as per its likely contract.
+                Consider if this check is necessary or if the next one covers it.
+                """
                 raise JumpOut(add_msg_final("sepEditNotAllow", ui_texts), task_code + 1)  # 5
             elif None == (sep_user_row := next((mus for mus in sep_usr_rows if mus.id == sep_id), None)):
                 raise JumpOut(add_msg_final("sepEditNotAllow", ui_texts), task_code + 2)  # 6
@@ -154,7 +161,7 @@ def do_sep_edit(data: str) -> str:
                 flask_form.sep_name.data = sep_row.name
                 flask_form.description.data = sep_row.description
                 flask_form.icon_filename.data = None
-                task_code += 8  # 515
+                task_code += 8  # 513
 
             # set the icon
             # task_code += 1  # 3

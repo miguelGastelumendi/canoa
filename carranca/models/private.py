@@ -299,7 +299,7 @@ class MgmtSepsUser(SQLABaseTable):
     #     return seps_recs, usr_list
 
     @staticmethod
-    def get_user_sep_list(user_id: Optional[int] = None) -> DBRecords:
+    def _get_sep_list(user_id: Optional[int] = None, sep_id: Optional[int] = None) -> DBRecords:
         field_names = [
             MgmtSepsUser.id.name,
             MgmtSepsUser.scm_name.name,
@@ -308,11 +308,30 @@ class MgmtSepsUser(SQLABaseTable):
             MgmtSepsUser.visible.name,
             MgmtSepsUser.icon_file_name.name,
         ]
+        if sep_id is not None:
+            field_names.append(MgmtSepsUser.user_curr.name)
 
         return MgmtSepsUser.get_seps_usr(field_names, user_id)
 
     @staticmethod
-    def get_seps_usr(field_names: List[str], user_id: Optional[int] = None) -> DBRecords:
+    def get_user_sep_list(user_id: int) -> DBRecords:
+        """Get seps for one user"""
+        return MgmtSepsUser._get_sep_list(user_id)
+
+    @staticmethod
+    def get_sep(sep_id: int) -> DBRecords:
+        """Get one sep"""
+        return MgmtSepsUser._get_sep_list(None, sep_id)
+
+    @staticmethod
+    def get_sep_list() -> DBRecords:
+        """Get all seps"""
+        return MgmtSepsUser._get_sep_list(None, None)
+
+    @staticmethod
+    def get_seps_usr(
+        field_names: List[str], user_id: Optional[int] = None, sep_id: Optional[int] = None
+    ) -> DBRecords:
         """
         Returns
         1) `vw_mgmt_seps_user` DB view that has the necessary columns to
@@ -331,6 +350,8 @@ class MgmtSepsUser(SQLABaseTable):
             stmt = select(*sel_cols) if sel_cols else select(MgmtSepsUser)
             if user_id is not None:  # then filter
                 stmt = stmt.where(MgmtSepsUser.user_id == user_id)
+            if sep_id is not None:  # then filter
+                stmt = stmt.where(MgmtSepsUser.id == sep_id)
 
             seps_rows = db_session.execute(stmt).all()
             seps_recs = DBRecords(stmt, seps_rows)

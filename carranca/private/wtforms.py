@@ -65,10 +65,15 @@ class SepEdit(FlaskForm):
           lang, disabled, readonly, required
     """
 
+    manager_name = StringField(
+        "",
+        render_kw={"class": "form-control", "disabled": True},  # always disabled
+    )
+
     schema_name = StringField(
         "",
         validators=[Length(min=5, max=140)],  # TODO sidekick.config.DB_len_val_for_sep
-        render_kw={"class": "form-control", "disabled": True},  # always disabled
+        render_kw={"class": "form-control", "disabled": True},  # almost always disabled
     )
 
     sep_name = StringField(

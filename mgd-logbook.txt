@@ -54,22 +54,30 @@
 ----------------------------------
 
 
-    	A user can not be disabled if it has a SEP, cannot be assigned a sep if is disabled
-
 
 
 -----------------------------------------------------------
   Logbook
   Atualizar versão em app_constants.py
 -----------------------------------------------------------
-------- 2025 - March -------------
+
+   	A user can not be disabled if it has a SEP, cannot be assigned a sep if is disabled
+
+------- 2025 - June -------------
 ----------------------------------
-2025-05-2--3 β 4.19 New Grid for SEP Admin (part 4/4a)
+2025-06-04 β 4.20 Get the Manger's name of the row edit in the SEP Adm Grid
+    - sep_new_edit:[sep_manager]
+
+
+2025-06-02--03 β 4.19 New Grid for SEP Admin (part 4/4a)
     - Include manager's name in Edit form when call from Grid (by Adm)
     - Return to grid after close the [x]`
     - TODO: select the row
 
 
+
+------- 2025 - March -------------
+----------------------------------
 2025-05-30 β 4.18 New Grid for SEP Admin (part 3/4)
     - Demo to Pedro:
         . Window & Menu name: ' ~Manutenção~ "Edição de Setores Estratégicos"
@@ -126,7 +134,9 @@
     - issue #36 ready
     - issue #34 1/3
 
------------------------------------------------------------
+
+------- 2025 - April -------------
+----------------------------------
 2025-04-28--30 β 4.07 issue #36
     - Já solicita e muda o ícone acordo
     - Falta propagar a informação para o processo

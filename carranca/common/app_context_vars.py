@@ -168,7 +168,7 @@ def _get_user_seps() -> user_seps_rtn:
     if app_user == None:
         result: error_message = "No current user to retrieve SEP data."
     else:  # convert simple dict to UserSep again
-        DEBUG_USER_SEPS = False
+        DEBUG_USER_SEPS = True  # True -> don't use scoped_var
         list_dic = (
             _prepare_user_seps() if DEBUG_USER_SEPS else _get_scoped_var("_user_seps", _prepare_user_seps)
         )
