@@ -18,9 +18,9 @@ from ..models.private import Sep, Schema, MgmtSepsUser
 from .wtforms import SepEdit, SepNew
 
 from .UserSep import UserSep
-from .sep_icon import icon_refresh
+from .sep_icon import icon_refresh, ICON_MIN_SIZE
 from .sep_constants import SEP_CMD_GRD, SEP_CMD_INS, ACTION_CODE_SEPARATOR
-from .SepIconConfig import SepIconConfig, ICON_MIN_SIZE
+from .SepIconConfig import SepIconConfig
 from ..public.ups_handler import ups_handler
 from ..helpers.py_helper import now, to_int, crc16
 from ..helpers.route_helper import (
@@ -58,7 +58,7 @@ def do_sep_edit(data: str) -> str:
 
     new_sep_id = 0
 
-    if ACTION_CODE_SEPARATOR in data:
+    if ACTION_CODE_SEPARATOR in data:  # called from sep_grid
         """
         action:code
         -----------
@@ -77,25 +77,31 @@ def do_sep_edit(data: str) -> str:
         action = data.split(ACTION_CODE_SEPARATOR)[0]
 
         """
-        `code` is:
-            » SEP_CMD_INS : insert a new SEP or
+        `code` can be:
+            » SEP_CMD_INS : insert a new SEP
+              or
             » The obfuscate ID of the SEP to edit
         """
         code = data.split(ACTION_CODE_SEPARATOR)[1]
-        goto = private_route("sep_grid", code=SEP_CMD_GRD)
-        on_close = {"action_form__form_on_close": goto}
+        """
+            Where to go after
+            save: goto
+            close: on_close
+        """
+        process_on_end = private_route("sep_grid", code=SEP_CMD_GRD)
+        from_on_close = {"action_form__form_on_close": process_on_end}
 
-    else:
+    else:  # standard routine
         code = data
         action = None
-        goto = login_route()
-        on_close = {}
+        process_on_end = login_route()  # default
+        from_on_close = {}  # default = login
 
     is_new_form = code == SEP_CMD_INS
     is_edit_form = not is_new_form
     sep_id = new_sep_id if is_new_form else UserSep.to_id(code)
     if sep_id is None or sep_id < 0:
-        return redirect_to(goto)
+        return redirect_to(process_on_end)
 
     task_code = ModuleErrorCode.SEP_EDIT.value
     flask_form, tmpl_ffn, is_get, ui_texts = init_response_vars()
@@ -168,6 +174,11 @@ def do_sep_edit(data: str) -> str:
 
             return usr_sep, sep_row, task_code, sep_user_row.fullname
 
+        def _get_id_schema() -> int:
+            lst_name = flask_form.schema_list.name
+            id_schema = int(request.form.get(lst_name, -1)) if is_new_form else None
+            return id_schema
+
         def _form_modified(sep_row: Sep) -> bool:
             # remove schema/sep separator sep+sep
             ui_description = get_input_text(flask_form.description.name)
@@ -177,6 +188,7 @@ def do_sep_edit(data: str) -> str:
                 id = flask_form.schema_list.data
                 form_modified = id or ui_description or ui_sep_name or _icon_file_sent()[0]
             else:  # is_edit and maybe user cannot modified sep_name
+                # TODO check Schema
                 sep_name = sep_row.name if ui_sep_name is None else ui_sep_name
                 flask_form.sep_name.data = sep_name
                 form_modified = (
@@ -233,30 +245,31 @@ def do_sep_edit(data: str) -> str:
         usr_sep, sep_row, task_code, sep_fullname = _get_sep_data(not is_get, task_code)
 
         task_code = ModuleErrorCode.SEP_EDIT.value + 10
+        sep_name = flask_form.sep_name.data
         if is_get:
             task_code += 1
         elif not _form_modified(sep_row):
             # TODO: nothing modified, add_msg_warn("nothingChanged", ui_texts)
-            return redirect_to(goto)
-        elif is_new_form and Sep.this_name_exists(sep_name := flask_form.sep_name.data):
+            return redirect_to(process_on_end)
+        elif is_new_form and Sep.this_name_exists(sep_name):
             add_msg_error("sepNameRepeated", ui_texts, sep_name)
         elif (icon_data := _get_icon_data(sep_row)).error_code > 0:
             add_msg_error("sepEditInvalidFormat", ui_texts, SepIconConfig.ext, icon_data.error_code)
         else:
             task_code += 1
+            sep_row.name = sep_name
             sep_row.description = get_input_text(flask_form.description.name)
             if is_new_form:
-                lst_name = flask_form.schema_list.name
                 task_code += 1  #
                 sep_row.visible = True
                 sep_row.ins_by = app_user.id
+                lst_name = flask_form.schema_list.name
                 sep_row.id_schema = int(request.form.get(lst_name, -1)) if is_new_form else None
-                sep_row.name = sep_name
                 sep_row.id = None
                 scm_list = ui_texts["schemaList"]
                 scm_name = next((scms["name"] for scms in scm_list if scms["id"] == sep_row.id_schema), "?")
-                sep_fullname = Sep.get_fullname(scm_name, sep_row.name)
                 # get sep_fullname in case of error
+                sep_fullname = Sep.get_fullname(scm_name, sep_row.name)
 
             if new_icon := icon_data.ready:
                 task_code += 2
@@ -275,7 +288,7 @@ def do_sep_edit(data: str) -> str:
                     icon_refresh(usr_sep)  # refresh this form icon
 
                 if action:
-                    return redirect_to(goto)
+                    return redirect_to(process_on_end)
 
             else:  # :—(
                 task_code += 4  # 19
@@ -290,7 +303,7 @@ def do_sep_edit(data: str) -> str:
         tmpl = render_template(tmpl_ffn, **ui_texts)
 
     # ??  import pdb; pdb.set_trace()  # Pause here to inspect `context`
-    tmpl = render_template(tmpl_ffn, form=flask_form, **ui_texts, **on_close)
+    tmpl = render_template(tmpl_ffn, form=flask_form, **ui_texts, **from_on_close)
     return tmpl
 
 

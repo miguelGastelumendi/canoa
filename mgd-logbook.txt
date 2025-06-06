@@ -65,7 +65,11 @@
 
 ------- 2025 - June -------------
 ----------------------------------
-2025-06-04 β 4.21 Fix a bug when recreating icon files from DB
+2025-06-06 β 4.22  Change Schema of SEP
+    -  Start allowing power user to change Schema of SEP
+
+
+2025-06-05 β 4.21 Fix a bug when recreating icon files from DB
     - see SepIconConfig new class_property
 
 
