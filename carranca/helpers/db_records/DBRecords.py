@@ -135,7 +135,7 @@ class DBRecords:
 
     @property
     def count(self) -> int:
-        return self.__len__(self)
+        return len(self)
 
     def append(self, record_dict: Dict[str, Any]) -> None:
         """Appends a new DBRecord object based on records list."""

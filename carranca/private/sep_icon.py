@@ -9,15 +9,15 @@ mgd 2024-11-16
 # cSpell:ignore mgmt
 
 from os import path, remove
-from typing import Optional, Tuple
+from typing import Optional
 
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.file_helper import folder_must_exist
 from ..common.app_context_vars import sidekick
-from ..common.app_error_assistant import AppStumbled
+from ..common.app_error_assistant import AppStumbled, JumpOut
 from ..models.private import Sep
 
-from .SepIcon import SepIcon, SepData
+from .SepIcon import SepIcon, ICON_MIN_SIZE
 from .SepIconConfig import SepIconConfig
 
 
@@ -40,9 +40,24 @@ def icon_refresh(sep: SepIcon | Sep) -> bool:
         do_icon_get_url(sep.id)
         refreshed = True
     except Exception as e:
+
         sidekick.display.error(f"Could not refresh icon [{file_full_name}].")
 
     return refreshed
+
+
+def icon_ready(file_full_name: str) -> bool:
+
+    if not path.isfile(file_full_name):
+        return False
+    elif path.getsize(file_full_name) > ICON_MIN_SIZE:
+        return True
+    else:
+        try:
+            remove(file_full_name)
+            return False
+        except OSError as e:
+            raise JumpOut(f"Error deleting file '{file_full_name}'.")
 
 
 def do_icon_get_url(icon_file_name: str, sep_id: Optional[int] = None) -> str:
@@ -65,7 +80,8 @@ def do_icon_get_url(icon_file_name: str, sep_id: Optional[int] = None) -> str:
         # TODO: express this error more clearly
         sidekick.display.error(f"Cannot create folder [{SepIconConfig.local_path}]")
         return None
-    elif not path.isfile(file_full_name):
+    elif not icon_ready(file_full_name):
+        content = ""
         match icon_file_name:
             case SepIconConfig.error_file:
                 content = SepIconConfig.error_content
@@ -74,7 +90,7 @@ def do_icon_get_url(icon_file_name: str, sep_id: Optional[int] = None) -> str:
             case SepIconConfig.none_file:
                 content = SepIconConfig.none_content
             case _:
-                if sep_id == None:
+                if sep_id is None:
                     content = SepIconConfig.none_content
                 else:
                     content, msg_error = Sep.get_content(sep_id)

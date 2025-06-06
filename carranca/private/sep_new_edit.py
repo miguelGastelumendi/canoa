@@ -20,7 +20,7 @@ from .wtforms import SepEdit, SepNew
 from .UserSep import UserSep
 from .sep_icon import icon_refresh
 from .sep_constants import SEP_CMD_GRD, SEP_CMD_INS, ACTION_CODE_SEPARATOR
-from .SepIconConfig import SepIconConfig
+from .SepIconConfig import SepIconConfig, ICON_MIN_SIZE
 from ..public.ups_handler import ups_handler
 from ..helpers.py_helper import now, to_int, crc16
 from ..helpers.route_helper import (
@@ -42,11 +42,11 @@ from ..helpers.ui_db_texts_helper import (
 )
 
 
+SVG_MIME = "image/svg+xml"
+
+
 def do_sep_edit(data: str) -> str:
     """SEP Edit Form"""
-
-    SVG_MIME = "image/svg+xml"
-    SVG_MIN_LEN = 267
 
     @dataclass
     class IconData:
@@ -138,8 +138,7 @@ def do_sep_edit(data: str) -> str:
                 raise JumpOut(add_msg_final("sepEditNotFound", ui_texts), task_code + 2)  # 7
             else:
                 edit_dict = dict(sep_usr_rows[0])
-                # AQUI
-                # Remove 'user_curr'  edit_dict, because is not needed in UserSep(..)
+                # Remove 'user_curr' from edit_dict, because is not needed in UserSep(..)
                 sep_manager = edit_dict.pop("user_curr", None)
                 usr_sep = UserSep(**edit_dict)
 
@@ -202,13 +201,13 @@ def do_sep_edit(data: str) -> str:
                 icon_data.error_code = 1
             elif not (file_obj := request.files.get(flask_form.icon_filename.name)):
                 icon_data.error_code = 2
-            elif len(data := file_obj.read().decode("utf-8").strip()) < SVG_MIN_LEN:
+            elif len(data := file_obj.read().decode("utf-8").strip()) < ICON_MIN_SIZE:
                 icon_data.error_code = 3
             elif (start := (idx if (idx := data.find("<svg>")) != -1 else data.find("<svg "))) < 0:
                 icon_data.error_code = 4
             elif (end := data.find("</svg>")) < 0:
                 icon_data.error_code = 5
-            elif (end - start) < SVG_MIN_LEN:
+            elif (end - start) < ICON_MIN_SIZE:
                 icon_data.error_code = 6
             elif not (sep_row.icon_svg or "") == (data or ""):
                 icon_data.content = data

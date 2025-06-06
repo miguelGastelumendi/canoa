@@ -8,8 +8,9 @@ mgd
 # cSpell:ignore MgmtSep
 
 
-from os import path
 from ..helpers.py_helper import is_str_none_or_empty
+
+ICON_MIN_SIZE = 267  # bytes
 
 
 class SepData:

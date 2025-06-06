@@ -65,6 +65,10 @@
 
 ------- 2025 - June -------------
 ----------------------------------
+2025-06-04 β 4.21 Fix a bug when recreating icon files from DB
+    - see SepIconConfig new class_property
+
+
 2025-06-04 β 4.20 Get the Manger's name of the row edit in the SEP Adm Grid
     - sep_new_edit:[sep_manager]
 

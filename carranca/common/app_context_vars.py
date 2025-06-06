@@ -165,7 +165,7 @@ def _prepare_user_seps() -> user_seps_rtn:
 def _get_user_seps() -> user_seps_rtn:
     from ..private.UserSep import UserSep
 
-    if app_user == None:
+    if app_user is None:
         result: error_message = "No current user to retrieve SEP data."
     else:  # convert simple dict to UserSep again
         DEBUG_USER_SEPS = True  # True -> don't use scoped_var

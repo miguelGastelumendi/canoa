@@ -89,7 +89,7 @@ def display_html(docName: str):
 
     def _setValue(key: str, default: str) -> str:
         value = ui_texts.get(key, None)
-        if value == None:
+        if value is None:
             value = ui_defaults.get(key, default)
             ui_texts[key] = value
         return

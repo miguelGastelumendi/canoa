@@ -31,19 +31,16 @@ instance/*
 !instance/.gitignore
 .webassets-cache
 
-## Canoa base
-carranca/static/assets/node_modules
-carranca/static/assets/yarn.lock
-carranca/static/assets/.temp
-carranca/log_files
-
 ## Canoa per git's user
+carranca/static/sep_icons
 carranca/static/docs/
+carranca/log_files
 user_files/
 uploaded_files/
 downloaded_files/
 LocalStorage/
 data_tunnel/
+
 
 ## Canoa Linux
 mount-win.sh

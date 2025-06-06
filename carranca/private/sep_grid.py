@@ -78,8 +78,9 @@ def _sep_data_fetch(col_names: List[str]) -> Tuple[DBRecords]:
     sep_usr_rows = MgmtSepsUser.get_seps_usr(col_names)
     idToCode = IdToCode()
     for record in sep_usr_rows:
-        record.id = idToCode.encode(record.id)
-        record.icon_file_name = do_icon_get_url(record.icon_file_name)
+        sep_id = record.id
+        record.id = idToCode.encode(sep_id)
+        record.icon_file_name = do_icon_get_url(record.icon_file_name, sep_id)
 
     return sep_usr_rows
 

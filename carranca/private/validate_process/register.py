@@ -11,7 +11,7 @@ mgd
 
 # cSpell:ignore ccitt
 
-import os
+from os import path, remove
 from zlib import crc32
 
 from .Cargo import Cargo
@@ -34,7 +34,7 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         return file_size, file_crc32
 
     def _crc_from_downloaded_file(full_name: str) -> tuple[int, int]:
-        file_size = os.path.getsize(full_name)
+        file_size = path.getsize(full_name)
         file_crc32 = 0
         with open(full_name, "rb") as file:
             file_crc32 = crc32(file.read())
@@ -93,7 +93,7 @@ def register(cargo: Cargo, file_data: object | str) -> Cargo:
         msg_fatal = f"Error registering the file [{cargo.pd.received_file_name}]"
         msg_deleted = ""
         if file_saved and not file_registered:
-            os.remove(work_fname)
+            remove(work_fname)
             msg_deleted = " (so it was locally deleted)"
         sidekick.app_log.fatal(f"{msg_fatal}{msg_deleted}. Error: [{msg_exception}].")
 

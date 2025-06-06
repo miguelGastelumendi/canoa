@@ -73,7 +73,7 @@ def send_email(batch_code: str, ui_texts: ui_db_texts, task_code: int) -> sep_mg
                 if item.old_user_name is not None:
                     old_error = _send_email(item.old_user_email, item.old_user_name, sep, "emailRemoved")
 
-                if item.new_user_name == None and item.old_user_name == None:
+                if item.new_user_name is None and item.old_user_name is None:
                     item.email_error = "No users found to send email."
                 elif new_error is None and old_error is None:
                     item.email_error = None

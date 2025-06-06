@@ -9,7 +9,7 @@ Equipe Canoa -- 2025
 mgd 2025-03-15, 5-23
 """
 
-# cspell:words Entendí
+# cspell:words Entendí ui_texts_locale
 
 from ..helpers.html_helper import icon_url
 from ..helpers.ui_db_texts_helper import ui_texts_locale, UITextsKeys

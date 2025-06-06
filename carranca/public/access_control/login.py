@@ -75,7 +75,7 @@ def login():
             elif user.disabled:
                 task_code += 3  # 12
                 add_msg_error("userIsDisabled", ui_texts)
-            elif user_role_abbr == None:
+            elif user_role_abbr is None:
                 task_code += 4  # 13
                 add_msg_error("roleNotFound", ui_texts, "(null)")
             elif not user_role_abbr in {role.value for role in RolesAbbr}:

@@ -2,7 +2,7 @@
 #
 # mgd 2024-06-21
 
-# cSpell:ignore
+# cSpell:ignore tpmt
 
 from flask import current_app
 
@@ -13,7 +13,7 @@ from ..helpers.types_helper import jinja_template
 _jinja_pre_template_mark = "^"
 
 
-def prepare_template(tepmt: jinja_template)-> jinja_template:
+def prepare_template(tpmt: jinja_template)-> jinja_template:
     prepared = tpmt.strip()
 
 
