@@ -295,7 +295,7 @@ def do_sep_edit(data: str) -> str:
                 item = f"sepFailed{'Edit' if is_edit_form else 'New'}"
                 add_msg_final(item, ui_texts, sep_fullname, task_code)
 
-    except JumpOut as e:
+    except JumpOut:
         pass
     except Exception as e:
         item = add_msg_final("sepEditException", ui_texts, sep_fullname, task_code)

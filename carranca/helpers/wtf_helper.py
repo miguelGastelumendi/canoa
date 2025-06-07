@@ -51,7 +51,7 @@ class LenValidate:
     def wtf_val(self) -> dict:
         """
         Returns:
-            dict: A dictionary containing the wtForms Length validator arguments.
+            dict: A dictionary containing the wtforms Length validator arguments.
 
                 Note that it is sent to the HTML input `max + 1` because the input
                 tag does not allow you to write more digits than the maximum and,
@@ -70,7 +70,7 @@ class LenValidate:
 # if not validator.check("This is a valid string"):
 #     print("Invalid length")
 
-# # Using the wtForms validator
+# # Using the wtforms validator
 # from wtforms import Form, StringField
 
 # class MyForm(Form):

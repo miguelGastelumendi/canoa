@@ -9,7 +9,7 @@ Equipe da Canoa -- 2024
 #
 # cSpell:ignore: nullable sqlalchemy sessionmaker sep ssep scm sepsusr usrlist SQLA
 
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from sqlalchemy import (
     Boolean,
     Column,
@@ -31,7 +31,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from .. import global_sqlalchemy_scoped_session
 
 from ..models import SQLABaseTable
-from ..models.public import User
 from ..private.SepIconConfig import SepIconConfig, svg_content
 from ..common.app_context_vars import sidekick
 from ..helpers.db_helper import db_fetch_rows, db_ups_error

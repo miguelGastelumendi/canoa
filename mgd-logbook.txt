@@ -65,6 +65,9 @@
 
 ------- 2025 - June -------------
 ----------------------------------
+2025-06-07 β 4.23  Sync git with note
+    -  My note was unsync with workstation
+
 2025-06-06 β 4.22  Change Schema of SEP
     -  Start allowing power user to change Schema of SEP
 
@@ -117,7 +120,7 @@
 
 2025-05-16,18,19 β 4.13
     - sep_new_edit.py:
-      Resolved wtForms mutable render_kw
+      Resolved wtforms mutable render_kw
 
 2025-05-12--15 β 4.12 pre
     - sep_new_edit.py ready for tests
@@ -818,7 +821,7 @@
 ----------------------------------
 
 2024-06-22 v β 1.6
-    1.  Check all wtForms validators (create app_config.LenFor.name & pw)
+    1.  Check all wtforms validators (create app_config.LenFor.name & pw)
           RegisterForm had no min size for `name` but LoginForm did.
           So a user who registered with a short (<6) name couldn't login.
     2.  Create wtf_helper.py and jinja_helper.py: class LenFor
@@ -826,7 +829,7 @@
     4.  Following the recommendation from
             https://wtforms.readthedocs.io/en/master/validators/#wtforms.validators.DataRequired
 
-            wtForms's DataRequired() -> InputRequired()
+            wtforms's DataRequired() -> InputRequired()
             _Unless a very specific reason exists, we recommend using the InputRequired instead._
     5.  As far as I check, EqualTo runs on the server. Using mine.
            https://wtforms.readthedocs.io/en/3.0.x/validators/?highlight=equa#wtforms.validators.EqualTo:
