@@ -27,15 +27,14 @@ from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import defer, Session
 from sqlalchemy.ext.hybrid import hybrid_property
 
-
 from .. import global_sqlalchemy_scoped_session
 
 from ..models import SQLABaseTable
-from ..private.SepIconConfig import SepIconConfig, svg_content
-from ..common.app_context_vars import sidekick
 from ..helpers.db_helper import db_fetch_rows, db_ups_error
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_user_code
+from ..private.SepIconConfig import SepIconConfig, svg_content
+from ..common.app_context_vars import sidekick
 from ..helpers.db_records.DBRecords import DBRecords
 
 
@@ -310,7 +309,7 @@ class MgmtSepsUser(SQLABaseTable):
         if sep_id is not None:
             field_names.append(MgmtSepsUser.user_curr.name)
 
-        return MgmtSepsUser.get_seps_usr(field_names, user_id)
+        return MgmtSepsUser.get_seps_usr(field_names, user_id, sep_id)
 
     @staticmethod
     def get_user_sep_list(user_id: int) -> DBRecords:
@@ -369,7 +368,7 @@ class MgmtEmailSep(SQLABaseTable):
     This *Updatable view `vw_mgmt_email_sep` exposes
     columns to assist in sending emails to users when
     the SEP assigned to them is changed by an admin.
-        .\private\sep_mgmt\send_email.py
+        ./private/sep_mgmt/send_email.py
         updates email_at and email_error
     """
 
@@ -457,7 +456,7 @@ class Sep(SQLABaseTable):
     def get_sep(id: int, load_icon: Optional[bool] = False) -> "Sep":
         """
         Select a SEP by id, with deferred Icon content (useful for edition). It also
-        returns the SEP's full name (schema +\+ SEP) from the view `vw_scm_sep`.
+        returns the SEP's full name (schema/SEP) (config.SCM_SEP_SEPARATOR) the view `vw_scm_sep`.
 
         NB:
             Forward Reference

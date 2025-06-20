@@ -50,9 +50,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 
+from .helpers.py_helper import crc16
 from .private.JinjaUser import JinjaUser
 from .helpers.pw_helper import is_someone_logged
-from .helpers.py_helper import crc16, to_base
 from .helpers.route_helper import private_route, public_route, static_route
 
 

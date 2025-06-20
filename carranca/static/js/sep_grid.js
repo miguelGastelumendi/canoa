@@ -43,7 +43,7 @@ const gridOptions = {
     onCellFocused: (event) => {
         rowCode = null;
         let row = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex);
-        setActiveRow(row)
+        setActiveRow(row, event.rowIndex)
     }
     , rowData: gridRows
     , columnDefs: [
@@ -55,9 +55,10 @@ const gridOptions = {
     ]
 }; // gridOptions
 
-const setActiveRow = (row) => {
+const setActiveRow = (row, rowIx) => {
     if (!row) { return; }
     activeRow = row;
+    rowIndex = rowIx
     rowCode = row.data[colCode]
     if (icon.src != row.data[colIconUrl]) {
         icon.src = row.data[colIconUrl];

@@ -12,6 +12,7 @@ import json
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 
+from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import internal_logout, nobody_is_logged
 from ..public.ups_handler import ups_handler
 from ..helpers.js_grid_helper import js_grid_rsp
@@ -24,7 +25,7 @@ from ..helpers.route_helper import (
     private_route,
     redirect_to,
 )
-from .sep_constants import SEP_CMD_NUL, SEP_CMD_GRD, ACTION_CODE_SEPARATOR
+from .sep_constants import SEP_CMD_NUL, SEP_CMD_GRD
 
 
 # === module variables ====================================
@@ -72,40 +73,44 @@ def sep_mgmt():
 
 @login_required
 @bp_private.route("/sep_grid/<code>", methods=["GET", "POST"])
-def sep_grid(code: str = SEP_CMD_NUL):
+def sep_grid(code: str = SEP_CMD_NUL): # TODO selected row: str = None):
     """
     Through this route, the admin user can CRUD seps
     """
     from .sep_grid import get_sep_grid, ResponseKeys
-    from .sep_new_edit import do_sep_edit
     from .sep_constants import SEP_CMD_INS
 
     def _goto(code: str) -> str:
         url = private_route("sep_edit", code=code)
         return redirect_to(url)
 
+    param = "?"
     if nobody_is_logged():
         return redirect_to(login_route())
     elif not is_method_get():
-        pass
+        param = "post"
     elif code == SEP_CMD_GRD:
         return get_sep_grid()
-    elif code == js_grid_rsp:
-        cmd_text = request.args.get(code, "")
+    elif code != js_grid_rsp:
+        param = code
+  # TODO security key  elif is_str_none_or_empty(sec_key:= request.args.get(code, "")) or (sec_key != ):
+    elif is_str_none_or_empty(cmd_text:= request.args.get(code, "")):
+        param = 'empty'
+    else:
         cmd_json = json.loads(cmd_text)
-        action = f"{cmd_json[ResponseKeys.action]} "[0]
-        # redirect action
+        action = f"{cmd_json[ResponseKeys.action]}"[0]
+        param = action
         match action:
             case ResponseKeys.insert:
                 return _goto(SEP_CMD_INS)
             case ResponseKeys.edit:
-                data = f"{action}:{cmd_json[ResponseKeys.code]}"
+                data = f"{action}:{cmd_json[ResponseKeys.code]:{cmd_json[ResponseKeys.index]}}"
                 return _goto(data)
             case ResponseKeys.delete:
                 # TODO Remove all
                 pass
 
-    _, tmpl_ffn, ui_texts = ups_handler(0, "Unexpected route parameter.")
+    _, tmpl_ffn, ui_texts = ups_handler(0, f"Unexpected route parameter [{param}].")
     tmpl = render_template(tmpl_ffn, **ui_texts)
     return tmpl
 

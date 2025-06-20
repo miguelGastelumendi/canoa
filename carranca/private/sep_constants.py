@@ -8,7 +8,7 @@ SEP constants
 ACTION_CODE_SEPARATOR = ":"
 SEP_CMD_GRD = "!##"
 SEP_CMD_INS = "!++"
-SEP_CMD_NUL = "?"
+SEP_CMD_NUL = "!~~"
 
 
 # eof

@@ -65,6 +65,9 @@
 
 ------- 2025 - June -------------
 ----------------------------------
+2025-06-09--19 β 4.24  Sep grid [Edit]
+    -  SEP Grid connected to Sep_edit
+
 2025-06-07 β 4.23  Sync git with note
     -  My note was unsync with workstation
 

@@ -8,7 +8,7 @@ mgd 2025-01-19
 # cSpell:ignore
 
 import json
-from typing import Tuple, List
+from typing import List
 
 from ..common.app_error_assistant import AppStumbled
 from .types_helper import ui_db_texts
