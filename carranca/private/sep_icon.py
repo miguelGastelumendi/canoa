@@ -18,7 +18,7 @@ from ..common.app_error_assistant import AppStumbled, JumpOut
 from ..models.private import Sep
 
 from .SepIcon import SepIcon, ICON_MIN_SIZE
-from .SepIconConfig import SepIconConfig
+from .SepIconMaker import SepIconMaker
 
 
 def icon_refresh(sep: SepIcon | Sep) -> bool:
@@ -33,7 +33,7 @@ def icon_refresh(sep: SepIcon | Sep) -> bool:
         return refreshed
 
     try:
-        file_full_name = SepIconConfig.get_local_name(sep.icon_file_name)
+        file_full_name = SepIconMaker.get_full_name(sep.icon_file_name)
         if path.isfile(file_full_name):
             remove(file_full_name)
 
@@ -69,33 +69,33 @@ def do_icon_get_url(icon_file_name: str, sep_id: Optional[int] = None) -> str:
     """
 
     if icon_file_name is None:
-        icon_file_name = SepIconConfig.none_file
+        icon_file_name = SepIconMaker.none_file
     elif icon_file_name == "":
-        icon_file_name = SepIconConfig.empty_file
+        icon_file_name = SepIconMaker.empty_file
 
-    file_full_name = SepIconConfig.get_local_name(icon_file_name)
-    icon_url = SepIconConfig.get_icon_url(icon_file_name)
+    file_full_name = SepIconMaker.get_full_name(icon_file_name)
+    icon_url = SepIconMaker.get_url(icon_file_name)
 
-    if not folder_must_exist(SepIconConfig.local_path):
+    if not folder_must_exist(SepIconMaker.local_path):
         # TODO: express this error more clearly
-        sidekick.display.error(f"Cannot create folder [{SepIconConfig.local_path}]")
+        sidekick.display.error(f"Cannot create folder [{SepIconMaker.local_path}]")
         return None
     elif not icon_ready(file_full_name):
         content = ""
         match icon_file_name:
-            case SepIconConfig.error_file:
-                content = SepIconConfig.error_content
-            case SepIconConfig.empty_file:
-                content = SepIconConfig.empty_content
-            case SepIconConfig.none_file:
-                content = SepIconConfig.none_content
+            case SepIconMaker.error_file:
+                content = SepIconMaker.error_content
+            case SepIconMaker.empty_file:
+                content = SepIconMaker.empty_content
+            case SepIconMaker.none_file:
+                content = SepIconMaker.none_content
             case _:
                 if sep_id is None:
-                    content = SepIconConfig.none_content
+                    content = SepIconMaker.none_content
                 else:
                     content, msg_error = Sep.get_content(sep_id)
                     if msg_error:
-                        content = SepIconConfig.error_content
+                        content = SepIconMaker.error_content
                         sidekick.display.error(
                             f"Cannot retrieve icon content of SEP id {sep_id}': [{msg_error}]."
                         )

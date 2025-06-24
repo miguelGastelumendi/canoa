@@ -1,8 +1,8 @@
 """
-SEP Icon Configuration
+SEP Icon Maker/Creator/Configurator
 
 Equipe da Canoa -- 2024
-mgd 2024-11-15
+mgd 2024-11-15, 2025-06-24 fix+rename
 """
 
 # cSpell: ignore lightgray darkgrey
@@ -10,6 +10,7 @@ mgd 2024-11-15
 from os import path
 from flask import current_app
 
+from ..helpers.py_helper import to_str
 from ..helpers.html_helper import url_join
 from ..helpers.route_helper import static_route
 from ..helpers.types_helper import svg_content
@@ -20,25 +21,35 @@ class class_property(property):
         return self.fget(owner)
 
 
-class SepIconConfig:
+class SepIconMaker:
 
     ext = "svg"
     folder = "sep_icons"
     static_folder: str = path.basename(current_app.static_folder)
     local_path: str = path.join(current_app.static_folder, folder)
+
     empty_file = "sep_icon-empty.svg"
     error_file = "sep_icon-error.svg"
     none_file = "sep_icon-none.svg"
 
     @staticmethod
-    def get_icon_url(icon_file_name: str) -> str:
-        folder_and_name = url_join(SepIconConfig.folder, icon_file_name)
+    def get_file_name(icon_file_name: str) -> str:
+        if icon_file_name is None:
+            return SepIconMaker.none_file
+        elif to_str(icon_file_name) == "":
+            return SepIconMaker.empty_file
+        else:
+            return icon_file_name
+
+    @staticmethod
+    def get_url(icon_file_name: str) -> str:
+        folder_and_name = url_join(SepIconMaker.folder, SepIconMaker.get_file_name(icon_file_name))
         url = static_route(folder_and_name)
         return url
 
     @staticmethod
-    def get_local_name(icon_file_name: str) -> str:
-        local_name = path.join(SepIconConfig.local_path, icon_file_name)
+    def get_full_name(icon_file_name: str) -> str:
+        local_name = path.join(SepIconMaker.local_path, SepIconMaker.get_file_name(icon_file_name))
         return local_name
 
     @staticmethod
@@ -69,7 +80,7 @@ class SepIconConfig:
         return cls.content_for("darkgrey", "Falta", stroke_opacity="0.45")
 
 
-# TODO
+# TODO new Python
 # class MetaSepIconConfig(type):
 #     @property
 #     def none_content(cls):

@@ -7,7 +7,7 @@ Equipe da Canoa -- 2024
 mgd
 """
 
-# cSpell: ignore werkzeug wtforms tmpl mgmt
+# cSpell: ignore werkzeug wtforms tmpl mgmt jscmd
 import json
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
@@ -100,10 +100,11 @@ def sep_grid(code: str = SEP_CMD_NUL):  # TODO selected row: str = None):
         return get_sep_grid()
     elif code != js_grid_rsp:
         error = _get_route_error(code)
-    # TODO security key  elif is_str_none_or_empty(sec_key:= request.args.get(code, "")) or (sec_key != ):
+    # TODO security key  elif is_str_none_or_empty(sec_key:= request.args.get('grid_sec_key', '')) or (sec_key != ):
     elif is_str_none_or_empty(cmd_text := request.args.get(code, "")):
         error = _get_route_error("empty")
     else:
+        error = _get_route_error("jscmd")
         cmd_json = json.loads(cmd_text)
         action = _get_value(cmd_json, ResponseKeys.action)[0]
         error = _get_route_error("action")

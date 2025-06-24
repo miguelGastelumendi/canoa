@@ -11,7 +11,7 @@ from typing import Optional, Tuple, List
 
 from .IdToCode import IdToCode
 from .sep_icon import do_icon_get_url
-from .SepIconConfig import SepIconConfig
+from .SepIconMaker import SepIconMaker
 from ..models.private import MgmtSepsUser
 from ..public.ups_handler import ups_handler
 from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
@@ -46,7 +46,7 @@ def get_sep_grid(code: Optional[str] = "") -> str:
         tmpl_ffn, is_get, ui_texts = get_private_response_data("sepGrid")
 
         task_code += 1  # 2
-        ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.get_icon_url(SepIconConfig.empty_file)
+        ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(SepIconMaker.empty_file)
 
         task_code += 1  # 3
         col_names = ["id", "icon_file_name", "scm_name", "name", "user_curr"]

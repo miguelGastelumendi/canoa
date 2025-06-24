@@ -60,6 +60,9 @@
 
 ------- 2025 - June -------------
 ----------------------------------
+2025-06-24 β 4.28 Set a default value for icon_file_name
+    - SepIconConfig.get_icon_url
+
 2025-06-24 β 4.27 An unhandled error in ../private/routes.py
     - Variable `error` was not defined.
 

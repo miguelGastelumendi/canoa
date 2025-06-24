@@ -10,6 +10,7 @@ mgd
 # spell:ignore Mgmt
 
 from typing import TypeAlias, Optional, List, Dict, Any
+
 from ..helpers.types_helper import error_message
 
 from .IdToCode import IdToCode
@@ -52,13 +53,15 @@ class UserSep:
         icon_file_name: str,
         icon_url: Optional[str] = None,
     ):
+        from .SepIconMaker import SepIconMaker
+
         self.id = id
         self.name = name
         self.scm_name = scm_name
         self.fullname = fullname
         self.description = description
         self.visible = visible
-        self.icon_file_name = icon_file_name
+        self.icon_file_name = SepIconMaker.get_file_name(icon_file_name)
         self.icon_url = icon_url
 
     id: int

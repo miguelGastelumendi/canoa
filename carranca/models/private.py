@@ -33,7 +33,7 @@ from ..models import SQLABaseTable
 from ..helpers.db_helper import db_fetch_rows, db_ups_error
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_user_code
-from ..private.SepIconConfig import SepIconConfig, svg_content
+from ..private.SepIconMaker import SepIconMaker, svg_content
 from ..common.app_context_vars import sidekick
 from ..helpers.db_records.DBRecords import DBRecords
 
@@ -497,9 +497,9 @@ class Sep(SQLABaseTable):
                 stmt = select(Sep).where(Sep.id == id)
                 sep = db_session.execute(stmt).scalar_one_or_none()
                 is_empty = is_str_none_or_empty(sep.icon_svg)
-                icon_content = SepIconConfig.empty_content if is_empty else sep.icon_svg
+                icon_content = SepIconMaker.empty_content if is_empty else sep.icon_svg
             except Exception as e:
-                icon_content = SepIconConfig.error_content
+                icon_content = SepIconMaker.error_content
                 sidekick.app_log.error(f"Error retrieving icon content of SEP {id}: [{e}].")
             return icon_content
 

@@ -24,7 +24,7 @@ from ..helpers.types_helper import error_message
 class AppUser:
     def __init__(self):
         from ..common.app_context_vars import sidekick
-        from .SepIconConfig import SepIconConfig  # Avoid Circular 2025.02.20
+        from .SepIconMaker import SepIconMaker  # Avoid Circular 2025.02.20
 
         self.ready = current_user.is_authenticated if current_user else False
 
@@ -55,7 +55,7 @@ class AppUser:
             self.email = current_user.email
             self.code = get_user_code(current_user.id)
             self.folder = get_user_folder(current_user.id)
-            self.path = SepIconConfig.local_path
+            self.path = SepIconMaker.local_path
             self.role_abbr: str = current_user.role.abbr
             self.role_name: str = current_user.role.name
             self.is_adm: bool = self.role_abbr == RolesAbbr.Admin.value

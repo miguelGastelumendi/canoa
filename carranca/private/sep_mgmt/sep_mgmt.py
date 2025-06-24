@@ -14,7 +14,7 @@ from ...models.public import User
 from ...models.private import MgmtSepsUser
 
 from ..sep_icon import do_icon_get_url
-from ..SepIconConfig import SepIconConfig
+from ..SepIconMaker import SepIconMaker
 
 from ...public.ups_handler import ups_handler
 from ...common.app_error_assistant import ModuleErrorCode, AppStumbled
@@ -46,7 +46,7 @@ def sep_mgmt() -> str:
         tmpl_ffn, is_get, ui_texts = get_private_response_data("sepMgmt")
 
         task_code += 1  # 2
-        ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.get_icon_url(SepIconConfig.none_file)
+        ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(SepIconMaker.none_file)
 
         task_code += 1  # 3
         # col_names = ["sep_id", "icon_file_name", "user_curr", "sep_fullname", user", "assigned_at"]

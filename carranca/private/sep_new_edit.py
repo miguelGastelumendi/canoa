@@ -19,7 +19,7 @@ from .wtforms import SepEdit, SepNew
 
 from .sep_icon import icon_refresh, ICON_MIN_SIZE
 from .sep_constants import SEP_CMD_GRD, SEP_CMD_INS, ACTION_CODE_SEPARATOR
-from .SepIconConfig import SepIconConfig
+from .SepIconMaker import SepIconMaker
 from ..models.private import Sep, Schema, MgmtSepsUser
 from ..helpers.jinja_helper import process_template
 from ..private.UserSep import UserSep
@@ -150,11 +150,11 @@ def do_sep_edit(data: str) -> str:
             else:  # is_insert
                 task_code += 3
                 ui_texts[SCHEMA_LIST_VALUE] = "" if is_get else flask_form.schema_list.data
-                ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.get_icon_url(SepIconConfig.empty_file)
+                ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(SepIconMaker.empty_file)
                 select_one = ui_texts["placeholderOption"]
                 ui_texts[SCHEMA_LIST] = [{"id": "", "name": select_one}] + Schema.get_schemas().to_list()
                 sep_row = Sep()
-                return None, sep_row, task_code, ui_texts["sepNewTmpName"], None
+                return None, sep_row, task_code, ui_texts["sepNewTmpName"]
 
             # --- is_edit_form ---
             # --------------------
@@ -175,7 +175,7 @@ def do_sep_edit(data: str) -> str:
                     sep_user if (sep_user := edit_dict.pop("user_curr", None)) else ui_texts["managerNone"]
                 )
                 usr_sep = UserSep(**edit_dict)
-                usr_sep.icon_url = SepIconConfig.get_icon_url(usr_sep.icon_file_name)
+                usr_sep.icon_url = SepIconMaker.get_url(usr_sep.icon_file_name)
 
             # check permissions
             if sep_usr_rows is None:
@@ -243,7 +243,7 @@ def do_sep_edit(data: str) -> str:
 
             icon_file_sent, file_storage = was_icon_file_sent()
             icon_data = IconData(file_name=file_storage.filename)
-            expected_ext = f".{SepIconConfig.ext}".lower()
+            expected_ext = f".{SepIconMaker.ext}".lower()
 
             if not icon_file_sent:
                 pass
@@ -305,7 +305,7 @@ def do_sep_edit(data: str) -> str:
             add_msg_error(
                 "sepEditInvalidFormat",
                 ui_texts,
-                SepIconConfig.ext,
+                SepIconMaker.ext,
                 icon_data.error_hint,
                 icon_data.error_code,
             )
@@ -335,12 +335,12 @@ def do_sep_edit(data: str) -> str:
             if new_icon := icon_data.ready:
                 task_code += 2
                 sep_row.icon_original_name = secure_filename(icon_data.file_name)
-                sep_row.icon_file_name = f"{app_user.code}u-{icon_data.crc:04x}_sep.{SepIconConfig.ext}"
+                sep_row.icon_file_name = f"{app_user.code}u-{icon_data.crc:04x}_sep.{SepIconMaker.ext}"
                 sep_row.icon_uploaded_at = now()
                 sep_row.icon_svg = icon_data.content
                 iv = sep_row.icon_version
                 sep_row.icon_version = iv + 1 if to_int(iv, 0) > 0 else 1
-                ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.get_icon_url(sep_row.icon_file_name)
+                ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(sep_row.icon_file_name)
 
             if Sep.save(sep_row):  # Success  :—)
                 task_code += 3  # 18
