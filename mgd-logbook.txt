@@ -60,6 +60,9 @@
 
 ------- 2025 - June -------------
 ----------------------------------
+2025-06-24 β 4.27 An unhandled error in ../private/routes.py
+    - Variable `error` was not defined.
+
 2025-06-24 β 4.26 Set Linux background img in css
     - Set Linux background img in css
       instead of Windows

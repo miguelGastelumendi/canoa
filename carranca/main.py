@@ -57,7 +57,7 @@ if __name__ != "__main__":
 else:
     app.run(debug=app_debug)
 
-# TODO use wathcfiles to reload the app
+# TODO use watchfiles to reload the app
 # elif if app_debug and not
 
 #     if sidekick.config.APP_AUTO_RERUN and app_debug:
