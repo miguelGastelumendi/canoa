@@ -1,6 +1,6 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
-#spell:ignore venv ccedil atilde receivefile datetime saude uix
+#spell:ignore venv ccedil atilde receivefile datetime saude uix unsync
 #spell:ignore Setorista sendgrid linux cnpq ajax mgmt SQLA
 
 
@@ -50,11 +50,6 @@
             - SchemaSEP
 
 
-------- 2025 - April -------------
-----------------------------------
-
-
-
 
 -----------------------------------------------------------
   Logbook
@@ -65,6 +60,12 @@
 
 ------- 2025 - June -------------
 ----------------------------------
+2025-06-24 β 4.26 Set Linux background img in css
+    - Set Linux background img in css
+      instead of Windows
+    - Add carranca/static/sep_icons/ to .gitignore
+
+
 2025-06-20,23 β 4.25  Setor Estratégico » Edição (admin + user) ready
     - Edição de SEP para admin pronto.
 
