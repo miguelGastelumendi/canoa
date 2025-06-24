@@ -6,7 +6,7 @@ Equipe da Canoa -- 2024
 mgd
 """
 
-# cSpell:ignore tmpl wtforms passwordreset
+# cSpell:ignore wtforms passwordreset
 
 from flask import render_template, request
 

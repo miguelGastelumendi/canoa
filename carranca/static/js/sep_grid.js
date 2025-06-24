@@ -25,7 +25,7 @@ const gridOptions = {
         const api = params.api
         const firstRow = api.getDisplayedRowAtIndex(0);
         if (firstRow) {
-            setTimeout(() => { firstRow.setSelected(true); setActiveRow(firstRow) }, 20);
+            setTimeout(() => { firstRow.setSelected(true); setActiveRow(firstRow, firstRow.rowIndex) }, 20);
         }
         const elForm = /** @type {HTMLFormElement} */(document.getElementById(formID))
         elForm?.addEventListener('submit', (event) => {

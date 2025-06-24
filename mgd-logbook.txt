@@ -65,6 +65,10 @@
 
 ------- 2025 - June -------------
 ----------------------------------
+2025-06-20,23 β 4.25  Setor Estratégico » Edição (admin + user) ready
+    - Edição de SEP para admin pronto.
+
+
 2025-06-09--19 β 4.24  Sep grid [Edit]
     -  SEP Grid connected to Sep_edit
 

@@ -4,7 +4,7 @@ SEP Management and User assignment
 
 """
 
-# cSpell: ignore tmpl samp sepsusr usrlist
+# cSpell: ignore samp sepsusr usrlist
 
 import json
 from flask import render_template, request

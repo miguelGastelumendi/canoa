@@ -298,8 +298,13 @@ class MgmtSepsUser(SQLABaseTable):
 
     @staticmethod
     def _get_sep_list(user_id: Optional[int] = None, sep_id: Optional[int] = None) -> DBRecords:
+        """ /!\\
+            any change here must be replated in
+            carranca/private/UserSep.py:UserSep
+        """
         field_names = [
             MgmtSepsUser.id.name,
+            MgmtSepsUser.name.name,
             MgmtSepsUser.scm_name.name,
             MgmtSepsUser.fullname.name,
             MgmtSepsUser.description.name,

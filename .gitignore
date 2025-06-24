@@ -32,7 +32,7 @@ instance/*
 .webassets-cache
 
 ## Canoa per git's user
-carranca/static/sep_icons
+carranca/static/sep_icons/
 carranca/static/docs/
 carranca/log_files
 user_files/
@@ -40,7 +40,6 @@ uploaded_files/
 downloaded_files/
 LocalStorage/
 data_tunnel/
-
 
 ## Canoa Linux
 mount-win.sh

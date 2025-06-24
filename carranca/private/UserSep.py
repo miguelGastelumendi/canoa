@@ -44,6 +44,7 @@ class UserSep:
     def __init__(
         self,
         id: int,
+        name: str,
         scm_name: str,
         fullname: str,
         description: str,
@@ -52,6 +53,7 @@ class UserSep:
         icon_url: Optional[str] = None,
     ):
         self.id = id
+        self.name = name
         self.scm_name = scm_name
         self.fullname = fullname
         self.description = description
@@ -60,6 +62,7 @@ class UserSep:
         self.icon_url = icon_url
 
     id: int
+    name: str
     scm_name: str
     fullname: str
     description: str

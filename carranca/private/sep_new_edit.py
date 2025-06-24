@@ -5,9 +5,10 @@ Equipe da Canoa -- 2024
 mgd 2024-10-09, 11-12
 """
 
-# cSpell: ignore tmpl wtforms werkzeug sepsusr usrlist scms nsert
+# cSpell: ignore wtforms werkzeug sepsusr usrlist scms nsert
 
-from flask import render_template, request
+import re
+from flask import request
 from typing import Tuple
 from os.path import splitext
 from dataclasses import dataclass
@@ -20,6 +21,7 @@ from .sep_icon import icon_refresh, ICON_MIN_SIZE
 from .sep_constants import SEP_CMD_GRD, SEP_CMD_INS, ACTION_CODE_SEPARATOR
 from .SepIconConfig import SepIconConfig
 from ..models.private import Sep, Schema, MgmtSepsUser
+from ..helpers.jinja_helper import process_template
 from ..private.UserSep import UserSep
 from ..helpers.py_helper import now, to_int, crc16
 from ..public.ups_handler import ups_handler
@@ -43,8 +45,9 @@ from ..helpers.ui_db_texts_helper import (
 
 
 SVG_MIME = "image/svg+xml"
-SCHEMA_LIST = 'schemaList'
-SCHEMA_LIST_VALUE = 'schemaListValue'
+SCHEMA_LIST = "schemaList"
+SCHEMA_LIST_VALUE = "schemaListValue"
+
 
 def do_sep_edit(data: str) -> str:
     """SEP Edit Form"""
@@ -55,10 +58,11 @@ def do_sep_edit(data: str) -> str:
         file_name: str = ""
         ready: bool = False
         crc: int = 0
+        error_hint: str = ""
         error_code: int = 0
 
     new_sep_id = 0
-    row_index= None
+    row_index = None
 
     if ACTION_CODE_SEPARATOR in data:  # called from sep_grid
         """
@@ -92,13 +96,12 @@ def do_sep_edit(data: str) -> str:
         """
         row_index = f"{data}{ACTION_CODE_SEPARATOR}".split(ACTION_CODE_SEPARATOR)[2]
 
-
         """
             Where to go after:
                 - save: goto
                 - close: on_close
         """
-        process_on_end = private_route("sep_grid", code=SEP_CMD_GRD) # TODO selected Row, ix=row_index)
+        process_on_end = private_route("sep_grid", code=SEP_CMD_GRD)  # TODO selected Row, ix=row_index)
         form_on_close = {"action_form__form_on_close": process_on_end}
 
     else:  # standard routine
@@ -107,15 +110,14 @@ def do_sep_edit(data: str) -> str:
         process_on_end = login_route()  # default
         form_on_close = {}  # default = login
 
-
     is_full_edit = False
     is_simple_edit = False
-    is_insert = (code == SEP_CMD_INS)
+    is_insert = code == SEP_CMD_INS
     if is_insert:
         pass
     elif app_user.is_power:
         is_full_edit = True  # full edit can edit all fields
-    else: #
+    else:  #
         is_simple_edit = True  # `normal user` can edit description & icon
 
     sep_id = new_sep_id if is_insert else UserSep.to_id(code)
@@ -125,9 +127,10 @@ def do_sep_edit(data: str) -> str:
     task_code = ModuleErrorCode.SEP_EDIT.value
     flask_form, tmpl_ffn, is_get, ui_texts = init_response_vars()
     sep_fullname = f"SPC&#8209;{code}"  # &#8209 is a `nobreak-hyphen`, &hyphen does not work.
-
+    tmpl = ""
     try:
-        def _icon_file_sent() -> Tuple[bool, FileStorage | None]:
+
+        def was_icon_file_sent() -> Tuple[bool, FileStorage | None]:
             form_file_name = flask_form.icon_filename.name
             file_storage: FileStorage = (
                 request.files[form_file_name] if form_file_name in request.files else None
@@ -144,7 +147,7 @@ def do_sep_edit(data: str) -> str:
                 task_code += 2
                 ui_texts[SCHEMA_LIST_VALUE] = "" if is_get else flask_form.schema_list.data
                 ui_texts[SCHEMA_LIST] = Schema.get_schemas().to_list()
-            else: # is_insert
+            else:  # is_insert
                 task_code += 3
                 ui_texts[SCHEMA_LIST_VALUE] = "" if is_get else flask_form.schema_list.data
                 ui_texts[UITextsKeys.Form.icon_url] = SepIconConfig.get_icon_url(SepIconConfig.empty_file)
@@ -168,8 +171,11 @@ def do_sep_edit(data: str) -> str:
             else:
                 edit_dict = dict(sep_usr_rows[0])
                 # Remove 'user_curr' from edit_dict, because is not needed in UserSep(..)
-                sep_manager = sep_user if (sep_user:= edit_dict.pop("user_curr", None)) else ui_texts["managerNone"]
+                sep_manager = (
+                    sep_user if (sep_user := edit_dict.pop("user_curr", None)) else ui_texts["managerNone"]
+                )
                 usr_sep = UserSep(**edit_dict)
+                usr_sep.icon_url = SepIconConfig.get_icon_url(usr_sep.icon_file_name)
 
             # check permissions
             if sep_usr_rows is None:
@@ -196,18 +202,11 @@ def do_sep_edit(data: str) -> str:
 
                 task_code += 8  # 513
 
-            # set the icon
-            # task_code += 1  # 3
-            # ui_texts[UITextsKeys.Form.icon_url] = usr_sep.icon_url
-
+            task_code += 1  # 3
+            ui_texts[UITextsKeys.Form.icon_url] = usr_sep.icon_url
             return usr_sep, sep_row, task_code, sep_user_row.fullname
 
-        def _get_id_schema() -> int:
-            lst_name = flask_form.schema_list.name
-            id_schema = int(request.form.get(lst_name, -1)) if is_full_edit else None
-            return id_schema
-
-        def _form_sep_modified(sep_row: Sep) -> Tuple[ bool, bool]:
+        def _was_form_sep_modified(sep_row: Sep) -> Tuple[bool, bool]:
             # remove schema/sep separator sep+sep
             ui_description = get_input_text(flask_form.description.name)
             ui_sep_name = get_input_text(flask_form.sep_name.name, [Sep.scm_sep])
@@ -215,7 +214,9 @@ def do_sep_edit(data: str) -> str:
 
             if is_insert:
                 id_schema = flask_form.schema_list.data
-                form_modified = id_schema or ui_description or ui_sep_name # optional: or _icon_file_sent()[0]
+                form_modified = (
+                    id_schema or ui_description or ui_sep_name
+                )  # optional: or _icon_file_sent()[0]
                 sep_modified = True
             else:  # is_edit or is_full_edit
                 # TODO check Schema
@@ -224,10 +225,10 @@ def do_sep_edit(data: str) -> str:
                 id_schema = flask_form.schema_list.data if is_full_edit else sep_row.id_schema
                 sep_modified = not (sep_name == sep_row.name)
                 form_modified = (
-                    sep_modified or
-                    (ui_description != sep_row.description) or
-                    (id_schema !=  sep_row.id_schema) or
-                    _icon_file_sent()[0]  # keep it as the last test (resource)
+                    sep_modified
+                    or (ui_description != sep_row.description)
+                    or (id_schema != sep_row.id_schema)
+                    or was_icon_file_sent()[0]  # keep it as the last test (resource)
                 )
 
             # remove spaces & '/' (scm_sep) so the user see its modified values (see get_input_text)
@@ -236,23 +237,33 @@ def do_sep_edit(data: str) -> str:
             return form_modified, sep_modified
 
         def _get_icon_data(sep_row: Sep) -> IconData:
-            icon_file_sent, file_storage = _icon_file_sent()
+            def __find(pattern: str, data: str) -> int:
+                match = re.search(pattern, data, re.IGNORECASE | re.DOTALL)
+                return match.start() if match else -1
+
+            icon_file_sent, file_storage = was_icon_file_sent()
             icon_data = IconData(file_name=file_storage.filename)
             expected_ext = f".{SepIconConfig.ext}".lower()
 
             if not icon_file_sent:
                 pass
             elif not splitext(icon_data.file_name)[1].lower().endswith(expected_ext):
+                icon_data.error_hint = expected_ext
                 icon_data.error_code = 1
             elif not (file_obj := request.files.get(flask_form.icon_filename.name)):
+                icon_data.error_hint = "↑×"
                 icon_data.error_code = 2
             elif len(data := file_obj.read().decode("utf-8").strip()) < ICON_MIN_SIZE:
+                icon_data.error_hint = f"≤ {ICON_MIN_SIZE}"
                 icon_data.error_code = 3
-            elif (start := (idx if (idx := data.find("<svg>")) != -1 else data.find("<svg "))) < 0:
+            elif (start := __find(r"<svg.*?>", data)) < 0:
+                icon_data.error_hint = "¿<svg>"
                 icon_data.error_code = 4
-            elif (end := data.find("</svg>")) < 0:
+            elif (end := __find(r"</svg\s*>", data)) < 0:
+                icon_data.error_hint = "</svg>?"
                 icon_data.error_code = 5
             elif (end - start) < ICON_MIN_SIZE:
+                icon_data.error_hint = f"< {ICON_MIN_SIZE}"
                 icon_data.error_code = 6
             elif not (sep_row.icon_svg or "") == (data or ""):
                 icon_data.content = data
@@ -279,9 +290,9 @@ def do_sep_edit(data: str) -> str:
 
         task_code = ModuleErrorCode.SEP_EDIT.value + 10
         form_mod = False  # avoid hint in attribution
-        sep_name = flask_form.sep_name.data
+        sep_name = usr_sep.name if input_disabled else flask_form.sep_name.data
 
-        form_mod, sep_mod = (False, False) if is_get else _form_sep_modified(sep_row)
+        form_mod, sep_mod = (False, False) if is_get else _was_form_sep_modified(sep_row)
         if is_get:
             task_code += 1
         elif not form_mod:
@@ -290,7 +301,15 @@ def do_sep_edit(data: str) -> str:
         elif (is_insert or sep_mod) and Sep.this_name_exists(sep_name):
             add_msg_error("sepNameRepeated", ui_texts, sep_name)
         elif (icon_data := _get_icon_data(sep_row)).error_code > 0:
-            add_msg_error("sepEditInvalidFormat", ui_texts, SepIconConfig.ext, icon_data.error_code)
+            # msg {ext} [{hint}-{code}]
+            add_msg_error(
+                "sepEditInvalidFormat",
+                ui_texts,
+                SepIconConfig.ext,
+                icon_data.error_hint,
+                icon_data.error_code,
+            )
+        # TODO: Check if icon used in other SEP
         else:
             task_code += 1
             sep_row.name = sep_name
@@ -330,22 +349,23 @@ def do_sep_edit(data: str) -> str:
                     icon_refresh(usr_sep)  # refresh this form icon
 
                 if action:
-                    return redirect_to(process_on_end, )
+                    return redirect_to(process_on_end)
 
             else:  # :—(
                 task_code += 4  # 19
                 item = f"sepFailed{'Edit' if is_simple_edit else 'New'}"
                 add_msg_final(item, ui_texts, sep_fullname, task_code)
 
+        tmpl = process_template(tmpl_ffn, form=flask_form, **ui_texts, **form_on_close)
+
     except JumpOut:
-        pass
+        tmpl = process_template(tmpl_ffn, **ui_texts)
+
     except Exception as e:
         item = add_msg_final("sepEditException", ui_texts, sep_fullname, task_code)
         _, tmpl_ffn, ui_texts = ups_handler(task_code, item, e)
-        tmpl = render_template(tmpl_ffn, **ui_texts)
+        tmpl = process_template(tmpl_ffn, **ui_texts)
 
-    # ??  import pdb; pdb.set_trace()  # Pause here to inspect `context`
-    tmpl = render_template(tmpl_ffn, form=flask_form, **ui_texts, **form_on_close)
     return tmpl
 
 

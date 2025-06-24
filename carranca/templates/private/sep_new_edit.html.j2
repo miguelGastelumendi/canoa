@@ -17,7 +17,7 @@ mgd
 {% block frm_blc_inputs %}
 
 {# [ Manager (when is_full_edit) #}
-{% if form.manager_name() %}
+{% if form.manager_name and form.manager_name.data %}
 <div class="form-group mb-3">
     <label class="form-label" inert for="{{ form.manager_name.id }}">{{ managerLabel }}</label>
     <div class="input-group">
@@ -51,7 +51,7 @@ mgd
     <label class="form-label" inert for="{{ form.sep_name.id }}">{{ sepLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
-            <i class="fas fa-id-badge" aria-hidden="true"></i>
+            <i class="fas fa-layer-group" aria-hidden="true"></i>
         </span>
         {{ form.sep_name() }}
     </div>

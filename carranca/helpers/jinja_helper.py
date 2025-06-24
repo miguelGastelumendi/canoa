@@ -4,7 +4,10 @@
 
 # cSpell:ignore tpmt
 
-from flask import current_app
+from flask import current_app, render_template
+from typing import Any
+
+from .py_helper import as_str_strip
 
 from ..helpers.types_helper import jinja_template
 
@@ -13,9 +16,8 @@ from ..helpers.types_helper import jinja_template
 _jinja_pre_template_mark = "^"
 
 
-def prepare_template(tpmt: jinja_template)-> jinja_template:
+def prepare_template(tpmt: jinja_template) -> jinja_template:
     prepared = tpmt.strip()
-
 
     return prepared
 
@@ -55,6 +57,17 @@ def process_pre_templates(texts: dict, mark: str = _jinja_pre_template_mark):
             value = jinja_pre_template(pre_template)
             texts[key] = value
     return texts
+
+
+def process_template(tmpl_ffn: str, **context: Any) -> str:
+    """
+    trim
+    TODO and check basic jinja errors if in debug
+    """
+
+    tmpl = render_template(tmpl_ffn, **context)
+    tmpl_s = as_str_strip(tmpl)
+    return tmpl_s
 
 
 # eof

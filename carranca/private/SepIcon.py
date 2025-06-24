@@ -10,7 +10,7 @@ mgd
 
 from ..helpers.py_helper import is_str_none_or_empty
 
-ICON_MIN_SIZE = 267  # bytes
+ICON_MIN_SIZE = 60  # bytes
 
 
 class SepData:

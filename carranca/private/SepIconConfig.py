@@ -5,7 +5,7 @@ Equipe da Canoa -- 2024
 mgd 2024-11-15
 """
 
-# cSpell: ignore tmpl lightgray darkgrey
+# cSpell: ignore lightgray darkgrey
 
 from os import path
 from flask import current_app

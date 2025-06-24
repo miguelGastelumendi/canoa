@@ -10,5 +10,6 @@
         "venv",
         "btns",
         "dunder",
+        "tmpl"
     ]
 }

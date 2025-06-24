@@ -3,7 +3,7 @@ SEP
     Grid form Adm
 """
 
-# cSpell: ignore tmpl samp sepsusr usrlist
+# cSpell: ignore samp sepsusr usrlist
 
 from flask import render_template
 from typing import Optional, Tuple, List
@@ -17,6 +17,7 @@ from ..public.ups_handler import ups_handler
 from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
 
 from ..helpers.py_helper import class_to_dict
+from ..helpers.jinja_helper import process_template
 from ..helpers.route_helper import get_private_response_data, init_response_vars
 from ..helpers.js_grid_helper import js_grid_constants
 from ..helpers.ui_db_texts_helper import add_msg_final, UITextsKeys
@@ -58,7 +59,7 @@ def get_sep_grid(code: Optional[str] = "") -> str:
         else:
             raise AppStumbled("Unexpected route method.")
 
-        tmpl = render_template(
+        tmpl = process_template(
             tmpl_ffn,
             sep_data=sep_data.to_list(),
             cargo_keys=class_to_dict(ResponseKeys),
@@ -69,7 +70,7 @@ def get_sep_grid(code: Optional[str] = "") -> str:
     except Exception as e:
         msg = add_msg_final("gridException", ui_texts, task_code)
         _, tmpl_ffn, ui_texts = ups_handler(task_code, msg, e)
-        tmpl = render_template(tmpl_ffn, **ui_texts)
+        tmpl = process_template(tmpl_ffn, **ui_texts)
 
     return tmpl
 
