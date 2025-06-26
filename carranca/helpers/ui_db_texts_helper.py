@@ -40,7 +40,7 @@ class UITextsKeys:
         error = "msgError"
         success = "msgSuccess"
         fatal = "msgFatal"
-        # display only message, no form, inputs/buttons (see .carranca\templates\layouts\form.html.j2 & dialog.html.j2)
+        # display only message, no form, inputs/buttons (see .carranca/templates/layouts/form.html.j2 & dialog.html.j2)
         display_only_msg = "msgOnly"
 
     class Page:
@@ -140,7 +140,7 @@ def __get_ui_texts_query(cols: str, table_search: UITexts_TableSearch) -> str:
         "" if table_search.item is None else f" and (item_lower = lower('{table_search.item}'))"
     )
 
-    # ** /!\ ******************************************************************
+    # ** ⚠️ ******************************************************************
     #  don't use <schema>.table_name. Must set
     #  ALTER ROLE canoa_connstr IN DATABASE adaptabrasil SET search_path=canoa;
     query = (

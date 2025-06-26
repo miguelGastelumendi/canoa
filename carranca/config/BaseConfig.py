@@ -3,7 +3,7 @@
 
  Configuration Files for the Application
 ----------------------------------------
- /!\. Attention
+ ⚠️ Attention
 ---------------------------------------
     This file position is VERY important
     `app_folder` must point to the folder

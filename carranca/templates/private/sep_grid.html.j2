@@ -54,13 +54,22 @@ mgd
     const colCode = colMeta[0].n;
     const colIconUrl = colMeta[1].n;
 
-    const gridRows = {{ sep_data | tojson | safe }}
+    const gridRows = {{ sep_data | tojson | safe }};
     const cargoKeys = {{ cargo_keys | tojson }};
     const gridID = '{{ grid_id }}';
     const iconID = '{{ dlg_var_icon_id }}';
-    const formID = '{{ dlg_var_submit_id }}';
-    const respID = '{{ grid_rsp }}';
-
+    const initRow = {{ grid_init_row | default (0) }};
+    const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '' };
+    document.addEventListener('DOMContentLoaded', () => {
+        const elForm = /** @type {HTMLFormElement} */(document.getElementById('{{ dlg_var_submit_id }}'));
+        const elResponse = /** @type {HTMLInputElement} */(document.getElementById('{{ grid_rsp }}'));
+        elForm?.addEventListener('submit', (event) => {
+            event.preventDefault();
+            cargo[cargoKeys.action] = event.submitter.id;
+            elResponse.value = JSON.stringify(cargo);
+            elForm.submit();
+        })
+    });
 </script>
 <script src="{{static_route('js/sep_grid.js')}}"></script>
 {% endblock grid_blc_javascript %}

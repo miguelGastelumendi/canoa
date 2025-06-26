@@ -19,6 +19,7 @@ var colMeta = /** @type {Object[]} */[];
 var userList = /** @type {String[]} */[];
 var gridRows = /** @type {JSON} */ '';
 var cargoKeys = /** @type {Cargo} */{};
+var cargo = /** @type {Object} */{};
 var itemNone = /** @type {string} */ '';
 var itemNone = /** @type {string} */ '';
 var jsData = /** @type {HTMLScriptElement} */ '';

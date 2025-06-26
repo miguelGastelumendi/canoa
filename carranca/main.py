@@ -41,11 +41,11 @@ sidekick.display.info(
 )
 
 # -------------------------------------------
-# /i\
+# (i)
 # -------------------------------------------
 # on the server, __name__ is 'carranca.main'
 # the app is executed by
-# `canoa\.vscode\launch.json`
+# `canoa/.vscode/launch.json`
 
 app_debug = sidekick.config.APP_DEBUG
 app_reload = sidekick.config.APP_AUTO_RELOAD

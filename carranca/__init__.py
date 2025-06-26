@@ -238,7 +238,7 @@ def create_app():
     from .common.app_constants import APP_NAME, APP_VERSION
     from .common.igniter import ignite_app
 
-    # /!\ =================================================
+    # ⚠️ =================================================
     # Global variables should be assigned before any other module
     # imports them. If not, they will remain None even if a value
     # is assigned before being used.

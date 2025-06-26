@@ -101,7 +101,7 @@ def sep_grid(code: str = SEP_CMD_NUL):  # TODO selected row: str = None):
     elif code != js_grid_rsp:
         error = _get_route_error(code)
     # TODO security key  elif is_str_none_or_empty(sec_key:= request.args.get('grid_sec_key', '')) or (sec_key != ):
-    elif is_str_none_or_empty(cmd_text := request.args.get(code, "")):
+    elif is_str_none_or_empty(cmd_text := request.args.get(js_grid_rsp, "")):
         error = _get_route_error("empty")
     else:
         error = _get_route_error("jscmd")

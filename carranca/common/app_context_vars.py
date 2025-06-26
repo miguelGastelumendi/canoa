@@ -17,7 +17,7 @@ Application Context
 Contains a shortcut to the global sidekick object.
 
 
--- [/!\] -------
+-- [⚠️] -------
     Avoid calling any of these functions in `main.py` or `carranca.__init__.py`
     as there is no `has_request_context` and a sidekick is already running.
 

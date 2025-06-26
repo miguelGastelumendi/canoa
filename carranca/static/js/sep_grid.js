@@ -11,11 +11,9 @@
  */
 /// <reference path="./ts-check.js" />
 
-let activeRow = null;
 let removeCount = 0;
-let rowCode = null;
-let rowIndex = null;
 const icon = /** @type {HTMLImageElement} */(document.getElementById(iconID))
+
 
 //-------------
 // == Ag Grid
@@ -23,25 +21,12 @@ const gridOptions = {
     rowSelection: 'single',
     onGridReady: (params) => {
         const api = params.api
-        const firstRow = api.getDisplayedRowAtIndex(0);
+        const firstRow = api.getDisplayedRowAtIndex(cargo[cargoKeys.index]);
         if (firstRow) {
             setTimeout(() => { firstRow.setSelected(true); setActiveRow(firstRow, firstRow.rowIndex) }, 20);
         }
-        const elForm = /** @type {HTMLFormElement} */(document.getElementById(formID))
-        elForm?.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const elResponse = /** @type {HTMLInputElement} */(document.getElementById(respID));
-            const cargo = JSON.stringify({
-                [cargoKeys.action]: event.submitter?.id,
-                [cargoKeys.code]: rowCode,
-                [cargoKeys.index]: rowIndex,
-            });
-            elResponse.value = cargo
-            elForm.submit();
-        })
     },
     onCellFocused: (event) => {
-        rowCode = null;
         let row = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex);
         setActiveRow(row, event.rowIndex)
     }
@@ -57,9 +42,8 @@ const gridOptions = {
 
 const setActiveRow = (row, rowIx) => {
     if (!row) { return; }
-    activeRow = row;
-    rowIndex = rowIx
-    rowCode = row.data[colCode]
+    cargo[cargoKeys.index] = rowIx;
+    cargo[cargoKeys.code] = row.data[colCode]
     if (icon.src != row.data[colIconUrl]) {
         icon.src = row.data[colIconUrl];
     }
@@ -69,5 +53,4 @@ const setActiveRow = (row, rowIx) => {
 //== Init
 const gridContainer = document.querySelector('#' + gridID);
 const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
-
-// eof
+//== eof

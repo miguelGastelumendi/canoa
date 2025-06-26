@@ -138,7 +138,7 @@ def submit(cargo: Cargo) -> Cargo:
             batch_has_run_permission = False
             sidekick.warn(f"Account doesn't have the necessary permissions to execute '{batch_full_name}'.")
 
-        result_ext = _cfg.output_file.ext  # /!\ keep always the same case (all lower)
+        result_ext = _cfg.output_file.ext  # ⚠️ keep always the same case (all lower)
         final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
         final_report_full_name = path.join(_path_read, final_report_file_name)
         try:
@@ -174,7 +174,7 @@ def submit(cargo: Cargo) -> Cargo:
                 + f"\n » {_cfg.dv_app.ui_name}.stderr:\n{std_err_str}"
                 + f"\n » {_cfg.dv_app.ui_name}.stdout:\n {std_out_str}"
                 + f"\nExitCode {exit_code}"
-                + f"\nEnd."
+                + f"/nEnd."
             )
         elif stat(final_report_full_name).st_size < 200:
             task_code += 2  # 9

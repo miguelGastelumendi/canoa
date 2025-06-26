@@ -59,12 +59,24 @@
    	A user can not be disabled if it has a SEP, cannot be assigned a sep if is disabled
 
 ------- 2025 - June -------------
-----------------------------------
+---------------------------------
+2025-06-24--25 β 4.29 Fix a bug in Chromium browsers
+    - Fix a bug on Chromium, the onGridReady
+        ```js
+        const gridOptions = {
+            // this event happens before the submit form is ready
+            onGridReady: (params) => {
+    - Change /!\. => ⚠️
+    - Options ℹ️, ⓘ ✅, ❌, 🛑, 🚧 Roadwork in progress"
+
+
 2025-06-24 β 4.28 Set a default value for icon_file_name
     - SepIconConfig.get_icon_url
 
+
 2025-06-24 β 4.27 An unhandled error in ../private/routes.py
     - Variable `error` was not defined.
+
 
 2025-06-24 β 4.26 Set Linux background img in css
     - Set Linux background img in css
@@ -79,8 +91,10 @@
 2025-06-09--19 β 4.24  Sep grid [Edit]
     -  SEP Grid connected to Sep_edit
 
+
 2025-06-07 β 4.23  Sync git with note
     -  My note was unsync with workstation
+
 
 2025-06-06 β 4.22  Change Schema of SEP
     -  Start allowing power user to change Schema of SEP

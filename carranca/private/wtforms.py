@@ -18,7 +18,7 @@ from ..common.app_context_vars import sidekick
 # Text here has no relevance, the ui_text table is actually used.
 
 
-# _ /!\ _________________________________________________
+# _ ⚠️ _________________________________________________
 #  Keep "name" and "id" the same string
 #  or don't specified "id"
 #
@@ -53,11 +53,11 @@ class ChangePassword(FlaskForm):
 class SepEdit(FlaskForm):
     """
     ------------------------------------------------------------
-       /!\
+       ⚠️
         Don't defined here mutable render_kw, they persist
         set value to those that will not change throw tha app
         see:
-            carranca\private\sep_new_edit.py
+            carranca/private/sep_new_edit.py
                 tmpl_form = SepNew(request.form) if is_new
                             else SepEdit(request.form)
     ------------------------------------------------------------
@@ -95,7 +95,7 @@ class SepEdit(FlaskForm):
             "class": "form-control",
             "autocomplete": "off",
             "spellcheck": True,
-            "lang": "",  # /!\ Don't defined here, they persist. See below SepNew
+            "lang": "",  # ⚠️ Don't defined here, they persist. See below SepNew
         },
     )
     icon_filename = FileField("", render_kw={"class": "form-control", "accept": ".svg"})

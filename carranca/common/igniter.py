@@ -9,7 +9,7 @@
 
 # cSpell:ignore sqlalchemy app_name cssless sendgrid ENDC mandatories
 
-# -- /!\ ----------------------------------
+# -- ⚠️ ----------------------------------
 # This module uses `local imports`
 # (within functions) to increase  modularization
 # and focus, clarity of function dependencies,

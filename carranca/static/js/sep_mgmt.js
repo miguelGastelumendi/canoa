@@ -112,7 +112,7 @@ const doGridCargo = () => {
         }
     });
     const cargo = JSON.stringify(
-        { // se carranca\private\sep_mgmt_save.py that parses the cargo
+        { // se carranca/private/sep_mgmt_save.py that parses the cargo
             [cargoKeys.actions]: { [cargoKeys.none]: itemNone },
             [cargoKeys.cargo]: gridCargo,
         }

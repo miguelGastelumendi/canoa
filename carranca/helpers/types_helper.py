@@ -16,7 +16,7 @@ Author: Equipe da Canoa, 2024
 cSpell:ignore
 """
 
-# --- /!\ ---
+# --- ⚠️ ---
 # Avoid adding project-specific imports in this module to prevent circular dependencies.
 
 from typing import TypeAlias, Dict, Tuple, List

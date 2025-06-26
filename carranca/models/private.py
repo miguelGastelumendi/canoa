@@ -298,9 +298,9 @@ class MgmtSepsUser(SQLABaseTable):
 
     @staticmethod
     def _get_sep_list(user_id: Optional[int] = None, sep_id: Optional[int] = None) -> DBRecords:
-        """ /!\\
-            any change here must be replated in
-            carranca/private/UserSep.py:UserSep
+        """⚠️
+        any change here must be replated in
+        carranca/private/UserSep.py:UserSep
         """
         field_names = [
             MgmtSepsUser.id.name,
@@ -584,8 +584,9 @@ class ReceivedFiles(SQLABaseTable):
     ) -> DBRecords:
 
         def _get_rows(db_session: Session) -> DBRecords:
-            """----------------------------------------------
-            /!\ Attention
+            """
+            ----------------------------------------------
+            | ⚠️ Attention
             -------------------------------------------------
                 There is an index on the underlying table
                 (email_sent, had_reception_error, user_id, registered_at)

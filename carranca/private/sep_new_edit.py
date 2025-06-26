@@ -101,7 +101,9 @@ def do_sep_edit(data: str) -> str:
                 - save: goto
                 - close: on_close
         """
+        # TODO use: window.history.back() in JavaScript.
         process_on_end = private_route("sep_grid", code=SEP_CMD_GRD)  # TODO selected Row, ix=row_index)
+
         form_on_close = {"action_form__form_on_close": process_on_end}
 
     else:  # standard routine
