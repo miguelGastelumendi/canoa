@@ -56,7 +56,7 @@ _locks_lock = Lock()
 RUN_WITH_LOCKS = True  # debug _get_scoped_var
 
 
-def _get_scoped_var(var_name: str, def_creator: Callable[[], Any]) -> Optional[Any]:
+def _get_scoped_var(var_name: str, do_var_creator: Callable[[], Any]) -> Optional[Any]:
     """
     Returns a value, from the current request context (g) under the var_name , creating it if necessary.
     """
@@ -80,26 +80,29 @@ def _get_scoped_var(var_name: str, def_creator: Callable[[], Any]) -> Optional[A
                 return var_value
             else:
                 try:
-                    var_value = def_creator()
+                    var_value = do_var_creator()
                     if var_value is None:
                         raise ValueError(...)
                     setattr(g, var_name, var_value)
+                    print(f"{var_name} data found, using sema.")
                     return var_value
                 except Exception as e:
                     setattr(g, var_name, _CREATION_FAILED)
-                    raise RuntimeError(f"Scoped variable creator {def_creator} raised an exception [{e}].")
+                    raise RuntimeError(f"Scoped variable creator {do_var_creator} raised an exception [{e}].")
+
     elif not hasattr(g, var_name):
         try:
-            var_value = def_creator()
+            var_value = do_var_creator()
             if var_value is None:
-                raise ValueError(f"{def_creator} returned None for `{var_name}`.")
+                raise ValueError(f"{do_var_creator} returned None for `{var_name}`.")
             setattr(g, var_name, var_value)
         except Exception as e:
-            raise RuntimeError(f"Scoped variable creator {def_creator} raised an exception [{e}].")
+            raise RuntimeError(f"Scoped variable creator {do_var_creator} raised an exception [{e}].")
 
         return var_value
     else:
         var_value = getattr(g, var_name)
+        print(f"{var_name} data found.")
         return var_value
 
 
@@ -133,7 +136,7 @@ count: int = 0
 
 # User SEPs
 # -----------
-def _prepare_user_seps() -> user_seps_rtn:
+def _prepare_user_seps(direct=False) -> user_seps_rtn:
     from ..models.private import MgmtSepsUser
     from ..private.UserSep import UserSep
     from ..private.sep_icon import do_icon_get_url
@@ -143,22 +146,30 @@ def _prepare_user_seps() -> user_seps_rtn:
     user_id: int = current_user.id if is_someone_logged() else -1
 
     global count
-    if count > 1:
-        print(f"Count: {count}  !!")
-
+    count += 1
     try:
-        sep_usr_rows = MgmtSepsUser.get_user_sep_list(user_id)
-    except Exception as e:
-        return str(e)
+        _debug = direct or count > 1
+        if _debug:
+            print(f"Count: {count} in")
 
-    seps: list[user_sep_dict] = []
-    for sep_row in sep_usr_rows:
-        item = UserSep(**sep_row)
-        item.icon_url = do_icon_get_url(item.icon_file_name, item.id)
-        dic = class_to_dict(item)  # as `g` only saves 'simple' classes convert it to a Dict
-        seps.append(dic)
+        try:
+            sep_usr_rows = MgmtSepsUser.get_user_sep_list(user_id)
+        except Exception as e:
+            return str(e)
 
-    count -= 1
+        seps: list[user_sep_dict] = []
+        for sep_row in sep_usr_rows:
+            item = UserSep(**sep_row)
+            item.icon_url = do_icon_get_url(item.icon_file_name, item.id)
+            dic = class_to_dict(item)  # as `g` only saves 'simple' classes convert it to a Dict
+            seps.append(dic)
+
+    finally:
+        # global count
+        count -= 1
+        if _debug:
+            print(f"Count: {count} out")
+
     return seps
 
 
@@ -168,10 +179,7 @@ def _get_user_seps() -> user_seps_rtn:
     if app_user is None:
         result: error_message = "No current user to retrieve SEP data."
     else:  # convert simple dict to UserSep again
-        DEBUG_USER_SEPS = True  # True -> don't use scoped_var
-        list_dic = (
-            _prepare_user_seps() if DEBUG_USER_SEPS else _get_scoped_var("_user_seps", _prepare_user_seps)
-        )
+        list_dic = _get_scoped_var("_user_seps", _prepare_user_seps)
         if list_dic is None or not isinstance(list_dic, list):
             sidekick.display.error(
                 f"An error occurred getting sep from user {app_user.id}: [{type(list_dic)}]->{list_dic}."

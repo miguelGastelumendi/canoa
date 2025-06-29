@@ -6,7 +6,7 @@ Retrieve ui texts item for current language
 (refactored from helper.py)
 mgd 2024-04-03
 
-     UNDER DEVELOPMENT
+     🚧 work in progress
 
 
 """

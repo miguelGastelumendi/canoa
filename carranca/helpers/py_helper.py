@@ -155,13 +155,13 @@ def as_bool(val: Any, val_if_none: Optional[bool] = False) -> bool:
     # fmt: on
 
 
-def clean_text(name: str, not_allowed: Optional[str] = ""):
+def clean_text(text: str, not_allowed: Optional[str] = ""):
     # - Strip leading and trailing whitespace
     # - Remove not_allowed chars (optional)
     # - Exclude all chars < 32
     # - Leave only one space between words
 
-    check_0 = as_str_strip(name)
+    check_0 = as_str_strip(text)
     exclude = as_str_strip(not_allowed)
     # Remove not_allowed
     check_1 = "".join(c for c in check_0 if c not in exclude)

@@ -7,7 +7,7 @@ Equipe da Canoa -- 2024
 
 # Equipe da Canoa -- 2024
 #
-# cSpell:ignore: nullable sqlalchemy sessionmaker sep ssep scm sepsusr usrlist SQLA
+# cSpell:ignore: nullable sqlalchemy sessionmaker sep ssep scm sepsusr usrlist SQLA duovigesimal
 
 from typing import List, Optional
 from sqlalchemy import (
@@ -30,11 +30,11 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from .. import global_sqlalchemy_scoped_session
 
 from ..models import SQLABaseTable
-from ..helpers.db_helper import db_fetch_rows, db_ups_error
+from ..helpers.db_helper import db_fetch_rows
 from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.user_helper import get_user_code
+from ..helpers.user_helper import get_user_code, get_batch_code
 from ..private.SepIconMaker import SepIconMaker, svg_content
-from ..common.app_context_vars import sidekick
+from ..common.app_context_vars import sidekick, app_user
 from ..helpers.db_records.DBRecords import DBRecords
 
 
@@ -179,7 +179,6 @@ class UserDataFiles(SQLABaseTable):
 
 # --- Table ---
 class Schema(SQLABaseTable):
-
     __tablename__ = "vw_schema"
 
     id = Column(Integer, primary_key=True)
@@ -196,24 +195,8 @@ class Schema(SQLABaseTable):
             schema_recs = DBRecords(stmt, schema_rows)
             return schema_recs
 
-        e, msg_error, schema_rows = db_fetch_rows(_get_data)
-        if e:
-            db_ups_error(e, msg_error, Schema.__tablename__)
-
+        e, msg_error, schema_rows = db_fetch_rows(_get_data, Schema.__tablename__)
         return schema_rows
-
-
-# # --- Table --- Replaced by Public.User
-# class SepUserData(SQLABaseTable):
-
-#     __tablename__ = "users"
-
-#     id = Column(Integer, primary_key=True)
-#     id_role = Column(Integer)
-#     username = Column(String(100), unique=True)
-#     username_lower = Column(String(100), Computed(""))
-#     email = Column(String(64), unique=True)
-#     disabled = Column(Boolean, default=False)
 
 
 # --- Table ---
@@ -252,50 +235,6 @@ class MgmtSepsUser(SQLABaseTable):
     assigned_by = Column(Integer)  #  pass through column: 0
     batch_code = Column(String(10))  # pass through column: ' '
 
-    # @staticmethod
-    # def get_sepsusr_and_usrlist(
-    #     field_names: Optional[List[str]], user_id: Optional[int] = None
-    # ) -> Tuple[DBRecords, DBRecords]:
-    #     """
-    #     Returns
-    #     1) `vw_mgmt_seps_user` DB view that has the necessary columns to
-    #         provide the adm with a UI grid to assign or remove SEP
-    #         to or from a user.
-    #     2) list if users from `users`
-    #     3) Error message if any action fails.
-    #     """
-
-    #     def _get_data(db_session: Session):
-    #         def __cols() -> List[Column]:
-    #             all_cols = MgmtSepsUser.__table__.columns
-    #             _cols = [col for col in all_cols if col.name in field_names]
-    #             return _cols
-
-    #         sel_cols = __cols() if field_names else None
-    #         stmt = select(*sel_cols) if sel_cols else select(MgmtSepsUser)
-    #         if user_id is not None:  # then filter
-    #             stmt = stmt.where(MgmtSepsUser.user_id == user_id)
-    #             usr_list: DBRecords = []  # and there is no users list
-
-    #         seps_rows = db_session.execute(stmt).all()
-    #         seps_recs = DBRecords(stmt, seps_rows)
-
-    #         if user_id is None:  # then get all users list, TODO: check 'disabled'?
-    #             # stmt = select(SepUserData).order_by(SepUserData.username_lower)
-    #             stmt = select(User.id, User.id_role, User.username, User.email, User.disabled).order_by(
-    #                 User.username_lower
-    #             )
-    #             usr_rows = db_session.execute(stmt).all()
-    #             usr_list = DBRecords(stmt, usr_rows)
-
-    #         return seps_recs, usr_list
-
-    #     e, msg_error, [seps_recs, usr_list] = db_fetch_rows(_get_data, 2)
-    #     if e:
-    #         db_ups_error(e, msg_error, MgmtSepsUser.__tablename__)
-
-    #     return seps_recs, usr_list
-
     @staticmethod
     def _get_sep_list(user_id: Optional[int] = None, sep_id: Optional[int] = None) -> DBRecords:
         """⚠️
@@ -305,6 +244,7 @@ class MgmtSepsUser(SQLABaseTable):
         field_names = [
             MgmtSepsUser.id.name,
             MgmtSepsUser.name.name,
+            MgmtSepsUser.scm_id,
             MgmtSepsUser.scm_name.name,
             MgmtSepsUser.fullname.name,
             MgmtSepsUser.description.name,
@@ -322,9 +262,10 @@ class MgmtSepsUser(SQLABaseTable):
         return MgmtSepsUser._get_sep_list(user_id)
 
     @staticmethod
-    def get_sep(sep_id: int) -> DBRecords:
+    def get_sep_row(sep_id: int) -> "MgmtSepsUser":
         """Get one sep"""
-        return MgmtSepsUser._get_sep_list(None, sep_id)
+        records: DBRecords = MgmtSepsUser._get_sep_list(None, sep_id)
+        return None if records is None or (records.count == 0) else records[0]
 
     @staticmethod
     def get_sep_list() -> DBRecords:
@@ -360,10 +301,7 @@ class MgmtSepsUser(SQLABaseTable):
             seps_recs = DBRecords(stmt, seps_rows)
             return seps_recs
 
-        e, msg_error, seps_recs = db_fetch_rows(_get_data)
-        if e:
-            db_ups_error(e, msg_error, MgmtSepsUser.__tablename__)
-
+        e, msg_error, seps_recs = db_fetch_rows(_get_data, MgmtSepsUser.__tablename__)
         return seps_recs
 
 
@@ -390,43 +328,6 @@ class MgmtEmailSep(SQLABaseTable):
     email_error = Column(String(400))
 
 
-# # --- Table ---
-# class SchemaSEP(SQLABaseTable):
-#     """
-#     Auxiliary View
-#     SchemaSEP is app's interface for the
-#     DB view `vw_scm_sep` that provides a couple of
-#     columns
-#     """
-
-#     __tablename__ = "vw_scm_sep"
-#     id = Column("sep_id", Integer, primary_key=True)
-#     user_id = Column("user_id", Integer, primary_key=True)
-#     sep_fullname = Column(Text)
-
-#     # 2025.06.16
-#     # not needed anymore
-#     # @staticmethod
-#     # def _get_sep_fullname(db_session: Session, sep_id: int) -> str:
-
-#     #     stmt = select(SchemaSEP.sep_fullname).where(SchemaSEP.id == sep_id)
-#     #     cell = db_session.execute(stmt).one_or_none()
-#     #     sep_fullname = None if cell is None else cell
-#     #     # AQUI
-#     #     return sep_fullname
-
-#     # @staticmethod
-#     # def get_sep_fullname(sep_id: int) -> str:
-#     #     if to_int(sep_id, -1) == -1:
-#     #         return ""
-
-#     #     e, msg_error, sep_fullname = db_fetch_rows(SchemaSEP._get_sep_fullname, sep_id)
-#     #     if e:
-#     #         db_ups_error(e, msg_error, Sep.__tablename__)
-
-#     #     return sep_fullname
-
-
 # --- Table ---
 class Sep(SQLABaseTable):
     """
@@ -441,14 +342,18 @@ class Sep(SQLABaseTable):
     users_id = Column("mgmt_users_id", Integer)
     ins_by = Column(Integer)
     ins_at = Column(DateTime)
+    edt_by = Column(Integer)
+    edt_at = Column(DateTime)
     name = Column(String(100), unique=True, nullable=False)
     name_lower = Column(String(100), Computed(""), unique=True)
     description = Column(String(140), nullable=False)
+    visible = Column(Boolean)
     icon_file_name = Column(String(120), nullable=True)
     icon_uploaded_at = Column(DateTime, nullable=True)
     icon_version = Column(Integer, nullable=False)
-    icon_original_name = Column(String(120), nullable=True)
-    icon_svg = Column(Text, nullable=True)
+    icon_original_name = Column(String(120))
+    icon_svg = Column(Text)
+    icon_crc = Column(Integer)
 
     # const
     scm_sep = sidekick.config.SCM_SEP_SEPARATOR
@@ -480,10 +385,7 @@ class Sep(SQLABaseTable):
 
             return sep_row
 
-        e, msg_error, sep_row = db_fetch_rows(_get_data)
-        if e:
-            db_ups_error(e, msg_error, Sep.__tablename__)
-
+        _, _, sep_row = db_fetch_rows(_get_data, Sep.__tablename__)
         return sep_row
 
     @staticmethod
@@ -504,42 +406,56 @@ class Sep(SQLABaseTable):
             return icon_content
 
         e, msg_error, icon_content = db_fetch_rows(_get_data)
-        if e:
-            db_ups_error(e, msg_error, Sep.__tablename__)
-
         return icon_content, msg_error
 
     @staticmethod
-    def save(sep_row: "Sep") -> bool:
+    def save(sep_row: "Sep", schema_changed: bool) -> bool:
         """
         Saves a Sep record
         """
+        batch_code = get_batch_code()
+
+        def _log(operation: str):
+            log_row = LogUserSep()
+            log_row.id_sep = sep_row.id
+            log_row.done_by = app_user.id
+            log_row.operation = operation
+            log_row.batch_code = batch_code
+            return log_row
+
         done = False
         db_session: Session
         with global_sqlalchemy_scoped_session() as db_session:
             try:
                 db_session.add(sep_row)
+                if sep_row.id is None:
+                    db_session.flush()  # get sep_row.id
+                    db_session.add(_log("I"))
+                else:
+                    db_session.add(_log("E"))
+                    if schema_changed:
+                        db_session.add(_log("C"))
+
                 db_session.commit()
                 done = True
             except Exception as e:
                 db_session.rollback()
                 sidekick.display.error(f"Error saving SEP record: [{e}].")
-                # msg_error = f"Cannot update {Sep.__tablename__}.id = {user_sep} | Error {e}."
 
         return done
 
     @staticmethod
-    def this_name_exists(sep_name: str) -> bool:
+    def full_name_exists(id_schema: int, sep_name: str) -> bool:
 
         def _get_data(db_session: Session) -> svg_content:
-            stmt = select(Sep.name_lower).where(Sep.name_lower == func.lower(sep_name))
+            # see sep__sch_name_lower_uix
+            stmt = select(Sep.name_lower).where(
+                Sep.id_schema == id_schema, Sep.name_lower == func.lower(sep_name)
+            )
             name_exists = db_session.query(exists(stmt)).scalar()
             return name_exists
 
-        e, msg_error, name_exists = db_fetch_rows(_get_data)
-        if e:
-            db_ups_error(e, msg_error, Sep.__tablename__)
-
+        _, _, name_exists = db_fetch_rows(_get_data, Sep.__tablename__)
         return name_exists
 
 
@@ -583,7 +499,7 @@ class ReceivedFiles(SQLABaseTable):
         file_id: int, user_id: int, email_sent: bool = True, had_reception_error: bool = False
     ) -> DBRecords:
 
-        def _get_rows(db_session: Session) -> DBRecords:
+        def _get_data(db_session: Session) -> DBRecords:
             """
             ----------------------------------------------
             | ⚠️ Attention
@@ -613,9 +529,7 @@ class ReceivedFiles(SQLABaseTable):
 
             return recs
 
-        e, msg_error, received_files = db_fetch_rows(_get_rows)
-        if e:
-            db_ups_error(e, msg_error, ReceivedFiles.__tablename__)
+        e, msg_error, received_files = db_fetch_rows(_get_data, ReceivedFiles.__tablename__)
 
         return received_files
 
@@ -654,11 +568,36 @@ class ReceivedFilesCount(SQLABaseTable):
 
             return recs
 
-        e, msg_error, received_files_count = db_fetch_rows(_get_data)
-        if e:
-            db_ups_error(e, msg_error, ReceivedFilesCount.__tablename__)
-
+        _, _, received_files_count = db_fetch_rows(_get_data, ReceivedFilesCount.__tablename__)
         return received_files_count
+
+
+# --- Table ---
+class LogUserSep(SQLABaseTable):
+    """
+    Keeps track of SEP management user (actual and last one)
+    and
+    insert and editions to table Sep
+    """
+
+    __tablename__ = "log_user_sep"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    id_sep = Column(Integer, nullable=False)
+    id_users = Column(Integer, nullable=True)  # Set NULL when remove sep from user (=id_users_prior)
+    id_users_prior = Column(
+        Integer, nullable=True
+    )  # The user ID of the previous owner of the SEP, or None if none was assigned
+    done_at = Column(DateTime, nullable=False, default=func.now())
+    done_by = Column(Integer, nullable=False)  # The new SEP owner user id
+    batch_code = Column(
+        String(10), nullable=False
+    )  # (days since 2024.11.01).(ms) both in base duovigesimal (22)
+    email_at = Column(DateTime, nullable=True)
+    email_error = Column(String(800), nullable=True)
+    operation = Column(
+        String(1), nullable=True
+    )  # (S)et, (Removed | (Edited, marked as (Deleted | (Change schema. For insert, see sep.ins_at.
 
 
 # eof

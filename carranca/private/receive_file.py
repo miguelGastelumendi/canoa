@@ -26,8 +26,9 @@ from ..helpers.py_helper import (
     is_str_none_or_empty,
 )  # Ensure this module contains the function
 from ..helpers.file_helper import folder_must_exist
+from ..helpers.jinja_helper import process_template
 from ..helpers.types_helper import template_file_full_name
-from ..helpers.route_helper import get_private_response_data, get_input_text
+from ..helpers.route_helper import get_private_response_data, get_front_end_text
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 from ..helpers.ui_db_texts_helper import (
     UITextsKeys,
@@ -47,7 +48,9 @@ def _do_sep_placeholderOption(fullname: str) -> UserSep:
     from .sep_icon import do_icon_get_url
     from .SepIconMaker import SepIconMaker
 
-    sep_fake = UserSep(0, "", fullname, "", False, SepIconMaker.none_file, do_icon_get_url(""))  # empty
+    sep_fake = UserSep(
+        -1, "", "", fullname, "", False, SepIconMaker.none_file, do_icon_get_url("")
+    )  # empty
     return sep_fake
 
 
@@ -70,7 +73,7 @@ def receive_file() -> template_file_full_name:
         ui_texts[UITextsKeys.Form.icon_url] = seps[0].icon_url if len(seps) > 0 else None
 
         dict_seps: List[user_sep_dict] = [class_to_dict(sep) for sep in seps]
-        tmpl: template_file_full_name = render_template(
+        tmpl: template_file_full_name = process_template(
             template, form=tmpl_form, seps=dict_seps, **ui_texts
         )
         return tmpl
@@ -97,13 +100,13 @@ def receive_file() -> template_file_full_name:
         # Find out what was kind of data was sent: an uploaded file or an URL (download)
         file_obj = request.files[tmpl_form.uploadfile.name] if len(request.files) > 0 else None
         task_code += 1  # 2
-        url_str = get_input_text(tmpl_form.urlname.name)
+        url_str = get_front_end_text(tmpl_form.urlname.name)
         task_code += 1  # 3
         has_file = (file_obj is not None) and not is_str_none_or_empty(file_obj.filename)
         task_code += 1  # 4
         has_url = not is_str_none_or_empty(url_str)
         task_code += 1  # 5
-        sep_id = to_int(get_input_text(tmpl_form.schema_sep.name))
+        sep_id = to_int(get_front_end_text(tmpl_form.schema_sep.name))
 
         # file_data holds a 'str' or an 'obj'
         task_code += 1  # 6

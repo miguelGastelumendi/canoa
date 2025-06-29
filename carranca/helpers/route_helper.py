@@ -98,7 +98,7 @@ def is_method_get() -> bool:
     return is_get
 
 
-def get_input_text(name: str, not_allowed: Optional[str] = "") -> str:
+def get_front_end_text(name: str, not_allowed: Optional[str] = "") -> str:
     text = request.form.get(name)
     # 2025.05.13 return clean_text(text)
     return None if text is None else clean_text(text, not_allowed)

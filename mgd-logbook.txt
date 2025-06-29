@@ -60,6 +60,11 @@
 
 ------- 2025 - June -------------
 ---------------------------------
+2025-06-26--28 β 4.50 DBv 4.09 [Setor Estratégico]=> Edit/Insert
+    - Menu [Setor Estratégico] ready for testes Edit/Insert
+    - log_user_sep ready for SEP Edit/Insert
+    - DB version 4.00.0
+
 2025-06-24--25 β 4.29 Fix a bug in Chromium browsers
     - Fix a bug on Chromium, the onGridReady
         ```js

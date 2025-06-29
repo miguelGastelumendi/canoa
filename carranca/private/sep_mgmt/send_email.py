@@ -15,6 +15,7 @@ Last Modified: 2025-04-28
 
 
 from typing import Tuple
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from carranca import global_sqlalchemy_scoped_session
@@ -63,7 +64,7 @@ def send_email(batch_code: str, ui_texts: ui_db_texts, task_code: int) -> sep_mg
                 return f"{email}:[{(error if error else 'OK')}]/n"
 
             for item in mgmt_email_list:
-                item.email_at = now()
+                item.email_at = func.now()
                 new_error = None
                 old_error = None
                 sep = item.sep_fullname

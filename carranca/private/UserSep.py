@@ -73,5 +73,4 @@ class UserSep:
     icon_file_name: str
     icon_url: Optional[str]  # expensive to 'calculate', so it is optional
 
-
 # eof

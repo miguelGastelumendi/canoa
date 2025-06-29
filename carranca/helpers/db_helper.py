@@ -55,22 +55,28 @@ def try_get_mgd_msg(error: object, default_msg: str = None) -> str:
 
 
 def db_fetch_rows(
-    func_or_query: str | Callable[[Session, Any], Any], return_tuple_len: int = 1, *args, **kwargs
+    func_or_query: str | Callable[[Session, Any], Any],
+    table_name: str = "",
+    return_tuple_len: int = 1,
+    *args,
+    **kwargs,
 ) -> Tuple[Optional[Exception], Optional[str], Tuple[Any, ...] | CursorResult]:
     """
     Executes a SQL query or a function within a database session.
 
     Args:
         func_or_query: A callable function or a SQL query string.
+        table_name ['']: if not None and a error occurs, the exception is raised here
+        return_tuple_len [1]: int the size of the tuple to return
         *args: Additional positional arguments to pass to the function.
         **kwargs: Additional keyword arguments to pass to the function.
 
     Returns:
         A tuple containing:
-            - An error (if any)
-            - A message
-            - Returns, if type of func_or_query is
-                callable: A tuple of unknown size
+            - An error or None
+            - A message error or None
+            - if type of func_or_query is
+                callable: A tuple of `return_tuple_len` size
                 str: CursorResult
 
         A tuple containing an error (if any) and the result of the query or function.
@@ -82,7 +88,13 @@ def db_fetch_rows(
 
         # TODO LOG to log
         err_code = f"[{e.code}]" if hasattr(e, "code") else ""
-        sidekick.display.error(f"[{func_or_query}]: '{msg}': Error{err_code} details: {e}.")
+        sidekick.display.error(
+            f"[{func_or_query}]: '{msg}'; Table: [{table_name}]; Error{err_code} details: {e}."
+        )
+
+        if table_name:
+            db_ups_error(e, msg, table_name)
+
         return e, msg, tuple([None] * return_tuple_len)
 
     try:

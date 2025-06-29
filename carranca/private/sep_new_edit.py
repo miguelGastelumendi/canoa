@@ -11,6 +11,7 @@ import re
 from flask import request
 from typing import Tuple
 from os.path import splitext
+from sqlalchemy import func  # func.now() == server time
 from dataclasses import dataclass
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
@@ -23,12 +24,13 @@ from .SepIconMaker import SepIconMaker
 from ..models.private import Sep, Schema, MgmtSepsUser
 from ..helpers.jinja_helper import process_template
 from ..private.UserSep import UserSep
-from ..helpers.py_helper import now, to_int, crc16
+from ..helpers.py_helper import clean_text, to_int, crc16
 from ..public.ups_handler import ups_handler
+from ..helpers.db_records.DBRecord import DBRecord
 from ..helpers.route_helper import (
     get_private_response_data,
     init_response_vars,
-    get_input_text,
+    get_front_end_text,
     login_route,
     private_route,
     redirect_to,
@@ -116,12 +118,16 @@ def do_sep_edit(data: str) -> str:
     is_simple_edit = False
     is_insert = code == SEP_CMD_INS
     if is_insert:
+        # insert can modified all fields (readonly `manager`` not shown)
         pass
     elif app_user.is_power:
-        is_full_edit = True  # full edit can edit all fields
-    else:  #
-        is_simple_edit = True  # `normal user` can edit description & icon
+        # full edit can edit all fields but `manager`` that is readonly (see .sep_mgmt)
+        is_full_edit = True
+    else:
+        # `normal user` can only edit description & icon
+        is_simple_edit = True
 
+    # edit SEP with ID, is a parameter
     sep_id = new_sep_id if is_insert else UserSep.to_id(code)
     if sep_id is None or sep_id < 0:
         return redirect_to(process_on_end)
@@ -141,85 +147,92 @@ def do_sep_edit(data: str) -> str:
             return icon_file_sent, file_storage
 
         def _get_sep_data(load_sep_icon_content: bool, task_code: int) -> Tuple[UserSep, Sep, int, str]:
-            if is_simple_edit:
-                task_code += 1
+
+            if (sep_row := Sep() if is_insert else Sep.get_sep(sep_id, load_sep_icon_content)) is None:
+                # get the editable row
+                # Someone deleted just now?
+                raise JumpOut(add_msg_final("sepEditNotFound", ui_texts), task_code + 1)
+            elif is_simple_edit:
+                # edit only description & icon
+                ui_texts[SCHEMA_LIST] = []
+                pass
             elif not app_user.is_power:
-                raise AppStumbled(add_msg_final("sepNewNotAllow", ui_texts), task_code, True)
+                # Power user only can edit more fields than description & icon
+                raise AppStumbled(add_msg_final("sepNewNotAllow", ui_texts), task_code + 2, True)
             elif is_full_edit:
-                task_code += 2
+                # edit Scheme (from list), sep name, description & icon
                 ui_texts[SCHEMA_LIST_VALUE] = "" if is_get else flask_form.schema_list.data
                 ui_texts[SCHEMA_LIST] = Schema.get_schemas().to_list()
-            else:  # is_insert
-                task_code += 3
+            else:  # is_insert => return
+                # edit Scheme (from list, but force user to select one), sep name, description & icon
                 ui_texts[SCHEMA_LIST_VALUE] = "" if is_get else flask_form.schema_list.data
                 ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(SepIconMaker.empty_file)
-                select_one = ui_texts["placeholderOption"]
+                select_one = ui_texts["placeholderOption"]  # (select schema)
                 ui_texts[SCHEMA_LIST] = [{"id": "", "name": select_one}] + Schema.get_schemas().to_list()
-                sep_row = Sep()
-                return None, sep_row, task_code, ui_texts["sepNewTmpName"]
+                return None, sep_row, task_code + 10, ui_texts["sepNewTmpName"]
 
-            # --- is_edit_form ---
-            # --------------------
-            sep_manager = None
-            task_code += 1  # 2
+            # else is_simple_edit or is_full_edit
+            # ------------
+            task_code += 3
+            # Now, find the sep's manager
+            sep_manager: str = None
+            sep_usr_row: MgmtSepsUser = None
+
+            # does current user owns the sep?
             usr_sep = next((sep for sep in app_user.seps if sep.id == sep_id), None)
+
+            # Get fresh dada from db
             if usr_sep is not None:
-                sep_usr_rows = MgmtSepsUser.get_user_sep_list(app_user.id)
+                # current user owns the sep, so it can be edited, get the record
+                sep_usr_row = MgmtSepsUser.get_sep_row(sep_id)
                 sep_manager = app_user.name
             elif not app_user.is_power:
-                raise JumpOut(add_msg_final("sepEditNotAllow", ui_texts, sep_fullname), task_code)
-            elif (sep_usr_rows := MgmtSepsUser.get_sep(sep_id)) is None or (sep_usr_rows.count == 0):
-                raise JumpOut(add_msg_final("sepEditNotFound", ui_texts), task_code + 2)  # 7
+                # current user does NOT own the sep, and he is not power user, so can *not* edit it.
+                raise JumpOut(add_msg_final("sepEditNotAllow", ui_texts, sep_fullname), task_code + 1)
+            elif (sep_usr_row := MgmtSepsUser.get_sep_row(sep_id)) is None:
+                # the selected sep id was not found
+                raise JumpOut(add_msg_final("sepEditNotFound", ui_texts), task_code + 2)
             else:
-                edit_dict = dict(sep_usr_rows[0])
+                # create a `usr_sep` and get the sep's manager (user_curr)
+                usr_sep_dict = dict(sep_usr_row)
                 # Remove 'user_curr' from edit_dict, because is not needed in UserSep(..)
                 sep_manager = (
-                    sep_user if (sep_user := edit_dict.pop("user_curr", None)) else ui_texts["managerNone"]
+                    sep_user
+                    if (sep_user := usr_sep_dict.pop("user_curr", None))
+                    else ui_texts["managerNone"]
                 )
-                usr_sep = UserSep(**edit_dict)
+                usr_sep = UserSep(**usr_sep_dict)
                 usr_sep.icon_url = SepIconMaker.get_url(usr_sep.icon_file_name)
 
-            # check permissions
-            if sep_usr_rows is None:
-                """
-                This condition seems unlikely to be met if get_user_sep_list returns
-                a list or None as per its likely contract.
-                Consider if this check is necessary or if the next one covers it.
-                """
-                raise JumpOut(add_msg_final("sepEditNotAllow", ui_texts), task_code + 1)  # 5
-            elif None == (sep_user_row := next((mus for mus in sep_usr_rows if mus.id == sep_id), None)):
-                raise JumpOut(add_msg_final("sepEditNotAllow", ui_texts), task_code + 2)  # 6
-            elif (sep_row := Sep.get_sep(sep_id, load_sep_icon_content)) is None:
-                raise JumpOut(add_msg_final("sepEditNotFound", ui_texts), task_code + 3)  # 7
-            elif is_get:
-                # set the form's data row for edition
+            # => usr_sep, sep_manager & sep_usr_row are ready always
+
+            # fill the form for edition
+            if is_get:
+                # set the form's data row for edition, just in case (someone messed with the db) clean up the text
                 flask_form.schema_name.data = usr_sep.scm_name
-                flask_form.sep_name.data = sep_row.name
-                flask_form.description.data = sep_row.description
+                flask_form.sep_name.data = clean_text(sep_row.name)
+                flask_form.description.data = clean_text(sep_row.description)
                 flask_form.icon_filename.data = None
                 flask_form.manager_name.data = None
                 if is_full_edit:
                     ui_texts[SCHEMA_LIST_VALUE] = sep_row.id_schema
                     flask_form.manager_name.data = sep_manager
 
-                task_code += 8  # 513
+                task_code += 3  # 509
 
-            task_code += 1  # 3
+            task_code += 1
             ui_texts[UITextsKeys.Form.icon_url] = usr_sep.icon_url
-            return usr_sep, sep_row, task_code, sep_user_row.fullname
+            return usr_sep, sep_row, task_code, sep_usr_row.fullname
 
         def _was_form_sep_modified(sep_row: Sep) -> Tuple[bool, bool]:
             # remove schema/sep separator sep+sep
-            ui_description = get_input_text(flask_form.description.name)
-            ui_sep_name = get_input_text(flask_form.sep_name.name, [Sep.scm_sep])
-            sep_modified = False
+            ui_description = get_front_end_text(flask_form.description.name)
+            ui_sep_name = get_front_end_text(flask_form.sep_name.name, [Sep.scm_sep])
 
             if is_insert:
                 id_schema = flask_form.schema_list.data
-                form_modified = (
-                    id_schema or ui_description or ui_sep_name
-                )  # optional: or _icon_file_sent()[0]
                 sep_modified = True
+                form_modified = id_schema or ui_description or ui_sep_name
             else:  # is_edit or is_full_edit
                 # TODO check Schema
                 sep_name = sep_row.name if ui_sep_name is None else ui_sep_name
@@ -236,7 +249,7 @@ def do_sep_edit(data: str) -> str:
             # remove spaces & '/' (scm_sep) so the user see its modified values (see get_input_text)
             flask_form.description.data = ui_description
             flask_form.sep_name.data = ui_sep_name
-            return form_modified, sep_modified
+            return form_modified, sep_modified, id_schema
 
         def _get_icon_data(sep_row: Sep) -> IconData:
             def __find(pattern: str, data: str) -> int:
@@ -274,7 +287,7 @@ def do_sep_edit(data: str) -> str:
 
             return icon_data
 
-        task_code += 1  # 2
+        task_code += 1  # 1
         tmpl_ffn, is_get, ui_texts = get_private_response_data("sepNewEdit")
         ui_texts["formForNew"] = is_insert or is_full_edit
         ui_texts["formTitle"] = ui_texts[f"formTitle{('New' if is_insert else 'Edit')}"]
@@ -282,8 +295,8 @@ def do_sep_edit(data: str) -> str:
         flask_form = SepNew(request.form) if is_insert or is_full_edit else SepEdit(request.form)
         # Personalized template for this user (see tmpl_form.sep_name for more info):
         input_disabled = not app_user.is_power
-        flask_form.sep_name.render_kw["required"] = not input_disabled
         flask_form.sep_name.render_kw["disabled"] = input_disabled
+        flask_form.sep_name.render_kw["required"] = not input_disabled
         flask_form.sep_name.render_kw["lang"] = app_user.lang
         flask_form.description.render_kw["lang"] = app_user.lang
 
@@ -291,17 +304,17 @@ def do_sep_edit(data: str) -> str:
         usr_sep, sep_row, task_code, sep_fullname = _get_sep_data(not is_get, task_code)
 
         task_code = ModuleErrorCode.SEP_EDIT.value + 10
-        form_mod = False  # avoid hint in attribution
+        form_mod, sep_mod, id_schema = (False, False, -1) if is_get else _was_form_sep_modified(sep_row)
         sep_name = usr_sep.name if input_disabled else flask_form.sep_name.data
+        scm_name = next((scm["name"] for scm in ui_texts[SCHEMA_LIST] if scm["id"] == id_schema), "?")
 
-        form_mod, sep_mod = (False, False) if is_get else _was_form_sep_modified(sep_row)
         if is_get:
             task_code += 1
         elif not form_mod:
             # TODO: nothing modified, add_msg_warn("nothingChanged", ui_texts)
             return redirect_to(process_on_end)
-        elif (is_insert or sep_mod) and Sep.this_name_exists(sep_name):
-            add_msg_error("sepNameRepeated", ui_texts, sep_name)
+        elif (is_insert or sep_mod) and Sep.full_name_exists(id_schema, sep_name):
+            add_msg_error("sepNameRepeated", ui_texts, scm_name, sep_name)
         elif (icon_data := _get_icon_data(sep_row)).error_code > 0:
             # msg {ext} [{hint}-{code}]
             add_msg_error(
@@ -311,42 +324,42 @@ def do_sep_edit(data: str) -> str:
                 icon_data.error_hint,
                 icon_data.error_code,
             )
-        # TODO: Check if icon used in other SEP
+        # TODO: Check if icon used in other SEP, index is ready
         else:
             task_code += 1
             sep_row.name = sep_name
-            sep_row.description = get_input_text(flask_form.description.name)
+            sep_row.description = get_front_end_text(flask_form.description.name)
             if is_insert:
-                task_code += 1
                 sep_row.id = None
-                sep_row.ins_by = app_user.id
                 sep_row.visible = True
+                sep_row.id_schema = id_schema
+                sep_row.ins_by = app_user.id
+                sep_row.ins_at = func.now()
+            else:
+                sep_row.edt_by = app_user.id
+                sep_row.edt_at = func.now()
 
             if is_insert or is_full_edit:
-                task_code += 1
-                lst_name = flask_form.schema_list.name
-                sep_row.id_schema = int(request.form.get(lst_name, -1))
-                scm_list = ui_texts[SCHEMA_LIST]
-                scm_name = next((scms["name"] for scms in scm_list if scms["id"] == sep_row.id_schema), "?")
-                # get sep_fullname in case of error
+                task_code += 1  # 513
                 sep_fullname = Sep.get_fullname(scm_name, sep_row.name)
 
-            if is_simple_edit:
-                pass
+            if schema_changed := (is_full_edit and (id_schema != sep_row.id_schema)):
+                sep_row.id_schema = id_schema
 
             if new_icon := icon_data.ready:
                 task_code += 2
-                sep_row.icon_original_name = secure_filename(icon_data.file_name)
-                sep_row.icon_file_name = f"{app_user.code}u-{icon_data.crc:04x}_sep.{SepIconMaker.ext}"
-                sep_row.icon_uploaded_at = now()
                 sep_row.icon_svg = icon_data.content
+                sep_row.icon_crc = icon_data.crc
+                sep_row.icon_file_name = f"{app_user.code}u-{icon_data.crc:04x}_sep.{SepIconMaker.ext}"
+                sep_row.icon_uploaded_at = func.now()
+                sep_row.icon_original_name = secure_filename(icon_data.file_name)
                 iv = sep_row.icon_version
                 sep_row.icon_version = iv + 1 if to_int(iv, 0) > 0 else 1
                 ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(sep_row.icon_file_name)
 
-            if Sep.save(sep_row):  # Success  :—)
-                task_code += 3  # 18
-                add_msg_success("sepEditSuccess", ui_texts, sep_fullname)
+            if Sep.save(sep_row, schema_changed):  # Success  :—)
+                task_code += 3  # 15
+                add_msg_success("sepSuccessNew" if is_insert else "sepSuccessEdit", ui_texts, sep_fullname)
                 if new_icon and usr_sep:  # after post
                     icon_refresh(usr_sep)  # refresh this form icon
 

@@ -9,6 +9,7 @@ mgd
 # cSpell:ignore sqlalchemy wtforms
 
 from flask import render_template, request
+from sqlalchemy import func
 from flask_login import login_user
 
 from ...models.public import persist_user
@@ -23,7 +24,7 @@ from ...helpers.route_helper import (
     home_route,
     redirect_to,
     init_response_vars,
-    get_input_text,
+    get_front_end_text,
     get_account_response_data,
 )
 from ...models.public import User, get_user_role_abbr
@@ -49,9 +50,9 @@ def login():
             pass
         else:
             task_code += 1  # 4
-            username = get_input_text("username")  # TODO tmpl_form
+            username = get_front_end_text("username")  # TODO tmpl_form
             task_code += 1  # 5
-            password = get_input_text("password")
+            password = get_front_end_text("password")
             task_code += 1  # 6
             search_for = to_str(username).lower()
             task_code += 1  # 7
@@ -64,7 +65,7 @@ def login():
                 task_code += 1  # 10
                 add_msg_error("userOrPwdIsWrong", ui_texts)
             elif not verify_pass(password, user.password):
-                user.password_failed_at = now()
+                user.password_failed_at = func.now()
                 task_code += 2  # 11
                 user.password_failures = user.password_failures + 1
                 add_msg_error("userOrPwdIsWrong", ui_texts)
@@ -84,7 +85,7 @@ def login():
             else:
                 task_code += 6  # 15
                 user.recover_email_token = None
-                user.last_login_at = now()
+                user.last_login_at = func.now()
                 user.password_failures = 0
                 task_code += 1  # 16
                 remember_me = not is_str_none_or_empty(request.form.get("remember_me"))

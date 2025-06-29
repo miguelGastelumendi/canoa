@@ -92,10 +92,7 @@ class User(SQLABaseTable, UserMixin):
             user = db_session.query(User).options(joinedload(User.role)).filter_by(**filter).first()
             return user
 
-        e, msg_error, user = db_fetch_rows(_get_data)
-        if e:
-            db_ups_error(e, msg_error, User.__tablename__)
-
+        _, _, user = db_fetch_rows(_get_data, User.__tablename__)
         return user
 
     @staticmethod
@@ -116,10 +113,7 @@ class User(SQLABaseTable, UserMixin):
             usr_list = DBRecords(stmt, usr_rows)
             return usr_list
 
-        e, msg_error, seps_recs = db_fetch_rows(_get_data)
-        if e:
-            db_ups_error(e, msg_error, User.__tablename__)
-
+        _, _, seps_recs = db_fetch_rows(_get_data, User.__tablename__)
         return seps_recs
 
 
