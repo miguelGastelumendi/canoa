@@ -80,6 +80,8 @@ class SepIconMaker:
         return cls.content_for("darkgrey", "Falta", stroke_opacity="0.45")
 
 
+SYSTEM_ICONS = [SepIconMaker.none_file, SepIconMaker.empty_file, SepIconMaker.error_file]
+
 # TODO new Python
 # class MetaSepIconConfig(type):
 #     @property

@@ -17,30 +17,29 @@ from ..common.app_context_vars import sidekick
 from ..common.app_error_assistant import AppStumbled, JumpOut
 from ..models.private import Sep
 
-from .SepIcon import SepIcon, ICON_MIN_SIZE
-from .SepIconMaker import SepIconMaker
+from .SepIcon import ICON_MIN_SIZE
+from .SepIconMaker import SepIconMaker, SYSTEM_ICONS
 
 
-def icon_refresh(sep: SepIcon | Sep) -> bool:
+def icon_refresh(ifn_old: str, ifn_new: str, sep_id: int) -> bool:
     """
     ⚠️ This is can be resources heavy routine
 
-    Deletes the icon file and recreates.
+    Deletes the 'old' icon file and creates a 'new' one
     """
 
     refreshed = False
-    if is_str_none_or_empty(sep.icon_file_name):
-        return refreshed
-
     try:
-        file_full_name = SepIconMaker.get_full_name(sep.icon_file_name)
-        if path.isfile(file_full_name):
+        if is_str_none_or_empty(ifn_old) or ifn_old in SYSTEM_ICONS:
+            pass  # this is a shared 'system' icon, don't delete
+        elif path.isfile(file_full_name := SepIconMaker.get_full_name(ifn_old)):
             remove(file_full_name)
 
-        do_icon_get_url(sep.id)
+        if not is_str_none_or_empty(ifn_new):
+            do_icon_get_url(ifn_new, sep_id)
+
         refreshed = True
     except Exception as e:
-
         sidekick.display.error(f"Could not refresh icon [{file_full_name}].")
 
     return refreshed

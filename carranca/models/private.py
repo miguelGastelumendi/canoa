@@ -32,7 +32,7 @@ from .. import global_sqlalchemy_scoped_session
 from ..models import SQLABaseTable
 from ..helpers.db_helper import db_fetch_rows
 from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.user_helper import get_user_code, get_batch_code
+from ..helpers.user_helper import get_user_code
 from ..private.SepIconMaker import SepIconMaker, svg_content
 from ..common.app_context_vars import sidekick, app_user
 from ..helpers.db_records.DBRecords import DBRecords
@@ -344,6 +344,8 @@ class Sep(SQLABaseTable):
     ins_at = Column(DateTime)
     edt_by = Column(Integer)
     edt_at = Column(DateTime)
+    ico_by = Column(Integer)
+    ico_at = Column(DateTime)
     name = Column(String(100), unique=True, nullable=False)
     name_lower = Column(String(100), Computed(""), unique=True)
     description = Column(String(140), nullable=False)
@@ -409,11 +411,12 @@ class Sep(SQLABaseTable):
         return icon_content, msg_error
 
     @staticmethod
-    def save(sep_row: "Sep", schema_changed: bool) -> bool:
+    def save(sep_row: "Sep", schema_changed: bool, batch_code: str) -> int:
         """
         Saves a Sep record
+            if OK -> returns the row id
+            else -> -1
         """
-        batch_code = get_batch_code()
 
         def _log(operation: str):
             log_row = LogUserSep()
@@ -423,12 +426,13 @@ class Sep(SQLABaseTable):
             log_row.batch_code = batch_code
             return log_row
 
-        done = False
         db_session: Session
+        sep_id = -1
         with global_sqlalchemy_scoped_session() as db_session:
+            done = False
             try:
                 db_session.add(sep_row)
-                if sep_row.id is None:
+                if sep_row.id is None:  # is it an insert?
                     db_session.flush()  # get sep_row.id
                     db_session.add(_log("I"))
                 else:
@@ -436,13 +440,14 @@ class Sep(SQLABaseTable):
                     if schema_changed:
                         db_session.add(_log("C"))
 
+                sep_id = sep_row.id
                 db_session.commit()
-                done = True
+
             except Exception as e:
                 db_session.rollback()
                 sidekick.display.error(f"Error saving SEP record: [{e}].")
 
-        return done
+        return sep_id
 
     @staticmethod
     def full_name_exists(id_schema: int, sep_name: str) -> bool:

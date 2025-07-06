@@ -58,12 +58,24 @@
 
    	A user can not be disabled if it has a SEP, cannot be assigned a sep if is disabled
 
+------- 2025 - July -------------
+---------------------------------
+2025-07-04--05 β 4.52 [Published] Fix Sep's Icon upload [Published]
+    - A bug \private\sep_icon.py:icon_refresh set new icons
+      to the default SepIconMaker.none_file
+
+
+2025-07-01--02 β 4.51 New tables for Schema
+    - Create new table for Scheme
+
+
 ------- 2025 - June -------------
 ---------------------------------
-2025-06-26--28 β 4.50 DBv 4.09 [Setor Estratégico]=> Edit/Insert
-    - Menu [Setor Estratégico] ready for testes Edit/Insert
-    - log_user_sep ready for SEP Edit/Insert
+2025-06-26--28 β 4.50 DBv 4.09 #45 [Setor Estratégico]=> Edit/Insert (Published)
+    - Fix bugs of: Menu [Setor Estratégico] ready for testes Edit/Insert
+    - #45 log (table, log_user_sep) ready for SEP Edit/Insert
     - DB version 4.00.0
+
 
 2025-06-24--25 β 4.29 Fix a bug in Chromium browsers
     - Fix a bug on Chromium, the onGridReady
@@ -84,9 +96,18 @@
 
 
 2025-06-24 β 4.26 Set Linux background img in css
-    - Set Linux background img in css
-      instead of Windows
+    - Set Linux's background img in css
+      instead of Windows's background
     - Add carranca/static/sep_icons/ to .gitignore
+
+
+2025-06-20,23 β 4.25 #42 #46  Menu [Setor Estratégico]
+    - Adm:
+        ◦ [Edição] » janela com a lista de todos os SEPs » alterar todos os atributos
+        ◦ [Inserção] » janela para cadastrar SEP
+
+    - Usuário:
+        No menu aparecem os SEP que pode alterar » Nome, Título e Imagem
 
 
 2025-06-20,23 β 4.25  Setor Estratégico » Edição (admin + user) ready

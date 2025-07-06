@@ -75,6 +75,7 @@ def _get_scoped_var(var_name: str, do_var_creator: Callable[[], Any]) -> Optiona
         with _locks[var_name]:
             if hasattr(g, var_name):
                 var_value = getattr(g, var_name)
+                print(f"{var_name} data found, using sema.")
                 if var_value is _CREATION_FAILED:
                     raise RuntimeError(f"Previous attempt to create `{var_name}` failed.")
                 return var_value
@@ -84,11 +85,12 @@ def _get_scoped_var(var_name: str, do_var_creator: Callable[[], Any]) -> Optiona
                     if var_value is None:
                         raise ValueError(...)
                     setattr(g, var_name, var_value)
-                    print(f"{var_name} data found, using sema.")
                     return var_value
                 except Exception as e:
                     setattr(g, var_name, _CREATION_FAILED)
-                    raise RuntimeError(f"Scoped variable creator {do_var_creator} raised an exception [{e}].")
+                    raise RuntimeError(
+                        f"Scoped variable creator {do_var_creator} raised an exception [{e}]."
+                    )
 
     elif not hasattr(g, var_name):
         try:
@@ -153,6 +155,7 @@ def _prepare_user_seps(direct=False) -> user_seps_rtn:
             print(f"Count: {count} in")
 
         try:
+            sidekick.display.debug("user_sep start creation...")
             sep_usr_rows = MgmtSepsUser.get_user_sep_list(user_id)
         except Exception as e:
             return str(e)
@@ -165,6 +168,7 @@ def _prepare_user_seps(direct=False) -> user_seps_rtn:
             seps.append(dic)
 
     finally:
+        sidekick.display.debug("user_sep was created.")
         # global count
         count -= 1
         if _debug:

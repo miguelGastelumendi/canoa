@@ -19,14 +19,14 @@ from werkzeug.datastructures import FileStorage
 from .wtforms import SepEdit, SepNew
 
 from .sep_icon import icon_refresh, ICON_MIN_SIZE
-from .sep_constants import SEP_CMD_GRD, SEP_CMD_INS, ACTION_CODE_SEPARATOR
 from .SepIconMaker import SepIconMaker
+from .sep_constants import SEP_CMD_GRD, SEP_CMD_INS, ACTION_CODE_SEPARATOR
 from ..models.private import Sep, Schema, MgmtSepsUser
-from ..helpers.jinja_helper import process_template
 from ..private.UserSep import UserSep
 from ..helpers.py_helper import clean_text, to_int, crc16
 from ..public.ups_handler import ups_handler
-from ..helpers.db_records.DBRecord import DBRecord
+from ..helpers.user_helper import get_batch_code
+from ..helpers.jinja_helper import process_template
 from ..helpers.route_helper import (
     get_private_response_data,
     init_response_vars,
@@ -303,7 +303,7 @@ def do_sep_edit(data: str) -> str:
         task_code += 1  # 3
         usr_sep, sep_row, task_code, sep_fullname = _get_sep_data(not is_get, task_code)
 
-        task_code = ModuleErrorCode.SEP_EDIT.value + 10
+        task_code = ModuleErrorCode.SEP_EDIT.value + 10  # 510
         form_mod, sep_mod, id_schema = (False, False, -1) if is_get else _was_form_sep_modified(sep_row)
         sep_name = usr_sep.name if input_disabled else flask_form.sep_name.data
         scm_name = next((scm["name"] for scm in ui_texts[SCHEMA_LIST] if scm["id"] == id_schema), "?")
@@ -324,50 +324,56 @@ def do_sep_edit(data: str) -> str:
                 icon_data.error_hint,
                 icon_data.error_code,
             )
-        # TODO: Check if icon used in other SEP, index is ready
+        # TODO: Check if icon used (CRC) in other SEP, index is ready
         else:
-            task_code += 1
+            task_code += 1  # 511
             sep_row.name = sep_name
             sep_row.description = get_front_end_text(flask_form.description.name)
+            batch_code = get_batch_code()
+
             if is_insert:
+                icon_old_file_name = None
                 sep_row.id = None
                 sep_row.visible = True
                 sep_row.id_schema = id_schema
                 sep_row.ins_by = app_user.id
                 sep_row.ins_at = func.now()
             else:
+                icon_old_file_name = sep_row.icon_file_name
                 sep_row.edt_by = app_user.id
                 sep_row.edt_at = func.now()
 
             if is_insert or is_full_edit:
-                task_code += 1  # 513
+                task_code += 1  # 512
+                # we need `sep_fullname`` in case of error (see except)
                 sep_fullname = Sep.get_fullname(scm_name, sep_row.name)
 
             if schema_changed := (is_full_edit and (id_schema != sep_row.id_schema)):
                 sep_row.id_schema = id_schema
 
-            if new_icon := icon_data.ready:
-                task_code += 2
+            icon_new_file_name = None
+            if fresh_icon := icon_data.ready:
+                task_code += 4 # 516
                 sep_row.icon_svg = icon_data.content
                 sep_row.icon_crc = icon_data.crc
-                sep_row.icon_file_name = f"{app_user.code}u-{icon_data.crc:04x}_sep.{SepIconMaker.ext}"
+                sep_row.icon_file_name = f"{batch_code}-{icon_data.crc:04x}_sep.{SepIconMaker.ext}"
                 sep_row.icon_uploaded_at = func.now()
                 sep_row.icon_original_name = secure_filename(icon_data.file_name)
-                iv = sep_row.icon_version
-                sep_row.icon_version = iv + 1 if to_int(iv, 0) > 0 else 1
+                sep_row.ico_by = app_user.id
+                sep_row.ico_at = func.now()
+                sep_row.icon_version = to_int(sep_row.icon_version, 0) + 1
                 ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(sep_row.icon_file_name)
+                icon_new_file_name = sep_row.icon_file_name
 
-            if Sep.save(sep_row, schema_changed):  # Success  :—)
-                task_code += 3  # 15
+            if (sep_id:= Sep.save(sep_row, schema_changed, batch_code)) >= 0:  # :——)
+                task_code += 5  # 21
                 add_msg_success("sepSuccessNew" if is_insert else "sepSuccessEdit", ui_texts, sep_fullname)
-                if new_icon and usr_sep:  # after post
-                    icon_refresh(usr_sep)  # refresh this form icon
-
+                if fresh_icon:  # after post
+                    icon_refresh(icon_old_file_name, icon_new_file_name, sep_id)
                 if action:
                     return redirect_to(process_on_end)
-
-            else:  # :—(
-                task_code += 4  # 19
+            else:  # :——(
+                task_code += 6  # 19
                 item = f"sepFailed{'Edit' if is_simple_edit else 'New'}"
                 add_msg_final(item, ui_texts, sep_fullname, task_code)
 
