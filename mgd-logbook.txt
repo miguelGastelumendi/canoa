@@ -60,13 +60,21 @@
 
 ------- 2025 - July -------------
 ---------------------------------
+2025-07-07--08 β 4.60, DBv 4.50 recreate views that depend on common.schema
+    - Recreate canoa.vw_schema and dependencies:
+        vw_mgmt_user_sep
+        vw_mgmt_email_sep
+        vw_mgmt_seps_user
+        vw_user_data_files
+        vw_scm_sep
+
 2025-07-04--05 β 4.52 [Published] Fix Sep's Icon upload [Published]
     - A bug \private\sep_icon.py:icon_refresh set new icons
       to the default SepIconMaker.none_file
 
 
 2025-07-01--02 β 4.51 New tables for Schema
-    - Create new table for Scheme
+    - Create new table for Scheme (canoa.schema)
 
 
 ------- 2025 - June -------------
