@@ -15,15 +15,13 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_us
 --------------------------------------- #}
 <nav id="navbar-main" class="navbar fixed-top navbar-expand-sm shadow-sm px-2">
     {% set menu_header= app_menu('menuHeaders') %}
-    {% set sep_menu= sep_menu() %}
+    {% set sep_list= sep_menu() %}
     {% set sep_menu_class= '' %}
-    {% set sep_indent= '' %}
     {% set j_user= jinja_user() %}
 
     {% if j_user.power %}
-    {# -- #}{% set sep_menu_class= '' %}
-    {# -- #}{% set sep_indent = '&nbsp;&nbsp;&#9702;&nbsp;' %} {# ◦ #}
-    {% elif not sep_menu %}
+    {# -- #}{% set scm_list= scm_menu() %}
+    {% elif not sep_list %}
     {# -- #}{% set sep_menu_class= 'disabled' %}
     {% endif %}
 
@@ -92,11 +90,10 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_us
                         {# ╘════════ admin sep menu ═══════╛ #}
                         {% else %}
                         {# ╒═════ user with seps menu ═════╕ #}
-                        {% for sep in sep_menu %}
+                        {% for sep in sep_list %}
                         <li>
                             <a class="dropdown-item"
-                                href="{{ private_route('sep_edit', code=sep.code) }}">{{sep_indent}}{{sep.name}}
-                            </a>
+                                href="{{ private_route('sep_edit', code=sep.code) }}">{{sep.name}}</a>
                         </li>
                         {% endfor %}
                         {# ╘════════ user sep menu ════════╛ #}
@@ -104,6 +101,36 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_us
                     </ul>
                     {% endif %}
                 </li>
+
+                {# ╒════════════════════ Menu: Esquema ══════════════════════════════╕ #}
+                {% if (j_user.power or True) and scm_list %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}} {{scm_menu_class}}"
+                        href="#" id="menu-se" role="button" data-bs-toggle="dropdown">
+                        {{menu_header['Schema']}}
+                    </a>
+                    {# ╒════════ schema menu ════════╕ #}
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ private_route('scm_edit', code=sep_cmd_add) }}"
+                                title="Abre o formul&aacute;rio para adicionar um Esquema">
+                                Inser&ccedil;&atilde;o
+                            </a>
+                        </li>
+                        <div class="dropdown-divider"></div>
+
+                        {% for scm in scm_list %}
+                        <li>
+                            <a class="dropdown-item" href="{{ private_route('scm_edit', code=scm.id) }}">{{scm.name}}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {# ╘════════ schema menu ════════╛ #}
+                </li>
+                {% endif %}
+
+
 
                 {# ╒════════════════════ Menu: Documentos ════════════════════════════╕ #}
                 <li class="nav-item dropdown">

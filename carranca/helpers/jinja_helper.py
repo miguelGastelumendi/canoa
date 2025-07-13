@@ -61,8 +61,9 @@ def process_pre_templates(texts: dict, mark: str = _jinja_pre_template_mark):
 
 def process_template(tmpl_ffn: str, **context: Any) -> str:
     """
-    trim
-    TODO and check basic jinja errors if in debug
+    TODO check if in debug HTML
+    TODO  » basic jinja errors if in debug
+    TODO  » HTML with BeautifulSoup
     """
 
     tmpl = render_template(tmpl_ffn, **context)

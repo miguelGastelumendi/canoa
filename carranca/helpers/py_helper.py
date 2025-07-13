@@ -130,6 +130,15 @@ def get_init_params(from_instance: Any, From_class=None) -> dict:
     return params
 
 
+def to_code(id: int, shift: int, expand: int = 1) -> str:
+    """
+    generate a unique value for id
+    for external use
+    maxInt -> (2**53 - 1) -> 1F FFFF FFFF FFFF -> base 21=> 14f01e5ec7fda
+    """
+    return to_base(expand * (shift + id), 21).zfill(5)
+
+
 def to_int(s: str, default=-1) -> int:
     """
     Returns the argument as a integer or default if not a valid int

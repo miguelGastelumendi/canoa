@@ -125,16 +125,33 @@ def sep_grid(code: str = SEP_CMD_NUL):  # TODO selected row: str = None):
 
 
 @login_required
+@bp_private.route("/scm_edit/<code>", methods=["GET", "POST"])
+def scm_edit(code: str = "?"):
+    """
+    Through this route, the user can edit and insert a Schema
+    """
+
+    if nobody_is_logged():
+        return redirect_to(login_route())
+    else:
+        from .scm_new_edit import do_scm_edit
+
+        return do_scm_edit(code)
+
+
+@login_required
 @bp_private.route("/sep_edit/<code>", methods=["GET", "POST"])
 def sep_edit(code: str = "?"):
     """
     Through this route, the user can edit a SEP
     """
-    from .sep_new_edit import do_sep_edit
 
     if nobody_is_logged():
         return redirect_to(login_route())
+
     else:
+        from .sep_new_edit import do_sep_edit
+
         return do_sep_edit(code)
 
 

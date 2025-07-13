@@ -60,6 +60,12 @@
 
 ------- 2025 - July -------------
 ---------------------------------
+2025-07-09--12 β 4.61 [Published] Implemented Schema Insert & Edit
+    - 07/11 First presentation
+    - Initial tests for Schema insert/edit workflows.
+    - TODO: name's Validations (see GitHub)
+
+
 2025-07-07--08 β 4.60, DBv 4.50 recreate views that depend on common.schema
     - Recreate canoa.vw_schema and dependencies:
         vw_mgmt_user_sep

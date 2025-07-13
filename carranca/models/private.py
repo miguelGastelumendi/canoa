@@ -31,7 +31,7 @@ from .. import global_sqlalchemy_scoped_session
 
 from ..models import SQLABaseTable
 from ..helpers.db_helper import db_fetch_rows
-from ..helpers.py_helper import is_str_none_or_empty
+from ..helpers.py_helper import is_str_none_or_empty, to_code
 from ..helpers.user_helper import get_user_code
 from ..private.SepIconMaker import SepIconMaker, svg_content
 from ..common.app_context_vars import sidekick, app_user
@@ -157,6 +157,7 @@ class UserDataFiles(SQLABaseTable):
                             setattr(record_to_ins_or_upd, attr, value)
 
                 db_session.commit()
+
             except Exception as e:
                 db_session.rollback()
                 operation = "update" if isUpdate else "insert to"
@@ -179,24 +180,77 @@ class UserDataFiles(SQLABaseTable):
 
 # --- Table ---
 class Schema(SQLABaseTable):
-    __tablename__ = "vw_schema"
+    __tablename__ = "schema"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(100))
-    user_lower = Column(String(100), Computed(""))
+    color = Column(String(9))
+    title = Column(String(140))
     description = Column(String(140))
+    content = Column(Text)
+    visible = Column(Boolean)
+    ins_by = Column(Integer)
+    ins_at = Column(DateTime)
+    edt_by = Column(Integer)
+    edt_at = Column(DateTime)
+
+    @hybrid_property
+    def code(self):
+        return to_code(self.user_id, 7)
+
+    # user_lower = Column(String(100), Computed(""))
+    @staticmethod
+    def get_row(id: int) -> "Schema":
+
+        def _get_data(db_session: Session):
+            stmt = select(Schema).where(Schema.id == id)
+            scm_row = db_session.execute(stmt).scalar_one_or_none()
+            return scm_row
+
+        _, _, row = db_fetch_rows(_get_data, Schema.__tablename__)
+        return row
 
     @staticmethod
-    def get_schemas() -> DBRecords:
-        def _get_data(db_session: Session):
-            # When columns are selected, return is a record (List) of scalar
-            stmt = select(Schema.id, Schema.name).order_by(Schema.name)
-            schema_rows = db_session.execute(stmt).all()
-            schema_recs = DBRecords(stmt, schema_rows)
-            return schema_recs
+    def get_schemas(field_names: Optional[List[str]] = None) -> DBRecords:
+        """
+        Returns:
+          All records from Schema table, optional of selected fields
+        """
 
-        e, msg_error, schema_rows = db_fetch_rows(_get_data, Schema.__tablename__)
-        return schema_rows
+        def _get_data(db_session: Session):
+            def __cols() -> List[Column]:
+                all_cols = Schema.__table__.columns
+                _cols = [col for col in all_cols if col.name in field_names]
+                return _cols
+
+            sel_cols = __cols() if field_names else None
+
+            stmt = select(*sel_cols) if sel_cols else select(Schema)
+            rows = db_session.execute(stmt).all()
+            recs = DBRecords(stmt, rows)
+            return recs
+
+        _, _, scm_recs = db_fetch_rows(_get_data, Schema.__tablename__)
+        return scm_recs
+
+    @staticmethod
+    def save(sep_row: "Schema"):
+        """
+        Saves a Schema record
+        """
+
+        db_session: Session
+        with global_sqlalchemy_scoped_session() as db_session:
+            try:
+                db_session.add(sep_row)
+                db_session.commit()
+
+            except Exception as e:
+                db_session.rollback()
+                sidekick.display.error(f"Error saving Schema record: [{e}].")
+                raise Exception(e)
+
+        return
 
 
 # --- Table ---
@@ -297,11 +351,11 @@ class MgmtSepsUser(SQLABaseTable):
             if sep_id is not None:  # then filter
                 stmt = stmt.where(MgmtSepsUser.id == sep_id)
 
-            seps_rows = db_session.execute(stmt).all()
-            seps_recs = DBRecords(stmt, seps_rows)
-            return seps_recs
+            rows = db_session.execute(stmt).all()
+            recs = DBRecords(stmt, rows)
+            return recs
 
-        e, msg_error, seps_recs = db_fetch_rows(_get_data, MgmtSepsUser.__tablename__)
+        _, _, seps_recs = db_fetch_rows(_get_data, MgmtSepsUser.__tablename__)
         return seps_recs
 
 
@@ -365,7 +419,7 @@ class Sep(SQLABaseTable):
         return f"{scm_name}{Sep.scm_sep}{sep_name}"
 
     @staticmethod
-    def get_sep(id: int, load_icon: Optional[bool] = False) -> "Sep":
+    def get_row(id: int, load_icon: Optional[bool] = False) -> "Sep":
         """
         Select a SEP by id, with deferred Icon content (useful for edition). It also
         returns the SEP's full name (schema/SEP) (config.SCM_SEP_SEPARATOR) the view `vw_scm_sep`.
@@ -534,7 +588,7 @@ class ReceivedFiles(SQLABaseTable):
 
             return recs
 
-        e, msg_error, received_files = db_fetch_rows(_get_data, ReceivedFiles.__tablename__)
+        _, _, received_files = db_fetch_rows(_get_data, ReceivedFiles.__tablename__)
 
         return received_files
 

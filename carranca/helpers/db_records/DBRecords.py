@@ -142,13 +142,17 @@ class DBRecords:
         new_record = DBRecord(record_dict, self.allowed_field_names, self.allowed_field_types)
         self.records.append(new_record)
 
-    def to_list(self, exclude_fields: Optional[List[str]] = None) -> Dict[str, Any]:
+    def to_list(
+        self, exclude_fields: Optional[List[str]] = None, include_fields: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
         exclude_fields = (exclude_fields or []) + ["__class__.__name__"]
-        list = [
+        if include_fields is None or len(include_fields) == 0:
+            include_fields = list(self.records[0].__dict__.keys()) if self.records else []
+        _list = [
             {key: value for key, value in record.__dict__.items() if key not in exclude_fields}
             for record in self.records
         ]
-        return list
+        return _list
 
     def keys(self):
         return self.records[0].keys() if len(self.records) > 0 else []

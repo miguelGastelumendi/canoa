@@ -1,0 +1,109 @@
+{# ------------------------------------
+./private/scm_new_edit.html.j2
+-------------------------------
+Edit and Inserts Schema
+
+Extends:
+./layouts/form.html.j2
+
+mgd
+--------------------------------------- #}
+{# cSpell:ignore tojson unselectable #}
+
+{% set dlg_var_icon_url= iconFileUrl %}
+{% set dlg_cls_size= 'modal-xl' %}
+{% extends "./layouts/form.html.j2" %}
+
+{# ╒══════════════════════ Inputs ═════════════════════════╕ #}
+{% block frm_blc_inputs %}
+
+{# ╒════════════════ Container ════════════════════════╕ #}
+<div class="container">
+    <div class="row">
+        {# ╒══════════════ Column 1 ═══════════════╕ #}
+        <div class="col-12 col-md-5">
+            <div class="mb-3"> {# [ Name #}
+                <div class="form-group">
+                    <label class="form-label" inert for="{{ form.name.id }}">{{ nameLabel }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-vector-square" aria-hidden="true"></i>
+                        </span>
+                        {{ form.name() }}
+                    </div>
+                </div>
+            </div> {# Name ] #}
+
+            <div class="mb-3"> {# [ Color #}
+                <div class="form-group mt-3">
+                    <label class="form-label" inert for="{{ form.color.id }}">{{ backColorLabel }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-palette" aria-hidden="true"></i>
+                        </span>
+                        {{ form.color() }}
+                    </div>
+                </div>
+            </div>{# Color ] #}
+
+            <div class="mb-3"> {# [ Title #}
+                <div class="form-group mt-3">
+                    <label class="form-label" inert for="{{ form.title.id }}">{{ titleLabel }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-tag" aria-hidden="true"></i>
+                        </span>
+                        {{ form.title() }}
+                    </div>
+                </div>
+            </div> {# Title ] #}
+
+            <div class="mb-3"> {# [ Visible #}
+                <div class="form-group">
+                    <div class="form-check">
+                        {{ form.visible() }}
+                        <label class="unselectable-text form-check-label" for="{{form.visible.name}}">
+                            {{ visibleLabel }}
+                        </label>
+                    </div>
+                </div>
+            </div> {# Visible ] #}
+
+        </div>
+        {# ╘═════════════ Column 1 ════════════════╛ #}
+
+        {# ╒══════════════ Column 2 ═══════════════╕ #}
+        <div class="col-12 col-md-7">
+            <div class="mb-3"> {# [ Simple Description #}
+                <div class=" form-group">
+                    <label class="form-label" inert for="{{ form.description.id }}">{{ descriptionLabel }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-tags" aria-hidden="true"></i>
+                        </span>
+                        {{ form.description() }}
+                    </div>
+                </div>
+            </div> {# Simple Description ] #}
+
+            <div class="mb-3"> {# [ Full Description #}
+                <div class="form-group mt-3">
+                    <label class="form-label" inert for="{{form.content.id}}">{{ contentLabel }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text"> <i class="fas fa-file-invoice"></i> </span>
+                        {# <textarea class="form-control" id="textarea" rows="6" placeholder=""></textarea> #}
+                        {{ form.content() }}
+                    </div>
+                </div>
+            </div> {# Full Description ] #}
+        </div>
+        {# ╘══════════════ Column 2 ═══════════════╛ #}
+    </div>
+</div>
+{# ╘════════════════ Container ═══════════════════════╛ #}
+
+{% endblock frm_blc_inputs %}
+{# ╘══════════════════════ Inputs ═════════════════════════╛ #}
+
+
+{# eof #}

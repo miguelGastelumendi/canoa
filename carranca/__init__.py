@@ -7,7 +7,7 @@ mgd
 
 """
 
-# cSpell:ignore app_name sqlalchemy sessionmaker autoflush gethostname connstr juser
+# cSpell:ignore app_name sqlalchemy sessionmaker autoflush gethostname connstr juser scms
 
 # ============================================================================ #
 from flask_login import LoginManager
@@ -134,12 +134,25 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
 
     def __get_user_sep_menu_list() -> List[Dict]:
         sep_list: List[Dict] = []
-        if is_someone_logged():
+        if is_someone_logged():  # 'import jinja_user' only when a user is logged
             from .common.app_context_vars import app_user
 
             sep_list = [{"code": user.code, "name": user.fullname} for user in app_user.seps]
 
         return sep_list
+
+    def __get_scm_menu_list() -> List[Dict]:
+        scm_list: List[Dict] = []
+        if is_someone_logged():  # 'import jinja_user' only when a user is logged
+            from .common.app_context_vars import jinja_user
+
+            if jinja_user.power:
+                from .models.private import Schema
+
+                scms = Schema.get_schemas(["id", "name"])
+                scm_list = [{"id": scm.id, "name": scm.name} for scm in scms]  # TODO app_user.scms]
+
+        return scm_list
 
     def __do_hash(data: str) -> str:
         i: int = crc16(data)
@@ -156,6 +169,7 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         jinja_user=__get_jinja_user,
         app_menu=__get_app_menu,
         sep_menu=__get_user_sep_menu_list,
+        scm_menu=__get_scm_menu_list,
         sep_cmd_add=SEP_CMD_INS,
         sep_cmd_grd=SEP_CMD_GRD,
     )

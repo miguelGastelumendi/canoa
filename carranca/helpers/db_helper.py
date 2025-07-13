@@ -66,7 +66,7 @@ def db_fetch_rows(
 
     Args:
         func_or_query: A callable function or a SQL query string.
-        table_name ['']: if not None and a error occurs, the exception is raised here
+        table_name ['']: if not None and an error occurs, the exception is raised here
         return_tuple_len [1]: int the size of the tuple to return
         *args: Additional positional arguments to pass to the function.
         **kwargs: Additional keyword arguments to pass to the function.

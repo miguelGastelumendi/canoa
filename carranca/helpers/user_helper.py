@@ -9,9 +9,9 @@ Equipe da Canoa -- 2024
 
 from os import path
 
-from .py_helper import ms_since_midnight, to_base, now, crc16
+from .py_helper import ms_since_midnight, to_base, to_code, now, crc16
 
-_code_shift_id = 903
+_user_code_shift_id = 903
 _ticket_receipt_sep = "_"
 
 
@@ -46,10 +46,8 @@ class UserFolders:
 def get_user_code(id: int) -> str:
     """
     generate a unique value for user (based in the user's table PK)
-    for external use
-    maxInt -> (2**53 - 1) -> 1F FFFF FFFF FFFF -> base 21=> 14f01e5ec7fda
     """
-    return to_base(_code_shift_id + id, 21).zfill(5)
+    return to_code(id, _user_code_shift_id)
 
 
 def get_user_folder(id: int) -> str:
