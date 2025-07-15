@@ -30,7 +30,7 @@ from ..helpers.jinja_helper import process_template
 from ..helpers.route_helper import (
     get_private_response_data,
     init_response_vars,
-    get_front_end_text,
+    get_front_end_str,
     login_route,
     private_route,
     redirect_to,
@@ -226,8 +226,8 @@ def do_sep_edit(data: str) -> str:
 
         def _was_form_sep_modified(sep_row: Sep) -> Tuple[bool, bool]:
             # remove schema/sep separator sep+sep
-            ui_sep_name = get_front_end_text(flask_form.sep_name.name, [Sep.scm_sep])
-            ui_description = get_front_end_text(flask_form.description.name)
+            ui_sep_name = get_front_end_str(flask_form.sep_name.name, [Sep.scm_sep])
+            ui_description = get_front_end_str(flask_form.description.name)
 
             if is_insert:
                 id_schema = flask_form.schema_list.data
@@ -329,7 +329,7 @@ def do_sep_edit(data: str) -> str:
         else:
             task_code += 1  # 511
             sep_row.name = sep_name
-            sep_row.description = get_front_end_text(flask_form.description.name)
+            sep_row.description = get_front_end_str(flask_form.description.name)
             batch_code = get_batch_code()
 
             if is_insert:

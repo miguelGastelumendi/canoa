@@ -24,7 +24,7 @@ from ...helpers.route_helper import (
     home_route,
     redirect_to,
     init_response_vars,
-    get_front_end_text,
+    get_front_end_str,
     get_account_response_data,
 )
 from ...models.public import User, get_user_role_abbr
@@ -50,9 +50,9 @@ def login():
             pass
         else:
             task_code += 1  # 4
-            username = get_front_end_text("username")  # TODO tmpl_form
+            username = get_front_end_str("username")  # TODO tmpl_form
             task_code += 1  # 5
-            password = get_front_end_text("password")
+            password = get_front_end_str("password")
             task_code += 1  # 6
             search_for = to_str(username).lower()
             task_code += 1  # 7

@@ -19,7 +19,7 @@ from ...helpers.route_helper import (
     redirect_to,
     login_route,
     init_response_vars,
-    get_front_end_text,
+    get_front_end_str,
     get_account_response_data,
 )
 from ...common.app_context_vars import sidekick
@@ -34,9 +34,9 @@ def do_password_change():
     try:
         task_code += 1  # 1
         tmpl_ffn, is_get, ui_texts = get_account_response_data("passwordChange", "password_reset_or_change")
-        password = "" if is_get else get_front_end_text("password")
+        password = "" if is_get else get_front_end_str("password")
         task_code += 1  # 2
-        confirm_password = "" if is_get else get_front_end_text("confirm_password")
+        confirm_password = "" if is_get else get_front_end_str("confirm_password")
         task_code += 1  # 3
         user = None if is_get else get_user_where(id=current_user.id)
         task_code += 1  # 4

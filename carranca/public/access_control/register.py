@@ -15,7 +15,7 @@ from ...common.app_context_vars import sidekick
 from ...models.public import persist_user
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.route_helper import get_account_response_data, get_front_end_text, init_response_vars
+from ...helpers.route_helper import get_account_response_data, get_front_end_str, init_response_vars
 from ...helpers.ui_db_texts_helper import add_msg_success, add_msg_error, add_msg_final
 
 from ..wtforms import RegisterForm
@@ -36,7 +36,7 @@ def register():
         flask_form = RegisterForm(request.form)
         task_code += 1  # 2
         tmpl_ffn, is_get, texts = get_account_response_data("register")
-        user_name = "" if is_get else get_front_end_text("username")
+        user_name = "" if is_get else get_front_end_str("username")
         task_code += 1  # 3
 
         if is_get and is_someone_logged():
@@ -45,9 +45,9 @@ def register():
             pass
         elif __exists_user_where(username_lower=user_name.lower()):
             add_msg_error("userAlreadyRegistered", texts)
-        elif __exists_user_where(email=get_front_end_text("email").lower()):
+        elif __exists_user_where(email=get_front_end_str("email").lower()):
             add_msg_error("emailAlreadyRegistered", texts)
-        elif not sidekick.config.DB_len_val_for_pw.check(get_front_end_text("password")):
+        elif not sidekick.config.DB_len_val_for_pw.check(get_front_end_str("password")):
             add_msg_error(
                 "invalidPassword",
                 texts,

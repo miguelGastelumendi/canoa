@@ -205,6 +205,11 @@ class Schema(SQLABaseTable):
         def _get_data(db_session: Session):
             stmt = select(Schema).where(Schema.id == id)
             scm_row = db_session.execute(stmt).scalar_one_or_none()
+            if scm_row is not None:
+                scm_row.color = scm_row.color.strip()
+                # TODO
+                # ALTER TABLE canoa."schema"
+                # ALTER COLUMN color TYPE VARCHAR(9) USING RTRIM(color);
             return scm_row
 
         _, _, row = db_fetch_rows(_get_data, Schema.__tablename__)

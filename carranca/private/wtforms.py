@@ -11,6 +11,7 @@ mgd 2024-04-09,27; 06-22
 from wtforms import PasswordField, FileField, StringField, SelectField, BooleanField, TextAreaField
 from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired, DataRequired, Length, URL
+from wtforms.widgets.core import ColorInput
 
 from ..common.app_context_vars import sidekick
 
@@ -151,12 +152,13 @@ class ScmEdit(FlaskForm):
 
     color = StringField(
         "",
-        validators=[Length(min=5, max=140)],
+        validators=[Length(min=7, max=7)],
         render_kw={
             "class": "form-control",
             "autocomplete": "off",
             "spellcheck": False,
         },
+        widget=ColorInput(),
     )
 
     title = StringField(

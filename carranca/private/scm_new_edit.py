@@ -11,12 +11,14 @@ import re
 from flask import request
 from typing import Optional
 from os.path import splitext
+from wtforms import StringField
 from sqlalchemy import func  # func.now() == server time
 from dataclasses import dataclass
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 
 from .wtforms import ScmEdit
+
 
 from .sep_icon import icon_refresh, ICON_MIN_SIZE
 from .SepIconMaker import SepIconMaker
@@ -32,7 +34,7 @@ from ..helpers.route_helper import (
     home_route,
     redirect_to,
     init_response_vars,
-    get_front_end_text,
+    get_front_end_str,
 )
 
 from ..common.app_context_vars import app_user
@@ -65,20 +67,23 @@ def do_scm_edit(code: str) -> str:
             # Someone deleted just now?
             raise JumpOut(add_msg_final("scmEditNotFound", ui_texts), task_code + 1)
         schema_name = ui_texts["scmNewTmpName"] if is_insert else scm_row.name
+
+        task_code += 1
+        ui_texts["formTitle"] = ui_texts[f"formTitle{'New' if is_insert else 'Edit'}"]
+        task_code += 1  # 2
+
+        form.name.render_kw["lang"] = app_user.lang
+        form.name.render_kw["pattern"] = "^[a-zA-ZáàãâéêíóôõúüçÁÀÃÂÉÊÍÓÔÕÚÜÇ_]+$"
+        form.name.title = "Apenas letras (sem espaço) e underline são permitidos."
+        form.title.render_kw["lang"] = app_user.lang
+        form.description.render_kw["lang"] = app_user.lang
+        form.content.render_kw["lang"] = app_user.lang
+
         if is_get:
-            task_code += 1
-            ui_texts["formTitle"] = ui_texts[f"formTitle{'New' if is_insert else 'Edit'}"]
-            task_code += 1  # 2
-
-            form.name.render_kw["lang"] = app_user.lang
-            form.title.render_kw["lang"] = app_user.lang
-            form.description.render_kw["lang"] = app_user.lang
-            form.content.render_kw["lang"] = app_user.lang
-
             if is_insert:
                 scm_row.id = None
                 scm_row.visible = False
-                scm_row.color = ""
+                scm_row.color = "#00000"  # RRGGBB
             else:
                 for field in form:
                     if hasattr(scm_row, field.name):
@@ -87,9 +92,15 @@ def do_scm_edit(code: str) -> str:
         else:  # is_post
 
             def modified(input, field, mod):
-                ui_value = get_front_end_text(input.name)
-                if _mod := (field != ui_value):
+                ui_value = (
+                    get_front_end_str(input.name, None)
+                    if input.type == StringField.__name__
+                    else input.data
+                )
+                _mod = field != ui_value
+                if input.data != ui_value:  # TODO, don't change .data
                     input.data = ui_value
+
                 return mod or _mod
 
             # TODO make a helper
@@ -100,7 +111,7 @@ def do_scm_edit(code: str) -> str:
 
             def _save_and_go():
                 form.populate_obj(scm_row)
-                scm_row.visible = scm_row.visible == "y"  # TODO
+                #  scm_row.visible = scm_row.visible == "y"  # TODO
                 Schema.save(scm_row)
                 return redirect_to(home_route())
 
@@ -115,6 +126,9 @@ def do_scm_edit(code: str) -> str:
                 scm_row.edt_at = func.now()
                 task_code += 2
                 return _save_and_go()
+            else:
+                # TODO Noo modi
+                return redirect_to(home_route())
 
         tmpl = process_template(tmpl_ffn, form=form, **ui_texts)
 

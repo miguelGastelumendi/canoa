@@ -18,7 +18,7 @@ from ...helpers.email_helper import RecipientsListStr
 from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_final
 from ...helpers.route_helper import (
     public_route,
-    get_front_end_text,
+    get_front_end_str,
     init_response_vars,
     is_external_ip_ready,
     get_account_response_data,
@@ -39,7 +39,7 @@ def password_recovery():
         task_code += 1  # 2
         tmpl_ffn, is_get, texts = get_account_response_data("passwordRecovery")
         task_code += 1  # 3
-        requested_email = "" if is_get else get_front_end_text("user_email").lower()
+        requested_email = "" if is_get else get_front_end_str("user_email").lower()
         task_code += 1  # 4
         record_to_update = None if is_get else get_user_where(email=requested_email)
 

@@ -16,7 +16,7 @@ from ...helpers.py_helper import now, to_str
 from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_success, add_msg_final
 from ...helpers.route_helper import (
-    get_front_end_text,
+    get_front_end_str,
     init_response_vars,
     get_account_response_data,
 )
@@ -43,9 +43,9 @@ def password_reset(token):
         task_code += 1  # 1
         tmpl_ffn, is_get, texts = get_account_response_data("passwordreset", "password_reset_or_change")
         token_str = to_str(token)
-        password = "" if is_get else get_front_end_text("password")
+        password = "" if is_get else get_front_end_str("password")
         task_code += 1  # 2
-        confirm_password = "" if is_get else get_front_end_text("confirm_password")
+        confirm_password = "" if is_get else get_front_end_str("confirm_password")
 
         # If you need the password pwd=  hash_pass(password);
         task_code += 1  # 3

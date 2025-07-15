@@ -60,6 +60,12 @@
 
 ------- 2025 - July -------------
 ---------------------------------
+2025-07-14 β 4.62 [Published] Improves in Schema edition inputs
+    - color
+    - TextAreaField
+    - str len
+    - Schema's name restriction
+
 2025-07-09--12 β 4.61 [Published] Implemented Schema Insert & Edit
     - 07/11 First presentation
     - Initial tests for Schema insert/edit workflows.

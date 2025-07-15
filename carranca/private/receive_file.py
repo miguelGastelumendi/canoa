@@ -28,7 +28,7 @@ from ..helpers.py_helper import (
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.jinja_helper import process_template
 from ..helpers.types_helper import template_file_full_name
-from ..helpers.route_helper import get_private_response_data, get_front_end_text
+from ..helpers.route_helper import get_private_response_data, get_front_end_str
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 from ..helpers.ui_db_texts_helper import (
     UITextsKeys,
@@ -100,13 +100,13 @@ def receive_file() -> template_file_full_name:
         # Find out what was kind of data was sent: an uploaded file or an URL (download)
         file_obj = request.files[tmpl_form.uploadfile.name] if len(request.files) > 0 else None
         task_code += 1  # 2
-        url_str = get_front_end_text(tmpl_form.urlname.name)
+        url_str = get_front_end_str(tmpl_form.urlname.name)
         task_code += 1  # 3
         has_file = (file_obj is not None) and not is_str_none_or_empty(file_obj.filename)
         task_code += 1  # 4
         has_url = not is_str_none_or_empty(url_str)
         task_code += 1  # 5
-        sep_id = to_int(get_front_end_text(tmpl_form.schema_sep.name))
+        sep_id = to_int(get_front_end_str(tmpl_form.schema_sep.name))
 
         # file_data holds a 'str' or an 'obj'
         task_code += 1  # 6
