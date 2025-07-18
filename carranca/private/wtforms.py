@@ -6,7 +6,7 @@ Equipe da Canoa -- 2024
 mgd 2024-04-09,27; 06-22
 """
 
-# cSpell:ignore: wtforms urlname iconfilename uploadfile tmpl
+# cSpell:ignore: wtforms urlname iconfilename uploadfile tmpl RRGGBB
 
 from wtforms import PasswordField, FileField, StringField, SelectField, BooleanField, TextAreaField
 from flask_wtf import FlaskForm
@@ -153,12 +153,15 @@ class ScmEdit(FlaskForm):
     color = StringField(
         "",
         validators=[Length(min=7, max=7)],
+        default="#000000",
+        id="colorInp",  # see .j2
         render_kw={
             "class": "form-control",
             "autocomplete": "off",
             "spellcheck": False,
+            "placeholder": "#RRGGBB",
         },
-        widget=ColorInput(),
+        #  widget=ColorInput(),
     )
 
     title = StringField(
@@ -183,7 +186,7 @@ class ScmEdit(FlaskForm):
         },
     )
 
-    content = TextAreaField("", render_kw={"class": "form-control", "rows": "6"})
+    content = TextAreaField("", render_kw={"class": "form-control", "rows": "12"})
 
 
 # eof

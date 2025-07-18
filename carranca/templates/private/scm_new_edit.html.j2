@@ -38,9 +38,10 @@ mgd
                 <div class="form-group mt-3">
                     <label class="form-label" inert for="{{ form.color.id }}">{{ backColorLabel }}</label>
                     <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-palette" aria-hidden="true"></i>
-                        </span>
+                        <button class="input-group-text" type="button" id="colorBtn">
+                            <i class="fas" aria-hidden="true"
+                                data-class='{"text": "fa-keyboard", "color": "fa-palette"}' id="colorImg"></i>
+                        </button>
                         {{ form.color() }}
                     </div>
                 </div>
@@ -58,6 +59,18 @@ mgd
                 </div>
             </div> {# Title ] #}
 
+            <div class="mb-3"> {# [ Simple Description #}
+                <div class=" form-group">
+                    <label class="form-label" inert for="{{ form.description.id }}">{{ descriptionLabel }}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-tags" aria-hidden="true"></i>
+                        </span>
+                        {{ form.description() }}
+                    </div>
+                </div>
+            </div> {# Simple Description ] #}
+
             <div class="mb-3"> {# [ Visible #}
                 <div class="form-group">
                     <div class="form-check">
@@ -74,24 +87,11 @@ mgd
 
         {# ╒══════════════ Column 2 ═══════════════╕ #}
         <div class="col-12 col-md-7">
-            <div class="mb-3"> {# [ Simple Description #}
-                <div class=" form-group">
-                    <label class="form-label" inert for="{{ form.description.id }}">{{ descriptionLabel }}</label>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fas fa-tags" aria-hidden="true"></i>
-                        </span>
-                        {{ form.description() }}
-                    </div>
-                </div>
-            </div> {# Simple Description ] #}
-
-            <div class="mb-3"> {# [ Full Description #}
-                <div class="form-group mt-3">
+            <div class=""> {# [ Full Description #}
+                <div class="form-group">
                     <label class="form-label" inert for="{{form.content.id}}">{{ contentLabel }}</label>
                     <div class="input-group">
                         <span class="input-group-text"> <i class="fas fa-file-invoice"></i> </span>
-                        {# <textarea class="form-control" id="textarea" rows="6" placeholder=""></textarea> #}
                         {{ form.content() }}
                     </div>
                 </div>
@@ -104,6 +104,17 @@ mgd
 
 {% endblock frm_blc_inputs %}
 {# ╘══════════════════════ Inputs ═════════════════════════╛ #}
+
+{% block dlg_blc_javascript %}
+<script>
+    const colorBtn = '{{ color_btn | default("colorBtn") }}';
+    const colorInp = '{{ color_inp | default("colorInp") }}';
+    const colorImg = '{{ color_img | default("colorImg") }}';
+    const colorInv = '{{ color_inv | default("invalid color.") }}';
+
+</script>
+<script src="{{static_route('js/scm_new_edit.js')}}"></script>
+{% endblock dlg_blc_javascript %}
 
 
 {# eof #}

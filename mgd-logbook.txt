@@ -60,9 +60,15 @@
 
 ------- 2025 - July -------------
 ---------------------------------
+2025-07-15--17 β 4.63 Improves in Schema edition inputs v2
+    - Color input toggles text/selector (text has clipboard paste)
+    - TextArea alone in right column
+    - Review strategy for deleting SEPs & Schemas
+
+
 2025-07-14 β 4.62 [Published] Improves in Schema edition inputs
-    - color
-    - TextAreaField
+    - Color
+    - TextArea
     - str len
     - Schema's name restriction
 
