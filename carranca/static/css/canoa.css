@@ -59,11 +59,18 @@ body {
 /* ============================================
  *  carranca\templates\layouts\dialog.tmpl
  * ============================================ */
+
 .dlg-width {
     /* https://getbootstrap.com/docs/4.2/components/modal/#optional-sizes */
     /* this line gives error: "--bs-modal-lg is not set". So as --bs-modal-lg: 900px;
     max-width: calc(var(--bs-modal-width) + (var(--bs-modal-lg) - var(--bs-modal-width)) / 2); */
     max-width: calc(var(--bs-modal-width) + (900px - var(--bs-modal-width)) / 2);
+}
+
+.dlg-body {
+    background-color: var(--canoa-form-body-bg);
+    border-bottom-left-radius: var(--bs-modal-inner-border-radius);
+    border-bottom-right-radius: var(--bs-modal-inner-border-radius);
 }
 
 .dlg-header {
@@ -73,12 +80,19 @@ body {
 
 .dlg-title {
     color: var(--canoa-dlg-header-color);
+    line-height: 1;
+    /* to align the icon vertically */
 }
 
-.dlg-body {
-    background-color: var(--canoa-form-body-bg);
-    border-bottom-left-radius: var(--bs-modal-inner-border-radius);
-    border-bottom-right-radius: var(--bs-modal-inner-border-radius);
+.dlg-icon-back {
+    background-color: white;
+    vertical-align: middle;
+    display: inline-block;
+    padding: 1px;
+}
+
+.dlg-icon-img {
+    vertical-align: middle;
 }
 
 .dlg-footer {
@@ -161,7 +175,7 @@ body {
  *  carranca\templates\layouts\form.html
  * ============================================ */
 .fas {
-    /* font awesome solid'icon' */
+    /* font awesome solid 'icon' */
     color: var(--canoa-form-icon-color);
 }
 
@@ -213,14 +227,22 @@ body {
 
 .form-main-btn:hover {
     /* same as fillcolor of carranca\static\icons\ups_handler.svg */
-    background-color: var(--canoa-form-button-bg);
     filter: brightness(130%);
 }
 
 .form-main-btn:disabled {
-    background-color: var(--canoa-form-button-bg);
     filter: brightness(60%);
 }
+
+/* see scm_new_edit.html.j2 for an example */
+.form-other-btn:hover {
+    background-color: white;
+}
+
+.form-main-btn:disabled {
+    filter: brightness(60%);
+}
+
 
 /* ============================================
  *          responsive design

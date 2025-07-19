@@ -1,28 +1,37 @@
 //
 
 
-
 document.addEventListener('DOMContentLoaded', function() {
-    const colorInp = document.getElementById('colorInp');
-    const colorBtn = document.getElementById('colorBtn');
-    const colorImg = document.getElementById('colorImg');
     const classMap = JSON.parse(colorImg.dataset.class)
     const inputHgt = colorInp.offsetHeight + 'px';
-    const inputPlH = colorInp.placeholder;
     const invalidClass = "is-invalid"
+    const imgDefaultColor = window.getComputedStyle(colorImg).color;
     const validateColor = () => {
-        const hexRegex = /^#([0-9A-F]{3}){1,2}$/i;
-        valid = colorInp.value && hexRegex.test(colorInp.value);
+        valid = /^#[0-9A-Fa-f]{6}$/.test(colorInp.value);
+        btnSubmit.disabled = !valid;
         if (valid) {
-            colorInp.placeholder = inputPlH;
             colorInp.classList.remove(invalidClass);
         } else {
             colorInp.classList.add(invalidClass);
         }
         return valid
     }
+    const setImageColor = (toDefault) => {
+        const clr = (toDefault || !validateColor()) ? imgDefaultColor : colorInp.value;
+        colorImg.style.color = clr;
+    }
 
     colorImg.classList.add(classMap[colorInp.type]);
+
+    ['mouseenter', 'focus', 'keyup'].forEach(event => {
+        colorInp.addEventListener(event, () => setImageColor(false))
+        colorBtn.addEventListener(event, () => setImageColor(false))
+    });
+
+    ['mouseleave', 'blur'].forEach(event => {
+        colorInp.addEventListener(event, () => setImageColor(true))
+        colorBtn.addEventListener(event, () => setImageColor(true))
+    });
 
 
     colorBtn.addEventListener('click', function() {
@@ -37,11 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return
         }
         colorImg.classList.add(classMap[colorInp.type]);
-    });
-
-    colorInp.addEventListener('blur', function() {
-        if (colorInp.type === 'text') {
-            validateColor();
-        }
+        setImageColor(true)
     });
 });
+
+// eof

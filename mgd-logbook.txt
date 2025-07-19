@@ -60,6 +60,12 @@
 
 ------- 2025 - July -------------
 ---------------------------------
+2025-07-18--19 β 4.64 [Published] Improves in Schema edition inputs v3
+    - Not allow to save with invalid color
+    - When Key is pressed validate_data
+    - Color left "button" show color, improved usability hints
+    - White background for the SEP icon
+
 2025-07-15--17 β 4.63 Improves in Schema edition inputs v2
     - Color input toggles text/selector (text has clipboard paste)
     - TextArea alone in right column

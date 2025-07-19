@@ -12,6 +12,12 @@ mgd
 
 {% set dlg_var_icon_url= iconFileUrl %}
 {% set dlg_cls_size= 'modal-xl' %}
+
+{% set id_color_inp= form.color.id %}
+{% set id_color_btn= 'id-color-btn' %}
+{% set id_color_img= 'id-color-img' %}
+
+
 {% extends "./layouts/form.html.j2" %}
 
 {# ╒══════════════════════ Inputs ═════════════════════════╕ #}
@@ -36,11 +42,12 @@ mgd
 
             <div class="mb-3"> {# [ Color #}
                 <div class="form-group mt-3">
-                    <label class="form-label" inert for="{{ form.color.id }}">{{ backColorLabel }}</label>
+                    <label class="form-label" inert for="{{ id_color_inp }}">{{ backColorLabel }}</label>
                     <div class="input-group">
-                        <button class="input-group-text" type="button" id="colorBtn">
+                        <button class="input-group-text form-other-btn" type="button" id="{{id_color_btn}}"
+                            title="{{ colorHint | default('Change: Text | Selector')}}">
                             <i class="fas" aria-hidden="true"
-                                data-class='{"text": "fa-keyboard", "color": "fa-palette"}' id="colorImg"></i>
+                                data-class='{"text": "fa-keyboard", "color": "fa-palette"}' id="{{id_color_img}}"></i>
                         </button>
                         {{ form.color() }}
                     </div>
@@ -107,10 +114,13 @@ mgd
 
 {% block dlg_blc_javascript %}
 <script>
-    const colorBtn = '{{ color_btn | default("colorBtn") }}';
-    const colorInp = '{{ color_inp | default("colorInp") }}';
-    const colorImg = '{{ color_img | default("colorImg") }}';
-    const colorInv = '{{ color_inv | default("invalid color.") }}';
+    const colorInp = document.getElementById('{{ id_color_inp }}');
+    const colorBtn = document.getElementById('{{ id_color_btn }}');
+    const colorImg = document.getElementById('{{ id_color_img }}');
+    const btnSubmit = document.getElementById('{{ dlg_id_submit_btn }}');
+
+    const colorInv = '{{ color_inv_text | default("invalid color.") }}';
+    const submitBtn = '{{ dlg_id_submit_btn }}';
 
 </script>
 <script src="{{static_route('js/scm_new_edit.js')}}"></script>

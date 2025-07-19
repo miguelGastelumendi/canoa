@@ -25,6 +25,7 @@ mgd
 {% set form_bke_only_msg= msgOnly | default(False) %}
 {% set form_bke_display_ui= not form_bke_only_msg %}
 {% set form_close_btn_text= form_close_btn_text | default('Fechar') %}
+
 {% set form_post_id= "form-post-id"%}
 
 {% extends "./layouts/dialog.html.j2" %}
@@ -58,7 +59,7 @@ mgd
 
 <div class="d-grid mt-6">
     {% from "includes/_action_forms_and_btns.html.j2" import btn_submit %}
-    {{ btn_submit(form_post_id, submitButton) }}
+    {{ btn_submit(form_post_id, submitButton, dlg_id_submit_btn) }}
 </div>
 {# ╘═══════════════ Display UI ═══════════════╛ #}
 {% endif %}

@@ -16,8 +16,9 @@ _var_ => VARiable
 _cls_ => CLaSs
 dlg-name-id => ID
 _blc_ => BLoCk
-_js_ => JScript
 _bke_ => send from the back-end
+_js_ => JScript
+_id_ => ID (use - as text separator in ID. eg dlg-submit-id)
 
 - Configuration (default is empty '', if not shown (see canoa.css))
 dlg_cls_body | default('dlg-body')
@@ -41,6 +42,7 @@ dlg_var_close_id | default('dlg-var-close-id') // id's
 dlg_var_v_centered | default(False) // from is Vertical Centered
 
 
+
 mgd
 --------------------------------------- #}
 {# cSpell:ignore tabindex endfor elif #}
@@ -51,7 +53,9 @@ mgd
 {% set dlg_var_icon_size= dlg_var_icon_size | default('32px') %} {# SepIconConfig.content_for() is a function that
 determines the default size for icons based on application settings. Ensure this matches the expected dimensions for
 dialog icons. #}
-{% set dlg_var_submit_id= dlg_var_submit_id | default('dlg-submit-id') %}
+{% set dlg_id_submit_form= dlg_id_submit_form | default('dlg-submit-form-id') %}
+{% set dlg_id_submit_btn= dlg_id_submit_btn | default('dlg-submit-btn-id') %}
+
 {% set dlg_var_close_id= dlg_var_close_id | default('dlg-close-id') %}
 {% set dlg_var_close= dlg_var_close | default(True) %}
 {% set dlg_cls_btn_close= dlg_cls_btn_close | default('btn-close') %}
@@ -69,11 +73,13 @@ dialog icons. #}
                 {{ dlg_cls_dialog|default('')}}">
             <div class="modal-content {{dlg_cls_content|default('')}}">
                 {# === Header === #}
-                <div class="modal-header {{ dlg_cls_header|default('dlg-header') }}">
-                    <h5 class="modal-title {{ dlg_cls_title|default('dlg-title') }}" inert>
+                <div class="modal-header {{ dlg_cls_header | default('dlg-header') }}">
+                    <h5 class="modal-title {{ dlg_cls_title | default('dlg-title') }}" inert>
                         {% if dlg_var_icon_url %}
-                        <img id="{{dlg_var_icon_id}}" src="{{dlg_var_icon_url}}" height="{{dlg_var_icon_size}}"
-                            width="{{dlg_var_icon_size}}" alt="[!]&nbsp;">
+                        <span class="dlg-icon-back">
+                            <img id="{{dlg_var_icon_id}}" src="{{dlg_var_icon_url}}" class="dlg-icon-img"
+                                height="{{dlg_var_icon_size}}" width="{{dlg_var_icon_size}}" alt="[!]&nbsp;">
+                        </span>
                         {% endif %}
                         {{formTitle|default(app_name)}}
                     </h5>

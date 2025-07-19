@@ -154,7 +154,7 @@ class ScmEdit(FlaskForm):
         "",
         validators=[Length(min=7, max=7)],
         default="#000000",
-        id="colorInp",  # see .j2
+        id="id-color-inp",  # see .j2
         render_kw={
             "class": "form-control",
             "autocomplete": "off",
