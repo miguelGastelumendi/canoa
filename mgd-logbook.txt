@@ -64,7 +64,7 @@
 ---------------------------------
 
 2025-07-21--22 β 4.65 [Published] New Visible attribute in SEP (#56)
-    - SEP can be visible or not
+    - SEP can be visible or not (DB v 4.51)
     - Start of a DEMO of Schema.content HTML check & highlighter
 
 2025-07-18--19 β 4.64 [Published] Improves in Schema edition inputs v3
