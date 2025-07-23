@@ -211,6 +211,7 @@ def do_sep_edit(data: str) -> str:
                 # set the form's data row for edition, just in case (someone messed with the db) clean up the text
                 flask_form.schema_name.data = usr_sep.scm_name
                 flask_form.sep_name.data = clean_text(sep_row.name)
+                flask_form.visible.data = bool(sep_row.visible)
                 flask_form.description.data = clean_text(sep_row.description)
                 flask_form.icon_filename.data = None
                 flask_form.manager_name.data = None
@@ -243,6 +244,7 @@ def do_sep_edit(data: str) -> str:
                     sep_modified
                     or (ui_description != sep_row.description)
                     or (id_schema != sep_row.id_schema)
+                    or (flask_form.visible.data != sep_row.visible)
                     or was_icon_file_sent()[0]  # keep it as the last test (resource)
                 )
 
@@ -329,6 +331,7 @@ def do_sep_edit(data: str) -> str:
         else:
             task_code += 1  # 511
             sep_row.name = sep_name
+            sep_row.visible = bool(flask_form.visible.data)
             sep_row.description = get_front_end_str(flask_form.description.name)
             batch_code = get_batch_code()
 

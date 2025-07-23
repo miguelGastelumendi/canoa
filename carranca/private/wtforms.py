@@ -99,7 +99,10 @@ class SepEdit(FlaskForm):
             "lang": "",  # ⚠️ Don't defined here, they persist. See below SepNew
         },
     )
+    
     icon_filename = FileField("", render_kw={"class": "form-control", "accept": ".svg"})
+
+    visible = BooleanField("", render_kw={"class": "form-check-input"} )
 
 
 # Derived Private form

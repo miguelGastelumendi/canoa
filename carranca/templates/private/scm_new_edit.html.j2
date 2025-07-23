@@ -44,7 +44,7 @@ mgd
                 <div class="form-group mt-3">
                     <label class="form-label" inert for="{{ id_color_inp }}">{{ backColorLabel }}</label>
                     <div class="input-group">
-                        <button class="input-group-text form-other-btn" type="button" id="{{id_color_btn}}"
+                        <button class="input-group-text form-icon-btn" type="button" id="{{id_color_btn}}"
                             title="{{ colorHint | default('Change: Text | Selector')}}">
                             <i class="fas" aria-hidden="true"
                                 data-class='{"text": "fa-keyboard", "color": "fa-palette"}' id="{{id_color_img}}"></i>
@@ -96,16 +96,31 @@ mgd
         <div class="col-12 col-md-7">
             <div class=""> {# [ Full Description #}
                 <div class="form-group">
-                    <label class="form-label" inert for="{{form.content.id}}">{{ contentLabel }}</label>
+                    <label class="form-label" inert for="{{form.content.id}}">{{contentLabel}}</label>
                     <div class="input-group">
-                        <span class="input-group-text"> <i class="fas fa-file-invoice"></i> </span>
+                        <span class="input-group-text" style="padding: .2rem .2rem; align-items: start;">
+                            <span class="form-icon-btn-column">
+                                <button class="input-group-text form-icon-btn" type="button" id="xx"
+                                    title="{{ copyHint | default('Copy')}}">
+                                    <i class="fas fa-paste" aria-hidden="true"></i>
+                                </button>
+                                <button class="input-group-text form-icon-btn" type="button" id="yy">
+                                    <i class="fas fa-copy" aria-hidden="true"></i>
+                                </button>
+                                <button class="input-group-text form-icon-btn" type="button" id="zz">
+                                    <i class="fas fa-check" aria-hidden="true"></i>
+                                </button>
+
+                            </span>
+                        </span>
                         {{ form.content() }}
                     </div>
                 </div>
-            </div> {# Full Description ] #}
-        </div>
-        {# ╘══════════════ Column 2 ═══════════════╛ #}
+            </div>
+        </div> {# Full Description ] #}
     </div>
+    {# ╘══════════════ Column 2 ═══════════════╛ #}
+</div>
 </div>
 {# ╘════════════════ Container ═══════════════════════╛ #}
 

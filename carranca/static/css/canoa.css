@@ -225,6 +225,7 @@ body {
     border-radius: var(--bs-border-radius);
 }
 
+
 .form-main-btn:hover {
     /* same as fillcolor of carranca\static\icons\ups_handler.svg */
     filter: brightness(130%);
@@ -235,14 +236,16 @@ body {
 }
 
 /* see scm_new_edit.html.j2 for an example */
-.form-other-btn:hover {
+.form-icon-btn-column {
+    display: flex;
+    flex-direction: column;
+    /* align-items: start !important; */
+    gap: 0.2rem;
+}
+
+.form-icon-btn:hover {
     background-color: white;
 }
-
-.form-main-btn:disabled {
-    filter: brightness(60%);
-}
-
 
 /* ============================================
  *          responsive design
@@ -257,5 +260,8 @@ body {
 ::-webkit-input-placeholder {
     font-style: italic;
 }
+
+
+
 
 /*~*/

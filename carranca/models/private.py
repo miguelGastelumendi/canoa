@@ -488,7 +488,6 @@ class Sep(SQLABaseTable):
         db_session: Session
         sep_id = -1
         with global_sqlalchemy_scoped_session() as db_session:
-            done = False
             try:
                 db_session.add(sep_row)
                 if sep_row.id is None:  # is it an insert?

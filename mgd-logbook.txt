@@ -58,8 +58,15 @@
 
    	A user can not be disabled if it has a SEP, cannot be assigned a sep if is disabled
 
+    Schema LOG
+
 ------- 2025 - July -------------
 ---------------------------------
+
+2025-07-21--22 β 4.65 [Published] New Visible attribute in SEP (#56)
+    - SEP can be visible or not
+    - Start of a DEMO of Schema.content HTML check & highlighter
+
 2025-07-18--19 β 4.64 [Published] Improves in Schema edition inputs v3
     - Not allow to save with invalid color
     - When Key is pressed validate_data
