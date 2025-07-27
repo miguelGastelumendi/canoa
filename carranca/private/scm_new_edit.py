@@ -5,26 +5,17 @@ Equipe da Canoa -- 2024
 mgd 2024-10-09, 11-12
 """
 
-# cSpell: ignore wtforms werkzeug sepsusr usrlist scms nsert
+# cSpell: ignore wtforms ZáàãâéêíóôõúüçÁÀÃÂÉÊÍÓÔÕÚÜÇ_
 
 import re
 from flask import request
-from typing import Optional
-from os.path import splitext
 from wtforms import StringField
-from sqlalchemy import func  # func.now() == server time
-from dataclasses import dataclass
-from werkzeug.utils import secure_filename
-from werkzeug.datastructures import FileStorage
+from sqlalchemy import func  # func.now() == db-server time
 
 from .wtforms import ScmEdit
+from .grid_helper import GridAction
 
-
-from .sep_icon import icon_refresh, ICON_MIN_SIZE
-from .SepIconMaker import SepIconMaker
-from .sep_constants import SEP_CMD_GRD, SEP_CMD_INS, ACTION_CODE_SEPARATOR
-from ..models.private import Sep, Schema, MgmtSepsUser
-from ..private.UserSep import UserSep
+from ..models.private import Schema
 from ..helpers.py_helper import clean_text, to_int, crc16
 from ..public.ups_handler import ups_handler
 from ..helpers.user_helper import get_batch_code
@@ -50,7 +41,8 @@ from ..helpers.ui_db_texts_helper import (
 def do_scm_edit(code: str) -> str:
     """SCM Edit Form"""
 
-    is_insert = code == SEP_CMD_INS
+    is_insert = code == GridAction.add
+    is_edit = not is_insert
 
     # edit SEP with ID, is a parameter
 
@@ -79,18 +71,15 @@ def do_scm_edit(code: str) -> str:
         form.description.render_kw["lang"] = app_user.lang
         form.content.render_kw["lang"] = app_user.lang
 
-        if is_get:
-            if is_insert:
-                scm_row.id = None
-                scm_row.visible = False
-                scm_row.color = "#00000"  # RRGGBB
-            else:
-                for field in form:
-                    if hasattr(scm_row, field.name):
-                        field.data = getattr(scm_row, field.name)
-
-        else:  # is_post
-
+        if is_get and is_insert:
+            scm_row.id = None
+            scm_row.visible = False
+            scm_row.color = "#00000"  # RR GG B
+        elif is_get and is_edit:
+            for field in form:
+                if hasattr(scm_row, field.name):
+                    field.data = getattr(scm_row, field.name)
+        else: # is_post
             def modified(input, field, mod):
                 ui_value = (
                     get_front_end_str(input.name, None)

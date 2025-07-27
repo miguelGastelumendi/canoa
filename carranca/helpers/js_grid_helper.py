@@ -43,6 +43,7 @@ def js_grid_constants(col_meta_info_txt: str, col_names: List[str], task_code: i
     grid_const: ui_db_texts = {}
 
     col_meta_info_json = json.loads(col_meta_info_txt)
+    # TODO: hide => v=  header == '', flex => f = 1 or from db
     col_meta_info_array = [{"n": key, "h": col_meta_info_json[key]} for key in col_meta_info_json]
     col_meta_info_names = {item["n"] for item in col_meta_info_array}
 

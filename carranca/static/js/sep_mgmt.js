@@ -41,9 +41,9 @@ const gridOptions = {
     }
     , rowData: gridRows
     , columnDefs: [
-        { field: colMeta[0].n, flex: 1, hide: true },
-        { field: colIconUrl, flex: 1, hide: true },
-        { field: colUserCurr, flex: 1, hide: true },
+        { field: colMeta[0].n, flex: 0, hide: true },
+        { field: colIconUrl, flex: 0, hide: true },
+        { field: colUserCurr, flex: 0, hide: true },
         { field: colMeta[3].n, headerName: colMeta[3].h, hide: false, flex: 3 },
         {
             field: colUserNew,
@@ -88,6 +88,13 @@ const gridOptions = {
             , valueFormatter: params => (params.data[colMeta[5].n] ? params.data[colMeta[5].n].toLocaleDateString(dateFormat) : '')
             , flex: 1
         },
+        {
+            field: colMeta[6].n
+            , headerName: colMeta[6].h
+            , flex: 1
+            , cellStyle: { display: 'flex', justifyContent: 'center' }
+        },
+
     ]
 }; // gridOptions
 

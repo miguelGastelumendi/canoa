@@ -108,7 +108,7 @@ def _register_blueprint_routes(app: Flask):
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
-    from .private.sep_constants import SEP_CMD_INS, SEP_CMD_GRD
+    from .private.grid_helper import GridAction
 
     def __get_app_menu(sub_menu_name: str) -> ui_db_texts:
         sub_menu: dict = {}
@@ -170,8 +170,8 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         app_menu=__get_app_menu,
         sep_menu=__get_user_sep_menu_list,
         scm_menu=__get_scm_menu_list,
-        sep_cmd_add=SEP_CMD_INS,
-        sep_cmd_grd=SEP_CMD_GRD,
+        grid_cmd_add=GridAction.add,
+        grid_cmd_shw=GridAction.show,
     )
     if debugUndefined:
         # Enable DebugUndefined for better error messages in Jinja2 templates

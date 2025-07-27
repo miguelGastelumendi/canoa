@@ -20,7 +20,7 @@ from .wtforms import SepEdit, SepNew
 
 from .sep_icon import icon_refresh, ICON_MIN_SIZE
 from .SepIconMaker import SepIconMaker
-from .sep_constants import SEP_CMD_GRD, SEP_CMD_INS, ACTION_CODE_SEPARATOR
+from .grid_helper import GridAction
 from ..models.private import Sep, Schema, MgmtSepsUser
 from ..private.UserSep import UserSep
 from ..helpers.py_helper import clean_text, to_int, crc16
@@ -64,48 +64,11 @@ def do_sep_edit(data: str) -> str:
         error_code: int = 0
 
     new_sep_id = 0
-    row_index = None
+    action, code, row_index = GridAction.get_data(data)
 
-    if ACTION_CODE_SEPARATOR in data:  # called from sep_grid
-        """
-        action:code
-        -----------
-        `action` can be:
-            » None: is a call from the menu, no action.
-              After edit or insert, return to standard login()
-                or
-            » [C]reate, [I]nsert, [E]dit
-            It is the first char of the button that trigger the action in
-                `private/sep_grid.html.j2`
-            and routed here via
-                `private/rout("/sep_grid/<code>")`
-            See sep_grid.html.j2  { -- Action Triggers -- }
-            After edit or insert, return to the calling grid & select this row
-        """
-        action = data.split(ACTION_CODE_SEPARATOR)[0]
-
-        """
-        `code` can be:
-            » SEP_CMD_INS : insert a new SEP
-              or
-            » The obfuscate ID of the SEP to edit
-        """
-        code = data.split(ACTION_CODE_SEPARATOR)[1]
-
-        """
-        `row_index` is the selected row index, selected again on return
-        # TODO, now optional
-        """
-        row_index = f"{data}{ACTION_CODE_SEPARATOR}".split(ACTION_CODE_SEPARATOR)[2]
-
-        """
-            Where to go after:
-                - save: goto
-                - close: on_close
-        """
+    if action is not None:  # called from sep_grid
         # TODO use: window.history.back() in JavaScript.
-        process_on_end = private_route("sep_grid", code=SEP_CMD_GRD)  # TODO selected Row, ix=row_index)
-
+        process_on_end = private_route("sep_grid", code=GridAction.show)  # TODO selected Row, ix=row_index)
         form_on_close = {"action_form__form_on_close": process_on_end}
 
     else:  # standard routine
@@ -116,7 +79,7 @@ def do_sep_edit(data: str) -> str:
 
     is_full_edit = False
     is_simple_edit = False
-    is_insert = code == SEP_CMD_INS
+    is_insert = code == GridAction.add
     if is_insert:
         # insert can modified all fields (readonly `manager`` not shown)
         pass

@@ -2,7 +2,6 @@
 SEP constants
     A low interference file easy to import"
 
-    see
 """
 
 ACTION_CODE_SEPARATOR = ":"

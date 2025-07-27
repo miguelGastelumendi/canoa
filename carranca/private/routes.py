@@ -8,9 +8,9 @@ mgd
 """
 
 # cSpell: ignore werkzeug wtforms tmpl mgmt jscmd
-import json
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
+from typing import Callable
 
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import internal_logout, nobody_is_logged
@@ -25,8 +25,6 @@ from ..helpers.route_helper import (
     private_route,
     redirect_to,
 )
-from .sep_constants import SEP_CMD_NUL, SEP_CMD_GRD
-
 
 # === module variables ====================================
 bp_private = Blueprint(bp_name(base_route_private), base_route_private, url_prefix="")
@@ -71,22 +69,17 @@ def sep_mgmt():
         return sep_mgmt()
 
 
-@login_required
-@bp_private.route("/sep_grid/<code>", methods=["GET", "POST"])
-def sep_grid(code: str = SEP_CMD_NUL):  # TODO selected row: str = None):
+def grid_route(code: str, editor: str, show_grid: Callable):
     """
-    Through this route, the admin user can CRUD seps
+    This func routes calls from a grid or to a grid. 8—|
+    see sep_grid & scm_grid
     """
-    from .sep_grid import get_sep_grid, ResponseKeys
-    from .sep_constants import SEP_CMD_INS
 
-    def _goto(code: str) -> str:
-        url = private_route("sep_edit", code=code)
+    from .grid_helper import GridAction, GridCargoKeys, GridResponse
+
+    def _goto(item_code: str) -> str:
+        url = private_route(editor, code=item_code)
         return redirect_to(url)
-
-    def _get_value(cmd_json, key: str) -> str:
-        value = cmd_json[key] if key in cmd_json else "?"
-        return value
 
     def _get_route_error(param: str) -> str:
         return f"Unexpected route parameter [{param}]."
@@ -96,8 +89,8 @@ def sep_grid(code: str = SEP_CMD_NUL):  # TODO selected row: str = None):
         return redirect_to(login_route())
     elif not is_method_get():
         error = _get_route_error("post")
-    elif code == SEP_CMD_GRD:
-        return get_sep_grid()
+    elif code == GridAction.show:
+        return show_grid()
     elif code != js_grid_rsp:
         error = _get_route_error(code)
     # TODO security key  elif is_str_none_or_empty(sec_key:= request.args.get('grid_sec_key', '')) or (sec_key != ):
@@ -105,16 +98,16 @@ def sep_grid(code: str = SEP_CMD_NUL):  # TODO selected row: str = None):
         error = _get_route_error("empty")
     else:
         error = _get_route_error("jscmd")
-        cmd_json = json.loads(cmd_text)
-        action = _get_value(cmd_json, ResponseKeys.action)[0]
+        grid_response = GridResponse(cmd_text)
+        action = grid_response.action
         error = _get_route_error("action")
         match action:
-            case ResponseKeys.insert:
-                return _goto(SEP_CMD_INS)
-            case ResponseKeys.edit:
-                data = f"{action}:{_get_value(cmd_json, ResponseKeys.code)}:{_get_value(cmd_json, ResponseKeys.index)}"
+            case GridCargoKeys.insert:
+                return _goto(GridAction.add)
+            case GridCargoKeys.edit:
+                data = GridResponse.do_data()
                 return _goto(data)
-            case ResponseKeys.delete:
+            case GridCargoKeys.delete:
                 error = f"The Delete procedure is still under development."
                 # TODO Remove all
                 pass
@@ -125,18 +118,55 @@ def sep_grid(code: str = SEP_CMD_NUL):  # TODO selected row: str = None):
 
 
 @login_required
-@bp_private.route("/scm_edit/<code>", methods=["GET", "POST"])
-def scm_edit(code: str = "?"):
+@bp_private.route("/sep_grid/<code>", methods=["GET", "POST"])
+def sep_grid(code: str = "?"):
     """
-    Through this route, the user can edit and insert a Schema
+    Through this route, the admin user can CRUD seps and display a grid
     """
+    from .sep_grid import get_sep_grid
 
-    if nobody_is_logged():
-        return redirect_to(login_route())
-    else:
-        from .scm_new_edit import do_scm_edit
+    return grid_route(code, "sep_edit", get_sep_grid)
 
-        return do_scm_edit(code)
+    # from .grid_helper import GridAction, GridCargoKeys, GridResponse
+
+    # def _goto(code: str) -> str:
+    #     url = private_route("sep_edit", code=code)
+    #     return redirect_to(url)
+
+    # def _get_route_error(param: str) -> str:
+    #     return f"Unexpected route parameter [{param}]."
+
+    # error = _get_route_error("?")
+    # if nobody_is_logged():
+    #     return redirect_to(login_route())
+    # elif not is_method_get():
+    #     error = _get_route_error("post")
+    # elif code == GridAction.show:
+    #     return get_sep_grid()
+    # elif code != js_grid_rsp:
+    #     error = _get_route_error(code)
+    # # TODO security key  elif is_str_none_or_empty(sec_key:= request.args.get('grid_sec_key', '')) or (sec_key != ):
+    # elif is_str_none_or_empty(cmd_text := request.args.get(js_grid_rsp, "")):
+    #     error = _get_route_error("empty")
+    # else:
+    #     error = _get_route_error("jscmd")
+    #     grid_response = GridResponse(cmd_text)
+    #     action = grid_response.action
+    #     error = _get_route_error("action")
+    #     match action:
+    #         case GridCargoKeys.insert:
+    #             return _goto(GridAction.add)
+    #         case GridCargoKeys.edit:
+    #             data = GridResponse.do_data()
+    #             return _goto(data)
+    #         case GridCargoKeys.delete:
+    #             error = f"The Delete procedure is still under development."
+    #             # TODO Remove all
+    #             pass
+
+    # _, tmpl_ffn, ui_texts = ups_handler(0, error)
+    # tmpl = render_template(tmpl_ffn, **ui_texts)
+    # return tmpl
 
 
 @login_required
@@ -153,6 +183,32 @@ def sep_edit(code: str = "?"):
         from .sep_new_edit import do_sep_edit
 
         return do_sep_edit(code)
+
+
+@login_required
+@bp_private.route("/scm_grid/<code>", methods=["GET", "POST"])
+def scm_grid(code: str = "?"):
+    """
+    Through this route, the user can edit and insert a Schema
+    """
+    from .scm_grid import get_scm_grid
+
+    return grid_route(code, "scm_edit", get_scm_grid)
+
+
+@login_required
+@bp_private.route("/scm_edit/<code>", methods=["GET", "POST"])
+def scm_edit(code: str = "?"):
+    """
+    Through this route, the user can edit a Schema
+    """
+
+    if nobody_is_logged():
+        return redirect_to(login_route())
+    else:
+        from .scm_new_edit import do_scm_edit
+
+        return do_scm_edit(code)
 
 
 @login_required

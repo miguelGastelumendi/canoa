@@ -23,6 +23,7 @@ var cargo = /** @type {Object} */{};
 var itemNone = /** @type {string} */ '';
 var itemNone = /** @type {string} */ '';
 var jsData = /** @type {HTMLScriptElement} */ '';
+var icon = /** @type {HTMLImageElement} */ null;
 
 var btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById("fake"));
 var dateFormat = /** @type {string} */ '';

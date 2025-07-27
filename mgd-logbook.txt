@@ -62,6 +62,10 @@
 
 ------- 2025 - July -------------
 ---------------------------------
+2025-07-23--26 β 4.66 Grid of Schemas to Edit & Delete v1 new columns ui_order
+    - Start Grid of Schemas to Edit & Delete (as Schema -> Edição/Remoção)
+    - New columns & indexes schema.ui_order, sep.ui_order
+
 
 2025-07-21--22 β 4.65 [Published] New Visible attribute in SEP (#56)
     - SEP can be visible or not (DB v 4.51)

@@ -189,6 +189,7 @@ class Schema(SQLABaseTable):
     description = Column(String(140))
     content = Column(Text)
     visible = Column(Boolean)
+    ui_order = Column(Integer)
     ins_by = Column(Integer)
     ins_at = Column(DateTime)
     edt_by = Column(Integer)
@@ -256,6 +257,8 @@ class Schema(SQLABaseTable):
                 raise Exception(e)
 
         return
+
+
 
 
 # --- Table ---
@@ -352,7 +355,7 @@ class MgmtSepsUser(SQLABaseTable):
             sel_cols = __cols() if field_names else None
             stmt = select(*sel_cols) if sel_cols else select(MgmtSepsUser)
             if user_id is not None:  # then filter
-                stmt = stmt.where(MgmtSepsUser.user_id == user_id)
+                stmt = stmt.where(MgmtSepsUser.user_id == user_id).order_by()
             if sep_id is not None:  # then filter
                 stmt = stmt.where(MgmtSepsUser.id == sep_id)
 
@@ -399,6 +402,7 @@ class Sep(SQLABaseTable):
     id = Column(Integer, primary_key=True, autoincrement=True)
     id_schema = Column(Integer)
     users_id = Column("mgmt_users_id", Integer)
+    ui_order = Column(Integer)
     ins_by = Column(Integer)
     ins_at = Column(DateTime)
     edt_by = Column(Integer)

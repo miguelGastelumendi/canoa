@@ -5,7 +5,7 @@
  *  Miguel Gastelumendi -- mgd
  * ============================================ */
 
-/* cSpell:ignore unselectable callout Konqueror tmpl */
+/* cSpell:ignore unselectable callout Konqueror tmpl adaptabrasil */
 
 :root {
     --project-name: 'Canoa';
@@ -23,6 +23,7 @@
     --canoa-form-label-color: #814c17;
     --canoa-form-button-color: white;
     --canoa-label-margin-left: calc(var(--bs-border-radius) / 2);
+    --adaptabrasil-back-color: white;
 }
 
 body {
@@ -85,7 +86,7 @@ body {
 }
 
 .dlg-icon-back {
-    background-color: white;
+    background-color: var(--adaptabrasil-back-color);
     vertical-align: middle;
     display: inline-block;
     padding: 1px;
@@ -99,7 +100,6 @@ body {
     background-color: var(--canoa-form-footer-bg);
     min-height: 2rem;
 }
-
 
 /* dialog ids */
 #dlg-var-svg-id {
@@ -235,16 +235,13 @@ body {
     filter: brightness(60%);
 }
 
-/* see scm_new_edit.html.j2 for an example */
-.form-icon-btn-column {
-    display: flex;
-    flex-direction: column;
-    /* align-items: start !important; */
-    gap: 0.2rem;
+.form-icon-btn {
+    width: 2rem;
+    justify-content: center;
 }
 
 .form-icon-btn:hover {
-    background-color: white;
+    background-color: var(--adaptabrasil-back-color);
 }
 
 /* ============================================

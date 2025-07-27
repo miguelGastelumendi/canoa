@@ -1,5 +1,5 @@
 """
-SEP
+Schema
 Grid form Adm
 
 mgd
@@ -7,51 +7,56 @@ mgd
 
 # cSpell: ignore samp sepsusr usrlist
 
-from typing import Tuple, List
+from typing import List, Tuple
 
 from .IdToCode import IdToCode
-from .sep_icon import do_icon_get_url
 from .grid_helper import GridCargoKeys
-from .SepIconMaker import SepIconMaker
-from ..models.private import MgmtSepsUser
 from ..public.ups_handler import ups_handler
 from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
+from ..models.private_1.SchemaGrid import SchemaGrid
 
 from ..helpers.py_helper import class_to_dict
 from ..helpers.jinja_helper import process_template
 from ..helpers.route_helper import get_private_response_data, init_response_vars
 from ..helpers.js_grid_helper import js_grid_constants
-from ..helpers.ui_db_texts_helper import add_msg_final, UITextsKeys
+from ..helpers.ui_db_texts_helper import add_msg_final
 from ..helpers.db_records.DBRecords import DBRecords, ListOfDBRecords
 
 
-def get_sep_grid() -> str:
-    task_code = ModuleErrorCode.SEP_GRID.value
+def get_scm_grid() -> str:
+
+    def _scm_data_fetch(col_names: List[str]) -> Tuple[DBRecords]:
+        scm_rows = SchemaGrid.get_schemas(col_names)
+        idToCode = IdToCode()
+        for record in scm_rows:
+            sep_id = record.id
+            record.id = idToCode.encode(sep_id)
+
+        return scm_rows
+
+    task_code = ModuleErrorCode.SCM_GRID.value
     _, tmpl_ffn, is_get, ui_texts = init_response_vars()
 
-    sep_data: ListOfDBRecords = []
+    scm_data: ListOfDBRecords = []
     tmpl = ""
     try:
         task_code += 1  # 1
-        tmpl_ffn, is_get, ui_texts = get_private_response_data("sepGrid")
-
-        task_code += 1  # 2
-        ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(SepIconMaker.empty_file)
+        tmpl_ffn, is_get, ui_texts = get_private_response_data("scmGrid")
 
         task_code += 1  # 3
-        col_names = ["id", "icon_file_name", "scm_name", "name", "user_curr"]
+        col_names = ["id", "name", "color", "visible", "sep_count"]
         grid_const = js_grid_constants(ui_texts["colMetaInfo"], col_names, task_code)
 
-        sep_data = []
+        scm_data = []
         if is_get:
             task_code += 1  # 4
-            sep_data = _sep_data_fetch(col_names)
+            scm_data = _scm_data_fetch(col_names)
         else:
             raise AppStumbled("Unexpected route method.")
 
         tmpl = process_template(
             tmpl_ffn,
-            sep_data=sep_data.to_list(),
+            scm_data=scm_data.to_list(),
             cargo_keys=class_to_dict(GridCargoKeys),
             **grid_const,
             **ui_texts,
@@ -63,17 +68,6 @@ def get_sep_grid() -> str:
         tmpl = process_template(tmpl_ffn, **ui_texts)
 
     return tmpl
-
-
-def _sep_data_fetch(col_names: List[str]) -> Tuple[DBRecords]:
-    sep_usr_rows = MgmtSepsUser.get_seps_usr(col_names)
-    idToCode = IdToCode()
-    for record in sep_usr_rows:
-        sep_id = record.id
-        record.id = idToCode.encode(sep_id)
-        record.icon_file_name = do_icon_get_url(record.icon_file_name, sep_id)
-
-    return sep_usr_rows
 
 
 # eof

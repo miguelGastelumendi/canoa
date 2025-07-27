@@ -7,7 +7,7 @@ CRUD por seps
 Extends
 "./layouts/grid.html.j2"
 
-2025.05.23
+2025.07.25
 mgd
 --------------------------------------- #}
 {# cSpell:ignore onclick tojson onsubmit #}
@@ -36,7 +36,7 @@ mgd
 {% endblock grid_blc_footer %}
 
 {% block grid_blc_forms %}
-<form method="get" action="{{private_route('sep_grid', code=grid_rsp)}}" id={{dlg_id_submit_form}}>
+<form method="get" action="{{private_route('scm_grid', code=grid_rsp)}}" id={{dlg_id_submit_form}}>
     <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
     <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
 </form>
@@ -49,13 +49,11 @@ mgd
     const colCode = colMeta[0].n;
     const colIconUrl = colMeta[1].n;
 
-    const gridRows = {{ sep_data | tojson | safe }};
+    const gridRows = {{ scm_data | tojson | safe }};
     const cargoKeys = {{ cargo_keys | tojson }};
     const gridID = '{{ grid_id }}';
     const initRow = {{ grid_init_row | default (0) }};
     const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '' };
-    const icon = /** @type {HTMLImageElement} */(document.getElementById('{{ dlg_var_icon_id }}'))
-
     document.addEventListener('DOMContentLoaded', () => {
         const elForm = /** @type {HTMLFormElement} */(document.getElementById('{{ dlg_id_submit_form }}'));
         const elResponse = /** @type {HTMLInputElement} */(document.getElementById('{{ grid_rsp }}'));
@@ -67,7 +65,7 @@ mgd
         })
     });
 </script>
-<script src="{{static_route('js/sep_grid.js')}}"></script>
+<script src="{{static_route('js/scm_grid.js')}}"></script>
 {% endblock grid_blc_javascript %}
 
 

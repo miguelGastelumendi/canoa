@@ -76,15 +76,15 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_us
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ private_route('sep_grid', code=sep_cmd_grd) }}"
-                                title="Abra o grid para adicionar, editar e remover Setores Estrat&eacute;gicos">
-                                Edi&ccedil;&atilde;o
+                            <a class="dropdown-item" href="{{ private_route('sep_edit', code=grid_cmd_add) }}"
+                                title="Abre o formul&aacute;rio para adicionar um Setor Estrat&eacute;gico">
+                                Inser&ccedil;&atilde;o
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ private_route('sep_edit', code=sep_cmd_add) }}"
-                                title="Abre o formul&aacute;rio para adicionar um Setor Estrat&eacute;gico">
-                                Inser&ccedil;&atilde;o
+                            <a class="dropdown-item" href="{{ private_route('sep_grid', code=grid_cmd_shw) }}"
+                                title="Abra o grid para editar ou remover Setores Estrat&eacute;gicos">
+                                Edi&ccedil;&atilde;o e Remo&ccedil;&atilde;o
                             </a>
                         </li>
                         {# ╘════════ admin sep menu ═══════╛ #}
@@ -112,19 +112,24 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_us
                     {# ╒════════ schema menu ════════╕ #}
                     <ul class="dropdown-menu">
                         <li>
-                            <a class="dropdown-item" href="{{ private_route('scm_edit', code=sep_cmd_add) }}"
+                            <a class="dropdown-item" href="{{ private_route('scm_edit', code=grid_cmd_add) }}"
                                 title="Abre o formul&aacute;rio para adicionar um Esquema">
                                 Inser&ccedil;&atilde;o
                             </a>
                         </li>
-                        <div class="dropdown-divider"></div>
-
+                        <li>
+                            <a class="dropdown-item" href="{{ private_route('scm_grid', code=grid_cmd_shw) }}"
+                                title="Abre o grid para editar ou remover Esquemas">
+                                Edi&ccedil;&atilde;o e Remo&ccedil;&atilde;o
+                            </a>
+                        </li>
+                        {# <div class="dropdown-divider"></div>
                         {% for scm in scm_list %}
                         <li>
                             <a class="dropdown-item" href="{{ private_route('scm_edit', code=scm.id) }}">{{scm.name}}
                             </a>
                         </li>
-                        {% endfor %}
+                        {% endfor %} #}
                     </ul>
                     {# ╘════════ schema menu ════════╛ #}
                 </li>

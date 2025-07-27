@@ -19,6 +19,7 @@ class SepMgmtGridCols:
     sep_fn = MgmtSepsUser.fullname.name  # 3
     usr_new = MgmtSepsUser.user_new.name  # 4
     set_at = MgmtSepsUser.assigned_at.name  # 5
+    visible = MgmtSepsUser.visible.name  # 6
 
 
 class CargoKeys:

@@ -13,6 +13,8 @@
 
 let removeCount = 0;
 //-------------
+
+// https://www.ag-grid.com/javascript-data-grid/column-definitions/
 // == Ag Grid
 const gridOptions = {
     rowSelection: 'single',
@@ -29,10 +31,17 @@ const gridOptions = {
     , rowData: gridRows
     , columnDefs: [
         { field: colCode, flex: 1, hide: true },
-        { field: colIconUrl, flex: 1, hide: true },
-        { field: colMeta[2].n, headerName: colMeta[2].h, hide: false, flex: 3 },
-        { field: colMeta[3].n, headerName: colMeta[3].h, hide: false, flex: 4 },
-        { field: colMeta[4].n, headerName: colMeta[4].h, hide: false, flex: 3 },
+        { field: colMeta[1].n, headerName: colMeta[1].h, hide: false, flex: 2 },
+        { field: colMeta[2].n, headerName: colMeta[2].h, hide: false, flex: 1 },
+        {
+            field: colMeta[3].n,
+            headerName: colMeta[3].h,
+            flex: 1,
+            cellStyle: { display: 'flex', justifyContent: 'center' },
+            headerClass: 'ag-center-aligned-header',
+        },
+        { field: colMeta[4].n, headerName: colMeta[4].h, hide: false, flex: 1, type: 'numericColumn' }
+
     ]
 }; // gridOptions
 
@@ -40,7 +49,7 @@ const setActiveRow = (row, rowIx) => {
     if (!row) { return; }
     cargo[cargoKeys.index] = rowIx;
     cargo[cargoKeys.code] = row.data[colCode]
-    if (icon.src != row.data[colIconUrl]) {
+    if (icon && (icon.src != row.data[colIconUrl])) {
         icon.src = row.data[colIconUrl];
     }
 }
