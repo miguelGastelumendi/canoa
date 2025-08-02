@@ -11,7 +11,7 @@ Buttons:
 v2 2024.04.01
 mgd
 
-Spell:ignore endmacro preid
+Spell:ignore endmacro preid onclick
 #}
 
 
@@ -21,19 +21,18 @@ Spell:ignore endmacro preid
 {% endmacro %}
 
 {% macro
-btn_close(action_form__form_submit_id, caption="OK", id="form_btn_close", class="form-main-btn form-cancel")
+btn_close(action_form__form_submit_id, caption="OK", id="form-btn-close-id", class="form-main-btn form-cancel")
 %}
-<button type="submit" class="{{class}}" form="{{action_form__form_submit_id}}" id="{{id}}">
+<button type="submit" class="{{class}}" form="{{action_form__form_submit_id}}" id="{{id}}" onclick='hideDialog()'>
     {{caption}}
 </button>
 {% endmacro %}
 
-{% macro btn_submit(action_form__form_submit_id, caption="Save", id="form_submit_id", attrib= "") %}
+{% macro btn_submit(action_form__form_submit_id, caption="Save", id="form-btn-submit-id", attrib= "") %}
 <button type="submit" class="form-main-btn form-submit" form="{{action_form__form_submit_id}}" id="{{id}}" {{attrib}}>
     {{caption}}
 </button>
 {% endmacro %}
-
 
 {% macro btn_action(action_form__id, caption, pre_id="")%}
 <button type="submit" class="form-main-btn form-submit btn-action" form="{{action_form__id}}"

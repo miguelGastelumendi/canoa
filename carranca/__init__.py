@@ -21,7 +21,7 @@ from typing import Optional, Dict, List
 global_sidekick: Optional[Sidekick] = None
 global_login_manager: Optional[LoginManager] = None
 global_sqlalchemy_scoped_session: Optional[scoped_session] = None
-global_ui_texts_cache: Dict = {}
+global_ui_texts_cache: Dict[str, str] = {}
 APP_DB_VERSION: str = "?"
 
 """

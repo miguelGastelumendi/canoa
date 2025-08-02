@@ -60,8 +60,22 @@
 
     Schema LOG
 
+
 ------- 2025 - July -------------
 ---------------------------------
+2025-08-01 β 4.67 [Published] Schema Grid, new Column [Sep count (Visible/Total)]
+    - Fix Schema grid's text bugs
+    - Add a border to the Schema grid's color cell, to display the color
+    - Add an 'error hint' when the schema's name is invalid
+
+
+------- 2025 - July -------------
+---------------------------------
+2025-07-28--31 β 4.66 Grid of Schemas: Edit ready
+    - User interface SEP and Schema (ui_order) #60
+    - Redo Schema table (it was a view from DB.Canoa, see β 4.60) #41
+
+
 2025-07-23--26 β 4.66 Grid of Schemas to Edit & Delete v1 new columns ui_order
     - Start Grid of Schemas to Edit & Delete (as Schema -> Edição/Remoção)
     - New columns & indexes schema.ui_order, sep.ui_order

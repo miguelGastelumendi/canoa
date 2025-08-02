@@ -33,15 +33,15 @@ class UserSep:
     """
 
     # obfuscate the id when is public
-    idToCode = IdToCode()
+    id_to_code = IdToCode()
 
     @staticmethod
     def to_id(code: str) -> int:
-        return UserSep.idToCode.decode(code)
+        return UserSep.id_to_code.decode(code)
 
     @property
     def code(self) -> str:
-        return UserSep.idToCode.encode(self.id)
+        return UserSep.id_to_code.encode(self.id)
 
     def __init__(
         self,

@@ -99,6 +99,7 @@ class ModuleErrorCode(IntEnum):
     SEP_MGMT = 550
     SEP_GRID = 600
     SCM_GRID = 700
+    SCM_EDIT  = 750
     DB_FETCH_ROWS = 590  # only on
 
     RECEIVED_FILES_MGMT = 700

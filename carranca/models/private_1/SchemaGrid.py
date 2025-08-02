@@ -13,6 +13,7 @@ Equipe da Canoa -- 2025.07.24
 
 from typing import List, Optional
 from sqlalchemy import (
+    Computed,
     Boolean,
     Column,
     Integer,
@@ -20,11 +21,10 @@ from sqlalchemy import (
     select,
 )
 from sqlalchemy.orm import Session
-from sqlalchemy.ext.hybrid import hybrid_property
 
 from ...models import SQLABaseTable
 from ...helpers.db_helper import db_fetch_rows
-from ...helpers.py_helper import to_code
+from ...private.IdToCode import IdToCode
 from ...helpers.db_records.DBRecords import DBRecords
 
 
@@ -38,11 +38,15 @@ class SchemaGrid(SQLABaseTable):
     title = Column(String(140))
     visible = Column(Boolean)
     sep_count = Column(Integer)
-    ui_order = Column(Integer)
+    v_sep_count = Column(Integer, Computed(""))  # visible sep
+    ui_order = Column(Integer, Computed(""))
+    sep_v2t = Column(String(11), Computed(""))  # visible / total
 
-    @hybrid_property
-    def code(self):
-        return to_code(self.user_id, 5)
+    id_to_code = IdToCode()
+
+    @staticmethod
+    def code(id: int) -> str:
+        return SchemaGrid.id_to_code.encode(id)
 
     @staticmethod
     def get_schemas(field_names: Optional[List[str]] = None) -> DBRecords:

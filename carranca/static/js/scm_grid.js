@@ -32,7 +32,16 @@ const gridOptions = {
     , columnDefs: [
         { field: colCode, flex: 1, hide: true },
         { field: colMeta[1].n, headerName: colMeta[1].h, hide: false, flex: 2 },
-        { field: colMeta[2].n, headerName: colMeta[2].h, hide: false, flex: 1 },
+        {
+            field: colMeta[2].n,
+            headerName: colMeta[2].h,
+            hide: false,
+            flex: 1,
+            cellStyle: params => ({
+                borderLeft: `12px solid ${params.value}`,
+                paddingLeft: '12px'
+            })
+        },
         {
             field: colMeta[3].n,
             headerName: colMeta[3].h,
@@ -49,7 +58,7 @@ const setActiveRow = (row, rowIx) => {
     if (!row) { return; }
     cargo[cargoKeys.index] = rowIx;
     cargo[cargoKeys.code] = row.data[colCode]
-    if (icon && (icon.src != row.data[colIconUrl])) {
+    if (row.data[colIconUrl] && (icon.src != row.data[colIconUrl])) {
         icon.src = row.data[colIconUrl];
     }
 }

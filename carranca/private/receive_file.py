@@ -9,7 +9,7 @@ mgd
 # cSpell: ignore werkzeug wtforms tmpl urlname uploadfile
 
 
-from flask import render_template, request
+from flask import request
 from typing import List
 from werkzeug.utils import secure_filename
 

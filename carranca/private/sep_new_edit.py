@@ -31,8 +31,8 @@ from ..helpers.route_helper import (
     get_private_response_data,
     init_response_vars,
     get_front_end_str,
-    login_route,
     private_route,
+    login_route,
     redirect_to,
 )
 
@@ -52,7 +52,7 @@ SCHEMA_LIST_VALUE = "schemaListValue"
 
 
 def do_sep_edit(data: str) -> str:
-    """SEP Edit Form"""
+    """SEP Edit & Insert Form"""
 
     @dataclass
     class IconData:
@@ -63,7 +63,6 @@ def do_sep_edit(data: str) -> str:
         error_hint: str = ""
         error_code: int = 0
 
-    new_sep_id = 0
     action, code, row_index = GridAction.get_data(data)
 
     if action is not None:  # called from sep_grid
@@ -83,7 +82,7 @@ def do_sep_edit(data: str) -> str:
     if is_insert:
         # insert can modified all fields (readonly `manager`` not shown)
         pass
-    elif app_user.is_power:
+    elif app_user.is_power: #  and is_edit
         # full edit can edit all fields but `manager`` that is readonly (see .sep_mgmt)
         is_full_edit = True
     else:
@@ -91,6 +90,7 @@ def do_sep_edit(data: str) -> str:
         is_simple_edit = True
 
     # edit SEP with ID, is a parameter
+    new_sep_id = 0
     sep_id = new_sep_id if is_insert else UserSep.to_id(code)
     if sep_id is None or sep_id < 0:
         return redirect_to(process_on_end)
@@ -100,7 +100,6 @@ def do_sep_edit(data: str) -> str:
     sep_fullname = f"SPC&#8209;{code}"  # &#8209 is a `nobreak-hyphen`, &hyphen does not work.
     tmpl = ""
     try:
-
         def was_icon_file_sent() -> Tuple[bool, FileStorage | None]:
             form_file_name = flask_form.icon_filename.name
             file_storage: FileStorage = (

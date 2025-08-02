@@ -16,17 +16,17 @@ TODO:
 
 from typing import TypeAlias, Optional, Tuple
 from flask_login import current_user
-from flask import current_app
+
 
 from .pw_helper import is_someone_logged
-from .py_helper import is_str_none_or_empty, now
+from .py_helper import is_str_none_or_empty
 
 # TODO from .jinja_helper import process_pre_templates
 from .types_helper import ui_db_texts
 
 from ..common.app_constants import APP_LANG
-from ..common.app_error_assistant import AppStumbled, ModuleErrorCode, RaiseIf
 from .. import global_ui_texts_cache
+
 
 # === Global 'constants' for HTML ui flask forms =============
 

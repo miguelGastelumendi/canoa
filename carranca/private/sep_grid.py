@@ -9,13 +9,12 @@ mgd
 
 from typing import Tuple, List
 
-from .IdToCode import IdToCode
 from .sep_icon import do_icon_get_url
 from .grid_helper import GridCargoKeys
 from .SepIconMaker import SepIconMaker
-from ..models.private import MgmtSepsUser
 from ..public.ups_handler import ups_handler
 from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
+from ..models.private import MgmtSepsUser
 
 from ..helpers.py_helper import class_to_dict
 from ..helpers.jinja_helper import process_template
@@ -36,7 +35,9 @@ def get_sep_grid() -> str:
         tmpl_ffn, is_get, ui_texts = get_private_response_data("sepGrid")
 
         task_code += 1  # 2
-        ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(SepIconMaker.empty_file)
+        ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(
+            SepIconMaker.empty_file
+        )
 
         task_code += 1  # 3
         col_names = ["id", "icon_file_name", "scm_name", "name", "user_curr"]
@@ -67,10 +68,9 @@ def get_sep_grid() -> str:
 
 def _sep_data_fetch(col_names: List[str]) -> Tuple[DBRecords]:
     sep_usr_rows = MgmtSepsUser.get_seps_usr(col_names)
-    idToCode = IdToCode()
     for record in sep_usr_rows:
         sep_id = record.id
-        record.id = idToCode.encode(sep_id)
+        record.id = MgmtSepsUser.code(sep_id)
         record.icon_file_name = do_icon_get_url(record.icon_file_name, sep_id)
 
     return sep_usr_rows

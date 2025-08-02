@@ -9,7 +9,6 @@ mgd
 
 from typing import List, Tuple
 
-from .IdToCode import IdToCode
 from .grid_helper import GridCargoKeys
 from ..public.ups_handler import ups_handler
 from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
@@ -27,11 +26,9 @@ def get_scm_grid() -> str:
 
     def _scm_data_fetch(col_names: List[str]) -> Tuple[DBRecords]:
         scm_rows = SchemaGrid.get_schemas(col_names)
-        idToCode = IdToCode()
         for record in scm_rows:
-            sep_id = record.id
-            record.id = idToCode.encode(sep_id)
-
+            scm_id = record.id
+            record.id = SchemaGrid.code(scm_id)
         return scm_rows
 
     task_code = ModuleErrorCode.SCM_GRID.value
@@ -44,7 +41,7 @@ def get_scm_grid() -> str:
         tmpl_ffn, is_get, ui_texts = get_private_response_data("scmGrid")
 
         task_code += 1  # 3
-        col_names = ["id", "name", "color", "visible", "sep_count"]
+        col_names = ["id", "name", "color", "visible", "sep_v2t"]
         grid_const = js_grid_constants(ui_texts["colMetaInfo"], col_names, task_code)
 
         scm_data = []

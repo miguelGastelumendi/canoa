@@ -5,8 +5,6 @@ mgd
 Equipe da Canoa -- 2024
 """
 
-# Equipe da Canoa -- 2024
-#
 # cSpell:ignore: nullable sqlalchemy sessionmaker sep ssep scm sepsusr usrlist SQLA duovigesimal
 
 from typing import List, Optional
@@ -31,11 +29,13 @@ from .. import global_sqlalchemy_scoped_session
 
 from ..models import SQLABaseTable
 from ..helpers.db_helper import db_fetch_rows
-from ..helpers.py_helper import is_str_none_or_empty, to_code
+from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_user_code
 from ..private.SepIconMaker import SepIconMaker, svg_content
 from ..common.app_context_vars import sidekick, app_user
 from ..helpers.db_records.DBRecords import DBRecords
+
+from ..private.IdToCode import IdToCode
 
 
 # --- Table ---
@@ -129,7 +129,9 @@ class UserDataFiles(SQLABaseTable):
         elif len(rows) == 1:
             return rows[0]
         else:
-            raise KeyError(f"The ticket {uTicket} return several records, expecting only one.")
+            raise KeyError(
+                f"The ticket {uTicket} return several records, expecting only one."
+            )
 
     @staticmethod
     def _ins_or_upd(isInsert: bool, uTicket: str, **kwargs) -> None:
@@ -161,9 +163,7 @@ class UserDataFiles(SQLABaseTable):
             except Exception as e:
                 db_session.rollback()
                 operation = "update" if isUpdate else "insert to"
-                msg_error = (
-                    f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
-                )
+                msg_error = f"Cannot {operation} {UserDataFiles.__tablename__}.ticket = {uTicket} | Error {e}."
                 sidekick.app_log.error(msg_error)
                 raise DatabaseError(msg_error)
         return None
@@ -195,11 +195,20 @@ class Schema(SQLABaseTable):
     edt_by = Column(Integer)
     edt_at = Column(DateTime)
 
+    # obfuscate the id when is public
+    id_to_code = IdToCode()
+
+    @staticmethod
+    def to_id(code: str) -> int:
+        return Schema.id_to_code.decode(code)
+
     @hybrid_property
     def code(self):
-        return to_code(self.user_id, 7)
+        """
+        Returns an obfuscated user's id.
+        """
+        return Schema.id_to_code.encode(self.user_id)
 
-    # user_lower = Column(String(100), Computed(""))
     @staticmethod
     def get_row(id: int) -> "Schema":
 
@@ -257,114 +266,6 @@ class Schema(SQLABaseTable):
                 raise Exception(e)
 
         return
-
-
-
-
-# --- Table ---
-class MgmtSepsUser(SQLABaseTable):
-    """
-    `vw_mgmt_user_sep` is a database view designed to provide the necessary
-    information for displaying a UI grid in the application's admin panel.
-
-    This grid enables administrators to efficiently assign or remove users
-    from SEPs (Setor Estratégico P...).
-
-    The view is equipped with triggers that automatically update the `users`
-    table and log the corresponding actions in the `log_user_sep` table.
-    """
-
-    __tablename__ = "vw_mgmt_seps_user"
-
-    # SEP table
-    id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
-    name = Column(String(100))
-    fullname = Column(String(256))  # schema + sep_name
-    fullname_lower = Column(String(256))
-    icon_file_name = Column(String(120))
-    description = Column(String(140))
-    visible = Column(Boolean)
-    # Schema table
-    scm_id = Column(Integer)
-    scm_name = Column(String(100))
-    # User table
-    user_id = Column(Integer)
-    user_disabled = Column(Boolean)
-    user_curr = Column(String(100))
-    user_new = Column(String(100))  #  pass through column: ' '
-
-    assigned_at = Column(DateTime)  # sep.mgmt_users_at
-    assigned_by = Column(Integer)  #  pass through column: 0
-    batch_code = Column(String(10))  # pass through column: ' '
-
-    @staticmethod
-    def _get_sep_list(user_id: Optional[int] = None, sep_id: Optional[int] = None) -> DBRecords:
-        """⚠️
-        any change here must be replated in
-        carranca/private/UserSep.py:UserSep
-        """
-        field_names = [
-            MgmtSepsUser.id.name,
-            MgmtSepsUser.name.name,
-            MgmtSepsUser.scm_id,
-            MgmtSepsUser.scm_name.name,
-            MgmtSepsUser.fullname.name,
-            MgmtSepsUser.description.name,
-            MgmtSepsUser.visible.name,
-            MgmtSepsUser.icon_file_name.name,
-        ]
-        if sep_id is not None:
-            field_names.append(MgmtSepsUser.user_curr.name)
-
-        return MgmtSepsUser.get_seps_usr(field_names, user_id, sep_id)
-
-    @staticmethod
-    def get_user_sep_list(user_id: int) -> DBRecords:
-        """Get seps for one user"""
-        return MgmtSepsUser._get_sep_list(user_id)
-
-    @staticmethod
-    def get_sep_row(sep_id: int) -> "MgmtSepsUser":
-        """Get one sep"""
-        records: DBRecords = MgmtSepsUser._get_sep_list(None, sep_id)
-        return None if records is None or (records.count == 0) else records[0]
-
-    @staticmethod
-    def get_sep_list() -> DBRecords:
-        """Get all seps"""
-        return MgmtSepsUser._get_sep_list(None, None)
-
-    @staticmethod
-    def get_seps_usr(
-        field_names: List[str], user_id: Optional[int] = None, sep_id: Optional[int] = None
-    ) -> DBRecords:
-        """
-        Returns
-        1) `vw_mgmt_seps_user` DB view that has the necessary columns to
-            provide the adm with a UI grid to assign or remove SEP
-            to or from a user.
-        2) Error message if any action fails.
-        """
-
-        def _get_data(db_session: Session):
-            def __cols() -> List[Column]:
-                all_cols = MgmtSepsUser.__table__.columns
-                _cols = [col for col in all_cols if col.name in field_names]
-                return _cols
-
-            sel_cols = __cols() if field_names else None
-            stmt = select(*sel_cols) if sel_cols else select(MgmtSepsUser)
-            if user_id is not None:  # then filter
-                stmt = stmt.where(MgmtSepsUser.user_id == user_id).order_by()
-            if sep_id is not None:  # then filter
-                stmt = stmt.where(MgmtSepsUser.id == sep_id)
-
-            rows = db_session.execute(stmt).all()
-            recs = DBRecords(stmt, rows)
-            return recs
-
-        _, _, seps_recs = db_fetch_rows(_get_data, MgmtSepsUser.__tablename__)
-        return seps_recs
 
 
 # --- Table ---
@@ -467,7 +368,9 @@ class Sep(SQLABaseTable):
                 icon_content = SepIconMaker.empty_content if is_empty else sep.icon_svg
             except Exception as e:
                 icon_content = SepIconMaker.error_content
-                sidekick.app_log.error(f"Error retrieving icon content of SEP {id}: [{e}].")
+                sidekick.app_log.error(
+                    f"Error retrieving icon content of SEP {id}: [{e}]."
+                )
             return icon_content
 
         e, msg_error, icon_content = db_fetch_rows(_get_data)
@@ -558,12 +461,19 @@ class ReceivedFiles(SQLABaseTable):
     report_warns = Column(Integer)
 
     user_receipt = Column(String(15))
-    email_sent = Column(Boolean)  # index (email_sent, had_reception_error, user_id, registered_at)
-    had_reception_error = Column(Boolean)  # index (email_sent, had_reception_error, user_id, registered_at)
+    email_sent = Column(
+        Boolean
+    )  # index (email_sent, had_reception_error, user_id, registered_at)
+    had_reception_error = Column(
+        Boolean
+    )  # index (email_sent, had_reception_error, user_id, registered_at)
 
     @staticmethod
     def get_records(
-        file_id: int, user_id: int, email_sent: bool = True, had_reception_error: bool = False
+        file_id: int,
+        user_id: int,
+        email_sent: bool = True,
+        had_reception_error: bool = False,
     ) -> DBRecords:
 
         def _get_data(db_session: Session) -> DBRecords:
@@ -626,7 +536,9 @@ class ReceivedFilesCount(SQLABaseTable):
     @staticmethod
     def get_records(user_id: Optional[int] = None) -> DBRecords:
         def _get_data(db_session: Session) -> DBRecords:
-            stmt = select(ReceivedFilesCount)  # stmt : Select[Tuple[ReceivedFilesCount]] =
+            stmt = select(
+                ReceivedFilesCount
+            )  # stmt : Select[Tuple[ReceivedFilesCount]] =
             if user_id is not None:
                 stmt = stmt.where(ReceivedFilesCount.user_id == user_id)
 
@@ -635,7 +547,9 @@ class ReceivedFilesCount(SQLABaseTable):
 
             return recs
 
-        _, _, received_files_count = db_fetch_rows(_get_data, ReceivedFilesCount.__tablename__)
+        _, _, received_files_count = db_fetch_rows(
+            _get_data, ReceivedFilesCount.__tablename__
+        )
         return received_files_count
 
 
@@ -651,20 +565,126 @@ class LogUserSep(SQLABaseTable):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     id_sep = Column(Integer, nullable=False)
-    id_users = Column(Integer, nullable=True)  # Set NULL when remove sep from user (=id_users_prior)
-    id_users_prior = Column(
-        Integer, nullable=True
-    )  # The user ID of the previous owner of the SEP, or None if none was assigned
+    # Set NULL when remove sep from user (=id_users_prior)
+    id_users = Column(Integer, nullable=True)
+    # The user ID of the previous owner of the SEP, or None if none was assigned
+    id_users_prior = Column(Integer, nullable=True)
     done_at = Column(DateTime, nullable=False, default=func.now())
     done_by = Column(Integer, nullable=False)  # The new SEP owner user id
-    batch_code = Column(
-        String(10), nullable=False
-    )  # (days since 2024.11.01).(ms) both in base duovigesimal (22)
+    # (days since 2024.11.01).(ms) both in base duovigesimal (22)
+    batch_code = Column(String(10), nullable=False)
     email_at = Column(DateTime, nullable=True)
     email_error = Column(String(800), nullable=True)
-    operation = Column(
-        String(1), nullable=True
-    )  # (S)et, (Removed | (Edited, marked as (Deleted | (Change schema. For insert, see sep.ins_at.
+    # (S)et, (Removed | (Edited, marked as (Deleted | (Change schema. For insert, see sep.ins_at.
+    operation = Column(String(1), nullable=True)
+
+
+class MgmtSepsUser(SQLABaseTable):
+    __tablename__ = "vw_mgmt_seps_user"
+
+    # SEP table
+    id = Column(Integer, primary_key=True, autoincrement=False)  # like a PK
+    name = Column(String(100))
+    fullname = Column(String(256))  # schema + sep_name
+    fullname_lower = Column(String(256))
+    icon_file_name = Column(String(120))
+    description = Column(String(140))
+    visible = Column(Boolean)
+    # Schema table
+    scm_id = Column(Integer)
+    scm_name = Column(String(100))
+    # User table
+    user_id = Column(Integer)
+    user_disabled = Column(Boolean)
+    user_curr = Column(String(100))
+    user_new = Column(String(100))  #  pass through column: ' '
+
+    assigned_at = Column(DateTime)  # sep.mgmt_users_at
+    assigned_by = Column(Integer)  #  pass through column: 0
+    batch_code = Column(String(10))  # pass through column: ' '
+
+    # obfuscate the id when is public
+    id_to_code = IdToCode()
+
+    @staticmethod
+    def code(id: int) -> str:
+        """
+        Returns an obfuscated code representation of the SEP's internal ID.
+        """
+        return MgmtSepsUser.id_to_code.encode(id)
+
+    @staticmethod
+    def _get_sep_list(
+        user_id: Optional[int] = None, sep_id: Optional[int] = None
+    ) -> DBRecords:
+        """⚠️
+        any change here must be replated in
+        carranca/private/UserSep.py:UserSep
+        """
+        field_names = [
+            MgmtSepsUser.id.name,
+            MgmtSepsUser.name.name,
+            MgmtSepsUser.scm_id,
+            MgmtSepsUser.scm_name.name,
+            MgmtSepsUser.fullname.name,
+            MgmtSepsUser.description.name,
+            MgmtSepsUser.visible.name,
+            MgmtSepsUser.icon_file_name.name,
+        ]
+        if sep_id is not None:
+            field_names.append(MgmtSepsUser.user_curr.name)
+
+        return MgmtSepsUser.get_seps_usr(field_names, user_id, sep_id)
+
+    @staticmethod
+    def get_user_sep_list(user_id: int) -> DBRecords:
+        """Get seps for one user"""
+        return MgmtSepsUser._get_sep_list(user_id)
+
+    @staticmethod
+    def get_sep_row(sep_id: int) -> "MgmtSepsUser":
+        """Get one sep"""
+        records: DBRecords = MgmtSepsUser._get_sep_list(None, sep_id)
+        return None if records is None or (records.count == 0) else records[0]
+
+    @staticmethod
+    def get_sep_list() -> DBRecords:
+        """Get all seps"""
+        return MgmtSepsUser._get_sep_list(None, None)
+
+    @staticmethod
+    def get_seps_usr(
+        field_names: List[str],
+        user_id: Optional[int] = None,
+        sep_id: Optional[int] = None,
+    ) -> DBRecords:
+        """
+        Returns
+        1) `vw_mgmt_seps_user` DB view that has the necessary columns to
+            provide the adm with a UI grid to assign or remove SEP
+            to or from a user.
+        2) Error message if any action fails.
+        """
+
+        def _get_data(db_session: Session):
+            def __cols() -> List[Column]:
+                all_cols = MgmtSepsUser.__table__.columns
+                _cols = [col for col in all_cols if col.name in field_names]
+                return _cols
+
+            sel_cols = __cols() if field_names else None
+            stmt = select(*sel_cols) if sel_cols else select(MgmtSepsUser)
+            if user_id is not None:  # then filter
+                stmt = stmt.where(MgmtSepsUser.user_id == user_id).order_by()
+            if sep_id is not None:  # then filter
+                stmt = stmt.where(MgmtSepsUser.id == sep_id)
+
+            rows = db_session.execute(stmt).all()
+            recs = DBRecords(stmt, rows)
+            return recs
+
+        _, _, seps_recs = db_fetch_rows(_get_data, MgmtSepsUser.__tablename__)
+        return seps_recs
 
 
 # eof

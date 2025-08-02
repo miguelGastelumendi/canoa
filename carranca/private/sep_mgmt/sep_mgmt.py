@@ -23,7 +23,12 @@ from ...helpers.py_helper import is_str_none_or_empty, class_to_dict
 from ...helpers.user_helper import get_batch_code
 from ...helpers.route_helper import get_private_response_data, init_response_vars
 from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list
-from ...helpers.js_grid_helper import js_grid_constants, js_grid_sec_key, js_grid_rsp, js_grid_sec_value
+from ...helpers.js_grid_helper import (
+    js_grid_constants,
+    js_grid_sec_key,
+    js_grid_rsp,
+    js_grid_sec_value,
+)
 from ...helpers.ui_db_texts_helper import add_msg_final, add_msg_error, UITextsKeys
 from ...helpers.db_records.DBRecords import DBRecords, ListOfDBRecords
 
@@ -46,7 +51,9 @@ def sep_mgmt() -> str:
         tmpl_ffn, is_get, ui_texts = get_private_response_data("sepMgmt")
 
         task_code += 1  # 2
-        ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(SepIconMaker.none_file)
+        ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(
+            SepIconMaker.none_file
+        )
 
         task_code += 1  # 3
         # col_names = ["sep_id", "icon_file_name", "user_curr", "sep_fullname", "user", "assigned_at", "visible"]
@@ -95,13 +102,17 @@ def sep_mgmt() -> str:
     return tmpl
 
 
-def _sep_data_fetch(_item_none: str, col_names: List[str]) -> Tuple[DBRecords, List[str], str]:
+def _sep_data_fetch(
+    _item_none: str, col_names: List[str]
+) -> Tuple[DBRecords, List[str], str]:
 
     sep_usr_rows = MgmtSepsUser.get_seps_usr(col_names)
     for record in sep_usr_rows:
         record.user_curr = _item_none if record.user_curr is None else record.user_curr
         record.user_new = record.user_curr
-        record.icon_file_name = do_icon_get_url(record.icon_file_name)  # this is file_name
+        record.icon_file_name = do_icon_get_url(
+            record.icon_file_name
+        )  # this is file_name
 
     user_rows = User.get_all_users(User.disabled == False)
     users_list = [user.username for user in user_rows]
@@ -109,17 +120,23 @@ def _sep_data_fetch(_item_none: str, col_names: List[str]) -> Tuple[DBRecords, L
     return sep_usr_rows, users_list
 
 
-def _save_and_email(grid_response: cargo_list, ui_texts: ui_db_texts, task_code: int) -> sep_mgmt_rtn:
+def _save_and_email(
+    grid_response: cargo_list, ui_texts: ui_db_texts, task_code: int
+) -> sep_mgmt_rtn:
     """Saves data & sends emails"""
 
     task_code += 1
     batch_code = get_batch_code()
-    msg_success_save, msg_error, task_code = save_data(grid_response, batch_code, ui_texts, task_code)
+    msg_success_save, msg_error, task_code = save_data(
+        grid_response, batch_code, ui_texts, task_code
+    )
     if not is_str_none_or_empty(msg_error):
         return None, msg_error, task_code
 
     task_code += 1  # 567
-    msg_success_email, msg_error, task_code = send_email(batch_code, ui_texts, task_code)
+    msg_success_email, msg_error, task_code = send_email(
+        batch_code, ui_texts, task_code
+    )
     if not is_str_none_or_empty(msg_error):
         return None, msg_error, task_code
 

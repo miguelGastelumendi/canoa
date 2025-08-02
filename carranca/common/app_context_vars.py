@@ -77,7 +77,9 @@ def _get_scoped_var(var_name: str, do_var_creator: Callable[[], Any]) -> Optiona
                 var_value = getattr(g, var_name)
                 print(f"{var_name} data found, using sema.")
                 if var_value is _CREATION_FAILED:
-                    raise RuntimeError(f"Previous attempt to create `{var_name}` failed.")
+                    raise RuntimeError(
+                        f"Previous attempt to create `{var_name}` failed."
+                    )
                 return var_value
             else:
                 try:
@@ -99,7 +101,9 @@ def _get_scoped_var(var_name: str, do_var_creator: Callable[[], Any]) -> Optiona
                 raise ValueError(f"{do_var_creator} returned None for `{var_name}`.")
             setattr(g, var_name, var_value)
         except Exception as e:
-            raise RuntimeError(f"Scoped variable creator {do_var_creator} raised an exception [{e}].")
+            raise RuntimeError(
+                f"Scoped variable creator {do_var_creator} raised an exception [{e}]."
+            )
 
         return var_value
     else:
@@ -164,7 +168,9 @@ def _prepare_user_seps(direct=False) -> user_seps_rtn:
         for sep_row in sep_usr_rows:
             item = UserSep(**sep_row)
             item.icon_url = do_icon_get_url(item.icon_file_name, item.id)
-            dic = class_to_dict(item)  # as `g` only saves 'simple' classes convert it to a Dict
+            dic = class_to_dict(
+                item
+            )  # as `g` only saves 'simple' classes convert it to a Dict
             seps.append(dic)
 
     finally:
@@ -186,7 +192,7 @@ def _get_user_seps() -> user_seps_rtn:
         list_dic = _get_scoped_var("_user_seps", _prepare_user_seps)
         if list_dic is None or not isinstance(list_dic, list):
             sidekick.display.error(
-                f"An error occurred getting sep from user {app_user.id}: [{type(list_dic)}]->{list_dic}."
+                f"An error occurred getting sep from user {app_user.id}: [{type(list_dic)}] → {list_dic}."
             )
             result = []
         else:

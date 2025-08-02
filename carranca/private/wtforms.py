@@ -8,10 +8,9 @@ mgd 2024-04-09,27; 06-22
 
 # cSpell:ignore: wtforms urlname iconfilename uploadfile tmpl RRGGBB
 
-from wtforms import PasswordField, FileField, StringField, SelectField, BooleanField, TextAreaField
 from flask_wtf import FlaskForm
+from wtforms import PasswordField, FileField, StringField, SelectField, BooleanField, TextAreaField
 from wtforms.validators import InputRequired, DataRequired, Length, URL
-from wtforms.widgets.core import ColorInput
 
 from ..common.app_context_vars import sidekick
 
@@ -185,11 +184,11 @@ class ScmEdit(FlaskForm):
             "class": "form-control",
             "autocomplete": "off",
             "spellcheck": True,
-            "lang": "",  # ⚠️ Don't defined here, they persist. See below SepNew
+            "lang": "",  # ⚠️ Don't define it here, they persist. See below ScmNew
         },
     )
 
-    content = TextAreaField("", render_kw={"class": "form-control", "rows": "12"})
+    content = TextAreaField("", render_kw={"class": "form-control", "rows": "13"})
 
 
 # eof

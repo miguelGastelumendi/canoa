@@ -41,16 +41,16 @@ dlg_var_close | default(True) // display Close button
 dlg_var_close_id | default('dlg-var-close-id') // id's
 dlg_var_v_centered | default(False) // from is Vertical Centered
 
-
-
 mgd
 --------------------------------------- #}
 {# cSpell:ignore tabindex endfor elif #}
 
 {% extends "./layouts/base.html.j2" %}
 
+{% set dlg_main_id= 'dlg-main-id'%}
 {% set dlg_var_icon_id= dlg_var_icon_id | default('dlg-icon-id') %}
-{% set dlg_var_icon_size= dlg_var_icon_size | default('32px') %} {# SepIconConfig.content_for() is a function that
+{% set dlg_var_icon_size= dlg_var_icon_size | default('32px') %}
+{# SepIconConfig.content_for() is a function that
 determines the default size for icons based on application settings. Ensure this matches the expected dimensions for
 dialog icons. #}
 {% set dlg_id_submit_form= dlg_id_submit_form | default('dlg-submit-form-id') %}
@@ -65,7 +65,7 @@ dialog icons. #}
 
 {% block base_blc_content %}
 <section>
-    <div id="dlg-main-id" style="{{ dlg_var_style|default('display: block;') }}"
+    <div id="{{dlg_main_id}}" style="{{ dlg_var_style|default('display: block;') }}"
         class="modal {% if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top | default('mt-5')}}{% endif %}">
         <div class="modal-dialog {{ dlg_cls_size|default('dlg-width') }}
                 {%+ if (dlg_var_v_centered|default(False)) %} modal-dialog-centered {% endif %}
@@ -110,6 +110,15 @@ dialog icons. #}
 
 
 {% block base_blc_body_js %}
+<script>
+    const hideDialog = () => {
+        document.body.style.cursor = "wait";
+        document.getElementById("{{ dlg_main_id }}").style.display = 'none';
+        }
+    document.getElementById("{{ action_form__id }}")?.addEventListener(
+        'submit', (event) =>{ hideDialog(); }
+    )
+</script>
 {# ╒═════════ Dialog JS ═════════╕ #}
 {% block dlg_blc_javascript %}
 {% endblock dlg_blc_javascript %}
@@ -119,7 +128,7 @@ dialog icons. #}
 {% block base_blc_forms %}
 
 {% from "includes/_action_forms_and_btns.html.j2" import action_form__close %}
-{{ action_form__close( action_form__form_on_close, action_form__form_close_id) }}
+{{ action_form__close(action_form__form_on_close, action_form__form_close_id) }}
 
 {# ╒═════════ Dialog Forms ═════════╕ #}
 {% block dlg_blc_forms %}

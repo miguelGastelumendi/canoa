@@ -7,7 +7,6 @@ mgd 2024-10-09, 11-12
 
 # cSpell: ignore wtforms ZáàãâéêíóôõúüçÁÀÃÂÉÊÍÓÔÕÚÜÇ_
 
-import re
 from flask import request
 from wtforms import StringField
 from sqlalchemy import func  # func.now() == db-server time
@@ -16,41 +15,56 @@ from .wtforms import ScmEdit
 from .grid_helper import GridAction
 
 from ..models.private import Schema
-from ..helpers.py_helper import clean_text, to_int, crc16
 from ..public.ups_handler import ups_handler
-from ..helpers.user_helper import get_batch_code
 from ..helpers.jinja_helper import process_template
 from ..helpers.route_helper import (
     get_private_response_data,
-    home_route,
-    redirect_to,
     init_response_vars,
     get_front_end_str,
+    private_route,
+    login_route,
+    home_route,
+    redirect_to,
 )
 
 from ..common.app_context_vars import app_user
-from ..common.app_error_assistant import ModuleErrorCode, AppStumbled, JumpOut
+from ..common.app_error_assistant import ModuleErrorCode, JumpOut
 from ..helpers.ui_db_texts_helper import (
-    UITextsKeys,
-    add_msg_success,
-    add_msg_error,
     add_msg_final,
 )
 
 
-def do_scm_edit(code: str) -> str:
-    """SCM Edit Form"""
+def do_scm_edit(data: str) -> str:
+    """SCM Edit & Insert Form"""
+
+    action, code, row_index = GridAction.get_data(data)
+
+    if action is not None:  # called from sep_grid
+        # TODO use: window.history.back() in JavaScript.
+        process_on_end = private_route(
+            "scm_grid", code=GridAction.show
+        )  # TODO selected Row, ix=row_index)
+        form_on_close = {"action_form__form_on_close": process_on_end}
+
+    else:  # standard routine
+        code = data
+        action = None
+        process_on_end = login_route()  # default
+        form_on_close = {}  # default = login
 
     is_insert = code == GridAction.add
     is_edit = not is_insert
 
     # edit SEP with ID, is a parameter
+    new_scm_id = 0
+    scm_id = new_scm_id if is_insert else Schema.to_id(code)
 
+    task_code = ModuleErrorCode.SCM_EDIT.value
     form, tmpl_ffn, is_get, ui_texts = init_response_vars()
     schema_name = "?"
+    tmpl = ""
     try:
-        task_code = 0
-        scm_id = to_int(code, -1)
+        task_code += 1
         tmpl_ffn, is_get, ui_texts = get_private_response_data("scmNewEdit")
         form = ScmEdit(request.form)
 
@@ -65,8 +79,8 @@ def do_scm_edit(code: str) -> str:
         task_code += 1  # 2
 
         form.name.render_kw["lang"] = app_user.lang
-        form.name.render_kw["pattern"] = "^[a-zA-ZáàãâéêíóôõúüçÁÀÃÂÉÊÍÓÔÕÚÜÇ_]+$"
-        form.name.title = "Apenas letras (sem espaço) e underline são permitidos."
+        form.name.render_kw["pattern"] = ui_texts["nameInputPattern"]
+        form.name.render_kw["title"] = ui_texts["nameErrorHint"]
         form.title.render_kw["lang"] = app_user.lang
         form.description.render_kw["lang"] = app_user.lang
         form.content.render_kw["lang"] = app_user.lang
@@ -74,12 +88,13 @@ def do_scm_edit(code: str) -> str:
         if is_get and is_insert:
             scm_row.id = None
             scm_row.visible = False
-            scm_row.color = "#00000"  # RR GG B
+            scm_row.color = ui_texts["colorDefaultValue"]  # "#00000"  # RR GG BB
         elif is_get and is_edit:
             for field in form:
                 if hasattr(scm_row, field.name):
                     field.data = getattr(scm_row, field.name)
-        else: # is_post
+        else:  # is_post
+
             def modified(input, field, mod):
                 ui_value = (
                     get_front_end_str(input.name, None)
@@ -102,7 +117,8 @@ def do_scm_edit(code: str) -> str:
                 form.populate_obj(scm_row)
                 #  scm_row.visible = scm_row.visible == "y"  # TODO
                 Schema.save(scm_row)
-                return redirect_to(home_route())
+                return redirect_to(process_on_end)
+                # return redirect_to(home_route())
 
             schema_name = form.name.data if is_insert else scm_row.name
             if is_insert:
@@ -116,10 +132,10 @@ def do_scm_edit(code: str) -> str:
                 task_code += 2
                 return _save_and_go()
             else:
-                # TODO Noo modi
+                # TODO Not modi
                 return redirect_to(home_route())
 
-        tmpl = process_template(tmpl_ffn, form=form, **ui_texts)
+        tmpl = process_template(tmpl_ffn, form=form, **ui_texts, **form_on_close)
 
     except JumpOut:
         tmpl = process_template(tmpl_ffn, **ui_texts)

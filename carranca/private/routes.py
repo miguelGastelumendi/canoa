@@ -225,6 +225,7 @@ def receive_file():
 
     Part of Canoa `Data Validation` Processes
     """
+    
     if nobody_is_logged():
         return redirect_to(login_route())
     else:

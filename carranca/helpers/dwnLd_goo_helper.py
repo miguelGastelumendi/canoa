@@ -15,10 +15,11 @@ import puremagic
 import urllib.parse
 from os import path, remove, rename
 
-# from zlib import crc32
-
-from googleapiclient.http import MediaIoBaseDownload
-from googleapiclient.discovery import build
+try:
+    from googleapiclient.http import MediaIoBaseDownload
+    from googleapiclient.discovery import build
+except ImportError as e:
+    raise ImportError("googleapiclient is required for Google Drive downloads. Please install it with 'pip install google-api-python-client'.") from e
 from google.oauth2.service_account import Credentials
 
 
