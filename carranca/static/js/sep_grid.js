@@ -31,8 +31,9 @@ const gridOptions = {
         { field: colCode, flex: 1, hide: true },
         { field: colIconUrl, flex: 1, hide: true },
         { field: colMeta[2].n, headerName: colMeta[2].h, hide: false, flex: 3 },
-        { field: colMeta[3].n, headerName: colMeta[3].h, hide: false, flex: 4 },
+        { field: colMeta[3].n, headerName: colMeta[3].h, hide: false, flex: 3 },
         { field: colMeta[4].n, headerName: colMeta[4].h, hide: false, flex: 3 },
+        { field: colMeta[5].n, headerName: colMeta[5].h, hide: false, flex: 1 },
     ]
 }; // gridOptions
 
@@ -47,6 +48,6 @@ const setActiveRow = (row, rowIx) => {
 
 //-------------
 //== Init
-const gridContainer = document.querySelector('#' + gridID);
+const gridContainer = document.getElementById(gridID);
 const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
 //== eof

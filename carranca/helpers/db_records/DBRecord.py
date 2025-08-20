@@ -7,8 +7,11 @@ mgd
 Equipe da Canoa --  2024 — 2025
 """
 
-from typing import Optional, TypeAlias, List, Any
+import datetime
+import base64
+from typing import Optional, List, Any
 
+from ..types_helper import OptListOfStr
 from .DBRecord_types import DBRecordData
 
 
@@ -22,13 +25,13 @@ class DBRecord:
     def __init__(
         self,
         record_data: DBRecordData,
-        names_filter: Optional[List[str]] = None,
+        names_filter: OptListOfStr = None,
         types_filter: Optional[List[type]] = None,
     ):
         """
         Args:
             rec_dict (dict): A dictionary containing the attributes to set on the instance.
-            names_filter (Optional[List[str]]): If provided, only sets attributes whose names are in this list
+            names_filter (OptListOfStr): If provided, only sets attributes whose names are in this list
                 and return the keys in that order.
             types_filter (Optional[List[type]]): If provided, only sets attributes that match the types in this list.
 
@@ -47,6 +50,30 @@ class DBRecord:
         for key, value in key_values:
             if isinstance(value, types_filter) if types_filter else True:
                 setattr(self, key, value)
+
+    def copy(self, exclude_cols: OptListOfStr = []):
+        copy = self.__dict__.copy()
+        for ex_col in exclude_cols:
+            if ex_col in copy:
+                del copy[ex_col]
+
+        return copy
+
+    def encode64(self, exclude_cols: OptListOfStr = []):
+        encoded = self.copy(exclude_cols)
+        for key, value in encoded.items():
+            if isinstance(value, datetime.datetime):
+                encoded[key] = value.isoformat()
+            elif isinstance(value, str):
+                _bytes = value.strip().encode("utf-8")
+                encoded[key] = base64.b64encode(_bytes).decode("utf-8")
+                # TODO:
+                # _b = base64.b64decode(encoded[key])
+                # _u = _b.decode("utf-8")
+                # if _u != value.strip():
+                #     raise Exception(f"Error coding {value}, result {_u}.")
+
+        return encoded
 
     def keys(self):
         return list(self.__dict__.keys())

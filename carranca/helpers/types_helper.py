@@ -19,9 +19,10 @@ cSpell:ignore
 # --- ⚠️ ---
 # Avoid adding project-specific imports in this module to prevent circular dependencies.
 
-from typing import TypeAlias, Dict, Tuple, List
+from typing import TypeAlias, Optional, Any, Dict, Tuple, List
 
 ui_db_texts: TypeAlias = Dict[str, str]
+UsualDict: TypeAlias = Dict[str, Any]
 
 sep_mgmt_rtn: TypeAlias = Tuple[str, str, int]
 
@@ -32,6 +33,8 @@ template_file_full_name: TypeAlias = str
 jinja_template: TypeAlias = str
 
 svg_content: TypeAlias = str
+
+OptListOfStr: TypeAlias = Optional[List[str]]
 
 
 # make str type explicit

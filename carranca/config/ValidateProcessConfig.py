@@ -1,8 +1,8 @@
 """
-config_validate_process.py
+ValidateProcessConfig.py
 
-ValidateProcessConfig
-Configuration of the file for validate process
+Configuration for the validation process
+
 (./private/validate_process)
 Stores the configurable parameters required at each step
 
@@ -47,7 +47,8 @@ class ValidateProcessConfig:
         # dv_app `data_validate` app output file name and extension
         self.output_file = OutputFile(name="data_report", ext=".pdf")
         self.dv_app = DataValidateApp(
-            batch="run_validate." + ("bat" if OS_IS_WINDOWS else "sh"),  # TODO: OS_IS_LINUX
+            batch="run_validate."
+            + ("bat" if OS_IS_WINDOWS else "sh"),  # TODO: OS_IS_LINUX
             folder="data_validate",  # ./<common_folder>/<folder>/python main.py
             ui_name="data_validate",  # user interface name
             flags="--no-spellchecker" if OS_IS_WINDOWS else "",  # any needed flags

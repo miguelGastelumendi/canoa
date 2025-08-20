@@ -101,7 +101,7 @@ const gridOptions = {
 
 //-------------
 //== Init
-const gridContainer = document.querySelector('#' + gridID);
+const gridContainer =  document.getElementById(gridID);
 const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
 
 

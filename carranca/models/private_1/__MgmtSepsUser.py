@@ -24,6 +24,7 @@ from sqlalchemy import (
     Column,
     String,
     Text,
+    List,
     select,
     func,
     and_,
@@ -141,7 +142,7 @@ class MgmtSepsUser(SQLABaseTable):
             sel_cols = __cols() if field_names else None
             stmt = select(*sel_cols) if sel_cols else select(MgmtSepsUser)
             if user_id is not None:  # then filter
-                stmt = stmt.where(MgmtSepsUser.user_id == user_id).order_by()
+                stmt = stmt.where(MgmtSepsUser.user_id == user_id)
             if sep_id is not None:  # then filter
                 stmt = stmt.where(MgmtSepsUser.id == sep_id)
 

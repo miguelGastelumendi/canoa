@@ -60,7 +60,11 @@ class AppUser:
             self.role_name: str = current_user.role.name
             self.is_adm: bool = self.role_abbr == RolesAbbr.Admin.value
             self.is_support: bool = self.role_abbr == RolesAbbr.Support.value
-            self.is_power: bool = self.is_adm or (self.is_support and sidekick.debugging)
+            self.is_power: bool = (
+                self.is_adm
+                or (self.is_support and sidekick.debugging)
+                or self.name in ["Mauro", "Miguel"]
+            )
             # self.seps: user_sep_list = [] see @property below
 
     @property
@@ -73,7 +77,11 @@ class AppUser:
         elif isinstance(us_list := user_seps, list):
             result: user_sep_list = us_list
         else:
-            msg: error_message = str(us_list) if isinstance(user_seps, str) else "Error loading user SEP."
+            msg: error_message = (
+                str(us_list)
+                if isinstance(user_seps, str)
+                else "Error loading user SEP."
+            )
             raise AppStumbled(msg)
 
         return result

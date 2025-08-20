@@ -9,14 +9,14 @@ Equipe da Canoa -- 2024
 
 from typing import List, Optional
 from sqlalchemy import (
-    Boolean,
-    Column,
     Computed,
     DateTime,
+    Boolean,
     Integer,
+    Column,
     String,
-    Text,
     select,
+    Text,
     func,
     and_,
     exists,
@@ -28,9 +28,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from .. import global_sqlalchemy_scoped_session
 
 from ..models import SQLABaseTable
-from ..helpers.db_helper import db_fetch_rows
+from ..helpers.db_helper import db_fetch_rows, col_names_to_columns
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_user_code
+from ..helpers.types_helper import OptListOfStr
 from ..private.SepIconMaker import SepIconMaker, svg_content
 from ..common.app_context_vars import sidekick, app_user
 from ..helpers.db_records.DBRecords import DBRecords
@@ -226,19 +227,21 @@ class Schema(SQLABaseTable):
         return row
 
     @staticmethod
-    def get_schemas(field_names: Optional[List[str]] = None) -> DBRecords:
+    def get_schemas(col_names: OptListOfStr = None) -> DBRecords:
         """
         Returns:
           All records from Schema table, optional of selected fields
         """
 
         def _get_data(db_session: Session):
-            def __cols() -> List[Column]:
-                all_cols = Schema.__table__.columns
-                _cols = [col for col in all_cols if col.name in field_names]
-                return _cols
 
-            sel_cols = __cols() if field_names else None
+            # def __cols() -> List[Column]:
+            #     all_cols = Schema.__table__.columns
+            #     _cols = [col for col in all_cols if col.name in col_names]
+            #     return _cols
+
+            # sel_cols = __cols() if field_names else None
+            sel_cols = col_names_to_columns(col_names, Schema.__table__.columns)
 
             stmt = select(*sel_cols) if sel_cols else select(Schema)
             rows = db_session.execute(stmt).all()
@@ -427,6 +430,25 @@ class Sep(SQLABaseTable):
 
         _, _, name_exists = db_fetch_rows(_get_data, Sep.__tablename__)
         return name_exists
+
+    @staticmethod
+    def get_visible_seps_of_schema(scm_id: int, col_names: List[str]) -> List["Sep"]:
+        if id is scm_id:
+            return None
+
+        def _get_data(db_session: Session) -> List[Sep]:
+            sel_cols = col_names_to_columns(col_names, Sep.__table__.columns)
+            stmt = (
+                select(*sel_cols)
+                .where(and_(Sep.id_schema == scm_id, Sep.visible == True))
+                .order_by(Sep.ui_order)
+            )
+            rows = db_session.execute(stmt).all()
+            recs = DBRecords(stmt, rows)
+            return recs
+
+        _, _, sep_rows = db_fetch_rows(_get_data, Sep.__tablename__)
+        return sep_rows
 
 
 # --- Table ---
@@ -654,7 +676,7 @@ class MgmtSepsUser(SQLABaseTable):
 
     @staticmethod
     def get_seps_usr(
-        field_names: List[str],
+        col_names: List[str],
         user_id: Optional[int] = None,
         sep_id: Optional[int] = None,
     ) -> DBRecords:
@@ -667,15 +689,17 @@ class MgmtSepsUser(SQLABaseTable):
         """
 
         def _get_data(db_session: Session):
-            def __cols() -> List[Column]:
-                all_cols = MgmtSepsUser.__table__.columns
-                _cols = [col for col in all_cols if col.name in field_names]
-                return _cols
+            # def __cols() -> List[Column]:
+            #     all_cols = MgmtSepsUser.__table__.columns
+            #     _cols = [col for col in all_cols if col.name in field_names]
+            #     return _cols
 
-            sel_cols = __cols() if field_names else None
+            # sel_cols = __cols() if field_names else None
+            sel_cols = col_names_to_columns(col_names, MgmtSepsUser.__table__.columns)
+
             stmt = select(*sel_cols) if sel_cols else select(MgmtSepsUser)
             if user_id is not None:  # then filter
-                stmt = stmt.where(MgmtSepsUser.user_id == user_id).order_by()
+                stmt = stmt.where(MgmtSepsUser.user_id == user_id)
             if sep_id is not None:  # then filter
                 stmt = stmt.where(MgmtSepsUser.id == sep_id)
 

@@ -16,6 +16,7 @@ JsonStrOfRecords: TypeAlias = str
 
 DBRecordData: TypeAlias = Dict[str, str | int | float | bool | datetime]
 
+
 # see  declarative_base
 # https://stackoverflow.com/questions/45259764/how-to-create-a-single-table-using-sqlalchemy-declarative-base
 # see ...private.models Base = declarative_base()

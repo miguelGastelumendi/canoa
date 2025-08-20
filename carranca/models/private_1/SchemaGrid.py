@@ -23,8 +23,9 @@ from sqlalchemy import (
 from sqlalchemy.orm import Session
 
 from ...models import SQLABaseTable
-from ...helpers.db_helper import db_fetch_rows
 from ...private.IdToCode import IdToCode
+from ...helpers.db_helper import db_fetch_rows, col_names_to_columns
+from ...helpers.types_helper import OptListOfStr
 from ...helpers.db_records.DBRecords import DBRecords
 
 
@@ -39,7 +40,7 @@ class SchemaGrid(SQLABaseTable):
     visible = Column(Boolean)
     sep_count = Column(Integer)
     v_sep_count = Column(Integer, Computed(""))  # visible sep
-    ui_order = Column(Integer, Computed(""))
+    ui_order = Column(Integer, Computed(""))  # vw_schema_grid is Ordered by this column
     sep_v2t = Column(String(11), Computed(""))  # visible / total
 
     id_to_code = IdToCode()
@@ -49,21 +50,22 @@ class SchemaGrid(SQLABaseTable):
         return SchemaGrid.id_to_code.encode(id)
 
     @staticmethod
-    def get_schemas(field_names: Optional[List[str]] = None) -> DBRecords:
+    def get_schemas(
+        col_names: OptListOfStr = None,
+        only_visible: bool = None,
+    ) -> DBRecords:
         """
         Returns:
           All records from SchemaGrid table, optional of selected fields
         """
 
         def _get_data(db_session: Session):
-            def __cols() -> List[Column]:
-                all_cols = SchemaGrid.__table__.columns
-                _cols = [col for col in all_cols if col.name in field_names]
-                return _cols
-
-            sel_cols = __cols() if field_names else None
+            sel_cols = col_names_to_columns(col_names, SchemaGrid.__table__.columns)
 
             stmt = select(*sel_cols) if sel_cols else select(SchemaGrid)
+            if only_visible:
+                stmt = stmt.where(SchemaGrid.visible == True)
+
             rows = db_session.execute(stmt).all()
             recs = DBRecords(stmt, rows)
             return recs

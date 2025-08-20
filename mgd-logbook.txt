@@ -63,6 +63,12 @@
 
 ------- 2025 - July -------------
 ---------------------------------
+2025-08-19 -- 19 β 4.70 [Published] DB Export phase 1 (output screen)
+    - Schemas & SEP export
+    - Export Configuration (ExportProcessConfig)
+    - scm_export.py
+
+
 2025-08-01 β 4.67 [Published] Schema Grid, new Column [Sep count (Visible/Total)]
     - Fix Schema grid's text bugs
     - Add a border to the Schema grid's color cell, to display the color

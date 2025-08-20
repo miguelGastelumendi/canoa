@@ -40,7 +40,7 @@ def get_sep_grid() -> str:
         )
 
         task_code += 1  # 3
-        col_names = ["id", "icon_file_name", "scm_name", "name", "user_curr"]
+        col_names = ["id", "icon_file_name", "scm_name", "name", "user_curr", "visible"]
         grid_const = js_grid_constants(ui_texts["colMetaInfo"], col_names, task_code)
 
         sep_data = []

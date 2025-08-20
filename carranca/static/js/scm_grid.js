@@ -17,30 +17,35 @@ let removeCount = 0;
 // https://www.ag-grid.com/javascript-data-grid/column-definitions/
 // == Ag Grid
 const gridOptions = {
-    rowSelection: 'single',
-    onGridReady: (params) => {
+    rowSelection: { type: 'singleRow' }
+    , onGridReady: (params) => {
         const firstRow = params.api.getDisplayedRowAtIndex(cargo[cargoKeys.index]);
         if (firstRow) {
-            setTimeout(() => { firstRow.setSelected(true); setActiveRow(firstRow, firstRow.rowIndex) }, 20);
+            setTimeout(() => {
+                firstRow.setSelected(true);
+                setActiveRow(firstRow, firstRow.rowIndex);
+            }, 20);
         }
-    },
-    onCellFocused: (event) => {
+    }
+    , onCellFocused: (event) => {
         let row = (event.rowIndex === null) || !event.api ? null : event.api.getDisplayedRowAtIndex(event.rowIndex);
         setActiveRow(row, event.rowIndex)
     }
     , rowData: gridRows
     , columnDefs: [
-        { field: colCode, flex: 1, hide: true },
+        { field: colCode, hide: true },
         { field: colMeta[1].n, headerName: colMeta[1].h, hide: false, flex: 2 },
         {
             field: colMeta[2].n,
             headerName: colMeta[2].h,
             hide: false,
-            flex: 1,
-            cellStyle: params => ({
-                borderLeft: `12px solid ${params.value}`,
-                paddingLeft: '12px'
-            })
+            resizable: false,
+            cellStyle: params => {
+                return {
+                    boxShadow: `inset 4em 0 0 ${params.value}`,
+                    paddingLeft: '4.3em',
+                }
+            }
         },
         {
             field: colMeta[3].n,
@@ -58,13 +63,10 @@ const setActiveRow = (row, rowIx) => {
     if (!row) { return; }
     cargo[cargoKeys.index] = rowIx;
     cargo[cargoKeys.code] = row.data[colCode]
-    if (row.data[colIconUrl] && (icon.src != row.data[colIconUrl])) {
-        icon.src = row.data[colIconUrl];
-    }
 }
 
 //-------------
 //== Init
-const gridContainer = document.querySelector('#' + gridID);
+const gridContainer = document.getElementById(gridID);
 const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
 //== eof

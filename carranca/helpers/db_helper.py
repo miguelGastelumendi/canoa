@@ -8,8 +8,8 @@ Equipe da Canoa -- 2024
 
 # cSpell:ignore sqlalchemy slqaRecords connstr
 
-from typing import Optional, Union, Tuple, Any, Callable
-from sqlalchemy import text
+from typing import Optional, Union, Tuple, Any, Callable, List
+from sqlalchemy import text, Column
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DatabaseError, OperationalError, ProgrammingError
 from sqlalchemy.engine import CursorResult
@@ -52,6 +52,16 @@ def try_get_mgd_msg(error: object, default_msg: str = None) -> str:
         mgd_message = error_string[start_index + len(start_mgd_marker) : end_index]
         is_mgd = len(mgd_message) > 1
         return mgd_message if is_mgd else default_msg
+
+
+def col_names_to_columns(
+    column_names: List[str], columns: list[Column]
+) -> List[Column]:
+    if not column_names:
+        return columns
+
+    selected_cols = [col for col in columns if col.name in column_names]
+    return selected_cols
 
 
 def db_fetch_rows(
@@ -198,7 +208,9 @@ def retrieve_dict(query: str):
                 # result = {data[0]: data[1]}
                 result = {data[i]: data[i + 1] for i in range(0, len(data) - 1, 2)}
     except Exception as e:
-        sidekick.app_log.error(f"An error occurred loading the dict from [{query}]: {e}")
+        sidekick.app_log.error(
+            f"An error occurred loading the dict from [{query}]: {e}"
+        )
         result = {}
 
     # # Check if the result is a tuple of tuples (multiple rows)
@@ -224,7 +236,9 @@ def get_str_field_length(table_model: object, field_name: str) -> int:
 # TODO
 def db_ups_error(e: Exception, msg_error: str, table_name: str) -> None:
     if not e is None:
-        sidekick.display.error(f"Fatal error while fetching rows in table [{table_name}]: {msg_error}")
+        sidekick.display.error(
+            f"Fatal error while fetching rows in table [{table_name}]: {msg_error}"
+        )
         raise AppStumbled(msg_error, ModuleErrorCode.DB_FETCH_ROWS, False, True)
 
     return

@@ -179,10 +179,24 @@ def sep_edit(code: str = "?"):
     if nobody_is_logged():
         return redirect_to(login_route())
 
-    else:
-        from .sep_new_edit import do_sep_edit
+    from .sep_new_edit import do_sep_edit
 
-        return do_sep_edit(code)
+    return do_sep_edit(code)
+
+
+@login_required
+@bp_private.route("/scm_export", methods=["GET"])
+def scm_export():
+    """
+    Through this route, the user export the all schemas and seps
+    """
+
+    if nobody_is_logged():
+        return redirect_to(login_route())
+
+    from .scm_export import do_scm_export
+
+    return do_scm_export()
 
 
 @login_required
@@ -225,7 +239,7 @@ def receive_file():
 
     Part of Canoa `Data Validation` Processes
     """
-    
+
     if nobody_is_logged():
         return redirect_to(login_route())
     else:

@@ -80,7 +80,9 @@ def _register_blueprint_events(app: Flask):
                 )
 
             cl = (int(r.headers.get("Content-Length", 0)) if r else 0) / 1000
-            app.logger.debug(f"Ending secession, sending  {cl:,.2f} Kb, with response status [{r.status}].")
+            app.logger.debug(
+                f"Ending secession, sending  {cl:,.2f} Kb, with response status [{r.status}]."
+            )
             global_sqlalchemy_scoped_session.remove()
         except Exception as e:
             app.logger.error(
@@ -137,7 +139,9 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         if is_someone_logged():  # 'import jinja_user' only when a user is logged
             from .common.app_context_vars import app_user
 
-            sep_list = [{"code": user.code, "name": user.fullname} for user in app_user.seps]
+            sep_list = [
+                {"code": user.code, "name": user.fullname} for user in app_user.seps
+            ]
 
         return sep_list
 
@@ -150,7 +154,9 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
                 from .models.private import Schema
 
                 scms = Schema.get_schemas(["id", "name"])
-                scm_list = [{"id": scm.id, "name": scm.name} for scm in scms]  # TODO app_user.scms]
+                scm_list = [
+                    {"id": scm.id, "name": scm.name} for scm in scms
+                ]  # TODO app_user.scms]
 
         return scm_list
 
@@ -237,11 +243,16 @@ def _create_app_and_log_file(app_name: str):
         if not error:
             info = f"file '{full_name}' levels '{level}' and above"
             _info(f"Logging to {info}.")
-            app.logger.log(global_sidekick.config.LOG_MIN_LEVEL, f"{app.name}'s log {info} is ready.")
+            app.logger.log(
+                global_sidekick.config.LOG_MIN_LEVEL,
+                f"{app.name}'s log {info} is ready.",
+            )
             global_sidekick.config.LOG_FILE_STATUS = "ready"
         else:
             global_sidekick.config.LOG_FILE_STATUS = "error"
-            global_sidekick.display.error(f"{app_name}'s log {info} creation error: [{error}].")
+            global_sidekick.display.error(
+                f"{app_name}'s log {info} creation error: [{error}]."
+            )
 
     return app
 
@@ -260,8 +271,12 @@ def create_app():
     # === 1/3 Global sidekick  === #
     global global_sidekick, APP_DB_VERSION
     # === Check if all mandatory information is ready === #
-    global_sidekick, APP_DB_VERSION, display_mute_after_init = ignite_app(APP_NAME, started)
-    _info(f"[{global_sidekick}] instance is now ready. It will be available during app's context.")
+    global_sidekick, APP_DB_VERSION, display_mute_after_init = ignite_app(
+        APP_NAME, started
+    )
+    _info(
+        f"[{global_sidekick}] instance is now ready. It will be available during app's context."
+    )
 
     # == 2/3 Global Scoped SQLAlchemy Session
     global global_sqlalchemy_scoped_session
@@ -277,7 +292,9 @@ def create_app():
     global global_login_manager
     global_login_manager = LoginManager()
     global_login_manager.init_app(app)
-    _info("The Login Manager has been successfully initialized and attached to the app.")
+    _info(
+        "The Login Manager has been successfully initialized and attached to the app."
+    )
 
     # -- Register SQLAlchemy
     _register_db(app)

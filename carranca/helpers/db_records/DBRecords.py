@@ -12,10 +12,14 @@ Equipe da Canoa --  2024 — 2025
 from typing import Optional, TypeAlias, List, Tuple, Dict, Any
 from datetime import datetime
 from sqlalchemy import Row
+from sqlalchemy.types import String
 
 from ..py_helper import class_to_dict
+from ..types_helper import OptListOfStr, UsualDict
+
 
 from .DBRecord import DBRecord
+
 
 ListOfDBRecords: TypeAlias = List["DBRecord"]
 
@@ -42,25 +46,66 @@ class DBRecords:
 
     simple_types_filter: Tuple[type, ...] = (str, int, float, bool, datetime)
 
+    col_types: List[type]
+
     def __init__(
         self,
         sqla_stmt: SQLAStatement,
         sqla_records: Optional[SQLABaseRecords] = None,
-        allowed_field_names: Optional[List[str]] = None,
+        allowed_field_names: OptListOfStr = None,
         allowed_field_types: Optional[Tuple[type, ...]] = None,
         includeNone: bool = True,
     ):
         self.records: ListOfDBRecords = []
         self.table_name = ""
         self.is_select = sqla_stmt.is_select
+        self.col_info: List[UsualDict] = []
 
         # Find the table Name
         if self.is_select:
             froms = sqla_stmt.columns_clause_froms
-            self.table_name = froms[0].name if len(froms) == 1 else ",".join([f.name for f in froms])
+            self.table_name = (
+                froms[0].name if len(froms) == 1 else ",".join([f.name for f in froms])
+            )
 
         if sqla_records is None:
             return
+
+        # -------------------------------------------------------------
+        # Get column types from the statement using .column_descriptions
+        #
+        # NOTE: This part requires the Result object, which is not available
+        # from sqla_records directly. You must get it from db_session.execute().
+        # So this logic should ideally be in the caller or the `__init__`
+        # should accept a `Result` object instead of just `sqla_records`.
+        # Assuming you're passing a SQLAlchemy Result object to `sqla_records`
+        # that has a .column_descriptions attribute.
+        # -------------------------------------------------------------
+
+        def _add_meta(name: str, _type: type, len: int):
+            self.col_info.append(
+                {
+                    "name": name,
+                    "type": "text" if (_type == "str" and len == 0) else _type,
+                    "len": len,
+                }
+            )
+            return
+
+        if hasattr(sqla_records, "column_descriptions"):
+            for desc in sqla_records.column_descriptions:
+                col_type = desc["type"].python_type
+                col_length = getattr(desc["type"], "length", None)
+                _add_meta(desc["name"], col_type.__name__, col_length)
+
+        elif self.is_select and hasattr(sqla_stmt, "selected_columns"):
+            for col in sqla_stmt.selected_columns:
+                col_length = (
+                    col.type.length
+                    if isinstance(col.type, String) and hasattr(col.type, "length")
+                    else 0
+                )
+                _add_meta(col.name, col.type.python_type.__name__, col_length)
 
         # Fields names filter required?
         self.allowed_field_names = (
@@ -70,7 +115,9 @@ class DBRecords:
         )
         # Fields values types were specified?
         self.allowed_field_types = (
-            allowed_field_types if allowed_field_types is not None else DBRecords.simple_types_filter
+            allowed_field_types
+            if allowed_field_types is not None
+            else DBRecords.simple_types_filter
         )
 
         if includeNone:
@@ -92,14 +139,17 @@ class DBRecords:
                 _key = "plugin_subject"
                 if self.table_name in dict_data[0]:
                     dict_data = _step_in(self.table_name)
-                elif (tbl_c := sqla_stmt._propagate_attrs[_key].class_.__name__) and tbl_c in dict_data[0]:
+                elif (
+                    tbl_c := sqla_stmt._propagate_attrs[_key].class_.__name__
+                ) and tbl_c in dict_data[0]:
                     dict_data = _step_in(tbl_c)
             except:
                 pass
 
             # Create the records from dict_data (rows._asdict())
             self.records = [
-                DBRecord(rec, self.allowed_field_names, self.allowed_field_types) for rec in dict_data
+                DBRecord(rec, self.allowed_field_names, self.allowed_field_types)
+                for rec in dict_data
             ]
 
         elif isinstance(first_record, tuple):
@@ -111,14 +161,19 @@ class DBRecords:
             else:
                 raise ValueError(f"Cannot determine column names for {sqla_stmt}")
             self.records = [
-                DBRecord(dict(zip(column_names, row)), self.allowed_field_names, self.allowed_field_types)
+                DBRecord(
+                    dict(zip(column_names, row)),
+                    self.allowed_field_names,
+                    self.allowed_field_types,
+                )
                 for row in sqla_records
             ]
 
         else:
             dict_data = [class_to_dict(r) for r in sqla_records]
             self.records = [
-                DBRecord(rec, self.allowed_field_names, self.allowed_field_types) for rec in dict_data
+                DBRecord(rec, self.allowed_field_names, self.allowed_field_types)
+                for rec in dict_data
             ]
 
     def __iter__(self):
@@ -137,19 +192,29 @@ class DBRecords:
     def count(self) -> int:
         return len(self)
 
-    def append(self, record_dict: Dict[str, Any]) -> None:
+    def append(self, record_dict: UsualDict) -> None:
         """Appends a new DBRecord object based on records list."""
-        new_record = DBRecord(record_dict, self.allowed_field_names, self.allowed_field_types)
+        new_record = DBRecord(
+            record_dict, self.allowed_field_names, self.allowed_field_types
+        )
         self.records.append(new_record)
 
     def to_list(
-        self, exclude_fields: Optional[List[str]] = None, include_fields: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        self,
+        exclude_fields: OptListOfStr = None,
+        include_fields: OptListOfStr = None,
+    ) -> UsualDict:
         exclude_fields = (exclude_fields or []) + ["__class__.__name__"]
         if include_fields is None or len(include_fields) == 0:
-            include_fields = list(self.records[0].__dict__.keys()) if self.records else []
+            include_fields = (
+                list(self.records[0].__dict__.keys()) if self.records else []
+            )
         _list = [
-            {key: value for key, value in record.__dict__.items() if key not in exclude_fields}
+            {
+                key: value
+                for key, value in record.__dict__.items()
+                if key not in exclude_fields
+            }
             for record in self.records
         ]
         return _list

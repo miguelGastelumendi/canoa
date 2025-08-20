@@ -62,7 +62,13 @@ class JumpOut(Exception):
 class AppStumbled(Exception):
     """A specialized Exception for Bug or Security Issue (logout)"""
 
-    def __init__(self, msg: str, error_code: int = 0, logout: bool = False, is_fatal: bool = False):
+    def __init__(
+        self,
+        msg: str,
+        error_code: int = 0,
+        logout: bool = False,
+        is_fatal: bool = False,
+    ):
         self.msg = msg
         self.error_code = error_code
         self.logout = logout
@@ -99,7 +105,9 @@ class ModuleErrorCode(IntEnum):
     SEP_MGMT = 550
     SEP_GRID = 600
     SCM_GRID = 700
-    SCM_EDIT  = 750
+    SCM_EDIT = 750
+    SCM_EXPORT = 800
+
     DB_FETCH_ROWS = 590  # only on
 
     RECEIVED_FILES_MGMT = 700

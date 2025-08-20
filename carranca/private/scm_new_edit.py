@@ -116,6 +116,7 @@ def do_scm_edit(data: str) -> str:
             def _save_and_go():
                 form.populate_obj(scm_row)
                 #  scm_row.visible = scm_row.visible == "y"  # TODO
+                scm_row.color = scm_row.color.upper()
                 Schema.save(scm_row)
                 return redirect_to(process_on_end)
                 # return redirect_to(home_route())

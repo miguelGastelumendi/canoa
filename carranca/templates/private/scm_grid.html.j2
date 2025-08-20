@@ -54,6 +54,7 @@ mgd
     const gridID = '{{ grid_id }}';
     const initRow = {{ grid_init_row | default (0) }};
     const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '' };
+    
     document.addEventListener('DOMContentLoaded', () => {
         const elForm = /** @type {HTMLFormElement} */(document.getElementById('{{ dlg_id_submit_form }}'));
         const elResponse = /** @type {HTMLInputElement} */(document.getElementById('{{ grid_rsp }}'));
