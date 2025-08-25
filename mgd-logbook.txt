@@ -61,9 +61,15 @@
     Schema LOG
 
 
-------- 2025 - July -------------
+
+
+------- 2025 - August -----------
 ---------------------------------
-2025-08-19 -- 19 β 4.70 [Published] DB Export phase 1 (output screen)
+2025-08-20 -- 25 β 4.71 [Published] DB Import demo
+    - Create a py Dict from the imported json
+    - Allow o save the Form/Dialog icon
+
+2025-08-04 -- 19 β 4.70 [Published] DB Export phase 1 (output screen)
     - Schemas & SEP export
     - Export Configuration (ExportProcessConfig)
     - scm_export.py

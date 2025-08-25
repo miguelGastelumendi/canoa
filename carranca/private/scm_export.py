@@ -1,11 +1,11 @@
 """
 Schema
-Grid form Adm
+Schema & Seps data export
 
-mgd
+A json containing the Schema table and its visible SEP is generated.
+
+mgd 2025.08
 """
-
-# cSpell: samp sepsusr usrlist
 
 import json
 from typing import Dict, List
@@ -61,10 +61,14 @@ def do_scm_export() -> str:
 
         # Convert the final dictionary to a JSON string
         jsn_data = json.dumps(schema_data, **config.json)
-        # jsn_data = jsn_data.replace("\r\n", "")
         tmpl = jsn_data
 
-    # tmpl = jsn_schemas
+        # test undo
+        from .scm_import import do_scm_import
+
+        dic_data = do_scm_import(jsn_data)
+        print(dic_data)
+
     except Exception as e:
         msg = add_msg_final("exportException", ui_texts, task_code)
         _, tmpl_ffn, ui_texts = ups_handler(task_code, msg, e)

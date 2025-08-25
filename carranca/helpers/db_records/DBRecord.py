@@ -8,9 +8,10 @@ Equipe da Canoa --  2024 — 2025
 """
 
 import datetime
-import base64
+
 from typing import Optional, List, Any
 
+from ..py_helper import encode64_utf8
 from ..types_helper import OptListOfStr
 from .DBRecord_types import DBRecordData
 
@@ -62,16 +63,13 @@ class DBRecord:
     def encode64(self, exclude_cols: OptListOfStr = []):
         encoded = self.copy(exclude_cols)
         for key, value in encoded.items():
-            if isinstance(value, datetime.datetime):
+            if value is None:
+                # check col_info to get the type of the column
+                encoded[key] = None
+            elif isinstance(value, datetime.datetime):
                 encoded[key] = value.isoformat()
             elif isinstance(value, str):
-                _bytes = value.strip().encode("utf-8")
-                encoded[key] = base64.b64encode(_bytes).decode("utf-8")
-                # TODO:
-                # _b = base64.b64decode(encoded[key])
-                # _u = _b.decode("utf-8")
-                # if _u != value.strip():
-                #     raise Exception(f"Error coding {value}, result {_u}.")
+                encoded[key] = encode64_utf8(value.strip())
 
         return encoded
 

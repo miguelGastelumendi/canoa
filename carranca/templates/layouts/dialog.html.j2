@@ -74,14 +74,16 @@ dialog icons. #}
             <div class="modal-content {{dlg_cls_content|default('')}}">
                 {# === Header === #}
                 <div class="modal-header {{ dlg_cls_header | default('dlg-header') }}">
-                    <h5 class="modal-title {{ dlg_cls_title | default('dlg-title') }}" inert>
+                    <h5 class="modal-title {{ dlg_cls_title | default('dlg-title') }}">
                         {% if dlg_var_icon_url %}
                         <span class="dlg-icon-back">
                             <img id="{{dlg_var_icon_id}}" src="{{dlg_var_icon_url}}" class="dlg-icon-img"
                                 height="{{dlg_var_icon_size}}" width="{{dlg_var_icon_size}}" alt="[!]&nbsp;">
                         </span>
                         {% endif %}
-                        {{formTitle|default(app_name)}}
+                        <span inert>
+                            {{formTitle|default(app_name)}}
+                        </span>
                     </h5>
                     {% if dlg_var_close %}
                     {% from "includes/_action_forms_and_btns.html.j2" import btn_close %}
@@ -114,9 +116,9 @@ dialog icons. #}
     const hideDialog = () => {
         document.body.style.cursor = "wait";
         document.getElementById("{{ dlg_main_id }}").style.display = 'none';
-        }
+    }
     document.getElementById("{{ action_form__id }}")?.addEventListener(
-        'submit', (event) =>{ hideDialog(); }
+        'submit', (event) => { hideDialog(); }
     )
 </script>
 {# ╒═════════ Dialog JS ═════════╕ #}

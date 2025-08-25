@@ -9,8 +9,10 @@ mgd 2025-02-04
 
 # cSpell:ignore latin CCITT
 
-import os, time, platform
 import json
+import base64
+import os, time, platform
+
 from sys import argv
 from datetime import datetime
 from typing import Any, Type, Dict, Tuple, List, Optional
@@ -23,6 +25,8 @@ OS_NAME_IS = platform.system()
 OS_IS_WINDOWS = OS_NAME_IS == "Windows"
 OS_IS_LINUX = OS_NAME_IS == "Linux"
 OS_IS_MAC = OS_NAME_IS == "Darwin"
+
+CODE_UTF_8 = "utf-8"
 
 
 class JSONObject:
@@ -58,8 +62,76 @@ def now_as_iso() -> str:
     return datetime.now().isoformat()
 
 
+def iso_to_datetime(value) -> datetime:
+    timestamp = None
+    try:
+        timestamp = datetime.fromisoformat(value)
+    except (ValueError, TypeError):
+        timestamp = None
+
+    return timestamp
+
+
 def as_str_strip(s: str) -> str:
     return "" if s is None else (str(s) + "").strip()
+
+
+def encode64_utf8(data: str) -> str | None:
+    # encodes srt into utf-8  => base64
+    encoded = data
+    if data is None:
+        pass
+    elif data == "":
+        pass
+    else:
+        try:
+            bytes = data.encode("utf-8")
+            encoded = base64.b64encode(bytes).decode(CODE_UTF_8)
+        except (base64.binascii.Error, UnicodeDecodeError):
+            encoded = None
+
+    return encoded
+
+
+def decode64_utf8(data_encoded: str) -> str | None:
+    # decodes srt from utf-8  => base64
+    data = data_encoded
+    if data_encoded is None:
+        pass
+    elif data_encoded == "":
+        pass
+    else:
+        try:
+            bytes = base64.b64decode(data_encoded)
+            data = bytes.decode(CODE_UTF_8)
+        except (base64.binascii.Error, UnicodeDecodeError):
+            data = None
+
+    return data
+
+
+def json_to_dict(data: Any, try_base64: Optional[bool] = False):
+    """
+    Recursively decodes Base64 and ISO-formatted datetime strings in a data structure.
+    """
+    if data is None:
+        return data
+    elif isinstance(data, str):
+        if len(data) < 4:
+            return data
+        elif (dt := iso_to_datetime(data)) is not None:
+            return dt
+        elif (dc := decode64_utf8(data)) is not None:
+            return dc
+        else:
+            return data
+    elif isinstance(data, dict):
+        return {key: json_to_dict(value, try_base64) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [json_to_dict(item, try_base64) for item in data]
+    else:
+        # For non-string, non-list, non-dict types, return as is
+        return data
 
 
 def quote(s: str, always: Optional[bool] = True) -> str:

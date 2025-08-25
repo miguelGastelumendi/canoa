@@ -9,7 +9,14 @@ mgd 2024-04-09,27; 06-22
 # cSpell:ignore: wtforms urlname iconfilename uploadfile tmpl RRGGBB
 
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, FileField, StringField, SelectField, BooleanField, TextAreaField
+from wtforms import (
+    PasswordField,
+    FileField,
+    StringField,
+    SelectField,
+    BooleanField,
+    TextAreaField,
+)
 from wtforms.validators import InputRequired, DataRequired, Length, URL
 
 from ..common.app_context_vars import sidekick
@@ -29,7 +36,9 @@ from ..common.app_context_vars import sidekick
 
 # Private form
 class ReceiveFileForm(FlaskForm):
-    schema_sep = SelectField("", validators=[DataRequired()], render_kw={"class": "form-select"})
+    schema_sep = SelectField(
+        "", validators=[DataRequired()], render_kw={"class": "form-select"}
+    )
     uploadfile = FileField("", render_kw={"class": "form-control", "accept": ".zip"})
     urlname = StringField("", validators=[URL()], render_kw={"class": "form-control"})
 
@@ -38,13 +47,19 @@ class ReceiveFileForm(FlaskForm):
 class ChangePassword(FlaskForm):
     password = PasswordField(
         "",
-        validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_pw.wtf_val())],
+        validators=[
+            InputRequired(),
+            Length(**sidekick.config.DB_len_val_for_pw.wtf_val()),
+        ],
         render_kw={"class": "form-control"},
     )
 
     confirm_password = PasswordField(
         "",
-        validators=[InputRequired(), Length(**sidekick.config.DB_len_val_for_pw.wtf_val())],
+        validators=[
+            InputRequired(),
+            Length(**sidekick.config.DB_len_val_for_pw.wtf_val()),
+        ],
         render_kw={"class": "form-control"},
     )
 
@@ -65,9 +80,9 @@ class SepEdit(FlaskForm):
           lang, disabled, readonly, required
     """
 
-    manager_name = StringField(
+    manager_name = SelectField(
         "",
-        render_kw={"class": "form-control", "disabled": True},  # always disabled
+        render_kw={"class": "form-control", "disabled": True},  # almost
     )
 
     schema_name = StringField(
@@ -106,6 +121,14 @@ class SepEdit(FlaskForm):
 
 # Derived Private form
 class SepNew(SepEdit):
+
+    manager_list = SelectField(
+        "",
+        validators=[DataRequired()],
+        coerce=int,
+        render_kw={"class": "form-select"},
+    )
+
     schema_list = SelectField(
         "",
         validators=[DataRequired()],
@@ -116,6 +139,7 @@ class SepNew(SepEdit):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.manager_list.validators.append(InputRequired())
         self.schema_list.validators.append(InputRequired())
 
 
@@ -137,7 +161,10 @@ class ScmEdit(FlaskForm):
 
     name = StringField(
         "",
-        validators=[InputRequired(), Length(min=5, max=140)],  # TODO sidekick.config.DB_len_val_for_sep
+        validators=[
+            InputRequired(),
+            Length(min=5, max=140),
+        ],  # TODO sidekick.config.DB_len_val_for_sep
         render_kw={
             "class": "form-control",
             "autofocus": "true",
@@ -168,7 +195,10 @@ class ScmEdit(FlaskForm):
 
     title = StringField(
         "",
-        validators=[InputRequired(), Length(min=5, max=140)],  # TODO sidekick.config.DB_len_val_for_sep
+        validators=[
+            InputRequired(),
+            Length(min=5, max=140),
+        ],  # TODO sidekick.config.DB_len_val_for_sep
         render_kw={
             "class": "form-control",
             "autocomplete": "off",

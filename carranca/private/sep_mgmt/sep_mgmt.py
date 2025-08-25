@@ -56,7 +56,6 @@ def sep_mgmt() -> str:
         )
 
         task_code += 1  # 3
-        # col_names = ["sep_id", "icon_file_name", "user_curr", "sep_fullname", "user", "assigned_at", "visible"]
         col_names: List[str] = list(class_to_dict(SepMgmtGridCols).values())
         grid_const = js_grid_constants(ui_texts["colMetaInfo"], col_names, task_code)
 

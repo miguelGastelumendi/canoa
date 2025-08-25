@@ -17,14 +17,21 @@ mgd
 {% block frm_blc_inputs %}
 
 {# [ Manager (when is_full_edit) #}
-{% if form.manager_name and form.manager_name.data %}
+{% if (form.manager_name and form.manager_name.data) or formForNew %}
 <div class="form-group mb-2">
-    <label class="form-label" inert for="{{ form.manager_name.id }}">{{ managerLabel }}</label>
+    {# TODO correct 'for' #}
+    <label class="form-label" inert for="{{ form.manager_list.id if formForNew else form.manager_name.id }}">{{
+        managerLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fas fa-circle-user" aria-hidden="true"></i>
         </span>
+        {% if formForNew %}
+        {{ form.manager_list() }}
+        {% else %}
         {{ form.manager_name() }}
+        {% endif %}
+
     </div>
 </div>
 {% endif %}
@@ -32,7 +39,9 @@ mgd
 
 {# [ Schema: Select (new) | Input (edit) #}
 <div class="form-group">
-    <label class="form-label" inert for="{{ schema_id }}">{{ schemasLabel if formForNew else schemaLabel }}</label>
+    <label class="form-label" inert for="{{ form.schema_list.id if formForNew else form.schema_name.id }}">
+        {{ schemasLabel if formForNew else schemaLabel }}
+    </label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fas fa-vector-square" aria-hidden="true"></i>
@@ -103,15 +112,18 @@ mgd
 
 {% if formForNew and form_bke_display_ui %}
 <script>
-    const select = document.getElementById('{{ form.schema_list.id }}');
-    const add_item = (id, text) => {
+    const scm_list = document.getElementById('{{ form.schema_list.id }}');
+    const mng_list = document.getElementById('{{ form.manager_list.id }}');
+    const add_item = (list, id, text) => {
         const option = document.createElement('option');
         option.value = id
         option.textContent = text;
-        select.appendChild(option);
+        list.appendChild(option);
     }
-    ({{ schemaList | tojson | safe }}).forEach(schema => add_item(schema.id, schema.name));
-    select.value = '{{ schemaListValue }}';
+    ({{ schemaList | tojson | safe }}).forEach(schema => add_item(scm_list, schema.id, schema.name));
+    scm_list.value = '{{ schemaListValue }}';
+    ({{ managerList | tojson | safe }}).forEach(manager => add_item(mng_list, manager.id, manager.name));
+    mng_list.value = '{{ managerListValue }}';
 </script>
 {% endif %}
 
