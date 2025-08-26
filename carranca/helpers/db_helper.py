@@ -239,7 +239,7 @@ def db_ups_error(e: Exception, msg_error: str, table_name: str) -> None:
         sidekick.display.error(
             f"Fatal error while fetching rows in table [{table_name}]: {msg_error}"
         )
-        raise AppStumbled(msg_error, ModuleErrorCode.DB_FETCH_ROWS, False, True)
+        raise AppStumbled(msg_error, ModuleErrorCode.DB_FETCH_ROWS, False, True, e)
 
     return
 

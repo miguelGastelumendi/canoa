@@ -68,11 +68,13 @@ class AppStumbled(Exception):
         error_code: int = 0,
         logout: bool = False,
         is_fatal: bool = False,
+        original_e: Exception = None
     ):
         self.msg = msg
         self.error_code = error_code
         self.logout = logout
         self.is_fatal = is_fatal
+        self.original_e = original_e
 
     def __str__(self):
         return f"{self.msg} (Error Code: {self.error_code}, Logout: {self.logout}, Fatal: {self.is_fatal})"

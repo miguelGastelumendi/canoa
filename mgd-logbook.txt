@@ -64,6 +64,9 @@
 
 ------- 2025 - August -----------
 ---------------------------------
+2025-08-26 β 4.74 Correct a export bug
+    - \helpers\db_records\DBRecords.py[129, if (len(sqla_records) == 0)]
+
 2025-08-26 β 4.73 Edit 'Manager' in SEP
     - new labels in SEP edit.
        Esquemas -> Esquema

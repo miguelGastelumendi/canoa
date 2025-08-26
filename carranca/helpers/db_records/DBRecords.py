@@ -123,8 +123,9 @@ class DBRecords:
         if includeNone:
             self.allowed_field_types += (type(None),)
 
-        first_record = sqla_records[0]
-        if isinstance(first_record, Row):
+        if (len(sqla_records) == 0):
+            pass
+        elif isinstance(first_record:= sqla_records[0], Row):
             # Handle SQLAlchemy Row objects
 
             # Get dict representation of records
