@@ -52,7 +52,9 @@ class Fuse:
         self.args = args
 
         if is_str_none_or_empty(args.app_mode):
-            self.app_mode = app_mode_development if args.app_debug else app_mode_production
+            self.app_mode = (
+                app_mode_development if args.app_debug else app_mode_production
+            )
         else:
             self.app_mode = self.args.app_mode
 
@@ -134,7 +136,9 @@ def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
             raise Exception(f"Unknown config mode '{fuse.app_mode}'.")
 
         if not path.isfile(path.join(Config.APP_FOLDER, "main.py")):
-            raise Exception("main.py file not found in the app folder. Check BaseConfig.APP_FOLDER.")
+            raise Exception(
+                "main.py file not found in the app folder. Check BaseConfig.APP_FOLDER."
+            )
 
         Config.APP_DEBUGGING = True if fuse.debugging else Config.APP_DEBUG
         Config.APP_ARGS = fuse.args
@@ -159,7 +163,9 @@ def _check_mandatory_keys(config, fDisplay) -> str:
             value = getattr(config, key, "")
             empty = value is None or value.strip() == ""
             if empty:
-                fDisplay.error(f"[{__name__}]: Config[{config.APP_MODE}].{key} has no value.")
+                fDisplay.error(
+                    f"[{__name__}]: Config[{config.APP_MODE}].{key} has no value."
+                )
             return empty
 
         has_empty = False
@@ -214,10 +220,14 @@ def _ignite_server_name(config) -> Tuple[any, str]:
             # Flask Config
             config.RUN_HOST = address.host
             config.RUN_PORT = address.port
-            fuse.display.info(f"The Flask Server address was set to '{scheme}{config.SERVER_ADDRESS}'.")
+            fuse.display.info(
+                f"The Flask Server address was set to '{scheme}{config.SERVER_ADDRESS}'."
+            )
 
     except Exception as e:
-        fuse.display.error(f"`urlparse({try_url}) -> parsed: {address.host}:{address.port}`")
+        fuse.display.error(
+            f"`urlparse({try_url}) -> parsed: {address.host}:{address.port}`"
+        )
         msg_error = _ERROR_MSG.format(
             __name__,
             f"parsing server address. Expect value is [HostName:Port], found: [{config.SERVER_ADDRESS}]",
@@ -249,7 +259,9 @@ def _ignite_sql_connection(uri: str) -> Tuple[str, str]:
         engine = create_engine(uri)
         start_time = time.time()
         with engine.connect() as connection:
-            result = connection.execute(text("select number from db_version order by id desc limit 1"))
+            result = connection.execute(
+                text("select number from db_version order by id desc limit 1")
+            )
             db_version = result.scalar()
             fuse.display.info(
                 f"Connected to database version {db_version} successfully in {(time.time() - start_time) * 1000:,.2f} ms."
@@ -304,7 +316,9 @@ def ignite_app(app_name, start_at) -> Tuple[Sidekick, bool]:
     # Check DB connection, stop if not debugging
     error, db_version = _ignite_sql_connection(config.SQLALCHEMY_DATABASE_URI)
     if not error:
-        fuse.display.info(f"SQLAlchemy engine was created and the db connection was successfully tested.")
+        fuse.display.info(
+            "SQLAlchemy engine was created and the db connection was successfully tested."
+        )
     elif RaiseIf.ignite_no_sql_conn:
         _log_and_exit(error)
     else:
@@ -320,7 +334,9 @@ def ignite_app(app_name, start_at) -> Tuple[Sidekick, bool]:
 
     if is_str_none_or_empty(config.EMAIL_API_KEY):
         warns += 1
-        fuse.display.warn("Sendgrid API key was not found, the app will not be able to send emails.")
+        fuse.display.warn(
+            "Sendgrid API key was not found, the app will not be able to send emails."
+        )
 
     if is_str_none_or_empty(config.EMAIL_ORIGINATOR):
         warns += 1

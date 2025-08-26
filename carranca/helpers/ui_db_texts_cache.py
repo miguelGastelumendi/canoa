@@ -14,18 +14,13 @@ mgd 2024-04-03
 # cSpell:ignore getDictResultset connstr adaptabrasil mgmt
 
 from typing import TypeAlias, Optional, Tuple
-from flask_login import current_user
 from flask import current_app
 
-from .pw_helper import is_someone_logged
-from .py_helper import is_str_none_or_empty, now
+from .py_helper import now
 
 # TODO from .jinja_helper import process_pre_templates
 from .types_helper import ui_db_texts
-
-from ..common.app_constants import APP_LANG
-from ..common.app_error_assistant import AppStumbled, ModuleErrorCode, RaiseIf
-from .. import global_ui_texts_cache
+from .ui_db_texts_helper import UITexts_TableSearch, ui_texts_locale
 
 # === Global 'constants' form HTML ui ========================
 cache_key: TypeAlias = Tuple[str, str, Optional[str]]
@@ -37,7 +32,9 @@ class UITexts_Cache:
     _CACHE_INTERNAL_INFO_KEY: cache_key = (" ", "mgmt_data", "key")
 
     ## TODO SAVE is Cache _CACHE_INTERNAL_INFO_KEY
-    _cfg_cache_lifetime_min = int(current_app.config.get("APP_UI_DB_TEXTS_CACHE_LIFETIME_MIN", 0))
+    _cfg_cache_lifetime_min = int(
+        current_app.config.get("APP_UI_DB_TEXTS_CACHE_LIFETIME_MIN", 0)
+    )
 
     def __init__(self, section: str, item: Optional[str] = None):
         self.locale = ui_texts_locale().lower()
@@ -88,7 +85,9 @@ class UITexts_Cache:
         global_ui_texts_cache[UITexts_TableSearch._CACHE_INTERNAL_INFO_KEY] = cache_info
 
     def get_info_value(self) -> dict:
-        cache_value = global_ui_texts_cache.get(UITexts_TableSearch._CACHE_INTERNAL_INFO_KEY, {})
+        cache_value = global_ui_texts_cache.get(
+            UITexts_TableSearch._CACHE_INTERNAL_INFO_KEY, {}
+        )
         return cache_value
 
     @property

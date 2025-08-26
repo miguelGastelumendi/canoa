@@ -12,14 +12,13 @@ from typing import Dict, List
 
 from ..public.ups_handler import ups_handler
 from ..config.ExportProcessConfig import ExportProcessConfig
-from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
+from ..common.app_error_assistant import ModuleErrorCode
 from ..models.private_1.SchemaGrid import SchemaGrid
 from ..models.private import Sep
 
 from ..helpers.jinja_helper import process_template
-from ..helpers.route_helper import get_private_response_data, init_response_vars
+from ..helpers.route_helper import init_response_vars
 from ..helpers.ui_db_texts_helper import add_msg_final
-from ..helpers.db_records.DBRecords import ListOfDBRecords
 
 
 def do_scm_export() -> str:

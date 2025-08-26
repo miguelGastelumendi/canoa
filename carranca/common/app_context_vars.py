@@ -33,7 +33,6 @@ mgd
 
 from flask import has_request_context, g
 from typing import Callable, Optional, Any
-from threading import Lock
 from flask_login import current_user
 from werkzeug.local import LocalProxy
 

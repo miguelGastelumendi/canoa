@@ -25,7 +25,7 @@ from sqlalchemy import (
     LargeBinary,
     select,
 )
-from sqlalchemy.orm import relationship, declarative_base, joinedload
+from sqlalchemy.orm import relationship, joinedload
 from flask_login import UserMixin
 
 from ..helpers.db_records.DBRecords import DBRecords
@@ -33,7 +33,7 @@ from ..helpers.db_records.DBRecords import DBRecords
 from ..models import SQLABaseTable
 from ..helpers.pw_helper import hash_pass
 from ..helpers.py_helper import is_str_none_or_empty
-from ..helpers.db_helper import db_fetch_rows, db_ups_error
+from ..helpers.db_helper import db_fetch_rows
 from ..private.RolesAbbr import RolesAbbr
 from ..common.app_constants import APP_LANG
 
@@ -89,7 +89,12 @@ class User(SQLABaseTable, UserMixin):
         """
 
         def _get_data(db_session: Session) -> "User":
-            user = db_session.query(User).options(joinedload(User.role)).filter_by(**filter).first()
+            user = (
+                db_session.query(User)
+                .options(joinedload(User.role))
+                .filter_by(**filter)
+                .first()
+            )
             return user
 
         _, _, user = db_fetch_rows(_get_data, User.__tablename__)
@@ -144,7 +149,9 @@ def get_user_role_abbr(user_id: int, user_role_id: int) -> RolesAbbr:
             except Exception as e:
                 from ..common.app_context_vars import sidekick
 
-                sidekick.app_log.error(f"Error retrieving user {user_id} role {user_role_id}: [{e}].")
+                sidekick.app_log.error(
+                    f"Error retrieving user {user_id} role {user_role_id}: [{e}]."
+                )
 
     return abbr
 
@@ -161,7 +168,12 @@ def get_user_where(**filter: Any) -> User:
         try:
             # stmt = select(User).filter_by(**filter)
             # user =  db_session.execute(stmt).scalar_one_or_none()
-            user = db_session.query(User).options(joinedload(User.role)).filter_by(**filter).first()
+            user = (
+                db_session.query(User)
+                .options(joinedload(User.role))
+                .filter_by(**filter)
+                .first()
+            )
         except Exception as e:
             sidekick.app_log.error(f"Error retrieving user {filter}: [{e}].")
 
@@ -206,7 +218,11 @@ def user_loader(id):
 @global_login_manager.request_loader
 def request_loader(request):
     username = "" if len(request.form) == 0 else request.form.get("username", "")
-    user = None if is_str_none_or_empty(username) else User.get_where(username_lower=username.lower())
+    user = (
+        None
+        if is_str_none_or_empty(username)
+        else User.get_where(username_lower=username.lower())
+    )
     return user
 
 

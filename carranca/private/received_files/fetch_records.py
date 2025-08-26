@@ -8,7 +8,7 @@ mgd 2025-01-14 & 03-18
 """
 
 from os import path
-from typing import Tuple, Optional
+from typing import Tuple
 from ...models.private import ReceivedFiles
 from ...common.app_context_vars import app_user
 from ...config.ValidateProcessConfig import ValidateProcessConfig

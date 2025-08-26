@@ -16,7 +16,7 @@ from ..helpers.types_helper import error_message
 from .IdToCode import IdToCode
 
 user_sep_list: TypeAlias = List["UserSep"]
-user_scm_list: TypeAlias = List["UserScm"]
+# user_scm_list: TypeAlias = List["UserScm"]
 user_sep_dict: TypeAlias = Dict[str, Any]
 user_seps_rtn: TypeAlias = user_sep_list | error_message
 
@@ -73,5 +73,6 @@ class UserSep:
     visible: bool
     icon_file_name: str
     icon_url: Optional[str]  # expensive to 'calculate', so it is optional
+
 
 # eof

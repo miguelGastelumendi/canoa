@@ -40,7 +40,7 @@ def icon_refresh(ifn_old: str, ifn_new: str, sep_id: int) -> bool:
 
         refreshed = True
     except Exception as e:
-        sidekick.display.error(f"Could not refresh icon [{file_full_name}].")
+        sidekick.display.error(f"Could not refresh icon [{file_full_name}]: {e}.")
 
     return refreshed
 
@@ -56,7 +56,7 @@ def icon_ready(file_full_name: str) -> bool:
             remove(file_full_name)
             return False
         except OSError as e:
-            raise JumpOut(f"Error deleting file '{file_full_name}'.")
+            raise JumpOut(f"Error deleting file '{file_full_name}' {e}.")
 
 
 def do_icon_get_url(icon_file_name: str, sep_id: Optional[int] = None) -> str:

@@ -52,7 +52,9 @@ def _store_report_result(
         else:
             rd = re.findall(stdout_result_pattern, std_out_str)
             if len(rd) == 0:
-                result_json_str = _local_result(f"no data matched regex: [{stdout_result_pattern}]")
+                result_json_str = _local_result(
+                    f"no data matched regex: [{stdout_result_pattern}]"
+                )
             else:
                 result_json_str = rd[0][1:-1]
                 result = ""
@@ -68,7 +70,9 @@ def _store_report_result(
                 report_warns = report["warnings"]
                 report_tests = report["tests"]
                 if len(rd) > 1:
-                    sidekick.display.warn(_local_result(f"{len(rd)} data matched. Expected only 1."))
+                    sidekick.display.warn(
+                        _local_result(f"{len(rd)} data matched. Expected only 1.")
+                    )
 
     except Exception as e:
         result_json_str = _local_result(f"Extraction error [{e}], result [{result}].")
@@ -88,7 +92,9 @@ def _store_report_result(
                 report_tests=report_tests,
             )
         except Exception as e:
-            sidekick.app_log.error(f"Error saving data_validate result: {result_json_str}: [{e}].")
+            sidekick.app_log.error(
+                f"Error saving data_validate result: {result_json_str}: [{e}]."
+            )
 
 
 def submit(cargo: Cargo) -> Cargo:
@@ -133,10 +139,14 @@ def submit(cargo: Cargo) -> Cargo:
         batch_has_run_permission = True
         if not path.isfile(batch_full_name):  # TODO send to check module
             task_code += 1  # 3
-            raise Exception(f"The `{_cfg.dv_app.ui_name}` module caller [{batch_full_name}] was not found.")
+            raise Exception(
+                f"The `{_cfg.dv_app.ui_name}` module caller [{batch_full_name}] was not found."
+            )
         elif OS_IS_LINUX and not access(batch_full_name, X_OK):
             batch_has_run_permission = False
-            sidekick.warn(f"Account doesn't have the necessary permissions to execute '{batch_full_name}'.")
+            sidekick.warn(
+                f"Account doesn't have the necessary permissions to execute '{batch_full_name}'."
+            )
 
         result_ext = _cfg.output_file.ext  # ⚠️ keep always the same case (all lower)
         final_report_file_name = f"{_cfg.output_file.name}{result_ext}"
@@ -170,11 +180,15 @@ def submit(cargo: Cargo) -> Cargo:
             task_code += 1  # 8
             raise Exception(
                 f"\n{sidekick.app_name}: Report was not found."
-                + (f"\nCheck `x` permission on {batch_full_name}" if not batch_has_run_permission else "")
+                + (
+                    f"\nCheck `x` permission on {batch_full_name}"
+                    if not batch_has_run_permission
+                    else ""
+                )
                 + f"\n » {_cfg.dv_app.ui_name}.stderr:\n{std_err_str}"
                 + f"\n » {_cfg.dv_app.ui_name}.stdout:\n {std_out_str}"
                 + f"\nExitCode {exit_code}"
-                + f"/nEnd."
+                + "\nEnd."
             )
         elif stat(final_report_full_name).st_size < 200:
             task_code += 2  # 9
@@ -186,7 +200,9 @@ def submit(cargo: Cargo) -> Cargo:
             # with the same name as the uploaded file,
             # But with extension `result_ext`
             #  (important so later the file can be found):
-            user_report_full_name = change_file_ext(cargo.pd.working_file_full_name(), result_ext)
+            user_report_full_name = change_file_ext(
+                cargo.pd.working_file_full_name(), result_ext
+            )
             task_code += 3  # 10
             shutil.move(final_report_full_name, user_report_full_name)
             task_code += 1  # 11
@@ -208,7 +224,9 @@ def submit(cargo: Cargo) -> Cargo:
                 shutil.rmtree(_path_read)
                 shutil.rmtree(_path_write)
             else:
-                sidekick.app_log.info("The communication folders contents was not removed, as requested.")
+                sidekick.app_log.info(
+                    "The communication folders contents was not removed, as requested."
+                )
                 pass  # leave the files for debugging
 
         except:

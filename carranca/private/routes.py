@@ -108,7 +108,7 @@ def grid_route(code: str, editor: str, show_grid: Callable):
                 data = GridResponse.do_data()
                 return _goto(data)
             case GridCargoKeys.delete:
-                error = f"The Delete procedure is still under development."
+                error = "The Delete procedure is still under development."
                 # TODO Remove all
                 pass
 

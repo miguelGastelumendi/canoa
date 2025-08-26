@@ -61,10 +61,12 @@
     Schema LOG
 
 
-
-
 ------- 2025 - August -----------
 ---------------------------------
+2025-0825 β 4.72 Fix all Visual Code Python's 'problems'
+    diagnostic messages
+
+
 2025-08-20 -- 25 β 4.71 [Published] DB Import demo
     - Create a py Dict from the imported json
     - Allow o save the Form/Dialog icon

@@ -25,8 +25,6 @@ from .py_helper import is_str_none_or_empty
 from .types_helper import ui_db_texts
 
 from ..common.app_constants import APP_LANG
-from .. import global_ui_texts_cache
-
 
 # === Global 'constants' for HTML ui flask forms =============
 
@@ -79,7 +77,9 @@ class UITexts_TableSearch:
     _LAST_UPDATE_KEY = "last_update"
     _CACHE_INTERNAL_INFO_KEY: cache_key = (" ", "mgmt_data", "key")
     ## TODO SAVE is Cache _CACHE_INTERNAL_INFO_KEY
-    _cfg_cache_lifetime_min = 0  # int(current_app.config.get("APP_UI_DB_TEXTS_CACHE_LIFETIME_MIN", 0))
+    _cfg_cache_lifetime_min = (
+        0  # int(current_app.config.get("APP_UI_DB_TEXTS_CACHE_LIFETIME_MIN", 0))
+    )
 
     def __init__(self, locale: str, section: str, item: Optional[str] = None):
         self.locale = locale
@@ -109,7 +109,9 @@ class UITexts_TableSearch:
         global_ui_texts_cache[UITexts_TableSearch._CACHE_INTERNAL_INFO_KEY] = cache_info
 
     def get_info_value(self) -> dict:
-        cache_value = global_ui_texts_cache.get(UITexts_TableSearch._CACHE_INTERNAL_INFO_KEY, {})
+        cache_value = global_ui_texts_cache.get(
+            UITexts_TableSearch._CACHE_INTERNAL_INFO_KEY, {}
+        )
         return cache_value
 
     @property
@@ -137,7 +139,9 @@ def __get_ui_texts_query(cols: str, table_search: UITexts_TableSearch) -> str:
     # returns Select query for locale, section and, eventually, for only one item.
     # Use SQL lower(item) is better than item.lower because uses db locale.
     optional_item_filter = (
-        "" if table_search.item is None else f" and (item_lower = lower('{table_search.item}'))"
+        ""
+        if table_search.item is None
+        else f" and (item_lower = lower('{table_search.item}'))"
     )
 
     # ** ⚠️ ******************************************************************
@@ -187,7 +191,9 @@ def _msg_not_found() -> str:  ## THIS IS OUTDATED ##
     return mnf
 
 
-def _add_msg(item: str, section: str, name: str, texts: Optional[ui_db_texts] = None, *args) -> str:
+def _add_msg(
+    item: str, section: str, name: str, texts: Optional[ui_db_texts] = None, *args
+) -> str:
     """Retrieves text and adds it to a dictionary.
 
     Args:
@@ -299,7 +305,9 @@ def add_msg_warning(item: str, texts: ui_db_texts = {}, *args) -> str:
     returns text for the [item/'sec_Error'] pair
     and adds pair to texts => texts.add( text, 'msgError')
     """
-    return _add_msg(item, UITextsKeys.Section.error, UITextsKeys.Msg.error, texts, *args)
+    return _add_msg(
+        item, UITextsKeys.Section.error, UITextsKeys.Msg.error, texts, *args
+    )
 
 
 def add_msg_error(item: str, texts: ui_db_texts = {}, *args) -> str:
@@ -307,7 +315,9 @@ def add_msg_error(item: str, texts: ui_db_texts = {}, *args) -> str:
     returns text for the [item/'sec_Error'] pair
     and adds pair to texts => texts.add( text, 'msgError')
     """
-    return _add_msg(item, UITextsKeys.Section.error, UITextsKeys.Msg.error, texts, *args)
+    return _add_msg(
+        item, UITextsKeys.Section.error, UITextsKeys.Msg.error, texts, *args
+    )
 
 
 def add_msg_final(item: str, texts: ui_db_texts = {}, *args) -> str:
@@ -332,7 +342,9 @@ def add_msg_success(item: str, texts: ui_db_texts = None, *args) -> str:
     the message (no other form inputs)
 
     """
-    msg = _add_msg(item, UITextsKeys.Section.success, UITextsKeys.Msg.success, texts, *args)
+    msg = _add_msg(
+        item, UITextsKeys.Section.success, UITextsKeys.Msg.success, texts, *args
+    )
     texts[UITextsKeys.Msg.display_only_msg] = True
     return msg
 

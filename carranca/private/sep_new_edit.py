@@ -10,7 +10,7 @@ mgd 2025-08-19--22  allow edit manager
 
 import re
 from flask import request
-from typing import Tuple, List, Dict
+from typing import Tuple, List
 from os.path import splitext
 from sqlalchemy import func  # func.now() == server time
 from dataclasses import dataclass

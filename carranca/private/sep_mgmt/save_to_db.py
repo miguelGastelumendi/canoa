@@ -9,7 +9,7 @@ mgd 202-04-09
 
 # cSpell: ignore mgmt
 
-from typing import Dict, Tuple
+from typing import Tuple
 
 from sqlalchemy.orm import Session
 
