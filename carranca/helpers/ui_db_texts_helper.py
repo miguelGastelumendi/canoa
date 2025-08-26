@@ -27,7 +27,7 @@ from .types_helper import ui_db_texts
 from ..common.app_constants import APP_LANG
 
 # === Global 'constants' for HTML ui flask forms =============
-
+from .. import global_ui_texts_cache # it is used, ignore warn
 
 # ==== UI Texts Constants ====================================
 class UITextsKeys:

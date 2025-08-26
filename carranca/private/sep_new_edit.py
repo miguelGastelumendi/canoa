@@ -25,6 +25,7 @@ from ..models.public import User
 from ..models.private import Sep, Schema, MgmtSepsUser
 from ..private.UserSep import UserSep
 from ..helpers.py_helper import UsualDict, clean_text, to_int, crc16
+from ..helpers.js_grid_helper import     js_grid_sec_key,        js_grid_sec_value
 from ..public.ups_handler import ups_handler
 from ..helpers.user_helper import get_batch_code
 from ..helpers.jinja_helper import process_template
@@ -143,9 +144,7 @@ def do_sep_edit(data: str) -> str:
                 pass
             elif not app_user.is_power:
                 # Power user only can edit more fields than description & icon
-                raise AppStumbled(
-                    add_msg_final("sepNewNotAllow", ui_texts), task_code + 2, True
-                )
+                raise AppStumbled(  add_msg_final("sepNewNotAllow", ui_texts), task_code + 2, True )
             elif is_full_edit:
                 # edit Scheme (from list), sep name, description & icon
                 ui_texts[SCHEMA_LIST_VALUE] = (
@@ -162,9 +161,7 @@ def do_sep_edit(data: str) -> str:
                 ui_texts[SCHEMA_LIST_VALUE] = (
                     "" if is_get else flask_form.schema_list.data
                 )
-                ui_texts[UITextsKeys.Form.icon_url] = do_icon_get_url(
-                    SepIconMaker.empty_file
-                )
+                ui_texts[UITextsKeys.Form.icon_url] = do_icon_get_url(SepIconMaker.empty_file )
                 # SepIconMaker.get_url(SepIconMaker.empty_file)
                 select_one = ui_texts["scm_placeholderOption"]  # (select schema)
                 ui_texts[SCHEMA_LIST] = [
@@ -227,9 +224,7 @@ def do_sep_edit(data: str) -> str:
                 flask_form.manager_name.render_kw["disabled"] = not is_full_edit
                 if is_full_edit:
                     ui_texts[SCHEMA_LIST_VALUE] = sep_row.id_schema
-                    ui_texts[MANAGER_LIST_VALUE] = to_int(
-                        sep_row.users_id, MANAGER_EMPTY_ID
-                    )
+                    ui_texts[MANAGER_LIST_VALUE] = to_int(sep_row.users_id, MANAGER_EMPTY_ID)
 
                 task_code += 3  # 509
 
@@ -241,21 +236,21 @@ def do_sep_edit(data: str) -> str:
             # remove schema/sep separator sep+sep
             ui_sep_name = get_front_end_str(flask_form.sep_name.name, [Sep.scm_sep])
             ui_description = get_front_end_str(flask_form.description.name)
+            id_manager = flask_form.manager_list.data if (is_full_edit or is_insert) and not (flask_form.manager_list.data == MANAGER_EMPTY_ID) else None
 
             if is_insert:
                 id_schema = flask_form.schema_list.data
                 sep_modified = True
-                form_modified = id_schema or ui_description or ui_sep_name
+                form_modified = id_manager or id_schema or ui_description or ui_sep_name
             else:  # is_edit or is_full_edit
                 # TODO check Schema
                 sep_name = sep_row.name if ui_sep_name is None else ui_sep_name
                 flask_form.sep_name.data = sep_name
-                id_schema = (
-                    flask_form.schema_list.data if is_full_edit else sep_row.id_schema
-                )
+                id_schema =flask_form.schema_list.data if is_full_edit else sep_row.id_schema
                 sep_modified = not (sep_name == sep_row.name)
                 form_modified = (
                     sep_modified
+                    or (id_manager != sep_row.users_id)
                     or (ui_description != sep_row.description)
                     or (id_schema != sep_row.id_schema)
                     or (flask_form.visible.data != sep_row.visible)
@@ -265,7 +260,7 @@ def do_sep_edit(data: str) -> str:
             # remove spaces & '/' (scm_sep) so the user see its modified values (see get_input_text)
             flask_form.description.data = ui_description
             flask_form.sep_name.data = ui_sep_name
-            return form_modified, sep_modified, id_schema
+            return form_modified, sep_modified, id_schema, id_manager
 
         def _get_icon_data(sep_row: Sep) -> IconData:
             def __find(pattern: str, data: str) -> int:
@@ -322,8 +317,8 @@ def do_sep_edit(data: str) -> str:
         usr_sep, sep_row, task_code, sep_fullname = _get_sep_data(not is_get, task_code)
 
         task_code = ModuleErrorCode.SEP_EDIT.value + 10  # 510
-        form_mod, sep_mod, id_schema = (
-            (False, False, -1) if is_get else _was_form_sep_modified(sep_row)
+        form_mod, sep_mod, id_schema, id_manager = (
+            (False, False, -1, -1) if is_get else _was_form_sep_modified(sep_row)
         )
 
         sep_name = usr_sep.name if input_disabled else flask_form.sep_name.data
@@ -337,6 +332,10 @@ def do_sep_edit(data: str) -> str:
         elif not form_mod:
             # TODO: nothing modified, add_msg_warn("nothingChanged", ui_texts)
             return redirect_to(process_on_end)
+        # TODO elif request.form.get(js_grid_sec_key) != js_grid_sec_value:
+        #     task_code += 2
+        #     msg = add_msg_error("secKeyViolation", ui_texts)
+        #     raise AppStumbled(msg, task_code, True, True)
         elif (is_insert or sep_mod) and Sep.full_name_exists(id_schema, sep_name):
             add_msg_error("sepNameRepeated", ui_texts, scm_name, sep_name)
         elif (icon_data := _get_icon_data(sep_row)).error_code > 0:
@@ -372,6 +371,7 @@ def do_sep_edit(data: str) -> str:
                 task_code += 1  # 512
                 # we need `sep_fullname`` in case of error (see except)
                 sep_fullname = Sep.get_fullname(scm_name, sep_row.name)
+                sep_row.users_id = id_manager
 
             if schema_changed := (is_full_edit and (id_schema != sep_row.id_schema)):
                 sep_row.id_schema = id_schema

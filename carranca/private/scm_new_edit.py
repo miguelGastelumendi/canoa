@@ -23,15 +23,13 @@ from ..helpers.route_helper import (
     get_front_end_str,
     private_route,
     login_route,
-    home_route,
     redirect_to,
+    home_route,
 )
 
 from ..common.app_context_vars import app_user
 from ..common.app_error_assistant import ModuleErrorCode, JumpOut
-from ..helpers.ui_db_texts_helper import (
-    add_msg_final,
-)
+from ..helpers.ui_db_texts_helper import add_msg_final
 
 
 def do_scm_edit(data: str) -> str:
@@ -81,9 +79,10 @@ def do_scm_edit(data: str) -> str:
         form.name.render_kw["lang"] = app_user.lang
         form.name.render_kw["pattern"] = ui_texts["nameInputPattern"]
         form.name.render_kw["title"] = ui_texts["nameErrorHint"]
-        form.title.render_kw["lang"] = app_user.lang
+
         form.description.render_kw["lang"] = app_user.lang
         form.content.render_kw["lang"] = app_user.lang
+        form.title.render_kw["lang"] = app_user.lang
 
         if is_get and is_insert:
             scm_row.id = None
@@ -94,8 +93,7 @@ def do_scm_edit(data: str) -> str:
                 if hasattr(scm_row, field.name):
                     field.data = getattr(scm_row, field.name)
         else:  # is_post
-
-            def modified(input, field, mod):
+            def _modified(input, field, is_mod):
                 ui_value = (
                     get_front_end_str(input.name, None)
                     if input.type == StringField.__name__
@@ -105,13 +103,13 @@ def do_scm_edit(data: str) -> str:
                 if input.data != ui_value:  # TODO, don't change .data
                     input.data = ui_value
 
-                return mod or _mod
+                return is_mod or _mod
 
             # TODO make a helper
             form_md = is_insert
             for field in form:
                 if hasattr(scm_row, field.name):
-                    form_md = modified(field, getattr(scm_row, field.name), form_md)
+                    form_md = _modified(field, getattr(scm_row, field.name), form_md)
 
             def _save_and_go():
                 form.populate_obj(scm_row)

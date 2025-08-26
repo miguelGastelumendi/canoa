@@ -61,9 +61,17 @@
     Schema LOG
 
 
+
 ------- 2025 - August -----------
 ---------------------------------
-2025-0825 β 4.72 Fix all Visual Code Python's 'problems'
+2025-08-26 β 4.73 Edit 'Manager' in SEP
+    - new labels in SEP edit.
+       Esquemas -> Esquema
+       Setor Estratégico -> Nome
+       Título -> Título (Aparecerá embaixo do ícone, pode ter HTML)
+
+
+2025-08-25 β 4.72 Fix all Visual Code Python's 'problems'
     diagnostic messages
 
 

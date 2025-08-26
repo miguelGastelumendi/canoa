@@ -36,6 +36,8 @@ js_grid_submit_id = "grid-submit-id"
 # TODO: create a real key with user_id and datetime
 js_grid_sec_value = "7298kaj0fk9dl-sd=)0y"
 
+ui_sec_key_item = "secKeyViolation"
+
 
 def js_grid_constants(col_meta_info_txt: str, col_names: List[str], task_code: int) -> ui_db_texts:
 
