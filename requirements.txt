@@ -10,9 +10,9 @@ google-api-python-client>=2.140.0
 google-auth-oauthlib>= 1.2.1
 google-auth-httplib2>= 0.2.0
 Jinja2==3.1.6
-python >= 3.10.0
-pipreqs=>0.4.13
-psycopg2-binary==2.9.10 
+python>=3.10.0
+pipreqs>=0.4.13
+psycopg2-binary==2.9.10
 requests==2.32.3
 sendgrid==6.11.0
 SQLAlchemy==2.0.38

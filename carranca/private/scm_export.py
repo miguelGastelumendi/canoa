@@ -8,7 +8,7 @@ mgd 2025.08
 """
 
 import json
-from typing import Dict, List
+from typing import Optional, Dict, List
 
 from ..public.ups_handler import ups_handler
 from ..config.ExportProcessConfig import ExportProcessConfig
@@ -21,26 +21,31 @@ from ..helpers.route_helper import init_response_vars
 from ..helpers.ui_db_texts_helper import add_msg_final
 
 
-def do_scm_export() -> str:
+def do_scm_export( test_jsn: Optional[bool] = True      ) -> str:
 
     SEPS_KEY = "seps"
-    task_code = ModuleErrorCode.SCM_EXPORT.value
+    task_code = ModuleErrorCode.SCM_EXPORT
     _, tmpl_ffn, is_get, ui_texts = init_response_vars()
 
     tmpl = ""
     try:
-        scm_id = SchemaGrid.id.name
+        task_code += 1
+        scm_id = SchemaGrid.id
         config = ExportProcessConfig()
+        task_code += 1
 
         # file_fullname = config.full_file_name
         scm_cols = config.scm_cols
+        task_code += 1
         if scm_id not in scm_cols:
-            #  Scheme's PK is needed to get seps by FK
+            #  Scheme's PK is needed in order to get seps by FK
             scm_cols.insert(0, scm_id)
 
+        task_code += 1
         scm_rows = SchemaGrid.get_schemas(scm_cols, True)
         schema_list: List[Dict] = []
         sep_rows: List[Sep] = []
+        task_code += 1
         for scm in scm_rows:
             schema_dic = scm.encode64([scm_id])
             schema_dic[SEPS_KEY]: List[Sep] = []
@@ -49,7 +54,7 @@ def do_scm_export() -> str:
                 schema_dic[SEPS_KEY].append(sep.encode64())
 
             schema_list.append(schema_dic)
-
+        task_code += 1
         meta_scm = scm_rows.col_info
         schema_data = {
             "header": config.header,
@@ -58,15 +63,16 @@ def do_scm_export() -> str:
             "schemas": schema_list,
         }
 
+        task_code += 1
         # Convert the final dictionary to a JSON string
         jsn_data = json.dumps(schema_data, **config.json)
         tmpl = jsn_data
 
-        # test undo
-        from .scm_import import do_scm_import
+        if test_jsn:
+            from .scm_import import do_scm_import
 
-        dic_data = do_scm_import(jsn_data)
-        print(dic_data)
+            dic_data = do_scm_import(jsn_data)
+            print(dic_data)
 
     except Exception as e:
         msg = add_msg_final("exportException", ui_texts, task_code)
@@ -74,3 +80,5 @@ def do_scm_export() -> str:
         tmpl = process_template(tmpl_ffn, **ui_texts)
 
     return tmpl
+
+#eof

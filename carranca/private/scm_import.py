@@ -1,26 +1,27 @@
 """
 Schema & Seps data import
 
-Reverse the action os scm_export, creating a Dict
+Reverse the action from scm_export, creating a Dict from the
+exported json.
 
 mgd 2025.08
 """
 
 import json
-from typing import Dict
 from ..helpers.py_helper import json_to_dict
+from ..helpers.types_helper import UsualDict
 
 
-def do_scm_import(json_string: str) -> Dict:
+def do_scm_import(json_string: str) -> UsualDict:
     """
     Decodes Base64-encoded strings within a dictionary parsed from a JSON string.
     """
     _dict = json.loads(json_string)
 
-    decoded_dic = json_to_dict(_dict, True)
+    decoded_dict = json_to_dict(_dict, True)
 
     # TODO
 
-    return decoded_dic
+    return decoded_dict
 
 # eof

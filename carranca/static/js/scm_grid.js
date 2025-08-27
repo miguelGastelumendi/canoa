@@ -11,13 +11,15 @@
  */
 /// <reference path="./ts-check.js" />
 
-let removeCount = 0;
+// let removeCount = 0;
 //-------------
 
 // https://www.ag-grid.com/javascript-data-grid/column-definitions/
 // == Ag Grid
+// rowSelection: { type: 'singleRow' }
 const gridOptions = {
-    rowSelection: { type: 'singleRow' }
+    rowSelection: 'single'
+    , suppressRowDeselection: true
     , onGridReady: (params) => {
         const firstRow = params.api.getDisplayedRowAtIndex(cargo[cargoKeys.index]);
         if (firstRow) {
