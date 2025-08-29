@@ -15,13 +15,6 @@ import puremagic
 import urllib.parse
 from os import path, remove, rename
 
-try:
-    from googleapiclient.http import MediaIoBaseDownload
-    from googleapiclient.discovery import build
-except ImportError as e:
-    raise ImportError("googleapiclient is required for Google Drive downloads. Please install it with 'pip install google-api-python-client'.") from e
-from google.oauth2.service_account import Credentials
-
 
 from .py_helper import is_str_none_or_empty, to_str
 from .file_helper import is_same_file_name, change_file_ext
@@ -132,6 +125,14 @@ def download_public_google_file(
             - The error code (0 if successful, non-zero if an error occurred).
             - The name of the downloaded file.
     """
+    # Loading on demand this modules, will allow other upload methods to work
+
+    try:
+        from googleapiclient.http import MediaIoBaseDownload
+        from googleapiclient.discovery import build
+    except ImportError as e:
+        raise ImportError("googleapiclient is required for Google Drive downloads. Please install it with 'pip install google-api-python-client'.") from e
+    from google.oauth2.service_account import Credentials
 
     def get_file_metadata(service, file_id):
         file_md = service.files().get(fileId=file_id).execute()

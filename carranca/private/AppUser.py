@@ -62,7 +62,7 @@ class AppUser:
             self.is_support: bool = self.role_abbr == RolesAbbr.Support.value
             self.is_power: bool = (
                 self.is_adm
-                or (self.is_support and sidekick.debugging)
+               # or (self.is_support and sidekick.debugging)
                 or self.name in ["Mauro", "Miguel"]
             )
             # self.seps: user_sep_list = [] see @property below

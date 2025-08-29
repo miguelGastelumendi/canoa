@@ -64,9 +64,15 @@
 
 ------- 2025 - August -----------
 ---------------------------------
-2025-08-27 β 4.76
+2025-08-
     - send emails when a schema manager is changed
+    - salver v++ de DB
 
+2025-08-27--29 β 4.76
+    - Correger pontos levantados por Pedro na 27/08 (no zap)
+    - Normalizar Menu, Título e rótulos dos formulários
+      usando (novo arquivo) carranca\Normas Títulos e Rótulos.md
+    - Revisar todos os formulários, como usuário padrão é admin
 
 2025-08-26 β 4.75 [Published] Check all menu procedures
     - Check all menu procedures:

@@ -20,8 +20,8 @@ mgd
 {% if (form.manager_name and form.manager_name.data) or formForNew %}
 <div class="form-group mb-2">
     {# TODO correct 'for' #}
-    <label class="form-label" inert for="{{ form.manager_list.id if formForNew else form.manager_name.id }}">{{
-        managerLabel }}</label>
+    <label class="form-label" inert for="{{ form.manager_list.id if formForNew else form.manager_name.id }}">
+        {{ managerLabel }}</label>
     <div class="input-group">
         <span class="input-group-text">
             <i class="fas fa-circle-user" aria-hidden="true"></i>

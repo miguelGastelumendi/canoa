@@ -41,7 +41,7 @@ const gridOptions = {
             field: colMeta[2].n,
             headerName: colMeta[2].h,
             hide: false,
-            resizable: false,
+            resizable: true,
             cellStyle: params => {
                 return {
                     boxShadow: `inset 4em 0 0 ${params.value}`,
@@ -56,7 +56,7 @@ const gridOptions = {
             cellStyle: { display: 'flex', justifyContent: 'center' },
             headerClass: 'ag-center-aligned-header',
         },
-        { field: colMeta[4].n, headerName: colMeta[4].h, hide: false, flex: 1, type: 'numericColumn' }
+        { field: colMeta[4].n, headerName: colMeta[4].h, hide: false, flex: 2, type: 'numericColumn' }
 
     ]
 }; // gridOptions

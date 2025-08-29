@@ -188,7 +188,7 @@ def do_sep_edit(data: str) -> str:
             if usr_sep is not None:
                 # current user owns the sep, so it can be edited, get the record
                 sep_usr_row = MgmtSepsUser.get_sep_row(sep_id)
-                sep_manager = app_user.name
+                sep_manager = None if is_simple_edit else app_user.name
             elif not app_user.is_power:
                 # current user does NOT own the sep, and he is not power user, so can *not* edit it.
                 raise JumpOut(

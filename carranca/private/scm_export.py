@@ -21,8 +21,8 @@ from ..helpers.route_helper import init_response_vars
 from ..helpers.ui_db_texts_helper import add_msg_final
 
 
-def do_scm_export( test_jsn: Optional[bool] = True      ) -> str:
-
+def do_scm_export( ) -> str:
+    test_jsn= True
     SEPS_KEY = "seps"
     task_code = ModuleErrorCode.SCM_EXPORT
     _, tmpl_ffn, is_get, ui_texts = init_response_vars()
@@ -30,7 +30,7 @@ def do_scm_export( test_jsn: Optional[bool] = True      ) -> str:
     tmpl = ""
     try:
         task_code += 1
-        scm_id = SchemaGrid.id
+        scm_id = SchemaGrid.id.name
         config = ExportProcessConfig()
         task_code += 1
 
