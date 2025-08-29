@@ -68,6 +68,8 @@
     - send emails when a schema manager is changed
     - salver v++ de DB
 
+2025-08-27--29 β 4.77 [Published]
+
 2025-08-27--29 β 4.76
     - Correger pontos levantados por Pedro na 27/08 (no zap)
     - Normalizar Menu, Título e rótulos dos formulários
