@@ -4,7 +4,6 @@
 -----------------------
 The Base Template for Canoa
 
-
 TODO:
 structure:
 ==========
@@ -40,25 +39,25 @@ mgd
     <link rel="icon" type="image/png" sizes="32x32" href="{{ static_route('img/favicon/favicon-32.png') }}">
     <link rel="icon" type="image/png" sizes="64x64" href="{{ static_route('img/favicon/favicon-64.png') }}">
 
-    <!-- Fontawesome -->
+    {# ════════ Fontawesome ═════════ #}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
         integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!--Bootstrap css -->
+    {# ════════ Bootstrap css ═══════ #}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
-    <!--Bootstrap js -->
+    {# ════════ Bootstrap js ════════ #}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
+    {# ════════ Canoa common js ════════ #}
+    <script src="{{ static_route('js/canoa.js') }}"></script>
 
-    <!--Canoa common scripts -->
-    <script>
-        const logout = () => { if (confirm("Confirma sair de Canoa?")) window.location.href = "./logout" };
-    </script>
+    {# ════════ Canoa css, can be overridden ════════ #}
+    <link rel="stylesheet" href="{{ static_route('css/canoa.css') }}">
 
     {# ╒════════ Base Head JS ════════╕ #}
     {% block base_blc_head_js %}
@@ -69,9 +68,6 @@ mgd
     {% block base_blc_head_css %}
     {% endblock base_blc_head_css %}
     {# ╘════════ Base Head CSS ═══════╛ #}
-
-    <!--Canoa css -->
-    <link rel="stylesheet" href="{{ static_route('css/canoa.css') }}">
 </head>
 
 <body>

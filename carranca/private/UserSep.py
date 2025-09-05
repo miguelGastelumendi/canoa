@@ -16,7 +16,6 @@ from ..helpers.types_helper import error_message
 from .IdToCode import IdToCode
 
 user_sep_list: TypeAlias = List["UserSep"]
-# user_scm_list: TypeAlias = List["UserScm"]
 user_sep_dict: TypeAlias = Dict[str, Any]
 user_seps_rtn: TypeAlias = user_sep_list | error_message
 

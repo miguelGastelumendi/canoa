@@ -2,7 +2,7 @@
 
 sep_grid.html.j2
 -----------------
-CRUD por seps
+CRUD for seps
 
 Extends
 "./layouts/grid.html.j2"
@@ -19,8 +19,9 @@ mgd
 {% set grid_submit_id= 'grd-submit-id' %}
 
 
-
+{# ╒════════════════ Grid Footer ════════════════╕ #}
 {% block grid_blc_footer %}
+
 <div class="mb-2 row">
     {# ----------- Action Triggers --------- #}
     <div class="col-auto">
@@ -33,17 +34,26 @@ mgd
     </div>
 
 </div>
-{% endblock grid_blc_footer %}
 
+{% endblock grid_blc_footer %}
+{# ╘═══════════════ Grid Footer ═════════════════╛ #}
+
+
+{# ╒════════════════ Grid Forms ═════════════════╕ #}
 {% block grid_blc_forms %}
+
 <form method="get" action="{{private_route('scm_grid', code=grid_rsp)}}" id={{dlg_id_submit_form}}>
     <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
     <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
 </form>
+
 {% endblock grid_blc_forms %}
+{# ╘════════════════ Grid Forms ═════════════════╛ #}
 
 
+{# ╒══════════════ Grid JavaScript ══════════════╕ #}
 {% block grid_blc_javascript %}
+
 <script>
     const colMeta = {{ grid_col_meta | tojson | safe }};
     const colCode = colMeta[0].n;
@@ -54,7 +64,7 @@ mgd
     const gridID = '{{ grid_id }}';
     const initRow = {{ grid_init_row | default (0) }};
     const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '' };
-    
+
     document.addEventListener('DOMContentLoaded', () => {
         const elForm = /** @type {HTMLFormElement} */(document.getElementById('{{ dlg_id_submit_form }}'));
         const elResponse = /** @type {HTMLInputElement} */(document.getElementById('{{ grid_rsp }}'));
@@ -67,7 +77,8 @@ mgd
     });
 </script>
 <script src="{{static_route('js/scm_grid.js')}}"></script>
-{% endblock grid_blc_javascript %}
 
+{% endblock grid_blc_javascript %}
+{# ╘══════════════ Grid JavaScript ══════════════╛ #}
 
 {# eof #}

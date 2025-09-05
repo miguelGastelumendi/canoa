@@ -451,7 +451,7 @@ class Sep(SQLABaseTable):
         return sep_rows
 
 
-# --- Table ---
+# --- View ---
 class ReceivedFiles(SQLABaseTable):
     """
     ReceivedFiles is app's interface for the

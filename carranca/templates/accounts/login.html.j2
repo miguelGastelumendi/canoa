@@ -5,9 +5,6 @@
 `login` page the _landing page_ for visitors
 `home` page is for users
 
-Extends:
-./layouts/form.html.j2
-
 mgd
 --------------------------------------- #}
 {# cspell:ignore unselectable #}
@@ -16,6 +13,7 @@ mgd
 {% set dlg_cls_size= '' %} {# default size #}
 {% extends "./layouts/form.html.j2" %}
 
+{# ╒════════════════ Inputs ════════════════╕ #}
 {% block frm_blc_inputs %}
 
 <!-- { User Name -->
@@ -48,8 +46,12 @@ mgd
 <!-- RememberMe } -->
 
 {% endblock frm_blc_inputs %}
+{# ╘════════════════ Inputs ════════════════╛ #}
 
+
+{# ╒════════════════ Below ════════════════╕ #}
 {% block frm_blc_below %}
+
 <div class="row no-gutters mt-2">
     <div class="col-6">
         <a href="{{ public_route('docs', publicDocName='privacyPolicy') }}" class="form-link">
@@ -68,5 +70,8 @@ mgd
         <a href="{{ public_route('register') }}" class="form-link">{{ gotoRegister }}</a>
     </div>
 </div>
+
 {% endblock frm_blc_below %}
+{# ╘════════════════ Below ════════════════╛ #}
+
 {# eof #}

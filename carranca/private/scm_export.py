@@ -8,28 +8,47 @@ mgd 2025.08
 """
 
 import json
-from typing import Optional, Dict, List
+from typing import Dict, List
 
 from ..public.ups_handler import ups_handler
-from ..config.ExportProcessConfig import ExportProcessConfig
+from ..config.ExportProcessConfig import ExportProcessConfig, UsualDict
 from ..common.app_error_assistant import ModuleErrorCode
 from ..models.private_1.SchemaGrid import SchemaGrid
 from ..models.private import Sep
 
 from ..helpers.jinja_helper import process_template
-from ..helpers.route_helper import init_response_vars
+from ..helpers.route_helper import get_private_response_data, init_response_vars
 from ..helpers.ui_db_texts_helper import add_msg_final
 
 
 def do_scm_export( ) -> str:
     test_jsn= True
-    SEPS_KEY = "seps"
+
     task_code = ModuleErrorCode.SCM_EXPORT
     _, tmpl_ffn, is_get, ui_texts = init_response_vars()
 
     tmpl = ""
     try:
         task_code += 1
+        tmpl_ffn, is_get, ui_texts = get_private_response_data("scmExport")
+
+        if False:
+             do_scm_export(test_jsn)
+
+        tmpl = process_template(
+            tmpl_ffn,
+            **ui_texts
+        )
+    except Exception as e:
+        msg = add_msg_final("exportException", ui_texts, task_code)
+        _, tmpl_ffn, ui_texts = ups_handler(task_code, msg, e)
+        tmpl = process_template(tmpl_ffn, **ui_texts)
+
+    return tmpl
+
+
+def get_scm_export( task_code: int, test_jsn: bool = False ) -> UsualDict:
+        SEPS_KEY = "seps"
         scm_id = SchemaGrid.id.name
         config = ExportProcessConfig()
         task_code += 1
@@ -65,20 +84,13 @@ def do_scm_export( ) -> str:
 
         task_code += 1
         # Convert the final dictionary to a JSON string
-        jsn_data = json.dumps(schema_data, **config.json)
-        tmpl = jsn_data
-
         if test_jsn:
+            jsn_data = json.dumps(schema_data, **config.json)
             from .scm_import import do_scm_import
 
             dic_data = do_scm_import(jsn_data)
             print(dic_data)
 
-    except Exception as e:
-        msg = add_msg_final("exportException", ui_texts, task_code)
-        _, tmpl_ffn, ui_texts = ups_handler(task_code, msg, e)
-        tmpl = process_template(tmpl_ffn, **ui_texts)
-
-    return tmpl
+        return schema_data
 
 #eof

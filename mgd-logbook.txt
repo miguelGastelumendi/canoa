@@ -62,11 +62,22 @@
 
 
 
-------- 2025 - August -----------
+------- 2025 -September----------
 ---------------------------------
-2025-08-
+2025-09-05
     - send emails when a schema manager is changed
     - salver v++ de DB
+
+
+2025-09-01--04 4.78 Start export UI
+    - new view wv_sep_recent_file
+      display info of the most recent user's sep file
+    - Start Schema Sep's order User Interface
+      smc_export : .py, .css, .js, .j2
+
+
+------- 2025 - August -----------
+---------------------------------
 
 2025-08-27--29 β 4.77 [Published]
 
