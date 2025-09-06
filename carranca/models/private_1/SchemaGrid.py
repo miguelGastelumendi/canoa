@@ -11,7 +11,6 @@ Equipe da Canoa -- 2025.07.24
 #
 # cSpell:ignore: nullable sqlalchemy sessionmaker sep ssep scm sepsusr usrlist SQLA duovigesimal
 
-from typing import List, Optional
 from sqlalchemy import (
     Computed,
     Boolean,
@@ -64,7 +63,7 @@ class SchemaGrid(SQLABaseTable):
 
             stmt = select(*sel_cols) if sel_cols else select(SchemaGrid)
             if only_visible:
-                stmt = stmt.where(SchemaGrid.visible == True)
+                stmt = stmt.where(SchemaGrid.visible == True).order_by(SchemaGrid.ui_order)
 
             rows = db_session.execute(stmt).all()
             recs = DBRecords(stmt, rows)

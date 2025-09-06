@@ -47,6 +47,7 @@ class DBRecords:
     simple_types_filter: Tuple[type, ...] = (str, int, float, bool, datetime)
 
     col_types: List[type]
+    col_info: List[UsualDict]
 
     def __init__(
         self,
@@ -58,7 +59,7 @@ class DBRecords:
     ):
         self.records: ListOfDBRecords = []
         self.table_name = ""
-        self.is_select = sqla_stmt.is_select
+        self.is_select: bool = sqla_stmt.is_select
         self.col_info: List[UsualDict] = []
 
         # Find the table Name

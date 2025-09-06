@@ -29,7 +29,7 @@ class ExportProcessConfig:
     _full_file_name = None
     _started = None
     scm_cols = ["name", "color", "title", "v_sep_count", "ui_order"]
-    sep_cols = ["name", "description", "icon_svg"]
+    sep_cols = ["name", "description", "icon_svg", "icon_file_name", "ui_order"]
 
     def __init__(self):
         self._started = now()

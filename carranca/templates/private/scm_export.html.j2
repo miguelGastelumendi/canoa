@@ -8,7 +8,7 @@ Also displays an UI to set the display order to the seps
 mgd
 
 --------------------------------------- #}
-{# cSpell:ignore urlname tojson stylesheet #}
+{# cSpell:ignore stylesheet urlname tojson endfor #}
 
 {% set reticle_id = reticle_id | default('reticle') %}
 
@@ -26,27 +26,23 @@ mgd
 {# ╒════════════════ Dialog Body ════════════════╕ #}
 {% block dlg_blc_body %}
 
+const seps = {{ seps | tojson | safe }};
 <div class="container text-center my-5" id='{{ reticle_id }}'>
    <h1 class="mb-4">Schemas</h1>
    <div class="reticule-grid">
-      <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1015/150/150" alt="Image 1">
+   {% for item in schemas %}
+      <div class="reticule-item" draggable="true">
+         <img src='{{ static_route( item.icon_file_name) }}' alt='{{item.name}}'>
+      </div>
+   {% endfor %}
+      {# <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1015/150/150" alt="Image 1">
       </div>
       <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1016/150/150" alt="Image 2">
       </div>
       <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1018/150/150" alt="Image 3">
       </div>
-      <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1025/150/150" alt="Image 4">
-      </div>
-      <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1028/150/150" alt="Image 5">
-      </div>
-      <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1040/150/150" alt="Image 6">
-      </div>
-      <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1043/150/150" alt="Image 7">
-      </div>
-      <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1044/150/150" alt="Image 8">
-      </div>
-      <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1050/150/150" alt="Image 9">
-      </div>
+      #}
+
    </div>
 </div>
 

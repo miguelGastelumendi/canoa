@@ -194,9 +194,9 @@ def scm_export():
     if nobody_is_logged():
         return redirect_to(login_route())
 
-    from .scm_export import do_scm_export
+    from .scm_export import get_scm_export
 
-    return do_scm_export()
+    return get_scm_export()
 
 
 @login_required
