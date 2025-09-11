@@ -8,35 +8,79 @@
 
 :root {
    --item-per-row: 3;
-   --item-size: 4rem;
-   --item-border: 6px;
+   --item-size: 3rem;
+   --item-border: 4px;
    --item-frame: calc(var(--item-size) + 2 * var(--item-border));
    --items-inter-space: 0px;
    --items-extent: calc(var(--item-per-row) * var(--item-frame) + (var(--item-per-row) - 1) * var(--items-inter-space));
 }
 
-.reticule-grid {
+.reticule-frame {
    display: flex;
    flex-wrap: wrap;
    justify-content: center;
+   background-color: var(--adaptabrasil-back-color);
    max-width: var(--items-extent);
    min-width: var(--items-extent);
-   /* not needed: */
-   /* max-height: var(--items-extent); */
-   /* min-height: var(--items-extent); */
    margin: 0 auto;
-   background-color: var(--adaptabrasil-back-color);
-   padding: var(--item-border) 0;
+   gap: var(--item-border);
    border: 1px solid var(--canoa-form-label-color);
+   border-radius: var(--bs-border-radius);
+}
+
+.reticule-header {
+   /* This ensures the header spans the full width of the container. */
+   flex-basis: 100%;
+   display: flex;
+   align-items: center;
+   /* Vertically centers the icon and title */
+   gap: 8px;
+   /* Adds space between the icon and title */
+   padding-left: 0.5rem;
+   background-color: var(--canoa-form-footer-bg);
+   border-bottom: 1px solid var(--canoa-form-label-color);
+   border-top-left-radius: var(--bs-border-radius);
+   border-top-right-radius: var(--bs-border-radius);
+}
+
+.reticule-header-color {
+   cursor: help;
+   width: 1.1rem;
+   height: 1.1rem;
+   border: 1px solid #000;
+   border-radius: 3px;
+}
+
+.reticule-header-title {
+   color: var(--canoa-form-label-color);
+   font-size: smaller;
+   user-select: none;
+   white-space: nowrap;
 }
 
 .reticule-item {
-   cursor: grab;
+   /* cursor: grab; */
    border: var(--item-border) solid var(--adaptabrasil-back-color);
    width: var(--item-size);
    height: var(--item-size);
    overflow: hidden;
    margin: 0 auto;
+   user-select: none;
+   /* old browsers */
+   -webkit-user-select: none;
+   /* Safari */
+   -moz-user-select: none;
+   /* Firefox */
+   -ms-user-select: none;
+   /* IE/Edge */
+}
+
+.reticule-item-hot {
+   cursor: grab;
+}
+
+.reticule-item-none {
+   border: var(--item-border) solid grey;
 }
 
 .reticule-item img {

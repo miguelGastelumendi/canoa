@@ -11,7 +11,7 @@
  */
 /// <reference path="./ts-check.js" />
 
-
+// SEP grid arrangement
 document.addEventListener('DOMContentLoaded', () => {
    let draggedItem = null;
 
@@ -26,13 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const imageOrder = Array.from(images).map(img => img.src);
 
       // Save the array to localStorage as a JSON string
-      localStorage.setItem('imageGridOrder', JSON.stringify(imageOrder));
-      alert('Grid order saved!'); // Provide user feedback
+      // localStorage.setItem('imageGridOrder', JSON.stringify(imageOrder));
+      // alert('Grid order saved!'); // Provide user feedback
    }
 
    /**
     * Loads the image order from localStorage and applies it to the grid.
-    */
    function loadGridOrder() {
       const savedOrder = localStorage.getItem('imageGridOrder');
 
@@ -48,51 +47,92 @@ document.addEventListener('DOMContentLoaded', () => {
          });
       }
    }
+   */
 
    // --- DRAG AND DROP LOGIC (from before) ---
    function initializeDragAndDrop() {
-      const gridItems = document.querySelectorAll('.reticule-item');
+      const gridItems = document.querySelectorAll('.reticule-item-hot');
 
       gridItems.forEach(item => {
-         item.addEventListener('dragstart', function() {
-            draggedItem = this;
-            setTimeout(() => { this.style.opacity = '0.5'; }, 0);
+         item.addEventListener('dragstart', () => {
+            draggedItem = item;
+            setTimeout(() => { (item instanceof HTMLElement) && (item.style.opacity = '0.5'); }, 0);
          });
 
-         item.addEventListener('dragend', function() {
-            setTimeout(() => { this.style.opacity = '1'; draggedItem = null; }, 0);
+         item.addEventListener('dragend', () => {
+            setTimeout(() => { (item instanceof HTMLElement) && (item.style.opacity = '1'); draggedItem = null; }, 0);
          });
 
-         item.addEventListener('dragover', function(e) {
+         item.addEventListener('dragover', (e) => {
             e.preventDefault();
-            this.classList.add('over');
+            item.classList.add('over');
          });
 
-         item.addEventListener('dragleave', function() {
-            this.classList.remove('over');
+         item.addEventListener('dragleave', () => {
+            item.classList.remove('over');
          });
 
-         item.addEventListener('drop', function(e) {
+         item.addEventListener('drop', (e) => {
             e.preventDefault();
-            this.classList.remove('over');
-            if (draggedItem !== this) {
+            item.classList.remove('over');
+            if (draggedItem !== item) {
                let draggedContent = draggedItem.innerHTML;
-               draggedItem.innerHTML = this.innerHTML;
-               this.innerHTML = draggedContent;
+               draggedItem.innerHTML = item.innerHTML;
+               item.innerHTML = draggedContent;
             }
          });
       });
    }
 
-   // --- INITIALIZATION ---
 
-   // 1. Load any saved order when the page is ready
-   // loadGridOrder();
 
-   // 2. Set up the drag-and-drop functionality
    initializeDragAndDrop();
 
 
 });
 
+
+//-------------
+// == Ag Grid
+const gridOptions = {
+   rowSelection: 'single',
+   onGridReady: (params) => {
+      const firstRow = params.api.getDisplayedRowAtIndex(cargo[cargoKeys.index]);
+      if (firstRow) {
+         setTimeout(() => { firstRow.setSelected(true); setActiveRow(firstRow, firstRow.rowIndex) }, 20);
+      }
+   },
+   onCellFocused: (event) => {
+      let row = (event.rowIndex === null) || !event.api ? null : event.api.getDisplayedRowAtIndex(event.rowIndex);
+      setActiveRow(row, event.rowIndex)
+   }
+   , rowData: gridRows
+   , columnDefs: [
+      { field: colCode, flex: 1, hide: true },
+      { field: colSep, flex: 1, hide: true },
+      { field: colScm, flex: 1, hide: true },
+      { field: colMeta[3].n, headerName: colMeta[3].h, hide: true, flex: 1 },
+      { field: colMeta[4].n, headerName: colMeta[4].h, hide: false, flex: 4 },
+      {
+         field: colMeta[5].n, headerName: colMeta[5].h, hide: false, flex: 3,
+         valueFormatter: params => new Date(params.value).toLocaleString(dateFormat),
+      },
+      { field: colMeta[6].n, headerName: colMeta[6].h, hide: false, flex: 2 }
+   ]
+}; // gridOptions
+
+const setActiveRow = (row, rowIx) => {
+   if (!row) { return; }
+   cargo[cargoKeys.index] = rowIx;
+   cargo[cargoKeys.code] = row.data[colCode]
+   if (icon.src != row.data[colIconUrl]) {
+      icon.src = row.data[colIconUrl];
+   }
+}
+
+//-------------
+//== Init
+const gridContainer = document.getElementById(gridID);
+const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
+//== eof
 // eof

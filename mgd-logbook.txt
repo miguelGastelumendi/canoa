@@ -64,13 +64,27 @@
 
 ------- 2025 -September----------
 ---------------------------------
-2025-09-05
+2025-09-0
     - send emails when a schema manager is changed
     - salver v++ de DB
 
+    - Fix layout export UI
+    -
+
+
+2025-09-08--10 4.81 4 export UI
+    - part 4
+    - allow to arrange seps
+    - display grid with latest uploaded data
+
+
+2025-09-01--04 4.80 3 export UI
+    - part 3
+    - show all schema and seps
+
 
 2025-09-01--04 4.79 2 export UI
-    - 2 part
+    - part 2 ()
 
 2025-09-01--04 4.78 Start export UI
     - new view wv_sep_recent_file

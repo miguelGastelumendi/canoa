@@ -5,64 +5,110 @@
 Exports Schemas with there Seps
 Also displays an UI to set the display order to the seps
 
+reticle
 mgd
 
 --------------------------------------- #}
-{# cSpell:ignore stylesheet urlname tojson endfor #}
-
+{# cSpell:ignore stylesheet urlname tojson endfor ufiles #}
+{% set dlg_cls_size= dlg_cls_size | default('modal-lg') %}
 {% set reticle_id = reticle_id | default('reticle') %}
 
 {% extends "./layouts/dialog.html.j2" %}
 
 {# ╒═════════════════ Base CSS ══════════════════╕ #}
 {% block base_blc_head_css %}
-
 <link href='{{static_route("css/scm_export.css")}}' rel="stylesheet">
-
-{% endblock base_blc_head_css %}
+{% endblock %}
 {# ╘═════════════════ Base CSS ══════════════════╛ #}
+
+{# ╒═════════════════ Base JS ══════════════════╕ #}
+{% block base_blc_head_js %}
+{% include "./includes/grid-header.html.j2" %}
+{% endblock %}
+{# ╘═════════════════ Base JS ═══════════════════╛ #}
 
 
 {# ╒════════════════ Dialog Body ════════════════╕ #}
 {% block dlg_blc_body %}
 
-const seps = {{ seps | tojson | safe }};
-<div class="container text-center my-5" id='{{ reticle_id }}'>
-   <h1 class="mb-4">Schemas</h1>
-   <div class="reticule-grid">
-   {% for item in schemas %}
-      <div class="reticule-item" draggable="true">
-         <img src='{{ static_route( item.icon_file_name) }}' alt='{{item.name}}'>
-      </div>
-   {% endfor %}
-      {# <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1015/150/150" alt="Image 1">
-      </div>
-      <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1016/150/150" alt="Image 2">
-      </div>
-      <div class="reticule-item" draggable="true"><img src="https://picsum.photos/id/1018/150/150" alt="Image 3">
-      </div>
-      #}
+<div class="container">
+   <div class="row">
+      {# ╒══════════════ Column 1 ═══════════════╕ #}
+      <div class="col-12 col-md-4" id='{{ reticle_id }}'>
 
+         {% for scm in schemas %}
+         {% if scm.seps|length > 0 %}
+
+         <div class="reticule-frame mb-2">
+            <div class=reticule-header>
+               <div class="reticule-header-color" style="background-color: {{scm.color}}" title='{{scm.color}}'></div>
+               <div class="reticule-header-title">{{scm.name}}</div>
+            </div>
+            {% for sep in scm.seps %}
+            <div class="reticule-item reticule-item-hot" draggable="true" title='{{sep.name}} | {{sep.manager}}'>
+               <img src='{{ sep.icon_file_name }}'>
+            </div>
+            {% endfor %}
+            {# fill empty slots #}
+            {% set empty_slots = (3 - (scm.seps|length % 3)) % 3 %}
+            {% if empty_slots > 0 %}
+            {% for i in range(empty_slots) %}
+            <div class="reticule-item reticule-item-empty"><img src='{{ empty_icon }}'></div>
+            {% endfor %}
+            {% endif %}
+         </div>
+
+         {% endif %}
+         {% endfor %}
+      </div>
+
+      {# ╘═════════════ Column 1 ════════════════╛ #}
+
+
+      {# ╒═════════════ Column 2 ═════════════════╕ #}
+      <div class="col-12 col-md-8" id='{{ reticle_id }}'>
+         {% include "./includes/grid-body.html.j2" %}
+      </div>
+      {# ╘═════════════ Column 2 ════════════════╛ #}
    </div>
-</div>
 
-{# <button id="saveButton" class="btn btn-primary mt-4">Save Order</button> #}
-</div>
-
-{% endblock dlg_blc_body %}
-{# ╘════════════════ Dialog Body ════════════════╛ #}
+   {% endblock %}
+   {# ╘════════════════ Dialog Body ════════════════╛ #}
 
 
-{# ╒══════════════ Grid JavaScript ══════════════╕ #}
-{% block dlg_blc_javascript %}
 
-<script>
-   const reticle = document.getElementById(' {{ reticle_id }}'); </script>
+   {# ╒════════════════ Dialog Footer ═══════════════╛ #}
+   {% block dlg_blc_footer %}
 
-<script src='{{static_route("js/scm_export.js")}}''></script>
+   <button id="saveButton" class="btn btn-primary mt-4">Salvar Arreglo</button>
+   <button id="exportButton" class="btn btn-primary mt-4">Exportar</button>
+
+   {% endblock %}
+   {# ╘════════════════ Dialog Footer ═══════════════╛ #}
+
+
+
+   {# ╒═══════════ Dialog JavaScript ══════════════╕ #}
+   {% block dlg_blc_javascript %}
+
+   <script>
+      const gridRows = {{ grid_data | tojson | safe }};
+      const reticle = document.getElementById(' {{ reticle_id }}');
+      const colMeta = {{ grid_col_meta | tojson | safe }};
+      const colCode = colMeta[0].n;
+      const colSep = colMeta[1].n;
+      const colScm = colMeta[2].n;
+      const cargoKeys = {{ cargo_keys | tojson }};
+      const gridID = '{{ grid_id }}';
+      const dateFormat = '{{ userDateFormat }}';
+      const initRow = {{ grid_init_row | default (0) }};
+      const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '' }
+   </script>
+
+   <script src='{{static_route("js/scm_export.js")}}''></script>
 
 {% endblock dlg_blc_javascript %}
-{# ╘══════════════ Grid JavaScript ══════════════╛ #}
+{# ╘══════════════ Dialog JavaScript ══════════════╛ #}
 
 
 <!-- eof -->

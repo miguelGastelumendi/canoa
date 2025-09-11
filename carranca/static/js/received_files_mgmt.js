@@ -79,9 +79,5 @@ const gridOptions = {
 const gridContainer = document.getElementById(gridID);
 const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
 
-/*
-fetch('https://www.ag-grid.com/example-assets/space-mission-data.json')
-    .then(response => response.json())
-    .then((data: any) => gridApi.setGridOption('gridRows', data))
-*/
+
 // eof

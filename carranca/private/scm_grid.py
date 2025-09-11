@@ -17,7 +17,7 @@ from ..models.private_1.SchemaGrid import SchemaGrid
 from ..helpers.py_helper import class_to_dict
 from ..helpers.jinja_helper import process_template
 from ..helpers.route_helper import get_private_response_data, init_response_vars
-from ..helpers.js_grid_helper import js_grid_constants
+from ..helpers.js_grid_helper import js_grid_col_meta_info,  js_grid_constants
 from ..helpers.ui_db_texts_helper import add_msg_final
 from ..helpers.db_records.DBRecords import DBRecords, ListOfDBRecords
 
@@ -42,7 +42,7 @@ def get_scm_grid() -> str:
 
         task_code += 1  # 3
         col_names = ["id", "name", "color", "visible", "sep_v2t"]
-        grid_const = js_grid_constants(ui_texts["colMetaInfo"], col_names, task_code)
+        grid_const = js_grid_constants(ui_texts[js_grid_col_meta_info], col_names, task_code)
 
         scm_data = []
         if is_get:

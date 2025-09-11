@@ -88,8 +88,6 @@ def local_ui_texts(section):
 # for ui_form_texts()
 def local_form_texts():
     ui_form_texts = _get_ui_texts(default_section) or {}
-    # icon = ui_form_texts[UITextsKeys.Form.icon_url]
-    # ui_form_texts[UITextsKeys.Form.icon_url] = icon_url("icons", icon)
 
     return ui_form_texts
 

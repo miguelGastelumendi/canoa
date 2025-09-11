@@ -16,10 +16,10 @@ from sqlalchemy import (
     Column,
     String,
     select,
+    exists,
     Text,
     func,
     and_,
-    exists,
 )
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import defer, Session
@@ -432,7 +432,7 @@ class Sep(SQLABaseTable):
         return name_exists
 
     @staticmethod
-    def get_visible_seps_of_schema(scm_id: int, col_names: List[str]) -> List["Sep"]:
+    def get_visible_seps_of_scm(scm_id: int, col_names: List[str]) -> List["Sep"]:
         if id is scm_id:
             return None
 

@@ -19,7 +19,7 @@ from ..models.private import MgmtSepsUser
 from ..helpers.py_helper import class_to_dict
 from ..helpers.jinja_helper import process_template
 from ..helpers.route_helper import get_private_response_data, init_response_vars
-from ..helpers.js_grid_helper import js_grid_constants
+from ..helpers.js_grid_helper import js_grid_col_meta_info,  js_grid_constants
 from ..helpers.ui_db_texts_helper import add_msg_final, UITextsKeys
 from ..helpers.db_records.DBRecords import DBRecords, ListOfDBRecords
 
@@ -41,7 +41,7 @@ def get_sep_grid() -> str:
 
         task_code += 1  # 3
         col_names = ["id", "icon_file_name", "scm_name", "name", "user_curr", "visible"]
-        grid_const = js_grid_constants(ui_texts["colMetaInfo"], col_names, task_code)
+        grid_const = js_grid_constants(ui_texts[js_grid_col_meta_info], col_names, task_code)
 
         sep_data = []
         if is_get:

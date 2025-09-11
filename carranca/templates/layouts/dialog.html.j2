@@ -67,14 +67,14 @@ dialog icons. #}
 <section>
     <div id="{{dlg_main_id}}" style="{{ dlg_var_style|default('display: block;') }}"
         class="modal {% if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top | default('mt-5')}}{% endif %}">
-        <div class="modal-dialog {{ dlg_cls_size|default('dlg-width') }}
+        <div class="modal-dialog {{dlg_cls_size|default('dlg-width')}}
                 {%+ if (dlg_var_v_centered|default(False)) %} modal-dialog-centered {% endif %}
                 {%+ if dlg_var_scroll %} modal-dialog-scrollable {% endif %}
                 {{ dlg_cls_dialog|default('')}}">
             <div class="modal-content {{dlg_cls_content|default('')}}">
                 {# === Header === #}
-                <div class="modal-header {{ dlg_cls_header | default('dlg-header') }}">
-                    <h5 class="modal-title {{ dlg_cls_title | default('dlg-title') }}">
+                <div class="modal-header {{dlg_cls_header | default('dlg-header')}}">
+                    <h5 class="modal-title {{dlg_cls_title | default('dlg-title')}}">
                         {% if dlg_var_icon_url %}
                         <span class="dlg-icon-back">
                             <img id="{{dlg_var_icon_id}}" src="{{dlg_var_icon_url}}" class="dlg-icon-img"

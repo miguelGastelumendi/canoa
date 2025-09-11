@@ -56,6 +56,9 @@ class SchemaGrid(SQLABaseTable):
         """
         Returns:
           All records from SchemaGrid table, optional of selected fields
+          If 'only_visible' is True, records are:
+            filtered by `visible` = True
+            and ordered by 'ui_order'
         """
 
         def _get_data(db_session: Session):

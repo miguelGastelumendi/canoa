@@ -2,7 +2,7 @@
     "python.analysis.extraPaths": [
         "./carranca"
     ],
-    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.typeCheckingMode": "standard",
     "github.copilot.enable": {
         "*": false,
         "plaintext": false,

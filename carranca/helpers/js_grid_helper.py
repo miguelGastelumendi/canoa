@@ -33,8 +33,10 @@ js_grid_sec_key = "grid_sec_key"
 js_grid_rsp = "grid_rsp"
 js_grid_submit_id = "grid-submit-id"
 
+js_grid_col_meta_info ="colMetaInfo"
+
 # TODO: create a real key with user_id and datetime
-js_grid_sec_value = "7298kaj0fk9dl-sd=)0y"
+js_grid_sec_value = "7298kaj0fk9dl-sd=)0ya"
 
 ui_sec_key_item = "secKeyViolation"
 

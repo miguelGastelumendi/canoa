@@ -25,7 +25,6 @@ from ..models.public import User
 from ..models.private import Sep, Schema, MgmtSepsUser
 from ..private.UserSep import UserSep
 from ..helpers.py_helper import UsualDict, clean_text, to_int, crc16
-from ..helpers.js_grid_helper import     js_grid_sec_key,        js_grid_sec_value
 from ..public.ups_handler import ups_handler
 from ..helpers.user_helper import get_batch_code
 from ..helpers.jinja_helper import process_template
@@ -158,11 +157,8 @@ def do_sep_edit(data: str) -> str:
 
             else:  # is_insert => return
                 # edit Scheme (from list, but force user to select one), sep name, description & icon
-                ui_texts[SCHEMA_LIST_VALUE] = (
-                    "" if is_get else flask_form.schema_list.data
-                )
-                ui_texts[UITextsKeys.Form.icon_url] = do_icon_get_url(SepIconMaker.empty_file )
-                # SepIconMaker.get_url(SepIconMaker.empty_file)
+                ui_texts[SCHEMA_LIST_VALUE] = "" if is_get else flask_form.schema_list.data
+                ui_texts[UITextsKeys.Form.icon_url] = None #do_icon_get_url(SepIconMaker.empty_file)
                 select_one = ui_texts["scm_placeholderOption"]  # (select schema)
                 ui_texts[SCHEMA_LIST] = [
                     {"id": "", "name": select_one}

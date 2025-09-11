@@ -10,20 +10,20 @@ mgd
 
 from carranca import global_sqlalchemy_scoped_session, global_login_manager
 
-from typing import Any
+from typing import Optional, Any
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import ColumnExpressionArgument
 from sqlalchemy import (
+    String,
+    select,
     Column,
+    Integer,
+    Boolean,
+    DateTime,
     Computed,
     ForeignKey,
-    Integer,
-    String,
-    DateTime,
-    Boolean,
     LargeBinary,
-    select,
 )
 from sqlalchemy.orm import relationship, joinedload
 from flask_login import UserMixin
@@ -101,7 +101,7 @@ class User(SQLABaseTable, UserMixin):
         return user
 
     @staticmethod
-    def get_all_users(where: ColumnExpressionArgument[bool]) -> DBRecords:
+    def get_all_users(arg_where: ColumnExpressionArgument[bool], arg_order: Optional[Column] = None) -> DBRecords:
         """
         Fetches a list of all users (id, id_role, username, email, disabled)
         from the `users` table.
@@ -110,8 +110,8 @@ class User(SQLABaseTable, UserMixin):
         def _get_data(db_session: Session):
             stmt = (
                 select(User.id, User.id_role, User.username, User.email, User.disabled)
-                .where(where)
-                .order_by(User.username_lower)
+                .where(arg_where)
+                .order_by(User.username_lower if arg_order is None else arg_order)
             )
 
             usr_rows = db_session.execute(stmt).all()
