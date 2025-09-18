@@ -93,7 +93,7 @@ body {
 }
 
 .dlg-icon-img {
-    vertical-align: middle;
+    /* This ruleset is empty and contains no declarations */
 }
 
 .dlg-footer {

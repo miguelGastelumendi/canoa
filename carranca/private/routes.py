@@ -185,8 +185,8 @@ def sep_edit(code: str = "?"):
 
 
 @login_required
-@bp_private.route("/scm_export", methods=["GET"])
-def scm_export():
+@bp_private.route("/scm_export_ui", methods=["GET"])
+def scm_export_ui():
     """
     Through this route, the user export the all schemas and seps
     """
@@ -194,9 +194,13 @@ def scm_export():
     if nobody_is_logged():
         return redirect_to(login_route())
 
-    from .scm_export import get_scm_export
+    from .scm_export import get_scm_export_ui
 
-    return get_scm_export()
+    return get_scm_export_ui()
+
+# @login_required
+# @bp_private.route("/scm_export/<code>", methods=["GET", "POST"])
+# def scm_export(code: str = "?"):
 
 
 @login_required

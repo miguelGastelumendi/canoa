@@ -57,11 +57,14 @@ def _do_sep_placeholderOption(fullname: str) -> UserSep:
 def receive_file() -> template_file_full_name:
     template, is_get, ui_texts = get_private_response_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
+    error_code = 0
 
     # utils
     def _get_template() -> template_file_full_name:
-        seps = [sep for sep in app_user.seps]
-        if not seps:
+        seps: user_sep_list = []
+        if error_code != 0:
+            ui_texts[UITextsKeys.Msg.info] = None
+        elif not (seps:= [sep for sep in app_user.seps]):
             ui_texts[UITextsKeys.Msg.warn] = ui_texts["noSEPassigned"]
             ui_texts[UITextsKeys.Msg.info] = None
             ui_texts[UITextsKeys.Msg.display_only_msg] = True
@@ -91,7 +94,6 @@ def receive_file() -> template_file_full_name:
 
     try:
         task_code = 1
-        error_code = 0
 
         if is_get:
             return _get_template()
@@ -186,18 +188,18 @@ def receive_file() -> template_file_full_name:
         from .validate_process.process import process
 
         task_code += 1  # 22
-        error_code, msg_error, _ = process(app_user, sep_data, file_data, pd, received_at, valid_extensions)
+        error_code, msg_id, _ = process(app_user, sep_data, file_data, pd, received_at, valid_extensions)
 
         if error_code == 0:
             log_msg = add_msg_success("uploadFileSuccess", ui_texts, pd.user_receipt, app_user.email)
             sidekick.display.debug(log_msg)
         else:
-            log_msg = _log_error(msg_error, error_code, "", True)
-            sidekick.display.error(log_msg)
+            # keep error_code from process()
+            _log_error(msg_id, task_code, "", True)
 
     except Exception as e:
-        e_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code, "", True)
-        sidekick.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {e_code}, Message: {e}.")
+        error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code + 1, "", True)
+        sidekick.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
 
     tmpl = _get_template()
     return tmpl

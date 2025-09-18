@@ -12,6 +12,7 @@ from typing import Dict, List
 
 
 from .sep_icon import do_icon_get_url
+from .IdToCode import IdToCode
 from .grid_helper import GridCargoKeys
 from ..models.public import User
 from ..models.private import Sep
@@ -29,18 +30,20 @@ from ..models.private_1.ExportGrid import ExportGrid
 
 class SchemaData:
     header: UsualDict
+    coder: IdToCode
     meta_scm: UsualDict
     meta_sep: UsualDict
     schemas: List[UsualDict]
 
-    def __init__(self, header: UsualDict, meta_scm: UsualDict,    meta_sep: UsualDict,    schemas: List[UsualDict]):
+    def __init__(self, coder: IdToCode, header: UsualDict, meta_scm: UsualDict, meta_sep: UsualDict, schemas: List[UsualDict]):
+        self.coder = coder
         self.header = header
         self.meta_scm = meta_scm
         self.meta_sep = meta_sep
         self.schemas = schemas
 
 
-def get_scm_export( ) -> str:
+def get_scm_export_ui() -> str:
 
     task_code = ModuleErrorCode.SCM_EXPORT
     _, tmpl_ffn, is_get, ui_texts = init_response_vars()
@@ -130,6 +133,7 @@ def _get_scm_data( task_code: int, encode64:bool, scm_cols: List[str], sep_cols:
         get_icon= Sep.icon_file_name.name in sep_cols
         task_code += 1
         mgmt: str = None
+        coder = IdToCode(11)
         for scm in scm_rows:
             schema_dic = scm.encode64([scm_id]) if encode64 else scm.copy([scm_id])
             schema_dic[SEPS_KEY]: List[Sep] = []
@@ -137,6 +141,8 @@ def _get_scm_data( task_code: int, encode64:bool, scm_cols: List[str], sep_cols:
             for sep in sep_rows:
                 sep.icon_file_name = do_icon_get_url(sep.icon_file_name, sep.id)  if get_icon else None
                 sep.manager = mgmt if mng_list and (mgmt:= mng_list.get(sep.mgmt_users_id)) else "?"
+                sep.scm_code = coder.encode(scm.id)
+                sep.code = coder.encode(sep.id)
                 schema_dic[SEPS_KEY].append(sep.encode64([sep_id]) if encode64 else sep.copy([sep_id]))
 
             schema_list.append(schema_dic)
@@ -144,7 +150,7 @@ def _get_scm_data( task_code: int, encode64:bool, scm_cols: List[str], sep_cols:
         task_code += 1
         meta_scm = scm_rows.col_info
         meta_sep = sep_rows.col_info if sep_rows else []
-        schema_data = SchemaData(None, meta_scm, meta_sep, schema_list)
+        schema_data = SchemaData(coder, None, meta_scm, meta_sep, schema_list)
 
         return schema_data
 

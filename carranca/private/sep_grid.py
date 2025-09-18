@@ -12,9 +12,9 @@ from typing import Tuple, List
 from .sep_icon import do_icon_get_url
 from .grid_helper import GridCargoKeys
 from .SepIconMaker import SepIconMaker
+from ..models.private import MgmtSepsUser
 from ..public.ups_handler import ups_handler
 from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
-from ..models.private import MgmtSepsUser
 
 from ..helpers.py_helper import class_to_dict
 from ..helpers.jinja_helper import process_template

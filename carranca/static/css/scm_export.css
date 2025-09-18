@@ -59,11 +59,10 @@
 }
 
 .reticule-item {
-   /* cursor: grab; */
    border: var(--item-border) solid var(--adaptabrasil-back-color);
    width: var(--item-size);
    height: var(--item-size);
-   overflow: hidden;
+   /* overflow: hidden; */
    margin: 0 auto;
    user-select: none;
    /* old browsers */
@@ -76,6 +75,7 @@
 }
 
 .reticule-item-hot {
+   vertical-align: middle;
    cursor: grab;
 }
 

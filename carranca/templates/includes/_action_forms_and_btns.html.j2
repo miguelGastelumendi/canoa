@@ -14,10 +14,16 @@ mgd
 Spell:ignore endmacro preid onclick
 #}
 
+{# `action_form__form_close_id` is defined in templates/layouts/base.html.j2 #}
+{% macro action_form__close(action_form__form_on_close, action_form__form_close_id) %}
+<form action="{{action_form__form_on_close}}" method="get" id="{{action_form__form_close_id}}"></form>
+{% endmacro %}
 
-{# `action_form__form_submit_id` is defined in templates/layouts/base.html.j2 #}
-{% macro action_form__close(action_form__form_on_close, action_form__form_submit_id) %}
-<form action="{{action_form__form_on_close}}" method="get" id="{{action_form__form_submit_id}}"></form>
+{% macro action_form__submit(action_form__form_on_submit) %}
+<form method="post" action="{{action_form__form_on_submit}}" id="{{grid_submit_id}}">
+    <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
+    <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
+</form>
 {% endmacro %}
 
 {% macro

@@ -31,11 +31,11 @@ mgd
         {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
         {{ btn_action(dlg_id_submit_form, grdBtnDelete, cargo_keys.delete) }}
     </div>
-
 </div>
 {% endblock grid_blc_footer %}
 
 {% block grid_blc_forms %}
+{# TODO: substitute form with action_form__submit #}
 <form method="get" action="{{private_route('sep_grid', code=grid_rsp)}}" id={{dlg_id_submit_form}}>
     <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
     <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">

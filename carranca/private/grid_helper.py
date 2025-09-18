@@ -25,7 +25,8 @@ class GridCargoKeys:
     edit = "E"
     insert = "I"
     delete = "D"
-
+    save = "S"
+    export = "X"
 
 class GridResponse:
     action: str = ""

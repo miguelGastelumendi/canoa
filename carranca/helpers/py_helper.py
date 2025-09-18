@@ -252,9 +252,8 @@ def clean_text(text: str, not_allowed: Optional[str] = ""):
     # Remove not_allowed
     check_1 = "".join(c for c in check_0 if c not in exclude)
     check_2 = "".join(c for c in check_1 if ord(c) >= 32)  # Remove any char < 32
-    check_3 = " ".join(
-        check_2.split()
-    )  # Remove extra spaces (left, right, and more than 2 consecutive)
+    # Remove extra spaces (left, right, and more than 2 consecutive)
+    check_3 = " ".join( check_2.split() )
     return check_3
 
 

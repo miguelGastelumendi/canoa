@@ -161,6 +161,8 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         return scm_list
 
     def __do_hash(data: str) -> str:
+        if not isinstance(data, str):
+            raise ValueError("Invalid argument: string expected in __do_hash(data: str)")
         i: int = crc16(data)
         hash = format(i, "04x")
         return hash

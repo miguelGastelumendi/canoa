@@ -13,7 +13,6 @@
 
 // SEP grid arrangement
 document.addEventListener('DOMContentLoaded', () => {
-   let draggedItem = null;
 
    /**
     * Saves the current order of image sources to localStorage.
@@ -50,10 +49,34 @@ document.addEventListener('DOMContentLoaded', () => {
    */
 
    // --- DRAG AND DROP LOGIC (from before) ---
-   function initializeDragAndDrop() {
-      const gridItems = document.querySelectorAll('.reticule-item-hot');
+   /** @type {HTMLSpanElement | null} */
+   let draggedItem = null;
 
-      gridItems.forEach(item => {
+
+   function initializeDragAndDrop() {
+
+      const gridImages = /** @type {HTMLSpanElement[]} */ (Array.from(document.querySelectorAll('.reticule-item-hot')));
+      /**
+       * Compare the Schema or Sep of tho items.
+       * @param {number} part
+       * @param {HTMLSpanElement} a
+       * @param {HTMLSpanElement} b
+       * @returns {boolean}
+       */
+      const same = (part, a, b) => a.firstElementChild?.id.split(':')[part] === b.firstElementChild?.id.split(':')[part];
+      const SCHEMA = 0
+      const SEP= 1
+
+      /**
+       * Determines if a item can be dropped.
+       * That is, if both belong to the same schema
+       * @param {HTMLSpanElement} item
+       * @returns {boolean}
+       */
+      const canDrop = (item) => (draggedItem != null) && (draggedItem !== item) && same(SCHEMA, draggedItem, item);
+
+
+      gridImages.forEach(item => {
          item.addEventListener('dragstart', () => {
             draggedItem = item;
             setTimeout(() => { (item instanceof HTMLElement) && (item.style.opacity = '0.5'); }, 0);
@@ -64,8 +87,13 @@ document.addEventListener('DOMContentLoaded', () => {
          });
 
          item.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            item.classList.add('over');
+            // How to signal if drop is allowed
+            if (canDrop(item)) {
+               e.preventDefault();
+               item.classList.add('over');
+            } else {
+               item.classList.remove('over');
+            }
          });
 
          item.addEventListener('dragleave', () => {
@@ -75,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
          item.addEventListener('drop', (e) => {
             e.preventDefault();
             item.classList.remove('over');
-            if (draggedItem !== item) {
+            if (canDrop(item)) {
                let draggedContent = draggedItem.innerHTML;
                draggedItem.innerHTML = item.innerHTML;
                item.innerHTML = draggedContent;
@@ -83,8 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
          });
       });
    }
-
-
 
    initializeDragAndDrop();
 
@@ -123,11 +149,11 @@ const gridOptions = {
 
 const setActiveRow = (row, rowIx) => {
    if (!row) { return; }
-   cargo[cargoKeys.index] = rowIx;
-   cargo[cargoKeys.code] = row.data[colCode]
-   if (icon.src != row.data[colIconUrl]) {
-      icon.src = row.data[colIconUrl];
-   }
+   /*  cargo[cargoKeys.index] = rowIx;
+     cargo[cargoKeys.code] = row.data[colCode]
+     if (icon.src != row.data[colIconUrl]) {
+        icon.src = row.data[colIconUrl];
+     } */
 }
 
 //-------------

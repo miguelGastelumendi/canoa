@@ -10,7 +10,7 @@ mgd
 
 --------------------------------------- #}
 {# cSpell:ignore stylesheet urlname tojson endfor ufiles #}
-{% set dlg_cls_size= dlg_cls_size | default('modal-lg') %}
+{% set dlg_cls_size= dlg_cls_size | default('modal-xl') %}
 {% set reticle_id = reticle_id | default('reticle') %}
 
 {% extends "./layouts/dialog.html.j2" %}
@@ -34,7 +34,7 @@ mgd
 <div class="container">
    <div class="row">
       {# ╒══════════════ Column 1 ═══════════════╕ #}
-      <div class="col-12 col-md-4" id='{{ reticle_id }}'>
+      <div class="col-12 col-md-4" id='{{reticle_id}}'>
 
          {% for scm in schemas %}
          {% if scm.seps|length > 0 %}
@@ -45,9 +45,9 @@ mgd
                <div class="reticule-header-title">{{scm.name}}</div>
             </div>
             {% for sep in scm.seps %}
-            <div class="reticule-item reticule-item-hot" draggable="true" title='{{sep.name}} | {{sep.manager}}'>
-               <img src='{{ sep.icon_file_name }}'>
-            </div>
+            <span class="reticule-item reticule-item-hot" draggable="true" title='{{sep.name}} | {{sep.manager}}'>
+               <img src='{{sep.icon_file_name}}' id='{{sep.scm_code}}:{{sep.code}}'>
+            </span>
             {% endfor %}
             {# fill empty slots #}
             {% set empty_slots = (3 - (scm.seps|length % 3)) % 3 %}
@@ -61,7 +61,6 @@ mgd
          {% endif %}
          {% endfor %}
       </div>
-
       {# ╘═════════════ Column 1 ════════════════╛ #}
 
 
@@ -69,46 +68,60 @@ mgd
       <div class="col-12 col-md-8" id='{{ reticle_id }}'>
          {% include "./includes/grid-body.html.j2" %}
       </div>
-      {# ╘═════════════ Column 2 ════════════════╛ #}
+      {# ╘═════════════ Column 2 ═════════════════╛ #}
    </div>
-
-   {% endblock %}
-   {# ╘════════════════ Dialog Body ════════════════╛ #}
-
-
-
-   {# ╒════════════════ Dialog Footer ═══════════════╛ #}
-   {% block dlg_blc_footer %}
-
-   <button id="saveButton" class="btn btn-primary mt-4">Salvar Arreglo</button>
-   <button id="exportButton" class="btn btn-primary mt-4">Exportar</button>
-
-   {% endblock %}
-   {# ╘════════════════ Dialog Footer ═══════════════╛ #}
+</div>
+{% endblock dlg_blc_body %}
+{# ╘════════════════ Dialog Body ════════════════╛ #}
 
 
+{# ╒════════════════ Dialog Footer ═══════════════╛ #}
+{% block dlg_blc_footer %}
+<div class="mb-2 row">
+   <div class="col-auto">
+      {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
+      {{ btn_action(dlg_id_submit_form, dlgBtnSaveArrange, cargo_keys.save) }}
+   </div>
+   <div class="col-auto">
+      {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
+      {{ btn_action(dlg_id_submit_form, dlgBtnExport, cargo_keys.export) }}
+   </div>
+</div>
+{% endblock dlg_blc_footer %}
+{# ╘════════════════ Dialog Footer ═══════════════╛ #}
 
-   {# ╒═══════════ Dialog JavaScript ══════════════╕ #}
-   {% block dlg_blc_javascript %}
 
-   <script>
-      const gridRows = {{ grid_data | tojson | safe }};
-      const reticle = document.getElementById(' {{ reticle_id }}');
-      const colMeta = {{ grid_col_meta | tojson | safe }};
-      const colCode = colMeta[0].n;
-      const colSep = colMeta[1].n;
-      const colScm = colMeta[2].n;
-      const cargoKeys = {{ cargo_keys | tojson }};
-      const gridID = '{{ grid_id }}';
-      const dateFormat = '{{ userDateFormat }}';
-      const initRow = {{ grid_init_row | default (0) }};
-      const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '' }
-   </script>
+{# ╒════════════════ Dialog Forms ════════════════╕ #}
+{% block dlg_blc_forms %}
 
-   <script src='{{static_route("js/scm_export.js")}}''></script>
+{% from "includes/_action_forms_and_btns.html.j2" import action_form__submit %}
+{{ action_form__submit("{{private_route('change_password')}}") }}
 
-{% endblock dlg_blc_javascript %}
-{# ╘══════════════ Dialog JavaScript ══════════════╛ #}
+{% endblock dlg_blc_forms %}
+{# ╘═════════════════ Dialog Forms ════════════════╛ #}
+
+
+{# ╒═══════════ Dialog JavaScript ══════════════╕ #}
+{% block dlg_blc_javascript %}
+
+<script>
+   const gridRows = {{ grid_data | tojson | safe }};
+   const reticle = document.getElementById('{{ reticle_id }}');
+   const colMeta = {{ grid_col_meta | tojson | safe }};
+   const colCode = colMeta[0].n;
+   const colSep = colMeta[1].n;
+   const colScm = colMeta[2].n;
+   const cargoKeys = {{ cargo_keys | tojson }};
+   const gridID = '{{ grid_id }}';
+   const dateFormat = '{{ userDateFormat }}';
+   const initRow = {{ grid_init_row | default (0) }};
+   const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '' }
+</script>
+
+<script src='{{static_route("js/scm_export.js")}}''></script>
+
+   {% endblock dlg_blc_javascript %}
+   {# ╘══════════════ Dialog JavaScript ══════════════╛ #}
 
 
 <!-- eof -->

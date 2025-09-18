@@ -64,12 +64,25 @@
 
 ------- 2025 -September----------
 ---------------------------------
-2025-09-0
     - send emails when a schema manager is changed
     - salver v++ de DB
 
+
+2025-09-18 4.82 6 export UI
+    - Part 6
+    - Avoid moving sep img to another sep
+    - Correctly display Barômetro icon
+    - Start saving icons position
+
+
+2025-09-16--17
+    - Prepare Linux Server to upgrade data_validator
+    - Try to fix a problem with the router is SAtelier
+
+
+2025-09-11,15
+    - part 5
     - Fix layout export UI
-    -
 
 
 2025-09-08--10 4.81 4 export UI
