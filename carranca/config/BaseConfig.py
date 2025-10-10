@@ -112,6 +112,7 @@ class BaseConfig(Config):
     DEBUG: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
     TESTING: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
     DEBUG_TEMPLATES: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
+    DEBUG_RENDERED_TEMPLATES: bool = None  # <- True if APP_PROPAGATE_DEBUG else False
     # this does'nt work (spend a day to find out), is SERVER_NAME: SERVER_ADDRESS = ""
     # https://flask.palletsprojects.com/en/latest/config/#SERVER_NAME
     # Inform the application what host and port it is bound to (NO Scheme).
@@ -136,7 +137,7 @@ class BaseConfig(Config):
     # folder is log_files
     LOG_FILE_FOLDER: str = None  # "log_files"
     LOG_FILE_NAME: str = None  # defaults to APP_NAME.datetime.log
-    LOG_FILE_STATUS = "?"  # internal set
+    LOG_FILE_STATUS: str = "?"  # internal set
 
     """ Database constant
         --------------------------

@@ -1,11 +1,10 @@
 {#
 ----------------------------------
-./private/scm_export.htm.j2
+./private/scm_export_ui.htm.j2
 ----------------------------------
 Exports Schemas with there Seps
 Also displays an UI to set the display order to the seps
 
-reticle
 mgd
 
 --------------------------------------- #}
@@ -36,7 +35,10 @@ mgd
       {# ╒══════════════ Column 1 ═══════════════╕ #}
       <div class="col-12 col-md-4" id='{{reticle_id}}'>
 
+         {# % set scm_count = 0 % #}
+
          {% for scm in schemas %}
+         {% set scm_index = loop.index %}
          {% if scm.seps|length > 0 %}
 
          <div class="reticule-frame mb-2">
@@ -45,8 +47,9 @@ mgd
                <div class="reticule-header-title">{{scm.name}}</div>
             </div>
             {% for sep in scm.seps %}
+            {% set ui_order = scm_index * 100 + loop.index %}
             <span class="reticule-item reticule-item-hot" draggable="true" title='{{sep.name}} | {{sep.manager}}'>
-               <img src='{{sep.icon_file_name}}' id='{{sep.scm_code}}:{{sep.code}}'>
+               <img src='{{sep.icon_file_name}}' id='{{sep.scm_code}}:{{sep.code}}' data-ui-order='{{ui_order}}'>
             </span>
             {% endfor %}
             {# fill empty slots #}
@@ -71,6 +74,7 @@ mgd
       {# ╘═════════════ Column 2 ═════════════════╛ #}
    </div>
 </div>
+
 {% endblock dlg_blc_body %}
 {# ╘════════════════ Dialog Body ════════════════╛ #}
 
@@ -80,11 +84,11 @@ mgd
 <div class="mb-2 row">
    <div class="col-auto">
       {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
-      {{ btn_action(dlg_id_submit_form, dlgBtnSaveArrange, cargo_keys.save) }}
+      {{ btn_action(dlg_submit_form_id, dlgBtnSaveArrange, cargo_keys.save, "disabled") }}
    </div>
    <div class="col-auto">
       {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
-      {{ btn_action(dlg_id_submit_form, dlgBtnExport, cargo_keys.export) }}
+      {{ btn_action(dlg_submit_form_id, dlgBtnExport, cargo_keys.export) }}
    </div>
 </div>
 {% endblock dlg_blc_footer %}
@@ -95,7 +99,8 @@ mgd
 {% block dlg_blc_forms %}
 
 {% from "includes/_action_forms_and_btns.html.j2" import action_form__submit %}
-{{ action_form__submit("{{private_route('change_password')}}") }}
+{{ action_form__submit(dlg_submit_form_id, private_route('scm_export_db')) }}
+
 
 {% endblock dlg_blc_forms %}
 {# ╘═════════════════ Dialog Forms ════════════════╛ #}
@@ -105,8 +110,16 @@ mgd
 {% block dlg_blc_javascript %}
 
 <script>
-   const gridRows = {{ grid_data | tojson | safe }};
    const reticle = document.getElementById('{{ reticle_id }}');
+   const btnSave = document.getElementById('{{ cargo_keys.save }}{{ hash(dlgBtnSaveArrange) }}');
+   const btnExport = document.getElementById('{{ cargo_keys.export }}{{ hash(dlgBtnExport) }}');
+   const getGridOrder = () => {
+      const images = reticle.querySelectorAll('.reticule-item img');
+      const gridOrder = Array.from(images).map(img => img.dataset.uiOrder).join(',');
+      return gridOrder;
+   }
+   const gridInitialOrder = getGridOrder();
+   const gridRows = {{ grid_data | tojson | safe }};
    const colMeta = {{ grid_col_meta | tojson | safe }};
    const colCode = colMeta[0].n;
    const colSep = colMeta[1].n;
@@ -114,14 +127,25 @@ mgd
    const cargoKeys = {{ cargo_keys | tojson }};
    const gridID = '{{ grid_id }}';
    const dateFormat = '{{ userDateFormat }}';
+   // TODO *: send form server
    const initRow = {{ grid_init_row | default (0) }};
-   const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '' }
+   const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '', [cargoKeys.cargo]: null }
+
+   const setActiveRow = (row, rowIx) => {
+      if (!row) { return; }
+      cargo[cargoKeys.index] = rowIx;
+      cargo[cargoKeys.code] = row.data[colCode]
+   }
+
+   {% from "includes/_action_forms_and_btns.js.j2" import form_link_action %}
+   {{ form_link_action(dlg_submit_form_id, form_cargo_id) }}
+
 </script>
 
 <script src='{{static_route("js/scm_export.js")}}''></script>
 
-   {% endblock dlg_blc_javascript %}
-   {# ╘══════════════ Dialog JavaScript ══════════════╛ #}
+{% endblock dlg_blc_javascript %}
+{# ╘══════════════ Dialog JavaScript ══════════════╛ #}
 
 
 <!-- eof -->

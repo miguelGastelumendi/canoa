@@ -16,8 +16,6 @@ mgd
 
 {# only specify if different from default #}
 {% set dlg_cls_size= 'modal-lg' %}
-{% set grid_submit_id= 'grd-submit-id' %}
-
 
 {# ╒════════════════ Grid Footer ════════════════╕ #}
 {% block grid_blc_footer %}
@@ -26,13 +24,12 @@ mgd
     {# ----------- Action Triggers --------- #}
     <div class="col-auto">
         {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
-        {{ btn_action(dlg_id_submit_form, grdBtnEdit, cargo_keys.edit) }}
+        {{ btn_action(dlg_submit_form_id, grdBtnEdit, cargo_keys.edit) }}
     </div>
     <div class="col-auto">
         {% from "includes/_action_forms_and_btns.html.j2" import btn_action %}
-        {{ btn_action(dlg_id_submit_form, grdBtnDelete, cargo_keys.delete) }}
+        {{ btn_action(dlg_submit_form_id, grdBtnDelete, cargo_keys.delete) }}
     </div>
-
 </div>
 
 {% endblock grid_blc_footer %}
@@ -42,10 +39,9 @@ mgd
 {# ╒════════════════ Grid Forms ═════════════════╕ #}
 {% block grid_blc_forms %}
 
-<form method="get" action="{{private_route('scm_grid', code=grid_rsp)}}" id={{dlg_id_submit_form}}>
-    <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
-    <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
-</form>
+
+{% from "includes/_action_forms_and_btns.html.j2" import action_form__submit %}
+{{ action_form__submit(dlg_submit_form_id, private_route('scm_grid', code=form_cargo_id)) }}
 
 {% endblock grid_blc_forms %}
 {# ╘════════════════ Grid Forms ═════════════════╛ #}
@@ -65,9 +61,10 @@ mgd
     const initRow = {{ grid_init_row | default (0) }};
     const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '' };
 
+    // {# TODO:  user _form_prepare_action #}
     document.addEventListener('DOMContentLoaded', () => {
-        const elForm = /** @type {HTMLFormElement} */(document.getElementById('{{ dlg_id_submit_form }}'));
-        const elResponse = /** @type {HTMLInputElement} */(document.getElementById('{{ grid_rsp }}'));
+        const elForm = /** @type {HTMLFormElement} */(document.getElementById('{{ form_submit_id }}'));
+        const elResponse = /** @type {HTMLInputElement} */(document.getElementById('{{ form_cargo_id }}'));
         elForm?.addEventListener('submit', (event) => {
             event.preventDefault();
             cargo[cargoKeys.action] = event.submitter.id;

@@ -38,8 +38,11 @@ class UITextsKeys:
         error = "msgError"
         success = "msgSuccess"
         fatal = "msgFatal"
+        tech = "msgTech"
         # display only message, no form, inputs/buttons (see .carranca/templates/layouts/form.html.j2 & dialog.html.j2)
         display_only_msg = "msgOnly"
+        # Only used in carranca\config\local_ui_texts.py
+        tech_intro = None
 
     class Page:
         title = "pageTitle"

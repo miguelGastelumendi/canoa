@@ -14,7 +14,7 @@ from flask import redirect, request, url_for
 
 from .py_helper import is_str_none_or_empty, camel_to_snake, clean_text
 from .html_helper import URL_PATH_SEP
-from .types_helper import ui_db_texts, template_file_full_name
+from .types_helper import ui_db_texts, template_file_full_name, OptStr
 from .ui_db_texts_helper import get_form_texts
 
 from ..config import BaseConfig
@@ -25,6 +25,10 @@ base_route_public = "public"
 base_route_static = "static"
 public_route__password_reset = "password_reset"
 templates_found = []
+
+MTD_GET= "GET"
+MTD_POST = "POST"
+MTD_ANY = [MTD_GET, MTD_POST]
 
 """
   ## Dynamic Route:
@@ -39,8 +43,11 @@ templates_found = []
 
 
 def _route(base: str, page: str, **params) -> str:
-    address = f"{bp_name(base)}.{page}"
-    url = url_for(address, **params)
+    try:
+        address = f"{bp_name(base)}.{page}"
+        url = url_for(address, **params)
+    except:
+        raise Exception(f"An error occurred while constructing the following address: [{base}.{page}/{params}]")
     return url
 
 
@@ -80,17 +87,19 @@ def index_route() -> str:
 def home_route() -> str:
     return private_route("home")
 
+def get_method() -> str:
+    return request.method.upper()
 
 def is_method_get() -> bool:
     """
     Determine if the current request method is GET.
     Raises a ValueError for unexpected request methods.
     """
-    rm = request.method.upper()
-    is_get = rm == "GET"
+    rm = get_method()
+    is_get = rm == MTD_GET
     if is_get:
         pass
-    elif rm == "POST":
+    elif rm == MTD_POST:
         is_get = False
     else:
         raise ValueError(f"Unexpected request method: '{rm}'.")
@@ -98,7 +107,7 @@ def is_method_get() -> bool:
     return is_get
 
 
-def get_front_end_str(name: str, not_allowed: Optional[str] = "") -> str:
+def get_form_input_value(name: str, not_allowed: Optional[str] = "") -> OptStr:
     text = request.form.get(name)
     return None if text is None else clean_text(text, not_allowed)
 
@@ -177,7 +186,7 @@ def init_response_vars() -> Tuple[dict, template_file_full_name, bool, ui_db_tex
     return {}, "", True, {}
 
 
-def redirect_to(route: str, message: str = None) -> str:
+def redirect_to(route: str, message: Optional[str] = None) -> str:
     # TODO: display message 'redirecting to ...
     return redirect(route)
 

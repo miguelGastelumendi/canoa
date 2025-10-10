@@ -17,7 +17,7 @@
 # It is only run once.
 
 import time, os.path as path
-from typing import Tuple, NamedTuple
+from typing import Tuple, NamedTuple, Optional, Any
 from urllib.parse import urlparse
 
 from .Args import Args
@@ -26,7 +26,7 @@ from .app_error_assistant import RaiseIf
 from ..helpers.py_helper import is_str_none_or_empty
 
 _ERROR_MSG = "[{}]: An error occurred while {}. Message: `{}`."
-fuse: "Fuse" = None
+fuse: Optional["Fuse"] = None
 
 
 # ---------------------------------------------------------------------------- #
@@ -77,19 +77,19 @@ def _get_debug_2() -> bool:
 
     debug_4 = False
     debug_3 = debug_4  # Read above 'Considerations'
-    debug_2 = bool(get_envvar("debug", debug_3))
+    debug_2 = bool(get_envvar("debug", str(debug_3)))
     return debug_2
 
 
 # ---------------------------------------------------------------------------- #
-def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, str]:
+def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[Any, str]:
     """
     Create the 'fuse' that will assists the initializations of classes
     """
     import json
 
-    msg_error = None
-    new_fuse: Fuse = None
+    msg_error = ''
+    new_fuse: Optional[Fuse] = None
     try:
         from .Display import Display
 
@@ -104,12 +104,12 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[any, st
         new_fuse.display.info(
             f"The 'fuse' was started in {new_fuse.app_mode} mode (and now we have how to print pretty)."
         )
-        args = f"{app_name}'s args: {{0}}"
+        s_args = f"{app_name}'s args: {{0}}"
         if new_fuse.debugging:
             _args = f"\n{json.dumps(new_fuse.args.__dict__, indent=3, sort_keys=True)}"
-            new_fuse.display.debug(args.format(_args))
+            new_fuse.display.debug(s_args.format(_args))
         else:
-            new_fuse.display.info(args.format(new_fuse.args))
+            new_fuse.display.info(s_args.format(new_fuse.args))
     except Exception as e:
         new_fuse = None
         msg_error = _ERROR_MSG.format(__name__, "starting the fuse", str(e))
@@ -127,7 +127,7 @@ def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
     WARNING: Don't run with debug turned on in production!
     """
     Config = None  # this config will later be shared by sidekick
-    msg_error = None
+    msg_error = ''
     try:
         from ..config.DynamicConfig import get_config_for_mode
 
@@ -155,7 +155,7 @@ def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
 def _check_mandatory_keys(config, fDisplay) -> str:
     """Check if the mandatories environment variables are set."""
 
-    msg_error = None
+    msg_error = ''
     try:
         from ..config.BaseConfig import CONFIG_MANDATORY_KEYS
 
@@ -176,7 +176,7 @@ def _check_mandatory_keys(config, fDisplay) -> str:
                 has_empty = True
 
         msg_error = (
-            None
+            ''
             if not has_empty
             else _ERROR_MSG.format(
                 __name__,
@@ -194,14 +194,15 @@ def _check_mandatory_keys(config, fDisplay) -> str:
 
 
 # ---------------------------------------------------------------------------- #
-def _ignite_server_name(config) -> Tuple[any, str]:
+def _ignite_server_name(config) -> Tuple[Any, str]:
     """Confirm validity of the server address"""
-    msg_error = None
+    msg_error = ''
 
     class Address(NamedTuple):
         host: str
         port: int
 
+    address = Address('', 0)
     try:
 
         try_url = f"http://{config.SERVER_ADDRESS}"
@@ -280,7 +281,7 @@ def _ignite_sql_connection(uri: str) -> Tuple[str, str]:
 from .Sidekick import Sidekick
 
 
-def ignite_app(app_name, start_at) -> Tuple[Sidekick, bool]:
+def ignite_app(app_name, start_at) -> Tuple[Sidekick, str, bool]:
     from .Display import Display
 
     global fuse

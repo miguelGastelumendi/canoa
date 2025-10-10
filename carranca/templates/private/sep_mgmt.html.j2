@@ -21,20 +21,24 @@ mgd
 <div class="mb-2 row">
     <div class="col-auto">
         {% from "includes/_action_forms_and_btns.html.j2" import btn_submit %}
-        {{ btn_submit(dlg_id_submit_form, grdBtnSave, dlg_id_submit_btn, "disabled") }}
+        {{ btn_submit(dlg_submit_form_id, dlg_submit_btn_id, grdBtnSave, "disabled") }}
     </div>
     <div class="col-auto">
-        {% from "includes/_action_forms_and_btns.html.j2" import btn_close %}
-        {{ btn_close(action_form__form_close_id, grdBtnCancel) }}
+        {% from "includes/_action_forms_and_btns.html.j2" import btn_close_dlg %}
+        {{ btn_close_dlg(dlg_close_form_id, dlg_close_btn_id, grdBtnCancel) }}
     </div>
 </div>
 {% endblock grid_blc_footer %}
 
+{# TODO: substitute form with grid_form__submit #}
 {% block grid_blc_forms %}
-<form method="post" action="{{private_route('sep_mgmt')}}" id={{dlg_id_submit_form}} onsubmit="return doGridCargo()">
+{# <form method="post" action="{{private_route('sep_mgmt')}}" id={{dlg_submit_form_id}} onsubmit="return doGridCargo()">
     <input type="hidden" name="{{grid_rsp}}" id="{{grid_rsp}}">
     <input type="hidden" name="{{grid_sec_key}}" value="{{grid_sec_value}}">
-</form>
+</form> #}
+{% from "includes/_action_forms_and_btns.html.j2" import action_form__submit %}
+{{ action_form__submit(dlg_submit_form_id, private_route('sep_mgmt'), 'post', "onsubmit='return doGridCargo()'")}}
+
 {% endblock grid_blc_forms %}
 
 {% block grid_blc_javascript %}
@@ -52,8 +56,7 @@ Create a copy of user_list(or empty array), then add (itemNone)
 5: { h: "Atribuído em", n: "assigned_at" }
 6: { h: "Visível",, n: "visible" }
 ​#}
-​#}
-
+​
 <script>
     const colMeta = {{ grid_col_meta | tojson | safe }};
     const colUserCurr = colMeta[1].n;
@@ -68,9 +71,9 @@ Create a copy of user_list(or empty array), then add (itemNone)
     const userList = [...{{ user_list | tojson }}, itemNone];
     const cargoKeys = {{ cargo_keys | tojson }};
     const gridID = '{{ grid_id }}';
-    const iconID = '{{ dlg_var_icon_id }}';
-    const respID = '{{ grid_rsp }}';
-    const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{dlg_id_submit_btn}}'));
+    const iconID = '{{ dlg_icon_id }}';
+    const respID = '{{ form_cargo_id }}';
+    const btnGridSubmit = /** @type {HTMLInputElement} */(document.getElementById('{{dlg_submit_btn_id}}'));
     const dateFormat = '{{ userDateFormat }}';
 
 </script>

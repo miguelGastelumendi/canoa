@@ -44,6 +44,7 @@ started = time.perf_counter()
 import json
 import jinja2
 import socket
+
 from flask import Flask
 from typing import Optional
 from sqlalchemy import create_engine
@@ -53,6 +54,7 @@ from flask_sqlalchemy import SQLAlchemy
 from .helpers.py_helper import crc16
 from .private.JinjaUser import JinjaUser
 from .helpers.pw_helper import is_someone_logged
+from .helpers.file_helper import file_full_name_parse
 from .helpers.route_helper import private_route, public_route, static_route
 
 
@@ -110,7 +112,8 @@ def _register_blueprint_routes(app: Flask):
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
-    from .private.grid_helper import GridAction
+    from .helpers.uiact_helper import UiActProxy
+    from .helpers.js_consts_helper import js_form_sec_key, js_form_cargo_id, js_form_sec_value
 
     def __get_app_menu(sub_menu_name: str) -> ui_db_texts:
         sub_menu: dict = {}
@@ -178,8 +181,9 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         app_menu=__get_app_menu,
         sep_menu=__get_user_sep_menu_list,
         scm_menu=__get_scm_menu_list,
-        grid_cmd_add=GridAction.add,
-        grid_cmd_shw=GridAction.show,
+        grid_cmd_add=UiActProxy.add,
+        grid_cmd_shw=UiActProxy.show,
+        safe_token= {"key": js_form_sec_key, "value": js_form_sec_value(), "cargo": js_form_cargo_id }
     )
     if debugUndefined:
         # Enable DebugUndefined for better error messages in Jinja2 templates
@@ -223,10 +227,13 @@ def _create_app_and_log_file(app_name: str):
     app = Flask(app_name)
     _info(f"The Flask App was created, named '{app.name}'.")
 
+    # 🖋️ Local alias for clarity — sk rides with sidekick, no duplication.
+    g_sk: Sidekick = global_sidekick
+
     # -- config from file
-    app.config.from_object(global_sidekick.config)
+    app.config.from_object(g_sk.config)
     # obfuscate after app is configured
-    db_connstr_obfuscate(global_sidekick.config)
+    db_connstr_obfuscate(g_sk.config)
     _info("App's config was successfully bound to the app.")
 
     # -- config from env vars
@@ -235,24 +242,25 @@ def _create_app_and_log_file(app_name: str):
     _info(f"App's config updated with environment variables from [{pcName}].")
 
     # -- Log file
-    if not global_sidekick.config.LOG_TO_FILE:
-        global_sidekick.config.LOG_FILE_STATUS = "off"
+    if not g_sk.config.LOG_TO_FILE:
+        g_sk.config.LOG_FILE_STATUS = "off"
     else:
-        cfg = global_sidekick.config
+        cfg = g_sk.config
         error, full_name, level = do_log_file(
             app, cfg.LOG_FILE_NAME, cfg.LOG_FILE_FOLDER, cfg.LOG_MIN_LEVEL
         )
+        info = f"file '{full_name}' levels '{level}' and above"
         if not error:
-            info = f"file '{full_name}' levels '{level}' and above"
             _info(f"Logging to {info}.")
             app.logger.log(
-                global_sidekick.config.LOG_MIN_LEVEL,
+                g_sk.config.LOG_MIN_LEVEL,
                 f"{app.name}'s log {info} is ready.",
             )
-            global_sidekick.config.LOG_FILE_STATUS = "ready"
+            g_sk.config.LOG_FILE_STATUS = "ready"
+            g_sk.log_filename = file_full_name_parse(full_name)[2]
         else:
-            global_sidekick.config.LOG_FILE_STATUS = "error"
-            global_sidekick.display.error(
+            g_sk.config.LOG_FILE_STATUS = "error"
+            g_sk.display.error(
                 f"{app_name}'s log {info} creation error: [{error}]."
             )
 
@@ -273,9 +281,7 @@ def create_app():
     # === 1/3 Global sidekick  === #
     global global_sidekick, APP_DB_VERSION
     # === Check if all mandatory information is ready === #
-    global_sidekick, APP_DB_VERSION, display_mute_after_init = ignite_app(
-        APP_NAME, started
-    )
+    global_sidekick, APP_DB_VERSION, display_mute_after_init = ignite_app(APP_NAME, started)
     _info(
         f"[{global_sidekick}] instance is now ready. It will be available during app's context."
     )

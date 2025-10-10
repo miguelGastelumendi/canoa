@@ -31,7 +31,7 @@ local_texts = {
             UITextsKeys.Form.date_format: "pt-br",
             UITextsKeys.Form.btn_close: "Entendi",
             UITextsKeys.Form.icon_file: "ups_handler.svg",
-            UITextsKeys.Form.icon_file: "ups_handler.svg",
+            UITextsKeys.Msg.tech: "Por favor, informe este texto:",
         },
         UITextsKeys.Fatal.no_db_conn: {
             UITextsKeys.Msg.warn: "Houve um erro e não foi possível conectar ao banco de dados. Por favor, tente novamente mais tarde."
@@ -43,6 +43,7 @@ local_texts = {
             UITextsKeys.Form.date_format: "en",
             UITextsKeys.Form.btn_close: "OK",
             UITextsKeys.Form.icon_file: "ups_handler.svg",
+            UITextsKeys.Msg.tech_intro: "Por favor informe este texto:",
         },
         UITextsKeys.Fatal.no_db_conn: {
             UITextsKeys.Msg.warn: "There was an error and it was not possible to connect to the database. Please try again later."
@@ -55,6 +56,7 @@ local_texts = {
             UITextsKeys.Form.date_format: "es",
             UITextsKeys.Form.btn_close: "Entendí",
             UITextsKeys.Form.icon_file: "ups_handler.svg",
+            UITextsKeys.Msg.tech_intro: "Por favor, reporte este texto:",
         },
         UITextsKeys.Fatal.no_db_conn: {
             UITextsKeys.Msg.warn: "Hubo un error y no fue posible conectarse a la base de datos. Por favor, inténtelo de nuevo más tarde."

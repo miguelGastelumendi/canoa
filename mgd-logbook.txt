@@ -68,6 +68,15 @@
     - salver v++ de DB
 
 
+2025-09-20 -- 10-09  β 5.00  to new *canoa_staging* in Linux Sommelier
+    - git clone git@github.com:your-user/canoa.git canoa_staging
+
+
+2025-09-19 4.83 7 export UI
+    - todo:
+    - Save Icon's Order
+    - Make the Export form vertical scrollable
+
 2025-09-18 4.82 6 export UI
     - Part 6
     - Avoid moving sep img to another sep
@@ -470,12 +479,12 @@
     - review ui_texts_helper.py msg_not_found
 
 2025-02-21 β 3.55 received_files_mgmt & sep_mgmt `merged`
-    - received_files_mgmt & sep_mgmt now uses js_grid_constants
+    - received_files_mgmt & sep_mgmt now uses js_ui_constants
     - Create Users <-> Roles SQLAlchemy relation
     - logged_user now has role_id & role_abbr
     - Check if user role is valid (see login)
     - Fix Circular import
-    - finished js_grid_constants to create grid forms
+    - finished js_ui_constants to create grid forms
     - always add ui_date_format to ui_texts (see ui_texts_helper.py:get_section)
     - Rename tables, remove plural: UserDataFile (UserDataFiles), etc
     - --
@@ -1440,7 +1449,7 @@ TODO:
 
     Todo:
         - schema/sep management
-        - err_code <- grid_constants
+        - err_code <- js_ui_dictionary
         - fix data_validate html/css
         - add_msg_fatal template
 

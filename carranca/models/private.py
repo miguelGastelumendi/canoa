@@ -59,7 +59,7 @@ class UserDataFiles(SQLABaseTable):
     ticket = Column(String(40), unique=True)
     id_sep = Column(Integer)  # fk
     id_users = Column(Integer)  # fk
-
+    log_file_name = Column(String(200)) # use in case of error
     # register, file info
     file_name = Column(String(80))
     file_size = Column(Integer)
@@ -515,10 +515,12 @@ class ReceivedFiles(SQLABaseTable):
             else:
                 # For grid
                 stmt = stmt.where(
-                    and_(
-                        ReceivedFiles.email_sent == email_sent,
-                        ReceivedFiles.had_reception_error == had_reception_error,
-                    )
+                    ReceivedFiles.had_reception_error == had_reception_error,
+
+                    # and_( # and_(  mgd-bug-2025-10-01
+                    #     ReceivedFiles.email_sent == email_sent,
+                    #     ReceivedFiles.had_reception_error == had_reception_error,
+                    # )
                 )
                 if user_id is not None:
                     stmt = stmt.where(ReceivedFiles.user_id == user_id)
@@ -558,9 +560,7 @@ class ReceivedFilesCount(SQLABaseTable):
     @staticmethod
     def get_records(user_id: Optional[int] = None) -> DBRecords:
         def _get_data(db_session: Session) -> DBRecords:
-            stmt = select(
-                ReceivedFilesCount
-            )  # stmt : Select[Tuple[ReceivedFilesCount]] =
+            stmt = select(ReceivedFilesCount)
             if user_id is not None:
                 stmt = stmt.where(ReceivedFilesCount.user_id == user_id)
 
@@ -640,7 +640,7 @@ class MgmtSepsUser(SQLABaseTable):
         user_id: Optional[int] = None, sep_id: Optional[int] = None
     ) -> DBRecords:
         """⚠️
-        any change here must be replated in
+        any change here must be repeated in
         carranca/private/UserSep.py:UserSep
         """
         field_names = [

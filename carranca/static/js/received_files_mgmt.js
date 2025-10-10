@@ -12,31 +12,17 @@
 
 /// <reference path="./ts-check.js" />
 
-let activeRow = null;
-let btnFile = /** @type {HTMLButtonElement|null} */ (null);
-let btnRprt = /** @type {HTMLButtonElement|null} */ (null);
-
-window.addEventListener('beforeunload', (event) => {
-
-});
-
-
 //-------------
 // == Basic Grid
 const gridOptions = {
     rowSelection: 'single',
     onGridReady: (params) => {
-        const api = params.api
-        const firstRowNode = api.getDisplayedRowAtIndex(0);
-        if (firstRowNode) { setTimeout(() => { firstRowNode.setSelected(true); }, 20); }
+        const firstRow = params.api.getDisplayedRowAtIndex(0);
+        if (firstRow) { setTimeout(() => { setActiveRow(firstRow); firstRow.setSelected(true); }, 20); }
     },
     onCellFocused: (event) => {
-        activeRow = (event.rowIndex === null) ? null : api.getDisplayedRowAtIndex(event.rowIndex);
-        if (activeRow) {
-            if (!btnFile || !btnRprt) { ([btnFile, btnRprt] = defButtons()); }
-            btnFile.disabled = !activeRow.data.data_f_found;
-            btnRprt.disabled = !activeRow.data.report_found;
-        }
+        let row = (event.rowIndex === null) || !event.api ? null : event.api.getDisplayedRowAtIndex(event.rowIndex);
+        setActiveRow(row)
     },
     rowData: gridRows,
     columnDefs: [
@@ -53,7 +39,7 @@ const gridOptions = {
             cellClassRules: {
                 'grid-item-none': params => {
                     const rowNode = params.api.getRowNode(params.rowIndex);
-                    return rowNode ? !(rowNode.data.report_found && rowNode.data.data_f_found) : false;
+                    return rowNode ? !(rowNode.data.report_found || rowNode.data.data_f_found) : false;
                 },
             },
         },
@@ -77,7 +63,7 @@ const gridOptions = {
 //-------------
 //== Init
 const gridContainer = document.getElementById(gridID);
-const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
+agGrid.createGrid(gridContainer, gridOptions);
 
 
 // eof

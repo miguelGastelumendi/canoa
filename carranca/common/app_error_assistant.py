@@ -10,6 +10,7 @@ mgd
 """
 
 from enum import IntEnum
+from typing import Optional
 
 from ..helpers.py_helper import crc16, now_as_iso
 
@@ -68,13 +69,15 @@ class AppStumbled(Exception):
         error_code: int = 0,
         logout: bool = False,
         is_fatal: bool = False,
-        original_e: Exception = None
+        original_e: Optional[Exception] = None,
+        tech_info: Optional[str] = None
     ):
         self.msg = msg
         self.error_code = error_code
         self.logout = logout
         self.is_fatal = is_fatal
         self.original_e = original_e
+        self.tech_info = tech_info
 
     def __str__(self):
         return f"{self.msg} (Error Code: {self.error_code}, Logout: {self.logout}, Fatal: {self.is_fatal})"
@@ -114,12 +117,13 @@ class ModuleErrorCode(IntEnum):
 
     RECEIVED_FILES_MGMT = 700
 
+    TEMPLATE_BUG = 800
+
 
 class RaiseIf:
-    """Flags to raise an error if
-    or just ignore the condition
+    """Flags to raise an error
+    or just print the condition
     """
-
     ignite_no_sql_conn = True
 
 

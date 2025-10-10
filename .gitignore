@@ -1,4 +1,6 @@
 # byte-compiled / optimized / DLL files
+# cspell:words: venv sqlite3 webassets pycache pytest
+
 __pycache__/
 *.py[cod]
 
@@ -43,6 +45,9 @@ data_tunnel/
 
 ## Canoa Linux
 mount-win.sh
+
+# private -mgd
+todo_today.txt
 
 #eof
 

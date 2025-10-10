@@ -1,36 +1,28 @@
 """
 Schema
-Grid form Adm
+Schema & Seps data create
 
-mgd
+
+mgd 2025.09
 """
 
 # cSpell: ignore samp sepsusr usrlist
 
-from typing import List
-
 from ..helpers.uiact_helper import UiActCmdKeys
 from ..public.ups_handler import ups_handler
 from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
-from ..models.private_1.SchemaGrid import SchemaGrid
 
 from ..helpers.py_helper import class_to_dict
 from ..helpers.jinja_helper import process_template
 from ..helpers.types_helper import jinja_template
 from ..helpers.route_helper import get_private_response_data, init_response_vars
-from ..helpers.js_consts_helper import js_grid_col_meta_info,  js_ui_dictionary
+from ..helpers.js_consts_helper import js_grid_col_meta_info, js_ui_dictionary
 from ..helpers.ui_db_texts_helper import add_msg_final
-from ..helpers.db_records.DBRecords import DBRecords, ListOfDBRecords
+from ..helpers.db_records.DBRecords import ListOfDBRecords
 
+#from .scm_export
 
-def get_scm_grid() -> jinja_template:
-
-    def _scm_data_fetch(col_names: List[str]) -> DBRecords:
-        scm_rows = SchemaGrid.get_schemas(col_names)
-        for record in scm_rows:
-            scm_id = record.id
-            record.id = SchemaGrid.code(scm_id)
-        return scm_rows
+def do_scm_create() -> jinja_template:
 
     task_code = ModuleErrorCode.SCM_GRID.value
     _, tmpl_rfn, is_get, ui_texts = init_response_vars()
@@ -69,3 +61,5 @@ def get_scm_grid() -> jinja_template:
 
 
 # eof
+
+

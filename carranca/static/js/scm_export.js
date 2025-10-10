@@ -11,70 +11,26 @@
  */
 /// <reference path="./ts-check.js" />
 
+
 // SEP grid arrangement
 document.addEventListener('DOMContentLoaded', () => {
-
-   /**
-    * Saves the current order of image sources to localStorage.
-    */
-   function saveGridOrder() {
-      // Get all image elements within the grid in their current order
-      const images = reticle.querySelectorAll('#grid-container .reticule-item img');
-
-      // Create an array of the image src attributes
-      const imageOrder = Array.from(images).map(img => img.src);
-
-      // Save the array to localStorage as a JSON string
-      // localStorage.setItem('imageGridOrder', JSON.stringify(imageOrder));
-      // alert('Grid order saved!'); // Provide user feedback
-   }
-
-   /**
-    * Loads the image order from localStorage and applies it to the grid.
-   function loadGridOrder() {
-      const savedOrder = localStorage.getItem('imageGridOrder');
-
-      if (savedOrder) {
-         const imageOrder = JSON.parse(savedOrder);
-         const images = document.querySelectorAll('#grid-container .reticule-item img');
-
-         // Re-assign the src for each image based on the saved order
-         images.forEach((img, index) => {
-            if (imageOrder[index]) {
-               img.src = imageOrder[index];
-            }
-         });
-      }
-   }
-   */
-
-   // --- DRAG AND DROP LOGIC (from before) ---
-   /** @type {HTMLSpanElement | null} */
-   let draggedItem = null;
-
-
+   let draggedItem = /** @type {HTMLSpanElement | null} */(null);
    function initializeDragAndDrop() {
-
-      const gridImages = /** @type {HTMLSpanElement[]} */ (Array.from(document.querySelectorAll('.reticule-item-hot')));
-      /**
-       * Compare the Schema or Sep of tho items.
-       * @param {number} part
-       * @param {HTMLSpanElement} a
-       * @param {HTMLSpanElement} b
-       * @returns {boolean}
-       */
-      const same = (part, a, b) => a.firstElementChild?.id.split(':')[part] === b.firstElementChild?.id.split(':')[part];
       const SCHEMA = 0
-      const SEP= 1
+      const SEP = 1
+      const gridImages = /** @type {HTMLSpanElement[]} */ (Array.from(document.querySelectorAll('.reticule-item-hot')));
 
-      /**
-       * Determines if a item can be dropped.
-       * That is, if both belong to the same schema
-       * @param {HTMLSpanElement} item
-       * @returns {boolean}
-       */
+      /** Retrieve the Schema o Sep of and Id ('scm:sep')
+       *  @type {(part: number, s: HTMLSpanElement) => string|undefined} */
+      const _get = (part, s) => s.firstElementChild?.id.split(':')[part];
+
+      /** Compare the Schema or Sep of two items.
+       *  @type {(part: number, a: HTMLSpanElement, b: HTMLSpanElement) => boolean} */
+      const same = (part, a, b) => _get(part, a) === _get(part, b);
+
+      /** Determines if a item can be dropped: both belong to the same schema
+       *  @type {(item: HTMLSpanElement) => boolean} */
       const canDrop = (item) => (draggedItem != null) && (draggedItem !== item) && same(SCHEMA, draggedItem, item);
-
 
       gridImages.forEach(item => {
          item.addEventListener('dragstart', () => {
@@ -87,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
          });
 
          item.addEventListener('dragover', (e) => {
-            // How to signal if drop is allowed
             if (canDrop(item)) {
                e.preventDefault();
                item.classList.add('over');
@@ -103,17 +58,21 @@ document.addEventListener('DOMContentLoaded', () => {
          item.addEventListener('drop', (e) => {
             e.preventDefault();
             item.classList.remove('over');
-            if (canDrop(item)) {
-               let draggedContent = draggedItem.innerHTML;
+            if (canDrop(item) && draggedItem) {
+               const draggedContent = draggedItem.innerHTML;
                draggedItem.innerHTML = item.innerHTML;
                item.innerHTML = draggedContent;
+               const newOrder = getGridOrder()
+               const gridOriginal = (newOrder == gridInitialOrder)
+               cargo[cargoKeys.cargo] = gridOriginal ? '' : newOrder
+               btnSave.disabled = gridOriginal;
+               btnExport.disabled = !gridOriginal
             }
          });
       });
    }
 
    initializeDragAndDrop();
-
 
 });
 
@@ -123,10 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
 const gridOptions = {
    rowSelection: 'single',
    onGridReady: (params) => {
-      const firstRow = params.api.getDisplayedRowAtIndex(cargo[cargoKeys.index]);
-      if (firstRow) {
-         setTimeout(() => { firstRow.setSelected(true); setActiveRow(firstRow, firstRow.rowIndex) }, 20);
-      }
+      const firstRow = cargo ? params.api.getDisplayedRowAtIndex(cargo[cargoKeys.index]) : null;
+      setTimeout(() => { firstRow?.setSelected(true); setActiveRow(firstRow, firstRow.rowIndex) }, 20);
    },
    onCellFocused: (event) => {
       let row = (event.rowIndex === null) || !event.api ? null : event.api.getDisplayedRowAtIndex(event.rowIndex);
@@ -147,18 +104,11 @@ const gridOptions = {
    ]
 }; // gridOptions
 
-const setActiveRow = (row, rowIx) => {
-   if (!row) { return; }
-   /*  cargo[cargoKeys.index] = rowIx;
-     cargo[cargoKeys.code] = row.data[colCode]
-     if (icon.src != row.data[colIconUrl]) {
-        icon.src = row.data[colIconUrl];
-     } */
-}
 
 //-------------
 //== Init
+// @ts-ignore
 const gridContainer = document.getElementById(gridID);
-const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
+agGrid.createGrid(gridContainer, gridOptions);
+
 //== eof
-// eof

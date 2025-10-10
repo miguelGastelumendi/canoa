@@ -204,7 +204,7 @@ def _get_user_seps() -> user_seps_rtn:
 # Proxies
 # =========================================================
 
-app_user: Optional[AppUser] = LocalProxy(_get_app_user)
+app_user: AppUser = LocalProxy(_get_app_user)
 
 
 jinja_user: Optional[JinjaUser] = LocalProxy(_get_jinja_user)

@@ -1,0 +1,90 @@
+{#
+----------------------------------
+./private/scm_export_db.htm.j2
+----------------------------------
+This dialog display the result of the
+Schemas & Seps Database export (Create/Update)
+
+mgd
+--------------------------------------- #}
+{# cSpell:ignore #}
+{% set dlg_cls_size= '' %}
+{% set form_close_btn_text= btnCloseForm | default('Ok') %}
+{% set form_bke_only_msg= msgOnly | default(True) %}
+
+{% extends "./layouts/dialog.html.j2" %}
+
+{# ╒════════════════ Dialog Body ════════════════╕ #}
+{% block dlg_blc_body %}
+
+{% include "includes/backend-msg.html.j2" %}
+
+{% endblock dlg_blc_body %}
+{# ╘════════════════ Dialog Body ════════════════╛ #}
+
+
+{# ╒════════════════ Dialog Footer ═══════════════╛ #}
+{% block dlg_blc_footer_buttons %}
+
+   <div class="col-auto">
+      {% from "includes/_action_forms_and_btns.html.j2" import btn_close_dlg %}
+      {{ btn_close_dlg(dlg_close_form_id, dlg_close_btn_id, form_close_btn_text) }}
+   </div>
+{% endblock dlg_blc_footer_buttons %}
+{# ╘════════════════ Dialog Footer ═══════════════╛ #}
+
+
+{# ╒════════════════ Dialog Forms ════════════════╕ #}
+{% block dlg_blc_forms %}
+
+{% from "includes/_action_forms_and_btns.html.j2" import action_form__submit %}
+{{ action_form__submit(dlg_submit_form_id, private_route('scm_export_db')) }}
+
+
+{% endblock dlg_blc_forms %}
+{# ╘═════════════════ Dialog Forms ════════════════╛ #}
+
+
+{# ╒═══════════ Dialog JavaScript ══════════════╕ #}
+{% block dlg_blc_javascript %}
+
+<script>
+   const reticle = document.getElementById('{{ reticle_id }}');
+   const btnSave = document.getElementById('{{ cargo_keys.save }}{{ hash(dlgBtnSaveArrange) }}');
+   const btnExport = document.getElementById('{{ cargo_keys.export }}{{ hash(dlgBtnExport) }}');
+   const getGridOrder = () => {
+      const images = reticle.querySelectorAll('.reticule-item img');
+      const gridOrder = Array.from(images).map(img => img.dataset.uiOrder).join(',');
+      return gridOrder;
+   }
+   const gridInitialOrder = getGridOrder();
+   const gridRows = {{ grid_data | tojson | safe }};
+   const colMeta = {{ grid_col_meta | tojson | safe }};
+   const colCode = colMeta[0].n;
+   const colSep = colMeta[1].n;
+   const colScm = colMeta[2].n;
+   const cargoKeys = {{ cargo_keys | tojson }};
+   const gridID = '{{ grid_id }}';
+   const dateFormat = '{{ userDateFormat }}';
+   // TODO *: send form server
+   const initRow = {{ grid_init_row | default (0) }};
+   const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '', [cargoKeys.cargo]: null }
+
+   const setActiveRow = (row, rowIx) => {
+      if (!row) { return; }
+      cargo[cargoKeys.index] = rowIx;
+      cargo[cargoKeys.code] = row.data[colCode]
+   }
+
+   {% from "includes/_action_forms_and_btns.js.j2" import form_link_action %}
+   {{ form_link_action(dlg_submit_form_id, form_cargo_id) }}
+
+</script>
+
+<script src='{{static_route("js/scm_export.js")}}''></script>
+
+{% endblock dlg_blc_javascript %}
+{# ╘══════════════ Dialog JavaScript ══════════════╛ #}
+
+
+<!-- eof -->

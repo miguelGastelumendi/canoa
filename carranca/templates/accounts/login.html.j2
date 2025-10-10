@@ -9,7 +9,7 @@ mgd
 --------------------------------------- #}
 {# cspell:ignore unselectable #}
 
-{% set dlg_var_close= False %}
+{% set dlg_close_btn_visible= False %}
 {% set dlg_cls_size= '' %} {# default size #}
 {% extends "./layouts/form.html.j2" %}
 
@@ -74,4 +74,9 @@ mgd
 {% endblock frm_blc_below %}
 {# ╘════════════════ Below ════════════════╛ #}
 
+{% block frm_blc_script %}
+<script>
+    Canoa.submitImmediately = true;
+</script>
+{% endblock frm_blc_script %}
 {# eof #}

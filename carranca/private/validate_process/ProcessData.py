@@ -116,9 +116,9 @@ class ProcessData:
         self.received_file_name = ""
         self.received_original_name = None
 
-    def working_file_name(self):
+    def working_file_name(self) -> str :
         return (
-            None
+            ''
             if is_str_none_or_empty(self.received_file_name)
             else f"{self.file_ticket}_{self.received_file_name}"
         )

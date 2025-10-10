@@ -21,24 +21,28 @@ cSpell:ignore
 
 from typing import TypeAlias, Optional, Any, Dict, Tuple, List
 
-ui_db_texts: TypeAlias = Dict[str, str]
+ui_db_texts: TypeAlias = Dict[str, Optional[str|bool]]
 UsualDict: TypeAlias = Dict[str, Any]
+js_const: TypeAlias = Dict[str, str]
 
-sep_mgmt_rtn: TypeAlias = Tuple[str, str, int]
+sep_mgmt_rtn: TypeAlias = Tuple[str|None, str, int]
 
 cargo_item: TypeAlias = Dict[str, str | Dict[str, str]]
 cargo_list: TypeAlias = List[cargo_item]
 
 template_file_full_name: TypeAlias = str
 jinja_template: TypeAlias = str
+jinja_generated_html: TypeAlias = str
 
 svg_content: TypeAlias = str
 
 OptListOfStr: TypeAlias = Optional[List[str]]
 
+OptStr: TypeAlias = Optional[str]
 
 # make str type explicit
 error_message: TypeAlias = str
 success_message: TypeAlias = str
 dic_as_json: TypeAlias = str
+json_txt: TypeAlias = str
 # eof

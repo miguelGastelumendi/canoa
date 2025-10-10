@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.db_helper import try_get_mgd_msg
-from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list
+from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list, OptStr
 from ...helpers.ui_db_texts_helper import format_ui_item
 
 from .keys_values import SepMgmtGridCols, CargoKeys
@@ -116,7 +116,7 @@ def _save_data_to_db(
     with global_sqlalchemy_scoped_session() as db_session:
         try:
 
-            def __set_sep_new_user(id: int, usr_new: str | None):
+            def __set_sep_new_user(id: int, usr_new: OptStr):
                 user_sep = db_session.query(MgmtSepsUser).filter_by(id=id).one_or_none()
                 if user_sep:
                     user_sep.user_new = usr_new

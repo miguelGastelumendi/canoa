@@ -21,7 +21,8 @@ mgd 2025-03-05
 
 # cSpell:ignore
 import inspect
-from typing import Tuple
+from os import path
+from typing import Tuple, Optional
 
 # TO USE from flask import render_template
 
@@ -36,7 +37,7 @@ from ..common.app_error_assistant import AppStumbled
 
 #  --------------------
 def ups_handler(
-    error_code: int, user_msg: str, e: Exception = None, logout: bool = None
+    error_code: int, user_msg: str, e: Optional[Exception] = None, logout: bool = False
 ) -> Tuple[dict, str, ui_db_texts]:
     from ..common.app_context_vars import app_user, sidekick
 
@@ -45,12 +46,14 @@ def ups_handler(
     except:
         ui_texts = local_ui_texts(UITextsKeys.Fatal.no_db_conn)
 
+    tech_msg = None
     if not e:
         error_msg = None  # no error, just a message for the user
     elif isinstance(e, AppStumbled):
         error_code = e.error_code
         error_msg = e.msg
         logout = e.logout
+        tech_msg = e.tech_info if e.tech_info else sidekick.log_filename
     elif app_user.is_power if app_user else False:
         error_msg = str(e)
     else:  # don't show to the common user a strange str
@@ -61,6 +64,7 @@ def ups_handler(
 
     # default texts that can be use in the form (see ups_page)
     context_texts = {
+        UITextsKeys.Msg.tech: tech_msg,
         UITextsKeys.Msg.warn: user_msg,
         UITextsKeys.Msg.error: error_msg,
         UITextsKeys.Msg.display_only_msg: True,
@@ -81,11 +85,11 @@ def ups_handler(
             ui_texts[key] = value
 
     # set the url for the icon IF a file name exists
-    if (file := ui_texts.get(UITextsKeys.Form.icon_file)) and not ui_texts.get(UITextsKeys.Form.icon_url):
+    if (file:= ui_texts.get(UITextsKeys.Form.icon_file)) and not ui_texts.get(UITextsKeys.Form.icon_url):
         ui_texts[UITextsKeys.Form.icon_url] = icon_url("icons", file)
 
     # TODO: send email
-    if (False if logout is None else logout) and is_someone_logged():
+    if logout and is_someone_logged():
         internal_logout()
 
     ups_template = get_tmpl_full_file_name("ups_page", "home")

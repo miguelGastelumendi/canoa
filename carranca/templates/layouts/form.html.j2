@@ -23,8 +23,6 @@ mgd
 {% set form_bke_display_ui= not form_bke_only_msg %}
 {% set form_close_btn_text= form_close_btn_text | default('Fechar') %}
 
-{% set form_post_id= "form-post-id"%}
-
 {% extends "./layouts/dialog.html.j2" %}
 
 {# ╒════════════════ Dialog Body ════════════════╕ #}
@@ -35,8 +33,8 @@ mgd
 {% if form_bke_only_msg %}
 {# ╒══════════ Display Message Only ══════════╕ #}
 
-{% from "includes/_action_forms_and_btns.html.j2" import btn_close %}
-{{ btn_close(action_form__form_close_id, form_close_btn_text) }}
+{# {% from "includes/_action_forms_and_btns.html.j2" import btn_close_dlg %}
+{{ btn_close_dlg(dlg_close_form_id, dlg_close_btn_id, form_close_btn_text) }} #}
 
 {# ╘══════════ Display Message Only ══════════╛ #}
 {% endif %}
@@ -47,18 +45,23 @@ mgd
 
 {% if form_bke_display_ui %}
 {# ╒═══════════════ Display UI ═══════════════╕ #}
-<form method="post" action="" id={{form_post_id}} {{ formAttribute | default('') }}>
+<form method="post" action="" id="{{dlg_submit_form_id}}" {{ formAttribute or '' }}>
     {{ form.hidden_tag() }}
-
+    {# OBSOLETE #}
     {% block frm_blc_inputs %}
     {% endblock frm_blc_inputs %}
 </form>
 
 <div class="d-grid mt-6">
     {% from "includes/_action_forms_and_btns.html.j2" import btn_submit %}
-    {{ btn_submit(form_post_id, submitButton, dlg_id_submit_btn) }}
+    {{ btn_submit(dlg_submit_form_id, dlg_submit_btn_id, submitButton) }}
 </div>
 {# ╘═══════════════ Display UI ═══════════════╛ #}
+{% else %}
+
+{% from "includes/_action_forms_and_btns.html.j2" import btn_close_dlg %}
+{{ btn_close_dlg(dlg_close_form_id, dlg_close_btn_id, form_close_btn_text) }}
+
 {% endif %}
 
 {% block frm_blc_below %}

@@ -52,9 +52,8 @@ def _store_report_result(
         else:
             rd = re.findall(stdout_result_pattern, std_out_str)
             if len(rd) == 0:
-                result_json_str = _local_result(
-                    f"no data matched regex: [{stdout_result_pattern}]"
-                )
+                result_json_str = f"{_local_result(f"no data matched regex: [{stdout_result_pattern}]")}\n'std_out_str': [{std_out_str}]"
+
             else:
                 result_json_str = rd[0][1:-1]
                 result = ""
@@ -144,7 +143,7 @@ def submit(cargo: Cargo) -> Cargo:
             )
         elif OS_IS_LINUX and not access(batch_full_name, X_OK):
             batch_has_run_permission = False
-            sidekick.warn(
+            sidekick.display.warn(
                 f"Account doesn't have the necessary permissions to execute '{batch_full_name}'."
             )
 
@@ -178,6 +177,8 @@ def submit(cargo: Cargo) -> Cargo:
         task_code += 1  # 7
         if not path.exists(final_report_full_name):
             task_code += 1  # 8
+            def _x(std_str: str) -> str:
+                return f"\n'{std_str}'" if std_str else "'<empty>.'"
             raise Exception(
                 f"\n{sidekick.app_name}: Report was not found."
                 + (
@@ -185,17 +186,18 @@ def submit(cargo: Cargo) -> Cargo:
                     if not batch_has_run_permission
                     else ""
                 )
-                + f"\n » {_cfg.dv_app.ui_name}.stderr:\n{std_err_str}"
-                + f"\n » {_cfg.dv_app.ui_name}.stdout:\n {std_out_str}"
+                + f"\n » {_cfg.dv_app.ui_name}.stderr: {_x(std_err_str)}"
+                + f"\n » {_cfg.dv_app.ui_name}.stdout: {_x(std_out_str)}"
                 + f"\nExitCode {exit_code}"
                 + "\nEnd."
             )
         elif stat(final_report_full_name).st_size < 200:
             task_code += 2  # 9
             raise Exception(
-                f"\n{sidekick.app_name}: Report has an invalid size = {stat(final_report_full_name).st_size}b."
+                f"\n{sidekick.app_name}: The report has an invalid size of = {stat(final_report_full_name).st_size}b."
             )
         else:
+            # ⚠️ PDF is moved to /canoa/user_files/uploaded/<user_id>
             # copy the final_report file to the same folder and
             # with the same name as the uploaded file,
             # But with extension `result_ext`

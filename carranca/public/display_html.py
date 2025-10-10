@@ -81,13 +81,13 @@ def __prepare_img_files(
 
 
 def display_html(docName: str):
-    template = "./home/document.html.j2"
+    tmpl = "./home/document.html.j2"
     section = docName
 
     ui_defaults = get_section("DisplayDoc")
     ui_texts = get_section(section)
 
-    def _setValue(key: str, default: str) -> str:
+    def _setValue(key: str, default: str):
         value = ui_texts.get(key, None)
         if value is None:
             value = ui_defaults.get(key, default)
@@ -142,7 +142,7 @@ def display_html(docName: str):
     # temp = current_app.jinja_env.from_string("{{ app_version() }}  + {{ app_name()}}")
     # print(temp.render())
 
-    tmpl = render_template(template, **ui_texts)
+    tmpl = render_template(tmpl, **ui_texts)
     return tmpl
 
 

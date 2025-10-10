@@ -11,18 +11,19 @@
  */
 
 /// <reference path="./ts-check.js" />
+// ! export { }; // Tells the checker this is a module, so `gridContainer` can be is other js files ;--)
 
 let activeRow = null;
 let removeCount = 0
-let assignedList = [];
+let assignedList = /** @type {string[]} */([]);
 const ignoreList = [itemNone];
 const icon = /** @type {HTMLImageElement} */(document.getElementById(iconID))
 
-window.addEventListener('beforeunload', (event) => {
-    if (assignedList.length > 0) {
-        event.preventDefault();
-    }
-});
+// window.addEventListener('beforeunload', (event) => {
+//     if (assignedList.length > 0) {
+//         event.preventDefault();
+//     }
+// });
 
 //-------------
 // == Basic Grid
@@ -78,7 +79,9 @@ const gridOptions = {
                 if (oldValue === itemNone) { removeCount--; }
                 if (newValue === itemNone) { removeCount++; }
                 params.data[colUserNew] = newValue;
-                btnGridSubmit.disabled = (assignedList.length == 0) && (removeCount == 0)
+                btnGridSubmit.disabled = (assignedList.length == 0) && (removeCount == 0);
+                Canoa.dataModified = !btnGridSubmit.disabled;
+
                 return true;
             }
         },
@@ -101,7 +104,7 @@ const gridOptions = {
 
 //-------------
 //== Init
-const gridContainer =  document.getElementById(gridID);
+const gridContainer = document.getElementById(gridID);
 const api = /** type {Object} */(agGrid.createGrid(gridContainer, gridOptions));
 
 
@@ -112,20 +115,22 @@ const doGridCargo = () => {
     const elResponse = /** @type {HTMLInputElement} */(document.getElementById(respID));
     if (!elResponse) { return false; }
     // TODO Error msg
-    const gridCargo = [];
+    /** @type {Array<Object>} */
+    const payLoad = [];
     api.forEachNode(node => {
         if (node.data && (node.data[colUserNew] !== node.data[colUserCurr])) {
-            gridCargo.push(node.data);
+            payLoad.push(node.data);
         }
     });
     const cargo = JSON.stringify(
         { // se carranca/private/sep_mgmt_save.py that parses the cargo
             [cargoKeys.actions]: { [cargoKeys.none]: itemNone },
-            [cargoKeys.cargo]: gridCargo,
+            [cargoKeys.cargo]: payLoad,
         }
     );
     elResponse.value = cargo
-    assignedList = [] // don't ask on leave
+    Canoa.dataModified = false;
+    // assignedList = [] // don't ask on leave
     return true
 }
 //-------------

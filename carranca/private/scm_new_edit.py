@@ -12,7 +12,7 @@ from wtforms import StringField
 from sqlalchemy import func  # func.now() == db-server time
 
 from .wtforms import ScmEdit
-from .grid_helper import GridAction
+from ..helpers.uiact_helper import UiActProxy
 
 from ..models.private import Schema
 from ..public.ups_handler import ups_handler
@@ -20,7 +20,7 @@ from ..helpers.jinja_helper import process_template
 from ..helpers.route_helper import (
     get_private_response_data,
     init_response_vars,
-    get_front_end_str,
+    get_form_input_value,
     private_route,
     login_route,
     redirect_to,
@@ -35,14 +35,14 @@ from ..helpers.ui_db_texts_helper import add_msg_final
 def do_scm_edit(data: str) -> str:
     """SCM Edit & Insert Form"""
 
-    action, code, row_index = GridAction.get_data(data)
+    action, code, row_index = UiActProxy().decode(data)
 
     if action is not None:  # called from sep_grid
         # TODO use: window.history.back() in JavaScript.
         process_on_end = private_route(
-            "scm_grid", code=GridAction.show
+            "scm_grid", code=UiActProxy.show
         )  # TODO selected Row, ix=row_index)
-        form_on_close = {"action_form__form_on_close": process_on_end}
+        form_on_close = {"dlg_close_action_url": process_on_end}
 
     else:  # standard routine
         code = data
@@ -50,7 +50,7 @@ def do_scm_edit(data: str) -> str:
         process_on_end = login_route()  # default
         form_on_close = {}  # default = login
 
-    is_insert = code == GridAction.add
+    is_insert = code == UiActProxy.add
     is_edit = not is_insert
 
     # edit SEP with ID, is a parameter
@@ -58,12 +58,12 @@ def do_scm_edit(data: str) -> str:
     scm_id = new_scm_id if is_insert else Schema.to_id(code)
 
     task_code = ModuleErrorCode.SCM_EDIT.value
-    form, tmpl_ffn, is_get, ui_texts = init_response_vars()
+    form, tmpl_rfn, is_get, ui_texts = init_response_vars()
     schema_name = "?"
     tmpl = ""
     try:
         task_code += 1
-        tmpl_ffn, is_get, ui_texts = get_private_response_data("scmNewEdit")
+        tmpl_rfn, is_get, ui_texts = get_private_response_data("scmNewEdit")
         form = ScmEdit(request.form)
 
         if (scm_row := Schema() if is_insert else Schema.get_row(scm_id)) is None:
@@ -95,7 +95,7 @@ def do_scm_edit(data: str) -> str:
         else:  # is_post
             def _modified(input, field, is_mod):
                 ui_value = (
-                    get_front_end_str(input.name, None)
+                    get_form_input_value(input.name, None)
                     if input.type == StringField.__name__
                     else input.data
                 )
@@ -134,15 +134,15 @@ def do_scm_edit(data: str) -> str:
                 # TODO Not modi
                 return redirect_to(home_route())
 
-        tmpl = process_template(tmpl_ffn, form=form, **ui_texts, **form_on_close)
+        tmpl = process_template(tmpl_rfn, form=form, **ui_texts, **form_on_close)
 
     except JumpOut:
-        tmpl = process_template(tmpl_ffn, **ui_texts)
+        tmpl = process_template(tmpl_rfn, **ui_texts)
 
     except Exception as e:
         item = add_msg_final("scmEditException", ui_texts, schema_name, task_code)
-        _, tmpl_ffn, ui_texts = ups_handler(task_code, item, e)
-        tmpl = process_template(tmpl_ffn, **ui_texts)
+        _, tmpl_rfn, ui_texts = ups_handler(task_code, item, e)
+        tmpl = process_template(tmpl_rfn, **ui_texts)
 
     return tmpl
 

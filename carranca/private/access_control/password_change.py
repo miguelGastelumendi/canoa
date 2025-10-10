@@ -19,7 +19,7 @@ from ...helpers.route_helper import (
     redirect_to,
     login_route,
     init_response_vars,
-    get_front_end_str,
+    get_form_input_value,
     get_account_response_data,
 )
 from ...common.app_context_vars import sidekick
@@ -29,14 +29,14 @@ from ..wtforms import ChangePassword
 
 def do_password_change():
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_CHANGE.value
-    flask_form, tmpl_ffn, is_get, ui_texts = init_response_vars()
+    flask_form, tmpl_rfn, is_get, ui_texts = init_response_vars()
 
     try:
         task_code += 1  # 1
-        tmpl_ffn, is_get, ui_texts = get_account_response_data("passwordChange", "password_reset_or_change")
-        password = "" if is_get else get_front_end_str("password")
+        tmpl_rfn, is_get, ui_texts = get_account_response_data("passwordChange", "password_reset_or_change")
+        password = "" if is_get else get_form_input_value("password")
         task_code += 1  # 2
-        confirm_password = "" if is_get else get_front_end_str("confirm_password")
+        confirm_password = "" if is_get else get_form_input_value("confirm_password")
         task_code += 1  # 3
         user = None if is_get else get_user_where(id=current_user.id)
         task_code += 1  # 4
@@ -71,7 +71,7 @@ def do_password_change():
         sidekick.app_log.info(msg)
         sidekick.app_log.error(str(e))
 
-    tmpl = render_template(tmpl_ffn, form=flask_form, **ui_texts)
+    tmpl = render_template(tmpl_rfn, form=flask_form, **ui_texts)
     return tmpl
 
 

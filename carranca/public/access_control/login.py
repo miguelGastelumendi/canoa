@@ -13,10 +13,11 @@ from sqlalchemy import func
 from flask_login import login_user
 
 from ...models.public import persist_user
-from ...helpers.py_helper import is_str_none_or_empty, now, to_str
+from ...helpers.py_helper import is_str_none_or_empty, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
 from ...private.RolesAbbr import RolesAbbr
 from ...public.ups_handler import ups_handler
+from ...helpers.jinja_helper import process_template
 from ...common.app_context_vars import sidekick
 from ...common.app_error_assistant import ModuleErrorCode
 from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_final
@@ -24,7 +25,7 @@ from ...helpers.route_helper import (
     home_route,
     redirect_to,
     init_response_vars,
-    get_front_end_str,
+    get_form_input_value,
     get_account_response_data,
 )
 from ...models.public import User, get_user_role_abbr
@@ -35,14 +36,14 @@ def login():
     from ..wtforms import LoginForm
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
-    flask_form, tmpl_ffn, is_get, ui_texts = init_response_vars()
+    flask_form, tmpl_rfn, is_get, ui_texts = init_response_vars()
 
     html = ""  # TODO init
     try:
         task_code += 1  # 1
         flask_form = LoginForm(request.form)
         task_code += 1  # 2
-        tmpl_ffn, is_get, ui_texts = get_account_response_data("login")
+        tmpl_rfn, is_get, ui_texts = get_account_response_data("login")
         task_code += 1  # 3
         if is_get and is_someone_logged():
             internal_logout()
@@ -50,9 +51,9 @@ def login():
             pass
         else:
             task_code += 1  # 4
-            username = get_front_end_str("username")  # TODO tmpl_form
+            username = get_form_input_value("username")  # TODO tmpl_form
             task_code += 1  # 5
-            password = get_front_end_str("password")
+            password = get_form_input_value("password")
             task_code += 1  # 6
             search_for = to_str(username).lower()
             task_code += 1  # 7
@@ -71,8 +72,6 @@ def login():
                 add_msg_error("userOrPwdIsWrong", ui_texts)
                 persist_user(user, task_code)
                 # persist_user creates an Anonymous User, so lets logout it
-                user
-
             elif user.disabled:
                 task_code += 3  # 12
                 add_msg_error("userIsDisabled", ui_texts)
@@ -102,17 +101,17 @@ def login():
                 task_code += 1  # 20
                 return redirect_to(home_route())
 
-        html = render_template(
-            tmpl_ffn,
+        html = process_template(
+            tmpl_rfn,
             form=flask_form,
             **ui_texts,
         )
     except Exception as e:
         error_code = task_code
         msg = add_msg_final("errorLogin", ui_texts, task_code)
-        flask_form, tmpl_ffn, ui_texts = ups_handler(error_code, msg, e, True)
-        html = render_template(
-            tmpl_ffn,
+        flask_form, tmpl_rfn, ui_texts = ups_handler(error_code, msg, e, True)
+        html = process_template(
+            tmpl_rfn,
             form=flask_form,
             **ui_texts,
         )

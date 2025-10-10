@@ -27,9 +27,10 @@ from ..helpers.py_helper import (
 )  # Ensure this module contains the function
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.jinja_helper import process_template
-from ..helpers.types_helper import template_file_full_name
-from ..helpers.route_helper import get_private_response_data, get_front_end_str
+from ..helpers.types_helper import jinja_template
+from ..helpers.route_helper import get_private_response_data, get_form_input_value
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
+from ..helpers.js_consts_helper import js_ui_dictionary
 from ..helpers.ui_db_texts_helper import (
     UITextsKeys,
     add_msg_success,
@@ -54,19 +55,20 @@ def _do_sep_placeholderOption(fullname: str) -> UserSep:
     return sep_fake
 
 
-def receive_file() -> template_file_full_name:
+def receive_file() -> jinja_template:
     template, is_get, ui_texts = get_private_response_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
     error_code = 0
 
     # utils
-    def _get_template() -> template_file_full_name:
+    def _get_template() -> jinja_template:
         seps: user_sep_list = []
+        ui_texts[UITextsKeys.Msg.tech] = None
+        ui_texts[UITextsKeys.Msg.info] = None
         if error_code != 0:
-            ui_texts[UITextsKeys.Msg.info] = None
+            ui_texts[UITextsKeys.Msg.tech] = sidekick.log_filename
         elif not (seps:= [sep for sep in app_user.seps]):
             ui_texts[UITextsKeys.Msg.warn] = ui_texts["noSEPassigned"]
-            ui_texts[UITextsKeys.Msg.info] = None
             ui_texts[UITextsKeys.Msg.display_only_msg] = True
             seps: user_sep_list = []
         elif len(seps) > 1:
@@ -76,8 +78,12 @@ def receive_file() -> template_file_full_name:
         ui_texts[UITextsKeys.Form.icon_url] = seps[0].icon_url if len(seps) > 0 else None
 
         dict_seps: List[user_sep_dict] = [class_to_dict(sep) for sep in seps]
-        tmpl: template_file_full_name = process_template(
-            template, form=tmpl_form, seps=dict_seps, **ui_texts
+        tmpl= process_template(
+            template
+            , form=tmpl_form
+            , seps=dict_seps
+            , **ui_texts
+            , **js_ui_dictionary()
         )
         return tmpl
 
@@ -102,13 +108,13 @@ def receive_file() -> template_file_full_name:
         # Find out what was kind of data was sent: an uploaded file or an URL (download)
         file_obj = request.files[tmpl_form.uploadfile.name] if len(request.files) > 0 else None
         task_code += 1  # 2
-        url_str = get_front_end_str(tmpl_form.urlname.name)
+        url_str = get_form_input_value(tmpl_form.urlname.name)
         task_code += 1  # 3
         has_file = (file_obj is not None) and not is_str_none_or_empty(file_obj.filename)
         task_code += 1  # 4
         has_url = not is_str_none_or_empty(url_str)
         task_code += 1  # 5
-        sep_id = to_int(get_front_end_str(tmpl_form.schema_sep.name))
+        sep_id = to_int(get_form_input_value(tmpl_form.schema_sep.name))
 
         # file_data holds a 'str' or an 'obj'
         task_code += 1  # 6

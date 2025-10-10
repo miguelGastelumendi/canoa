@@ -8,7 +8,7 @@ mgd 2025-02-04
 """
 
 # cSpell:ignore latin CCITT
-
+import re
 import json
 import base64
 import os, time, platform
@@ -17,7 +17,7 @@ from sys import argv
 from datetime import datetime
 from typing import Any, Type, Dict, Tuple, List, Optional
 
-from .types_helper import UsualDict
+from .types_helper import UsualDict, OptStr
 from ..common.app_constants import APP_NAME
 
 # https://docs.python.org/3/library/platform.html#platform.system
@@ -76,7 +76,7 @@ def as_str_strip(s: str) -> str:
     return "" if s is None else (str(s) + "").strip()
 
 
-def encode64_utf8(data: str) -> str | None:
+def encode64_utf8(data: str) -> OptStr:
     # encodes srt into utf-8  => base64
     encoded = data
     if data is None:
@@ -93,7 +93,7 @@ def encode64_utf8(data: str) -> str | None:
     return encoded
 
 
-def decode64_utf8(data_encoded: str) -> str | None:
+def decode64_utf8(data_encoded: str) -> OptStr:
     # decodes srt from utf-8  => base64
     data = data_encoded
     if data_encoded is None:
@@ -159,7 +159,7 @@ def quote(s: str, always: Optional[bool] = True) -> str:
     return f'"{quoted}"'
 
 
-def is_str_none_or_empty(s: str) -> bool:
+def is_str_none_or_empty(s: str | None) -> bool:
     """
     Returns True if the argument is None, not a str, or an empty (only spaces, \n, \t, etc) string
     """
@@ -216,7 +216,7 @@ def to_code(id: int, shift: int, expand: int = 1) -> str:
     return to_base(expand * (shift + id), 21).zfill(5)
 
 
-def to_int(s: str, default=-1) -> int:
+def to_int(s: Optional[str], default=-1) -> int:
     """
     Returns the argument as a integer or default if not a valid int
     """
@@ -280,11 +280,21 @@ def camel_to_snake(string: str) -> str:
     Returns:
       The converted snake case string.
     """
-    snake_case = ""
-    for char in string:
-        snake_case += ("_" if char.isupper() else "") + char.lower()
+    # snake_case = ""
+    # for char in string:
+    #     snake_case += ("_" if char.isupper() else "") + char.lower()
 
-    return snake_case.strip("_")  # Remove leading underscores
+    # return snake_case.strip("_")  # Remove leading underscores
+
+    # 1. Insert an underscore before any lowercase letter that follows an uppercase letter
+    # This handles transitions like 'DBank' -> 'D_Bank' (the 'B' is followed by 'a')
+    string = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', string)
+
+    # 2. Insert an underscore before any uppercase letter that follows a lowercase letter
+    # This handles the main splits like 'scmExport' -> 'scm_Export'
+    string = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', string)
+
+    return string.lower()
 
 
 def coalesce(val1, val2):

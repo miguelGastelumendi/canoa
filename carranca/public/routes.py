@@ -16,6 +16,7 @@ from flask import Blueprint, render_template
 from carranca import global_login_manager
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.route_helper import (
+    MTD_ANY,
     bp_name,
     home_route,
     redirect_to,
@@ -58,7 +59,7 @@ def index():
     return redirect_to(login_route())
 
 
-@bp_public.route("/register", methods=["GET", "POST"])
+@bp_public.route("/register", methods=MTD_ANY)
 def register():
     """
     The `register` page can convert
@@ -73,7 +74,7 @@ def register():
         return do_register()
 
 
-@bp_public.route("/login", methods=["GET", "POST"])
+@bp_public.route("/login", methods=MTD_ANY)
 def login():
     """
     The `login` page can be access by everyone,
@@ -93,7 +94,7 @@ def login():
         return do_login()
 
 
-@bp_public.route(f"/{public_route__password_reset}/<token>", methods=["GET", "POST"])
+@bp_public.route(f"/{public_route__password_reset}/<token>", methods=MTD_ANY)
 def password_reset(token=None):
     """
     Password Reset Form:
@@ -111,7 +112,7 @@ def password_reset(token=None):
         return password_reset(token)
 
 
-@bp_public.route("/password_recovery", methods=["GET", "POST"])
+@bp_public.route("/password_recovery", methods=MTD_ANY)
 def password_recovery():
     """ "
     *Password Recovery Form*

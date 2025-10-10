@@ -95,6 +95,7 @@ class DynamicConfig(BaseConfig):
             self.TESTING = _if_debug(self.TESTING)  # Flask
             self.APP_MINIFIED = _if_debug(self.APP_MINIFIED, not self.APP_DEBUG)
             self.DEBUG_TEMPLATES = _if_debug(self.DEBUG_TEMPLATES)  # jinja
+            self.DEBUG_RENDERED_TEMPLATES = _if_debug(self.DEBUG_RENDERED_TEMPLATES)
             self.APP_DISPLAY_DEBUG_MSG = _if_debug(self.APP_DISPLAY_DEBUG_MSG)
 
         if is_str_none_or_empty(self.SECRET_KEY):

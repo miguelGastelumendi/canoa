@@ -58,7 +58,7 @@ def process(
 
     current_module_name = __name__.split(".")[-1]
 
-    def _get_next_params(cargo: Cargo) -> list[object, dict]:
+    def _get_next_params(cargo: Cargo) -> Tuple[object, dict]:
         """
         Extracts the parameters of the next procedure,
         initialize cargo and returns to the loop

@@ -23,7 +23,7 @@ class SepMgmtGridCols:
 
 
 class CargoKeys:
-    # This class is used to create a the cargo of the response of `sp_mgmt`
+    # This class is used to create a the cargo of the response of `sp_mgmt` & etc
     # and parsed sep_mgm_save._prepare_data_to_save
     actions = "actions"
     cargo = "cargo"

@@ -12,8 +12,5 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true
-    },
-    "python-envs.pythonProjects": [],
-	"python.defaultInterpreterPath": ".env\\Scripts\\python.exe",
-	
+    }
 }

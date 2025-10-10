@@ -10,7 +10,7 @@ mgd
 
 from carranca import global_sqlalchemy_scoped_session, global_login_manager
 
-from typing import Optional, Any
+from typing import Optional, Any, List
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import ColumnExpressionArgument
@@ -101,7 +101,7 @@ class User(SQLABaseTable, UserMixin):
         return user
 
     @staticmethod
-    def get_all_users(arg_where: ColumnExpressionArgument[bool], arg_order: Optional[Column] = None) -> DBRecords:
+    def get_all_users(arg_where: ColumnExpressionArgument[bool], arg_order: Optional[Column] = None) -> List["User"]: # DBRecords:
         """
         Fetches a list of all users (id, id_role, username, email, disabled)
         from the `users` table.

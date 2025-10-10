@@ -53,7 +53,7 @@ def js_grid_constants(col_meta_info_txt: str, col_names: List[str], task_code: i
 
     if col_meta_info_names and not set(col_names).issubset(col_meta_info_names):
         missing_keys = set(col_names) - col_meta_info_names
-        # this is an for the developer
+        # this is a error for the developer
         raise AppStumbled(
             f"Invalid MetaInfo columns mapping: `{col_meta_info_txt}` <> [{', '.join(col_names)}]. Missing keys: {missing_keys}",
             task_code,
