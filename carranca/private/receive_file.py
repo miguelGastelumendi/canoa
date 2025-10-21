@@ -26,7 +26,7 @@ from ..helpers.py_helper import (
     is_str_none_or_empty,
 )  # Ensure this module contains the function
 from ..helpers.file_helper import folder_must_exist
-from ..helpers.jinja_helper import process_template
+from ..helpers.jinja_helper import AppStumbled, process_template
 from ..helpers.types_helper import jinja_template
 from ..helpers.route_helper import get_private_response_data, get_form_input_value
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
@@ -76,7 +76,6 @@ def receive_file() -> jinja_template:
             seps.insert(0, sep_placeholder_option)
 
         ui_texts[UITextsKeys.Form.icon_url] = seps[0].icon_url if len(seps) > 0 else None
-
         dict_seps: List[user_sep_dict] = [class_to_dict(sep) for sep in seps]
         tmpl= process_template(
             template
@@ -104,6 +103,7 @@ def receive_file() -> jinja_template:
         if is_get:
             return _get_template()
 
+        raise AppStumbled('Oops, I slipped.')
         received_at = now()
         # Find out what was kind of data was sent: an uploaded file or an URL (download)
         file_obj = request.files[tmpl_form.uploadfile.name] if len(request.files) > 0 else None

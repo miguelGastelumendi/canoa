@@ -57,10 +57,10 @@ mgd
 {% set dlg_close_form_id= 'dlg_close_form_id' %}
 {% set dlg_close_x_id= 'dlg_close_x_id' %} # The upper right [x] button ID
 {% set dlg_close_btn_id= 'dlg_close_btn_id' %}
+{# {% set dlg_close_btn_title= dlg_close_btn_title | default('Fechar') %} #}
 {% set dlg_close_btn_class= dlg_close_btn_class | default('btn-close') %} {# bootstrap class #}
 {% set dlg_close_btn_visible= dlg_close_btn_visible | default(True) %}
-{% set dlg_close_action_url= dlg_close_action_url| default('/login') %}
-
+{% set dlg_close_action_url= dlg_close_action_url | default('/login') %}
 
 {% set dlg_icon_id= 'dlg_icon_id' %}
 {% set dlg_icon_size= dlg_icon_size | default('32px') %}
@@ -74,66 +74,65 @@ mgd
 {% set dlg_bke_display_ui= not dlg_bke_only_msg %}
 
 
-{% block base_blc_content %}
-<section>
-    {# === Main === #}
-    <div
-        id="{{dlg_main_id}}" style="{{ dlg_var_style|default('display: block;') }}" class="modal {% if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top | default('mt-5') }}{% endif -%}">
-		{# === Dialog === #}
-		<div class="modal-dialog {{ dlg_cls_size|default('dlg-width') }}
-			{%- if (dlg_var_v_centered|default(False)) %} modal-dialog-centered {% endif -%}
-			{%- if dlg_var_scroll -%} modal-dialog-scrollable {%- endif -%}{{ dlg_cls_dialog|default('') }}">
-        {# === Content === #}
-        <div class="modal-content{{dlg_cls_content|default('')}}">
-            {# === Pillow === #}
-            <div id="{{dlg_sleep_id}}"></div>
-            {# === Header === #}
-            <div class="modal-header {{dlg_cls_header | default('dlg-header')}}">
-                <h5 class="modal-title {{dlg_cls_title | default('dlg-title')}}">
-                    {% if dlg_var_icon_url %}
-                    <span
-                        class="{%- if 'sep_icons' in dlg_var_icon_url %}dlg-sep_icon-back{% else %}dlg-icon-back{% endif %}">
-                        <img id="{{dlg_icon_id}}" src="{{dlg_var_icon_url}}" alt="[!]&nbsp;"
-                            height="{{dlg_icon_size}}" width="{{dlg_icon_size}}">
+{# ╒═════════════════════════════ Main ═════════════════════════════╕ #}
+{% block base_blc_main %}
+<div id="{{dlg_main_id}}" style="{{ dlg_var_style|default('display: block;') }}" class="modal {% if not (dlg_var_v_centered | default(False)) %}{{ dlg_cls_top | default('mt-5') }}{% endif -%}">
+
+    {# ╒════════════════════════ Dialog ════════════════════════════╕ #}
+    <div class="modal-dialog {{ dlg_cls_size|default('dlg-width') }}
+        {%- if (dlg_var_v_centered|default(False)) %} modal-dialog-centered {% endif -%}
+        {%- if dlg_var_scroll %} modal-dialog-scrollable {% endif %} {{ dlg_cls_dialog|default('') }}">
+
+    {# ╒════════════════════════ Content ═══════════════════════════╕ #}
+    <div class="modal-content{{dlg_cls_content|default('')}}">
+        {# ╒════════════════════ Pillow ════════════════════════════╕ #}
+        <div id="{{dlg_sleep_id}}"></div>
+        {# ╘════════════════════ Pillow ════════════════════════════╛ #}
+
+        {# ╒════════════════════ Header ════════════════════════════╕ #}
+        <div class="modal-header {{dlg_cls_header | default('dlg-header')}}">
+            <h5 class="modal-title {{dlg_cls_title | default('dlg-title')}}">
+                {% if dlg_var_icon_url %}
+                    <span class="{%- if 'sep_icons' in dlg_var_icon_url %}dlg-sep_icon-back{% else %}dlg-icon-back{% endif %}">
+                        <img id="{{dlg_icon_id}}" src="{{dlg_var_icon_url}}" alt="[!]&nbsp;" height="{{dlg_icon_size}}" width="{{dlg_icon_size}}">
                     </span>
-                    {% endif %}
-                    <span inert>
-                        {{formTitle|default(app_name)}}
-                    </span>
-                </h5>
-                {% if dlg_close_btn_visible %}
-                <button type="submit" id= "{{dlg_close_x_id}}" form="{{dlg_close_form_id}}" class="{{dlg_close_btn_class}}"></button>
                 {% endif %}
-            </div>
-            {# === Body === #}
-            <div class="modal-body {{ dlg_cls_body|default('dlg-body') }}">
-                {# ╒═════════ Dialog Body ═════════╕ #}
-                {% block dlg_blc_body %}
-                {% endblock dlg_blc_body %}
-                {# ╘═════════ Dialog Body ═════════╛ #}
-            </div>
-            {# === Footer === #}
-            <div class="modal-footer justify-content-center {{ dlg_cls_footer|default('dlg-footer') }}">
-            {# ╒═════════ Dialog Footer ═════════╕ #}
-            {% block dlg_blc_footer %}
-
-                {# ╒═════════ Dialog Footer Buttons═════════╕ #}
-                <div id="{{dlg_btns_container_id}}" class="row">
-
-                {% block dlg_blc_footer_buttons %}
-                {# <div class="col-auto">Button 1/div> ... #}
-                {% endblock dlg_blc_footer_buttons %}
-                
-                </div>
-                {# ╘═════════ Dialog Footer Buttons═════════╛ #}
-
-            {% endblock dlg_blc_footer %}
-            {# ╘═════════ Dialog Footer ═════════╛ #}
-            </div>
+                <span inert>{{formTitle|default(app_name)}}</span>
+            </h5>
+            {% if dlg_close_btn_visible %}
+                <button type="submit" title="Fechar" id="{{dlg_close_x_id}}" form="{{dlg_close_form_id}}" class="{{dlg_close_btn_class}}"></button>
+            {% endif %}
         </div>
+        {# ╘════════════════════ Header ════════════════════════════╛ #}
+
+        {# ╒═════════════════════ Body ═════════════════════════════╕ #}
+        <div class="modal-body {{ dlg_cls_body|default('dlg-body') }}">
+            {# ╒═════════ Dialog Body ═════════╕ #}
+            {% block dlg_blc_body %}
+            {% endblock dlg_blc_body %}
+            {# ╘═════════ Dialog Body ═════════╛ #}
+        </div>
+        {# ╘═════════════════════ Body ═════════════════════════════╛ #}
+
+        {# ╒═════════════════════ Dialog Footer ════════════════════╕ #}
+        {% block dlg_blc_footer %}
+        <div class="modal-footer justify-content-center {{ dlg_cls_footer|default('dlg-footer') }}">
+
+            {# ╒═════════ Dialog Footer Buttons═════════╕ #}
+            <div id="{{dlg_btns_container_id}}" class="row">
+            {% block dlg_blc_footer_buttons %}
+            {# example <div class="col-auto">Button 1/<div> ... #}
+            {% endblock dlg_blc_footer_buttons %}
+            </div>
+            {# ╘═════════ Dialog Footer Buttons═════════╛ #}
+
+        </div>
+        {% endblock dlg_blc_footer %}
+        {# ╘═════════════════════ Dialog Footer ════════════════════╛ #}
+
     </div>
-</section>
-{% endblock base_blc_content %}
+</div>
+{% endblock base_blc_main %}
 
 
 {% block base_blc_body_js %}
@@ -175,7 +174,6 @@ mgd
             e.preventDefault();
         }
     });
-
 </script>
 
 {# ╒═════════ Dialog JS ═════════╕ #}
@@ -183,17 +181,14 @@ mgd
 {% endblock dlg_blc_javascript %}
 {# ╘═════════ Dialog JS ═════════╛ #}
 
-{% endblock base_blc_body_js %}
+{% endblock base_blc_body_js %}S
 
 {% block base_blc_forms %}
-
 <form action="{{dlg_close_action_url}}" method="get" id="{{dlg_close_form_id}}"></form>
-
 {# ╒═════════ Dialog Forms ═════════╕ #}
 {% block dlg_blc_forms %}
 {% endblock dlg_blc_forms %}
 {# ╘═════════ Dialog Forms ═════════╛ #}
-
 {% endblock base_blc_forms %}
 
 {# eof #}

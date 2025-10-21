@@ -37,6 +37,7 @@ CONFIG_MANDATORY_KEYS = [
 # === Available app/config modes, add yours own mode here (extend)
 app_mode_production: str = "Production"  # capital P
 app_mode_development: str = "Development"  # capital D
+app_mode_stage: str = "Stage"  # capital S
 # ---------------------------
 # Get the folder from main.py
 app_folder = path.abspath(path_remove_last_folder(path.dirname(__file__)))

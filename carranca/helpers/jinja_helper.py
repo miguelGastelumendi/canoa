@@ -142,7 +142,7 @@ def process_template(tmpl_rfn: jinja_template, **context: Any) -> jinja_generate
             if errors:
                 raise AppStumbled(
                     f"{_jinja_bug_found}: {errors}"
-                    ,ModuleErrorCode.TEMPLATE_BUG
+                    ,ModuleErrorCode.TEMPLATE_BUG.value
                     , False
                     , False
                     , None
@@ -150,7 +150,7 @@ def process_template(tmpl_rfn: jinja_template, **context: Any) -> jinja_generate
                 )
     except Exception as e:
         if isinstance(e, TemplateSyntaxError):
-            raise
+            raise AppStumbled(f"Error in file template, line {e.lineno}: {e.message}.", ModuleErrorCode.TEMPLATE_ERROR.value)
         elif not validated and (msg_error := _validate_jinja(jHTML, file_name)):
             raise Exception(msg_error) from e
         else:

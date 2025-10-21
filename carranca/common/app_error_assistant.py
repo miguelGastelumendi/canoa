@@ -93,6 +93,9 @@ class ModuleErrorCode(IntEnum):
 
     # User Interface Text Retrieval
     UI_TEXTS = 170  # 1
+    # Jinja Helper
+    TEMPLATE_ERROR = 171
+    TEMPLATE_BUG = 172
 
     # RECEIVE_FILE_* =: [200... 270] + 100
     RECEIVE_FILE_ADMIT = 200
@@ -117,7 +120,7 @@ class ModuleErrorCode(IntEnum):
 
     RECEIVED_FILES_MGMT = 700
 
-    TEMPLATE_BUG = 800
+
 
 
 class RaiseIf:

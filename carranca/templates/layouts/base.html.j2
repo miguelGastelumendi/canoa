@@ -71,35 +71,28 @@ mgd
 </head>
 
 <body>
-    <main>
-        {# ┌┄┄┄┄ if user logged in ┄┄┄┄┐ #}
+    <header>
+    </header>
+
+    <nav>
         {% if jinja_user() %}
-        {# see 'carranca/templates/private/home.html.j2' #}
+        {# ╒═══════════════ Base Navigator ═══════════════╕ #}
         {% set _nav_button_state= nav_button_state | default('disabled') %}
         {% set _nav_sub_menu = nav_sub_menu | default(False) %}
-        {# ┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈ #}
+        {# ┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┄┈┄┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈ #}
         {% with nav_button_state = _nav_button_state, nav_sub_menu= _nav_sub_menu %}
         {% include 'includes/navigator.html.j2' %}
         {% endwith %}
-        {# ┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈┄┈ #}
-        {# see templates/includes/_action_forms_and_btns.html.j2 #}
-        {# {% set base__dlg_  form_close_id= 'base-dlg-form-close-id' %} =>  dlg_id_submit_form#}
-        {# {% set base__dlg_ on_close= base__dlg_ on_close or 'login' => dlg_page_on_close   #}
+        {# ╘═══════════════ Base Navigator ═══════════════╛ #}
         {% endif %}
-        {# └┄┄┄┄ if user logged in ┄┄┄┄┘ #}
+    </nav>
 
-        {# ╒═══════ Base Content ══════╕ #}
-        {% block base_blc_content %}
-        {% endblock base_blc_content %}
-        {# ╘═══════ Base Content ══════╛ #}
+    <main>
+        {# ╒═══════════════ Base Main ═══════════════╕ #}
+        {% block base_blc_main %}
+        {% endblock base_blc_main %}
+        {# ╘═══════════════ Base Main ═══════════════╛ #}
     </main>
-
-    {# ╒═══════ Base HTML helpers ══════╕ #}
-    {% block base_blc_htmlHelpers %}
-    {% endblock base_blc_htmlHelpers %}
-    {# ╘═══════ Base HTML helpers ══════╛ #}
-    {% include 'includes/scripts.html' %}
-
 
     <div class="form-actions">
         {# ╒═══════ Base Forms ══════╕ #}

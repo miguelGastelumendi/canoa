@@ -52,9 +52,7 @@ class Fuse:
         self.args = args
 
         if is_str_none_or_empty(args.app_mode):
-            self.app_mode = (
-                app_mode_development if args.app_debug else app_mode_production
-            )
+            self.app_mode = app_mode_stage
         else:
             self.app_mode = self.args.app_mode
 
@@ -118,7 +116,7 @@ def _start_fuse(app_name: str, args: Args, started_from: float) -> Tuple[Any, st
 
 
 # ---------------------------------------------------------------------------- #
-from ..config.DynamicConfig import DynamicConfig
+from ..config.DynamicConfig import DynamicConfig, app_mode_stage
 
 
 def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
@@ -126,29 +124,29 @@ def _ignite_config(fuse: Fuse) -> Tuple[DynamicConfig, str]:
     Select the config, based in the app_mode (production or debug)
     WARNING: Don't run with debug turned on in production!
     """
-    Config = None  # this config will later be shared by sidekick
+    config = None  # this config will later be shared by sidekick
     msg_error = ''
     try:
         from ..config.DynamicConfig import get_config_for_mode
 
-        Config = get_config_for_mode(fuse.app_mode, fuse)
-        if Config is None:
+        config = get_config_for_mode(fuse.app_mode, fuse)
+        if config is None:
             raise Exception(f"Unknown config mode '{fuse.app_mode}'.")
 
-        if not path.isfile(path.join(Config.APP_FOLDER, "main.py")):
+        if not path.isfile(path.join(config.APP_FOLDER, "main.py")):
             raise Exception(
                 "main.py file not found in the app folder. Check BaseConfig.APP_FOLDER."
             )
 
-        Config.APP_DEBUGGING = True if fuse.debugging else Config.APP_DEBUG
-        Config.APP_ARGS = fuse.args
+        config.APP_DEBUGGING = True if fuse.debugging else config.APP_DEBUG
+        config.APP_ARGS = fuse.args
         fuse.display.info(f"The app config, in '{fuse.app_mode}' mode, was ignited.")
     except Exception as e:
         msg_error = _ERROR_MSG.format(
             __name__, f"initializing the app config in mode '{fuse.app_mode}'", str(e)
         )
 
-    return Config, msg_error
+    return config, msg_error
 
 
 # ---------------------------------------------------------------------------- #
