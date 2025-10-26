@@ -8,7 +8,7 @@ mgd 2025.09
 
 # cSpell: ignore samp sepsusr usrlist
 
-from ..helpers.uiact_helper import UiActCmdKeys
+from ..helpers.uiact_helper import UiActResponseKeys
 from ..public.ups_handler import ups_handler
 from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
 
@@ -47,7 +47,7 @@ def do_scm_create() -> jinja_template:
         tmpl = process_template(
             tmpl_rfn,
             scm_data=scm_data.to_list(),
-            cargo_keys=class_to_dict(UiActCmdKeys),
+            cargo_keys=class_to_dict(UiActResponseKeys),
             **ui_texts,
             **js_ui_dict,
         )

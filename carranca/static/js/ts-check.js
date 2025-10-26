@@ -96,7 +96,7 @@ var agGrid
 
 const cargoKeys = {
     actions: "actions"
-    , cargo: "cargo"
+    , data: "data"
     , index: "index"
     , code: "code"
     , none: "none"

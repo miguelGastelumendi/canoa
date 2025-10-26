@@ -17,8 +17,8 @@ mgd
 {# only specify if different from default #}
 {% set dlg_cls_size= 'modal-lg' %}
 
-{% block grid_blc_footer %}
-<div class="mb-2 row">
+{% block dlg_blc_footer_buttons %}
+{# <div class="mb-2 row"> #}
     <div class="col-auto">
         {% from "includes/_action_forms_and_btns.html.j2" import btn_submit %}
         {{ btn_submit(dlg_submit_form_id, dlg_submit_btn_id, grdBtnSave, "disabled") }}
@@ -27,8 +27,8 @@ mgd
         {% from "includes/_action_forms_and_btns.html.j2" import btn_close_dlg %}
         {{ btn_close_dlg(dlg_close_form_id, dlg_close_btn_id, grdBtnCancel) }}
     </div>
-</div>
-{% endblock grid_blc_footer %}
+{# </div> #}
+{% endblock dlg_blc_footer_buttons %}
 
 {# TODO: substitute form with grid_form__submit #}
 {% block grid_blc_forms %}

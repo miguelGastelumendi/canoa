@@ -1,6 +1,6 @@
 """
 
-ui-action <-> py communication infrastructure
+ui-action-response <-> py communication infrastructure
 
 mgd
 
@@ -12,17 +12,20 @@ import json
 from typing import Optional, Tuple, Any, Dict
 
 from ..helpers.py_helper import to_int
-from ..helpers.types_helper import json_txt
+from ..helpers.types_helper import UsualDict, json_txt
 from ..common.app_error_assistant import AppStumbled
 
 DATA_SEPARATOR = ":"
 
-class UiActCmdKeys:
-    # Defines the response's ui commands actions keys of `sep_grid` `scm_grid`, etc
+class UiActResponseKeys:
+    # Defines the response's ui commands actions keys of `sep_grid` `scm_grid`, scm_e etc
     action = "act"
     code = "code"
-    index = "idx"
+    row_index = "idx"
     grid = "grd"
+    data = "data"
+    # request actions:
+    unknown = "?"
     edit = "E"
     insert = "I"
     delete = "D"
@@ -34,35 +37,40 @@ class UiActResponse:
     action: str = ""
     code: str = ""
     row_index = 0
-    cmd_json: Dict[str, Any]
+    data: Dict[str, Any]
 
     def _get_value(self, key: str) -> str:
-        value = self.cmd_json[key] if key in self.cmd_json else "?"
+        value = self.data[key] if key in self.data else "?"
         return value
 
     def __init__(self, cmd_text_or_code: str | json_txt):
         try:
-            self.cmd_json = json.loads(cmd_text_or_code)
-            self.action = self._get_value(UiActCmdKeys.action)[0]
-            self.code = self._get_value(UiActCmdKeys.code)
-            self.row_index = to_int(self._get_value(UiActCmdKeys.index))
+            self.data = json.loads(cmd_text_or_code)
+            self.action = self._get_value(UiActResponseKeys.action)[0]
+            self.code = self._get_value(UiActResponseKeys.code)
+            self.row_index = to_int(self._get_value(UiActResponseKeys.row_index))
         except:
-            if (code:= cmd_text_or_code.strip()) in [UiActProxy.add, UiActProxy.null, UiActProxy.show]:
+            if (code:= cmd_text_or_code.strip()) in [UiActResponseProxy.add, UiActResponseProxy.null, UiActResponseProxy.show]:
                 self.code = code
             else:
                 raise AppStumbled(f'Unknown UI Action code <code>{code}</code>')
 
-
-
-
+    def initial(self) -> json_txt:
+        initial: UsualDict = {
+            "action": '',
+            "row_index": self.row_index,
+            "code": '',
+            "data": None,
+        }
+        return json.dumps(initial)
 
     def encode(self) -> str:
-        data = UiActProxy().encode(self.action, self.code, self.row_index)
+        data = UiActResponseProxy().encode(self.action, self.code, self.row_index)
         return data
 
 
-class UiActProxy:
-    # Send command from grid
+class UiActResponseProxy:
+    # Send response from UI
     add = "!++"
     null = "!~~"
     show = "!##"

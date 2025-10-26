@@ -8,6 +8,8 @@ mgd
 """
 
 # cSpell: ignore werkzeug wtforms tmpl mgmt jscmd
+import errno
+from carranca.helpers.db_helper import retrieve_dict
 from flask import Blueprint, request
 from flask_login import login_required, current_user
 
@@ -16,7 +18,7 @@ from typing import Tuple, Callable
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import internal_logout, nobody_is_logged
 from ..public.ups_handler import ups_handler
-from ..helpers.uiact_helper import UiActResponse, UiActProxy, UiActCmdKeys
+from ..helpers.uiact_helper import UiActResponse, UiActResponseProxy, UiActResponseKeys
 from ..helpers.jinja_helper import process_template
 from ..helpers.types_helper import jinja_template, json_txt
 from ..helpers.js_consts_helper import js_form_cargo_id, js_form_sec_check
@@ -140,7 +142,7 @@ def create_ups_tmpl(error: str, code: int = 0):
     return tmpl
 
 
-def uiact_response(code: str) -> Tuple[jinja_template, UiActResponse | None]:
+def uiact_response(code: str) -> Tuple[jinja_template, UiActResponse]: #| None]: Too many warns with None
     """
     This func decodes a uiact response
     """
@@ -198,7 +200,7 @@ def grid_route(code: str, editor: str, show_grid: Callable) -> jinja_template:
 
     if tmpl:
         go_tmpl= tmpl
-    elif uiact_rsp and uiact_rsp.code == UiActProxy.show:
+    elif uiact_rsp and uiact_rsp.code == UiActResponseProxy.show:
         go_tmpl= show_grid()
     elif uiact_rsp:
         def _goto(item_code: str) -> str:
@@ -206,12 +208,12 @@ def grid_route(code: str, editor: str, show_grid: Callable) -> jinja_template:
             return redirect_to(url)
 
         match uiact_rsp.action:
-            case UiActCmdKeys.insert:
-                go_tmpl = _goto(UiActProxy.add)
-            case UiActCmdKeys.edit:
+            case UiActResponseKeys.insert:
+                go_tmpl = _goto(UiActResponseProxy.add)
+            case UiActResponseKeys.edit:
                 data = uiact_rsp.encode()
                 go_tmpl = _goto(data)
-            case UiActCmdKeys.delete:
+            case UiActResponseKeys.delete:
                 go_tmpl = create_ups_tmpl("The Delete procedure is still under development.")
             case _:
                 go_tmpl = create_ups_tmpl(f"Unknown route action '{uiact_rsp.action}'.")
@@ -229,12 +231,11 @@ def sep_grid(code: str = "?"):
     error_tmpl, uiact_rsp = uiact_response(code)
     if not is_str_none_or_empty(error_tmpl):
         return error_tmpl
-    elif uiact_rsp.code == UiActProxy.show:
+    elif uiact_rsp.code == UiActResponseProxy.show:
         return get_sep_grid()
     else:
         url = private_route("sep_edit", code=uiact_rsp.code)
         return redirect_to(url)
-
 
 
 @login_required
@@ -253,46 +254,30 @@ def sep_edit(code: str = "?"):
 
 
 @login_required
-@bp_private.route("/scm_export_ui", methods=[MTD_GET])
-def scm_export_ui():
+@bp_private.route("/scm_export/<code>", methods=MTD_ANY)
+def scm_export(code: str = "?"):
     """
     Through this route, the user gets the export UI
-    Can edit the Sep arrangement and/or export
+    Where the SEP arrangement can be edited and/or DB exported
     """
-
     if nobody_is_logged():
         return redirect_to(login_route())
 
-    from .scm_export_ui import scm_export_ui
+    error_tmpl, uiact_rsp = uiact_response(code)
+    if not is_str_none_or_empty(error_tmpl):
+        return error_tmpl
+    elif uiact_rsp.code == UiActResponseProxy.show:
+        from .scm_export_ui import scm_export_ui
+        return scm_export_ui(uiact_rsp)
+    elif uiact_rsp.action == UiActResponseKeys.export:
+        from .scm_export_db import scm_export_db
+        return scm_export_db(uiact_rsp)
+    elif uiact_rsp.action == UiActResponseKeys.save:
+        from .scm_export_layout import scm_export_layout
+        return scm_export_layout(uiact_rsp)
 
-    return scm_export_ui()
+    return redirect_to(login_route())
 
-@login_required
-@bp_private.route("/scm_export_db", methods=MTD_ANY)
-def scm_export_db():
-    """
-    Through this route, the user saves the
-    icon ui arrangement or exports
-    """
-
-    if nobody_is_logged():
-        return redirect_to(login_route())
-
-    from .scm_export_db import scm_export_db
-
-    return scm_export_db()
-
-    # from ..helpers.uiact_helper import UiActCmdKeys
-
-
-    # return grid_route("", "sep_edit", None, MTD_POST)
-
-    # if nobody_is_logged():
-    #     return redirect_to(login_route())
-
-    # # check grid_sek_key
-
-    # return get_scm_export_ui()
 
 
 @login_required

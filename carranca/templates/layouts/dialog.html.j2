@@ -51,7 +51,7 @@ mgd
 {% set dlg_sleep_id= 'dlg_sleep_id'%}
 
 {% set dlg_submit_form_id= 'dlg_submit_form_id' %}
-{% set dlg_submit_btn_id= 'dlg_submit_btn_id' %}
+{% set dlg_submit_btn_id= 'dlg_submit_btn_i' %}
 {% set dlg_btns_container_id = 'dlg_btns_container_id' %} {# <div> that contains the footer buttons #}
 
 {% set dlg_close_form_id= 'dlg_close_form_id' %}
@@ -121,6 +121,7 @@ mgd
             {# ╒═════════ Dialog Footer Buttons═════════╕ #}
             <div id="{{dlg_btns_container_id}}" class="row">
             {% block dlg_blc_footer_buttons %}
+        
             {# example <div class="col-auto">Button 1/<div> ... #}
             {% endblock dlg_blc_footer_buttons %}
             </div>

@@ -178,8 +178,8 @@ def _check_mandatory_keys(config, fDisplay) -> str:
             if not has_empty
             else _ERROR_MSG.format(
                 __name__,
-                f"confirming the existence of the mandatory configuration keys {CONFIG_MANDATORY_KEYS}",
-                f"Missing: {empty_keys.strip(',')} As Environment Variable must be prefixed with {APP_NAME}.",
+                f"confirming the existence of the mandatory configuration keys: [{CONFIG_MANDATORY_KEYS}]",
+                f"Missing: [{empty_keys.strip(',')}]. Note that environment variables must be prefixed with '{APP_NAME}'.",
             )
         )
 

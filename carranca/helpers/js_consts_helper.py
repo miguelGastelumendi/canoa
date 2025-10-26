@@ -62,7 +62,7 @@ def js_ui_dictionary(col_meta_info_txt: str = '', col_names: List[str] = [], tas
 
     js_ui_dict: js_const = {}
 
-    js_ui_dict["grid_id"] = "gridID"
+    js_ui_dict["grid_id"] = "grid_id_"
     js_ui_dict[js_form_cargo_id] = js_form_cargo_id
 
     # # TODO see _ini_py:_register_jinja

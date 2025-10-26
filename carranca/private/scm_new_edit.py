@@ -12,7 +12,7 @@ from wtforms import StringField
 from sqlalchemy import func  # func.now() == db-server time
 
 from .wtforms import ScmEdit
-from ..helpers.uiact_helper import UiActProxy
+from ..helpers.uiact_helper import UiActResponseProxy
 
 from ..models.private import Schema
 from ..public.ups_handler import ups_handler
@@ -35,12 +35,12 @@ from ..helpers.ui_db_texts_helper import add_msg_final
 def do_scm_edit(data: str) -> str:
     """SCM Edit & Insert Form"""
 
-    action, code, row_index = UiActProxy().decode(data)
+    action, code, row_index = UiActResponseProxy().decode(data)
 
     if action is not None:  # called from sep_grid
         # TODO use: window.history.back() in JavaScript.
         process_on_end = private_route(
-            "scm_grid", code=UiActProxy.show
+            "scm_grid", code=UiActResponseProxy.show
         )  # TODO selected Row, ix=row_index)
         form_on_close = {"dlg_close_action_url": process_on_end}
 
@@ -50,7 +50,7 @@ def do_scm_edit(data: str) -> str:
         process_on_end = login_route()  # default
         form_on_close = {}  # default = login
 
-    is_insert = code == UiActProxy.add
+    is_insert = code == UiActResponseProxy.add
     is_edit = not is_insert
 
     # edit SEP with ID, is a parameter

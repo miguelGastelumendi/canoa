@@ -69,7 +69,7 @@ def _register_blueprint_events(app: Flask):
         # @app.teardown_request
         # def shutdown_session(exception=None):
         # It is 'usually'define in teardown_request. but is to often, each time a
-        #   "GET /static/img/pages/canoa_fundo-w.jpeg HTTP/1.1" 304 -
+        #   "GET /static/img/pages/canoa_fundo.jpeg HTTP/1.1" 304 -
         # it shuts the session.
         try:
             if global_sqlalchemy_scoped_session.dirty:
@@ -112,7 +112,7 @@ def _register_blueprint_routes(app: Flask):
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
-    from .helpers.uiact_helper import UiActProxy
+    from .helpers.uiact_helper import UiActResponseProxy
     from .helpers.js_consts_helper import js_form_sec_key, js_form_cargo_id, js_form_sec_value
 
     def __get_app_menu(sub_menu_name: str) -> ui_db_texts:
@@ -163,12 +163,12 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
 
         return scm_list
 
-    def __do_hash(data: str) -> str:
+    def __do_btn_id(action: str, data: str) -> str:
         if not isinstance(data, str):
-            raise ValueError("Invalid argument: string expected in __do_hash(data: str)")
+            raise ValueError("Invalid argument: string expected in __do_btn_id(action: str, data: str)")
         i: int = crc16(data)
-        hash = format(i, "04x")
-        return hash
+        btn_id = f"{action}{format(i, '04x')}"
+        return btn_id
 
     app.jinja_env.globals.update(
         app_name=app_name,
@@ -176,13 +176,13 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         static_route=static_route,
         private_route=private_route,
         public_route=public_route,
-        hash=__do_hash,
+        do_btn_id=__do_btn_id,
         jinja_user=__get_jinja_user,
         app_menu=__get_app_menu,
         sep_menu=__get_user_sep_menu_list,
         scm_menu=__get_scm_menu_list,
-        grid_cmd_add=UiActProxy.add,
-        grid_cmd_shw=UiActProxy.show,
+        ui_act_add=UiActResponseProxy.add,
+        ui_act_shw=UiActResponseProxy.show,
         safe_token= {"key": js_form_sec_key, "value": js_form_sec_value(), "cargo": js_form_cargo_id }
     )
     if debugUndefined:

@@ -26,7 +26,7 @@ from ..private.UserSep import UserSep
 from ..helpers.py_helper import UsualDict, clean_text, is_str_none_or_empty, to_int, crc16
 from ..public.ups_handler import ups_handler
 from ..helpers.user_helper import get_batch_code
-from ..helpers.uiact_helper import UiActProxy
+from ..helpers.uiact_helper import UiActResponseProxy
 from ..helpers.jinja_helper import process_template
 from ..helpers.js_consts_helper import js_form_sec_check, js_ui_dictionary
 from ..helpers.route_helper import (
@@ -69,12 +69,12 @@ def do_sep_edit(data: str) -> str:
         error_hint: str = ""
         error_code: int = 0
 
-    action, code, row_index = UiActProxy().decode(data)
+    action, code, row_index = UiActResponseProxy().decode(data)
 
     if action is not None:  # called from sep_grid
         # TODO use: window.history.back() in JavaScript.
         process_on_end = private_route(
-            "sep_grid", code=UiActProxy.show
+            "sep_grid", code=UiActResponseProxy.show
         )  # TODO selected Row, ix=row_index)
         form_on_close = {"dlg_close_action_url": process_on_end}
 
@@ -86,7 +86,7 @@ def do_sep_edit(data: str) -> str:
 
     is_full_edit = False
     is_simple_edit = False
-    is_insert = code == UiActProxy.add
+    is_insert = code == UiActResponseProxy.add
     if is_insert:
         # insert can modified all fields)
         pass

@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
                item.innerHTML = draggedContent;
                const newOrder = getGridOrder()
                const gridOriginal = (newOrder == gridInitialOrder)
-               cargo[cargoKeys.cargo] = gridOriginal ? '' : newOrder
+               cargo[cargoKeys.data] = gridOriginal ? '' : newOrder
                btnSave.disabled = gridOriginal;
                btnExport.disabled = !gridOriginal
             }
@@ -83,7 +83,7 @@ const gridOptions = {
    rowSelection: 'single',
    onGridReady: (params) => {
       const firstRow = cargo ? params.api.getDisplayedRowAtIndex(cargo[cargoKeys.index]) : null;
-      setTimeout(() => { firstRow?.setSelected(true); setActiveRow(firstRow, firstRow.rowIndex) }, 20);
+      setTimeout(() => { firstRow?.setSelected(true); setActiveRow(firstRow, firstRow?.rowIndex) }, 20);
    },
    onCellFocused: (event) => {
       let row = (event.rowIndex === null) || !event.api ? null : event.api.getDisplayedRowAtIndex(event.rowIndex);

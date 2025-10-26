@@ -114,7 +114,9 @@ class ModuleErrorCode(IntEnum):
     SEP_GRID = 600
     SCM_GRID = 700
     SCM_EDIT = 750
-    SCM_EXPORT = 800
+    SCM_EXPORT_UI = 800
+    SCM_EXPORT_DB = 820
+    SCM_LAYOUT = 840
 
     DB_FETCH_ROWS = 590  # only on
 

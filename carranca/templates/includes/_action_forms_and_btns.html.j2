@@ -52,9 +52,9 @@ Spell:ignore endmacro preid onclick
 {# == Submit > #}
 
 {# -- A Button to linked through ui_constant -- #}
-{% macro btn_action(action_form__id, caption, pre_id='', attrib= '')%}
+{% macro btn_action(action_form__id, caption, cmd= '', attrib= '')%}
 <button type="submit" class="form-main-btn form-submit btn-action" form="{{action_form__id}}"
-    id="{{pre_id}}{{hash(caption)}}" {{attrib}}>
+    id="{{do_btn_id(cmd, caption)}}" {{attrib}}>
     {{caption}}
 </button>
 {% endmacro %}

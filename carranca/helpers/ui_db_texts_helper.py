@@ -346,6 +346,10 @@ def add_msg_success(item: str, texts: ui_db_texts = None, *args) -> str:
     the message (no other form inputs)
 
     """
+    # TODO:
+    # search for item in texts first, then in 'section'
+    # ren the family to set_ui_msg_xxx
+
     msg = _add_msg(
         item, UITextsKeys.Section.success, UITextsKeys.Msg.success, texts, *args
     )
