@@ -61,6 +61,13 @@
     Schema LOG
 
 
+------- 2025 - November ----------
+2025-10-27 -- 11-05 5.03
+    "β 5.04"
+    Comprehensive revision:
+    Updated all Canoa modules, processes, and accompanying documentation.
+
+
 ------- 2025 - October----------
 2025-10-22 -- 26 5.02
     carranca\private\grid_helper.py -> carranca\helpers\uiact_helper.py
@@ -68,7 +75,6 @@
     UI ACTions & response
     Saving schema layout (on the way)
     Problems with form's extension template (buttons repetes)
-    
 
 
 2025-10-17 -- 21 β 5.01  [Published]
