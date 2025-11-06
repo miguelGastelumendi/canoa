@@ -13,11 +13,8 @@ mgd
 --------------------------------------- #}
 {# cSpell:ignore onclick tojson onsubmit dnld Rprt endfor onchange #}
 
-{# only specify if different from default #}
-
-{% set dlg_cls_size= 'modal-xl' %}
-
-{% extends "./layouts/dialog.html.j2" %}
+{# {% extends "./layouts/dialog.html.j2" %} #}
+{% extends "./layouts/grid.html.j2" %}
 
 {% if dlg_bke_display_ui %}
 
@@ -35,10 +32,9 @@ mgd
 {# ╘════════════════ Dialog Body ════════════════╛ #}
 
 {% block dlg_blc_footer_buttons %}
-{# <div class="mb-3 row"> #}
     {% if users_list %}
     <div class="col-auto">
-        <select id="{{sel_id}}" class="form-control form-select" style="{{sel_width}}">
+        <select id="{{sel_id}}" class="form-control form-select" >
             {% for code, name, enabled in users_list %}
             <option value="{{code}}" {% if not enabled %}disabled{% endif %}>{{name | safe}}</option>
             {% endfor %}
@@ -47,14 +43,13 @@ mgd
     {% endif %}
     {# TODO: from "includes/_action_forms_and_btns.html.j2" import btn_click #}
     <div class="col-auto">
-        <button type="button" onclick="download('{{dnld_F}}')" id="btn{{dnld_F}}" class="form-control form-main-btn"
-            style="{{btn_width}}" disabled>
+        <button type="button" onclick="download('{{dnld_F}}')" id="btn{{dnld_F}}" class="form-control form-main-btn" disabled>
             {{btnDwnLoadFile}}
         </button>
     </div>
     <div class="col-auto">
         <button type="button" onclick="download('{{dnld_R}}')" id="btn{{dnld_R}}" class="form-control form-main-btn"
-            style="{{btn_width}}" disabled>
+            disabled>
             {{btnDwnLoadRprt}}
         </button>
     </div>
@@ -109,10 +104,10 @@ mgd
 {# ╒════════════════ Dialog Forms ════════════════╕ #}
 {% block dlg_blc_forms %}
 
-{% from "includes/_action_forms_and_btns.html.j2" import action_form__submit %}
-{{ action_form__submit(dlg_submit_form_id, private_route('received_file_download'), extra='target="_blank"') }}
+{% from "includes/_action_forms_and_btns.html.j2" import action_form__submit_cargo %}
+{{ action_form__submit_cargo(dlg_submit_form_id, private_route('received_file_download'), extra='target="_blank"') }}
 
-{% endblock dlg_blc_forms %}
+{% endblock %}
 {# ╘═════════════════ Dialog Forms ════════════════╛ #}
 
 {% endif %}

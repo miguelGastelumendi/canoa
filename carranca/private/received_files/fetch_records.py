@@ -53,6 +53,11 @@ def fetch_record_s(
             folder = uf.uploaded if record.file_origin == "L" else uf.downloaded
             file_full_name = path.join(folder, user_folder, record.stored_file_name)
             # Copy specific fields to a new object 'row'
+            
+            # if path.isfile(file_full_name):
+            #     print(file_full_name)
+            #     print(record.user_receipt)
+
             row = {
                 "id": record.id,
                 "data_f_found": path.isfile(file_full_name),  # data_file was found
@@ -66,9 +71,6 @@ def fetch_record_s(
                 "warns": record.report_warns,
             }
             grid_rows.append(row)
-            if (row['data_f_found']):
-                print(row["file_name" ])
-
 
     return grid_rows, file_full_name, report_ext
 

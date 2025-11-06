@@ -28,7 +28,7 @@ from typing import Tuple, Optional
 
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.html_helper import icon_url
-from ..helpers.types_helper import ui_db_texts
+from ..helpers.types_helper import UiDbTexts
 from ..helpers.route_helper import get_tmpl_full_file_name
 from ..config.local_ui_texts import local_ui_texts, local_form_texts
 from ..helpers.ui_db_texts_helper import get_section, UITextsKeys
@@ -38,7 +38,7 @@ from ..common.app_error_assistant import AppStumbled
 #  --------------------
 def ups_handler(
     error_code: int, user_msg: str, e: Optional[Exception] = None, logout: bool = False
-) -> Tuple[dict, str, ui_db_texts]:
+) -> Tuple[dict, str, UiDbTexts]:
     from ..common.app_context_vars import app_user, sidekick
 
     try:

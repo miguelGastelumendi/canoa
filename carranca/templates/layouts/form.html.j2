@@ -8,7 +8,6 @@ mgd
 --------------------------------------- #}
 
 {# only specify value if different from default #}
-{% set dlg_cls_footer= "" %}
 {% set form_backend_msg= msgOnly | default(False) %}
 {% set form_display_ui= not form_backend_msg %}
 {% set form_close_btn_text= form_close_btn_text | default('Fechar') %}
@@ -21,12 +20,10 @@ mgd
 {% if form_display_ui %}
     {# ╒═══════════════ Display UI ═══════════════╕ #}
     <form method="post" action="" id="{{dlg_submit_form_id}}" {{ formAttribute | default('') }}>
-        {{ form.hidden_tag() }}
-
+        <input type="hidden" name="{{safe_token.key}}" value="{{safe_token.value}}">
+        {# {{ form.hidden_tag() }} #}
         {# ╒═══════════════ Form's input ═══════════════╕ #}
-        {% block frm_blc_inputs %}
-
-        {% endblock frm_blc_inputs %}
+        {% block frm_blc_inputs %}{% endblock %}
         {# ╘══════════════ Form's input ════════════════╛ #}
     </form>
     {# ╘═══════════════ Display UI ═══════════════╛ #}
@@ -36,6 +33,9 @@ mgd
     {# ╘═════════ Display Only Message ═══════════╛ #}
 {% endif %}
 
+{% endblock dlg_blc_body %}
+{# ╘════════════════════ Dialog Body ══════════════════════╛ #}
+
 
 {# ╒════════════════ Footer ════════════════════╕ #}
 
@@ -44,32 +44,28 @@ mgd
 {% if form_display_ui %}
     {# ╒═══════════ Display UI ═══════════╕ #}
         <div class="col-auto">
-        {% from "includes/_action_forms_and_btns.html.j2" import btn_submit %}
-        A=A
+            {% from "includes/_action_forms_and_btns.html.j2" import btn_submit %}
             {{ btn_submit(dlg_submit_form_id, dlg_submit_btn_id, submitButton) }}
         </div>
     {# ╘══════════ Display UI ═══════════╛ #}
 {% else %}
     {# ╒══════ Display Only Message ═════╕ #}
         <div class="col-auto">
-        {% from "includes/_action_forms_and_btns.html.j2" import btn_close_dlg %}
-        {{ btn_close_dlg(dlg_close_form_id, dlg_close_btn_id, form_close_btn_text) }}
+            {% from "includes/_action_forms_and_btns.html.j2" import btn_close_dlg %}
+            {{ btn_close_dlg(dlg_close_form_id, dlg_close_btn_id, form_close_btn_text) }}
         </div>
     {# ╘══════ Display Only Message ══════╛ #}
-{% endif %} {# if NOT C:\Users\Miguel\Projects#}
-{# ╘════════════ Footer Buttons ══════════╛ #}
+{% endif %}
 {% endblock dlg_blc_footer_buttons %}
+{# ╘════════════ Footer Buttons ══════════╛ #}
+
 
 
 {# ╒═══════════ Footer Option ════════════╕ #}
 {% block dlg_blc_footer_options %}
-
-
+{# optional; for a example see login.html.j2 #}
 {% endblock dlg_blc_footer_options %}
 {# ╘═══════════ Footer Option ════════════╛ #}
-
-{% endblock dlg_blc_body %}
-{# ╘════════════════════ Dialog Body ══════════════════════╛ #}
 
 
 {% if form_display_ui %}

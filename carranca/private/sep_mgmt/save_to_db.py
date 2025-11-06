@@ -15,18 +15,18 @@ from sqlalchemy.orm import Session
 
 from ...helpers.py_helper import is_str_none_or_empty
 from ...helpers.db_helper import try_get_mgd_msg
-from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list, OptStr
+from ...helpers.types_helper import UiDbTexts, SepMgmtReturn, CargoList, OptStr
 from ...helpers.ui_db_texts_helper import format_ui_item
 
 from .keys_values import SepMgmtGridCols, CargoKeys
 
 
 def save_data(
-    grid_response: cargo_list,
+    grid_response: CargoList,
     batch_code: str,
-    ui_texts: ui_db_texts,
+    ui_texts: UiDbTexts,
     task_code: int,
-) -> sep_mgmt_rtn:  # msg_success, msg_error, task_code
+) -> SepMgmtReturn:  # msg_success, msg_error, task_code
     """Saves user modifications to the DB via the view's trigger"""
 
     msg_success = None
@@ -56,21 +56,21 @@ def save_data(
 
 
 def _prepare_data_to_save(
-    grid_response: cargo_list,
-    ui_texts: ui_db_texts,
+    grid_response: CargoList,
+    ui_texts: UiDbTexts,
     task_code: int,
-) -> Tuple[str, cargo_list, cargo_list, int]:
+) -> Tuple[str, CargoList, CargoList, int]:
     """Distributes grid's modifications in two groups: remove & assign"""
 
     msg_error = None
-    remove: cargo_list = []
-    assign: cargo_list = []
+    remove: CargoList = []
+    assign: CargoList = []
     try:
         actions = grid_response[CargoKeys.actions]
         task_code += 1
         str_none: str = actions[CargoKeys.none]
         task_code += 1
-        grid: cargo_list = grid_response[CargoKeys.cargo]
+        grid: CargoList = grid_response[CargoKeys.cargo]
         task_code += 1
         for item in grid:
             usr_new = item[SepMgmtGridCols.usr_new]
@@ -89,12 +89,12 @@ def _prepare_data_to_save(
 
 
 def _save_data_to_db(
-    remove: cargo_list,
-    update: cargo_list,
+    remove: CargoList,
+    update: CargoList,
     batch_code: str,
-    ui_texts: ui_db_texts,
+    ui_texts: UiDbTexts,
     task_code: int,
-) -> sep_mgmt_rtn:
+) -> SepMgmtReturn:
     """
     Saves user-made changes to the UI grid to the database
     via an 'instead-of' trigger that:

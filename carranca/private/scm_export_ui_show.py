@@ -10,10 +10,10 @@ from .sep_icon import do_icon_get_url
 from .scm_data import scm_data_get
 from ..helpers.py_helper import class_to_dict
 from ..public.ups_handler import ups_handler
-from ..helpers.types_helper import jinja_template
+from ..helpers.types_helper import JinjaTemplate
 from ..helpers.jinja_helper import process_template
 from ..helpers.uiact_helper import UiActResponse, UiActResponseKeys
-from ..helpers.route_helper import get_private_response_data, init_response_vars, template_file_full_name
+from ..helpers.route_helper import get_private_response_data, init_response_vars, TemplateFileFullName
 from ..helpers.js_consts_helper import js_grid_col_meta_info, js_ui_dictionary
 from ..helpers.ui_db_texts_helper import add_msg_final
 from ..config.ExportProcessConfig import ExportProcessConfig
@@ -21,9 +21,9 @@ from ..common.app_error_assistant import ModuleErrorCode
 from ..models.private_1.ExportGrid import ExportGrid
 
 
-def scm_export_ui(uiact_rsp: UiActResponse) -> jinja_template:
+def scm_export_ui_show(uiact_rsp: UiActResponse) -> JinjaTemplate:
 
-    task_code = ModuleErrorCode.SCM_EXPORT_UI
+    task_code = ModuleErrorCode.SCM_EXPORT_UI_SHOW
     _, tmpl_rfn, _, ui_texts = init_response_vars()
 
     scm_cols = ["name", "color"]
@@ -32,12 +32,12 @@ def scm_export_ui(uiact_rsp: UiActResponse) -> jinja_template:
     tmpl = ""
     try:
         task_code += 1
-        tmpl_rfn, _, ui_texts = get_private_response_data("scmExportUI")
+        tmpl_rfn, _, ui_texts = get_private_response_data("scmExportUiShow")
 
         task_code += 1
         config = ExportProcessConfig(scm_cols, sep_cols)
         task_code += 1
-        schema_data, coder, task_code = scm_data_get(task_code, False, config)
+        schema_data, task_code = scm_data_get(task_code, False, config)
         task_code += 1
         grid_data = ExportGrid.get_data()
         task_code += 1
@@ -48,13 +48,13 @@ def scm_export_ui(uiact_rsp: UiActResponse) -> jinja_template:
         js_ui_dict = js_ui_dictionary(ui_texts[js_grid_col_meta_info], col_names, task_code)
 
         task_code += 1
-        tmpl: template_file_full_name = process_template(
+        tmpl: TemplateFileFullName = process_template(
             tmpl_rfn,
             schemas=schema_data.schemas,
             grid_data = grid_data.to_list(),
             empty_icon= empty_icon,
             cargo_keys=class_to_dict(UiActResponseKeys),
-            cargo_data= uiact_rsp.initial(),
+            cargo= uiact_rsp.initial(),
             **ui_texts,
             **js_ui_dict,
         )

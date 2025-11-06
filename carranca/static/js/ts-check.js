@@ -59,6 +59,8 @@ var btnExport;
 /** @type {Object} */
 var gridContainer;
 
+/** @type {Object} */
+var params;
 
 /**
  * @typedef {Object} ColMetaItem

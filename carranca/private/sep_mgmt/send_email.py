@@ -20,7 +20,7 @@ from sqlalchemy.orm import Session
 
 from carranca import global_sqlalchemy_scoped_session
 from ...models.private import MgmtEmailSep
-from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn
+from ...helpers.types_helper import UiDbTexts, SepMgmtReturn
 from ...helpers.email_helper import RecipientsListStr
 from ...common.app_context_vars import sidekick
 from ...helpers.sendgrid_helper import send_email as send_email_to
@@ -28,7 +28,7 @@ from ...helpers.ui_db_texts_helper import format_ui_item
 from ...common.app_error_assistant import proper_user_exception
 
 
-def send_email(batch_code: str, ui_texts: ui_db_texts, task_code: int) -> sep_mgmt_rtn:
+def send_email(batch_code: str, ui_texts: UiDbTexts, task_code: int) -> SepMgmtReturn:
     """
     Send an email for each user with a
     'new' SEP or if it was removed

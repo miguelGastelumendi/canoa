@@ -14,7 +14,7 @@ mgd
 {% extends "./layouts/form.html.j2" %}
 
 {# ╒═════════════════════ Inputs ═════════════════════════╕ #}
-{% block frm_blc_inputs_obsolete %}
+{% block frm_blc_inputs %}
 
 {# [ Manager (when is_full_edit) #}
 {% if (form.manager_name and form.manager_name.data) or formForNew %}
@@ -102,7 +102,7 @@ mgd
 </div>
 {# Icon ] #}
 
-{% endblock frm_blc_inputs_obsolete %}
+{% endblock frm_blc_inputs %}
 {# ╘═════════════════════ Inputs ═════════════════════════╛ #}
 
 

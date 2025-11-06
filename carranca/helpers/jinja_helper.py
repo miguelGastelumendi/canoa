@@ -11,7 +11,7 @@ from typing import Any, List
 
 from .py_helper import as_str_strip
 from .file_helper import file_full_name_parse
-from .types_helper import jinja_generated_html, jinja_template, template_file_full_name
+from .types_helper import JinjaGeneratedHtml, JinjaTemplate, TemplateFileFullName
 from ..public.ups_handler import ups_handler
 from ..common.app_context_vars import sidekick
 from ..common.app_error_assistant import AppStumbled, ModuleErrorCode
@@ -57,13 +57,13 @@ def process_pre_templates(texts: dict, mark: str = _jinja_pre_template_mark):
     return texts
 
 
-def extract_tag(tmpl: jinja_template, tag: str):
+def extract_tag(tmpl: JinjaTemplate, tag: str):
     pattern = rf'<{tag}>(.*?)</{tag}>'
     match = re.search(pattern, tmpl, re.IGNORECASE | re.DOTALL)
     return match.group(1).strip() if match else None
 
 
-def _get_line(tmpl: jinja_template, lineno: int) -> str:
+def _get_line(tmpl: JinjaTemplate, lineno: int) -> str:
     lines = tmpl.splitlines()
     line = ''
     if 1 <= lineno <= len(lines):
@@ -71,7 +71,7 @@ def _get_line(tmpl: jinja_template, lineno: int) -> str:
     return  line
 
 
-def _validate_jinja(tmpl: jinja_template, tmpl_rfn: str, raise_if_error: bool = False) -> str:
+def _validate_jinja(tmpl: JinjaTemplate, tmpl_rfn: str, raise_if_error: bool = False) -> str:
     error = ''
     try:
         env = Environment()
@@ -84,8 +84,8 @@ def _validate_jinja(tmpl: jinja_template, tmpl_rfn: str, raise_if_error: bool = 
 
     return error
 
-def _load_template(tmpl_rfn: template_file_full_name ) -> jinja_template:
-    tmpl: jinja_template = ''
+def _load_template(tmpl_rfn: TemplateFileFullName ) -> JinjaTemplate:
+    tmpl: JinjaTemplate = ''
     with open(tmpl_rfn, encoding="utf-8") as f:
         tmpl = f.read()
 
@@ -116,13 +116,13 @@ def _detect_jinja_runtime_errors(rendered_html: str) -> list[str]:
     result : list[str] = missing_obj + missing_var
     return result
 
-def process_template(tmpl_rfn: jinja_template, **context: Any) -> jinja_generated_html:
+def process_template(tmpl_rfn: JinjaTemplate, **context: Any) -> JinjaGeneratedHtml:
     """
     TODO  » HTML with BeautifulSoup
     """
 
-    jHTML_to_display: jinja_generated_html = ''
-    jHTML: jinja_generated_html = ''
+    jHtml_to_display: JinjaGeneratedHtml = ''
+    jHTML: JinjaGeneratedHtml = ''
     validated = False
     errors: List[str] = []
     file_name = ''
@@ -134,11 +134,11 @@ def process_template(tmpl_rfn: jinja_template, **context: Any) -> jinja_generate
             _validate_jinja(jHTML, file_name, True)
             validated = True
 
-        jHTML: jinja_generated_html = render_template(tmpl_rfn, **context)
-        jHTML_to_display = as_str_strip(jHTML)
+        jHTML: JinjaGeneratedHtml = render_template(tmpl_rfn, **context)
+        jHtml_to_display = as_str_strip(jHTML)
 
         if sidekick.config.DEBUG_RENDERED_TEMPLATES:
-            errors = _detect_jinja_runtime_errors(jHTML_to_display)
+            errors = _detect_jinja_runtime_errors(jHtml_to_display)
             if errors:
                 raise AppStumbled(
                     f"{_jinja_bug_found}: {errors}"
@@ -155,9 +155,9 @@ def process_template(tmpl_rfn: jinja_template, **context: Any) -> jinja_generate
             raise Exception(msg_error) from e
         else:
             _, tmpl_rfn, ui_texts = ups_handler(ModuleErrorCode.TEMPLATE_BUG.value, '',  e)
-            jHTML_to_display = render_template(tmpl_rfn, **ui_texts)
+            jHtml_to_display = render_template(tmpl_rfn, **ui_texts)
 
-    return jHTML_to_display
+    return jHtml_to_display
 
 
 # eof

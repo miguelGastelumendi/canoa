@@ -70,8 +70,6 @@ body {
 
 .dlg-body {
     background-color: var(--canoa-form-body-bg);
-    border-bottom-left-radius: var(--bs-modal-inner-border-radius);
-    border-bottom-right-radius: var(--bs-modal-inner-border-radius);
 }
 
 .dlg-header {
@@ -105,7 +103,6 @@ body {
      */
 }
 
-
 .dlg-sep-icon-back {
     background-color: var(--adaptabrasil-back-color);
     vertical-align: middle;
@@ -125,6 +122,7 @@ body {
 .dlg-footer {
     background-color: var(--canoa-form-footer-bg);
     min-height: 2rem;
+    padding: 0rem !important;
 }
 
 /* dialog ids */
@@ -139,6 +137,17 @@ body {
     color: var(--bs-dropdown-link-color) !important;
 }
 
+/* ============================================
+ *  carranca\templates\home\document.html.j2
+ * ============================================ */
+.document_cls_body {
+    /* light dialog footer */
+    background-color: #fff8f1;
+    font-family: "Source Sans Pro", sans-serif;
+    color: black;
+    font-size: 1rem;
+    line-height: 1.2;
+}
 
 /* =+===========================================
  *  ag-grid override
@@ -173,6 +182,10 @@ body {
     transition: background-color 0.2s ease;
 }
 
+.ag-cell-focus.ag-cell-not-inline-editing.grd-col-sep_new {
+    border: 1px solid var(--ag-range-selection-border-color) !important;
+    /* initial  */
+}
 
 /* ============================================
  *  carranca\templates\layouts\grid.html.j2
@@ -193,10 +206,10 @@ body {
     color: limegreen;
 }
 
-.ag-cell-focus.ag-cell-not-inline-editing.grd-col-sep_new {
-    border: 1px solid var(--ag-range-selection-border-color) !important;
-    /* initial  */
+.grid-body {
+    padding: 0.5rem;
 }
+
 
 /* ============================================
  * carranca\templates\includes\backend-msg.html.j2
@@ -286,8 +299,9 @@ body {
 }
 
 .form-main-btn:disabled {
-    filter: brightness(60%);
+    filter: brightness(70%);
     color: var(--canoa-form-button-color);
+    background-color: var(--canoa-form-button-bg);
 }
 
 .form-icon-btn {

@@ -42,7 +42,7 @@ Spell:ignore endmacro preid onclick
 {% endmacro %}
 
 {# -- Submit Form: includes security token -- #}
-{% macro action_form__submit(form_id, action_url, method= 'post', extra='')%}
+{% macro action_form__submit_cargo(form_id, action_url, method= 'post', extra='')%}
 <form id="{{form_id}}" action="{{action_url}}" method="{{method}}" {{extra}}>
     <input type="hidden" name="{{safe_token.cargo}}" id="{{safe_token.cargo}}">
     <input type="hidden" name="{{safe_token.key}}" value="{{safe_token.value}}">

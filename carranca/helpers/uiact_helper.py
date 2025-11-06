@@ -12,7 +12,7 @@ import json
 from typing import Optional, Tuple, Any, Dict
 
 from ..helpers.py_helper import to_int
-from ..helpers.types_helper import UsualDict, json_txt
+from ..helpers.types_helper import UsualDict, JsonText
 from ..common.app_error_assistant import AppStumbled
 
 DATA_SEPARATOR = ":"
@@ -43,26 +43,28 @@ class UiActResponse:
         value = self.data[key] if key in self.data else "?"
         return value
 
-    def __init__(self, cmd_text_or_code: str | json_txt):
+    def __init__(self, cmd_text_or_code: str | JsonText):
         try:
+            ## is 'cmd_text_or_code' is json?
             self.data = json.loads(cmd_text_or_code)
             self.action = self._get_value(UiActResponseKeys.action)[0]
             self.code = self._get_value(UiActResponseKeys.code)
             self.row_index = to_int(self._get_value(UiActResponseKeys.row_index))
         except:
+            ## No, 'cmd_text_or_code' is not json, so is s code
             if (code:= cmd_text_or_code.strip()) in [UiActResponseProxy.add, UiActResponseProxy.null, UiActResponseProxy.show]:
+                # TODO: code => cmd
                 self.code = code
             else:
-                raise AppStumbled(f'Unknown UI Action code <code>{code}</code>')
+                raise AppStumbled(f'Unknown UI Action Response <code>{code}</code>.')
 
-    def initial(self) -> json_txt:
-        initial: UsualDict = {
+    def initial(self) -> UsualDict:
+        return {
             "action": '',
             "row_index": self.row_index,
             "code": '',
             "data": None,
         }
-        return json.dumps(initial)
 
     def encode(self) -> str:
         data = UiActResponseProxy().encode(self.action, self.code, self.row_index)

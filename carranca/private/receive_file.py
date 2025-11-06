@@ -13,6 +13,7 @@ from flask import request
 from typing import List
 from werkzeug.utils import secure_filename
 
+from ..public.ups_handler import ups_handler
 from ..common.app_context_vars import sidekick, app_user
 from ..common.app_error_assistant import ModuleErrorCode
 from ..config.ValidateProcessConfig import ValidateProcessConfig
@@ -27,7 +28,7 @@ from ..helpers.py_helper import (
 )  # Ensure this module contains the function
 from ..helpers.file_helper import folder_must_exist
 from ..helpers.jinja_helper import AppStumbled, process_template
-from ..helpers.types_helper import jinja_template
+from ..helpers.types_helper import JinjaTemplate
 from ..helpers.route_helper import get_private_response_data, get_form_input_value
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
 from ..helpers.js_consts_helper import js_ui_dictionary
@@ -38,7 +39,7 @@ from ..helpers.ui_db_texts_helper import (
     add_msg_final,
 )
 from .validate_process.ProcessData import ProcessData
-from .UserSep import UserSep, user_sep_list, user_sep_dict
+from .UserSep import UserSep, UserSepList, user_sep_dict
 
 RECEIVE_FILE_DEFAULT_ERROR: str = "uploadFileError"
 
@@ -55,14 +56,14 @@ def _do_sep_placeholderOption(fullname: str) -> UserSep:
     return sep_fake
 
 
-def receive_file() -> jinja_template:
-    template, is_get, ui_texts = get_private_response_data("receiveFile")
+def receive_file() -> JinjaTemplate:
+    tmpl_rfn, is_get, ui_texts = get_private_response_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
     error_code = 0
 
     # utils
-    def _get_template() -> jinja_template:
-        seps: user_sep_list = []
+    def _get_template() -> JinjaTemplate:
+        seps: UserSepList = []
         ui_texts[UITextsKeys.Msg.tech] = None
         ui_texts[UITextsKeys.Msg.info] = None
         if error_code != 0:
@@ -70,7 +71,7 @@ def receive_file() -> jinja_template:
         elif not (seps:= [sep for sep in app_user.seps]):
             ui_texts[UITextsKeys.Msg.warn] = ui_texts["noSEPassigned"]
             ui_texts[UITextsKeys.Msg.display_only_msg] = True
-            seps: user_sep_list = []
+            seps: UserSepList = []
         elif len(seps) > 1:
             sep_placeholder_option = _do_sep_placeholderOption(ui_texts["placeholderOption"])
             seps.insert(0, sep_placeholder_option)
@@ -78,7 +79,7 @@ def receive_file() -> jinja_template:
         ui_texts[UITextsKeys.Form.icon_url] = seps[0].icon_url if len(seps) > 0 else None
         dict_seps: List[user_sep_dict] = [class_to_dict(sep) for sep in seps]
         tmpl= process_template(
-            template
+            tmpl_rfn
             , form=tmpl_form
             , seps=dict_seps
             , **ui_texts
@@ -97,13 +98,12 @@ def receive_file() -> jinja_template:
         sidekick.app_log.error(log_error)
         return e_code
 
+    task_code = 1
     try:
-        task_code = 1
 
         if is_get:
             return _get_template()
 
-        raise AppStumbled('Oops, I slipped.')
         received_at = now()
         # Find out what was kind of data was sent: an uploaded file or an URL (download)
         file_obj = request.files[tmpl_form.uploadfile.name] if len(request.files) > 0 else None
@@ -203,11 +203,15 @@ def receive_file() -> jinja_template:
             # keep error_code from process()
             _log_error(msg_id, task_code, "", True)
 
+        tmpl = _get_template()
     except Exception as e:
         error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code + 1, "", True)
         sidekick.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
+        msg = add_msg_final("receiveFileException", ui_texts, task_code)
+        _, tmpl_rfn, ui_texts = ups_handler(task_code, msg, e)
+        tmpl = process_template(tmpl_rfn, **ui_texts)
 
-    tmpl = _get_template()
+
     return tmpl
 
 

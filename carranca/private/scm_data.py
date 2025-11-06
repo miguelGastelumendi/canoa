@@ -11,7 +11,6 @@ mgd 2025.08
 from typing import Optional, Tuple, Dict, List
 
 from .sep_icon import do_icon_get_url
-from .IdToCode import IdToCode
 from ..models.public import User
 from ..models.private import Sep
 from ..helpers.py_helper import UsualDict
@@ -21,8 +20,6 @@ from ..models.private_1.SchemaGrid import SchemaGrid
 
 
 class SchemaData:
-
-    coder: Optional[IdToCode]
     header: Optional[UsualDict]
     meta_scm: UsualDict
     meta_sep: UsualDict
@@ -36,7 +33,7 @@ class SchemaData:
         self.schemas = schemas
 
 
-def scm_data_get(task_code: int, encode64: bool, config: ExportProcessConfig) -> Tuple[SchemaData, IdToCode, int]:
+def scm_data_get(task_code: int, encode64: bool, config: ExportProcessConfig) -> Tuple[SchemaData, int]:
    task_code += 1
    SEPS_KEY = "seps"
    scm_id = SchemaGrid.id.name
@@ -68,7 +65,6 @@ def scm_data_get(task_code: int, encode64: bool, config: ExportProcessConfig) ->
    get_icon= Sep.icon_file_name.name in sep_cols
    task_code += 1
    mgmt: OptStr = None
-   id_coder = IdToCode(11) # obfuscate PK
    for scm in scm_rows:
       schema_dic = scm.encode64([scm_id]) if encode64 else scm.copy([scm_id])
       schema_dic[SEPS_KEY]: List[Sep] = []
@@ -76,8 +72,8 @@ def scm_data_get(task_code: int, encode64: bool, config: ExportProcessConfig) ->
       for sep in sep_rows:
             sep.icon_file_name = do_icon_get_url(sep.icon_file_name, sep.id)  if get_icon else None
             sep.manager = mgmt if mng_list and (mgmt:= mng_list.get(sep.mgmt_users_id)) else "?"
-            sep.scm_code = id_coder.encode(scm.id)
-            sep.code = id_coder.encode(sep.id)
+            sep.scm_code = config.coder.encode(scm.id)
+            sep.code = config.coder.encode(sep.id)
             schema_dic[SEPS_KEY].append(sep.encode64([sep_id]) if encode64 else sep.copy([sep_id]))
 
       schema_list.append(schema_dic)
@@ -87,7 +83,7 @@ def scm_data_get(task_code: int, encode64: bool, config: ExportProcessConfig) ->
    meta_sep = sep_rows.col_info if sep_rows else []
    schema_data = SchemaData(config.header, meta_scm, meta_sep, schema_list)
 
-   return schema_data, id_coder, task_code
+   return schema_data, task_code
 
 
 # eof

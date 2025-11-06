@@ -8,6 +8,9 @@ Equipe da Canoa -- 2024
 # cSpell:ignore: nullable sqlalchemy sessionmaker sep ssep scm sepsusr usrlist SQLA duovigesimal
 
 from typing import List, Optional
+from carranca.main import app
+from carranca.private.scm_export_ui_save import SepUiOrder
+from carranca.public.ups_handler import AppStumbled
 from sqlalchemy import (
     Computed,
     DateTime,
@@ -32,7 +35,7 @@ from ..helpers.db_helper import db_fetch_rows, col_names_to_columns
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.user_helper import get_user_code
 from ..helpers.types_helper import OptListOfStr
-from ..private.SepIconMaker import SepIconMaker, svg_content
+from ..private.SepIconMaker import SepIconMaker, SvgContent
 from ..common.app_context_vars import sidekick, app_user
 from ..helpers.db_records.DBRecords import DBRecords
 
@@ -358,12 +361,12 @@ class Sep(SQLABaseTable):
         return sep_row
 
     @staticmethod
-    def get_content(id: int) -> Optional[svg_content]:
+    def get_content(id: int) -> Optional[SvgContent]:
         """
         Returns the content of the icon_svg (useful for creating a file)
         """
 
-        def _get_data(db_session: Session) -> svg_content:
+        def _get_data(db_session: Session) -> SvgContent:
             try:
                 stmt = select(Sep).where(Sep.id == id)
                 sep = db_session.execute(stmt).scalar_one_or_none()
@@ -378,6 +381,33 @@ class Sep(SQLABaseTable):
 
         e, msg_error, icon_content = db_fetch_rows(_get_data)
         return icon_content, msg_error
+
+    @staticmethod
+    def save_ui_order(items: SepUiOrder, task_code: int) -> bool:
+        # The new order is implied by the position in the list, grouped by schema.
+        # ⚠️ We intentionally update *all* items instead of only modified ones.
+        #     Reason: keeping the stored order always synchronized with the frontend
+        #     ensures deterministic behavior, avoids "out-of-sync" inconsistencies,
+        #     and greatly simplifies rollback and debugging.
+        #     The performance cost is negligible given the small number of SEPs per SCM.
+
+        db_session: Session
+        sep_id = -1
+        with global_sqlalchemy_scoped_session() as db_session:
+
+            try:
+                for sep_id, new_index in items:
+                    db_session.query(Sep).filter_by(id=sep_id).update({"ui_order": new_index })
+
+                db_session.commit()
+
+            except Exception as e:
+                db_session.rollback()
+                raise AppStumbled("Error save Schema ui-order.", task_code, False, e)
+
+
+        return True
+
 
     @staticmethod
     def save(sep_row: "Sep", schema_changed: bool, batch_code: str) -> int:
@@ -420,7 +450,7 @@ class Sep(SQLABaseTable):
     @staticmethod
     def full_name_exists(id_schema: int, sep_name: str) -> bool:
 
-        def _get_data(db_session: Session) -> svg_content:
+        def _get_data(db_session: Session) -> SvgContent:
             # see sep__sch_name_lower_uix
             stmt = select(Sep.name_lower).where(
                 Sep.id_schema == id_schema, Sep.name_lower == func.lower(sep_name)

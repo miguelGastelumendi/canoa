@@ -1,6 +1,6 @@
 {#
 ----------------------------------
-./private/scm_export_ui.htm.j2
+./private/scm_export_ui_show.htm.j2
 ----------------------------------
 Exports Schemas with there Seps
 Also displays an UI to set the display order to the seps
@@ -9,7 +9,7 @@ mgd
 
 --------------------------------------- #}
 {# cSpell:ignore stylesheet urlname tojson endfor ufiles #}
-{% set dlg_cls_size= dlg_cls_size | default('modal-xl') %}
+{% set dlg_cls_size= dlg_cls_size | default('modal-lg') %}
 {% set grid_cell_id = grid_cell_id | default('grid_cell_id') %}
 {% set reticle_cell_id = reticle_cell_id | default('reticle_cell_id') %}
 
@@ -32,9 +32,9 @@ mgd
 {% block dlg_blc_body %}
 
 <div class="container">
-   <div class="row">
+   <div class="row gx-1">
       {# ╒══════════════ Column 1 ═══════════════╕ #}
-      <div class="col-12 col-md-4" id='{{reticle_cell_id}}'>
+      <div class="col-12 col-md-3" id='{{reticle_cell_id}}'>
 
          {# % set scm_count = 0 % #}
 
@@ -48,7 +48,7 @@ mgd
                <div class="reticule-header-title">{{scm.name}}</div>
             </div>
             {% for sep in scm.seps %}
-            {% set ui_order = scm_index * 100 + loop.index %}
+            {% set ui_order = scm_index ~ ':' ~ loop.index %}
             <span class="reticule-item reticule-item-hot" draggable="true" title='{{sep.name}} | {{sep.manager}}'>
                <img src='{{sep.icon_file_name}}' id='{{sep.scm_code}}:{{sep.code}}' data-ui-order='{{ui_order}}'>
             </span>
@@ -69,7 +69,7 @@ mgd
 
 
       {# ╒═════════════ Column 2 ═════════════════╕ #}
-      <div class="col-12 col-md-8" id='{{grid_cell_id}}'>
+      <div class="col-12 col-md-9" id='{{grid_cell_id}}'>
          {% include "./includes/grid-body.html.j2" %}
       </div>
       {# ╘═════════════ Column 2 ═════════════════╛ #}
@@ -97,8 +97,8 @@ mgd
 {# ╒════════════════ Dialog Forms ════════════════╕ #}
 {% block dlg_blc_forms %}
 
-{% from "includes/_action_forms_and_btns.html.j2" import action_form__submit %}
-{{ action_form__submit(dlg_submit_form_id, private_route('scm_export', code=form_cargo_id)) }}
+{% from "includes/_action_forms_and_btns.html.j2" import action_form__submit_cargo %}
+{{ action_form__submit_cargo(dlg_submit_form_id, private_route('scm_export', code=form_cargo_id)) }}
 
 {% endblock dlg_blc_forms %}
 {# ╘═════════════════ Dialog Forms ════════════════╛ #}
@@ -111,12 +111,15 @@ mgd
    const reticle = document.getElementById('{{ reticle_cell_id }}');
    const btnSave = document.getElementById('{{ do_btn_id(cargo_keys.save, dlgBtnSaveArrange) }}');
    const btnExport = document.getElementById('{{ do_btn_id(cargo_keys.export, dlgBtnExport) }}');
-   const getGridOrder = () => {
+   const getReticuleOrder = () => {
       const images = reticle.querySelectorAll('.reticule-item img');
-      const gridOrder = Array.from(images).map(img => img.dataset.uiOrder).join(',');
-      return gridOrder;
+      const reticuleOrder = Array.from(images)
+         .filter(img => img && img.id)
+         .map(img => `${img.id}:${img.dataset.uiOrder}`)
+         .join(',');
+      return reticuleOrder;
    }
-   const gridInitialOrder = getGridOrder();
+   const gridInitialOrder = getReticuleOrder();
    const gridRows = {{ grid_data | tojson | safe }};
    const colMeta = {{ grid_col_meta | tojson | safe }};
    const colCode = colMeta[0].n;
@@ -124,14 +127,13 @@ mgd
    const colScm = colMeta[2].n;
    const gridID = '{{ grid_id }}';
    const dateFormat = '{{ userDateFormat }}';
-   // TODO *: send form server
    const cargoKeys = {{ cargo_keys | tojson }};
    const cargo = {{ cargo | tojson }};
-   {# const cargo = { [cargoKeys.action]: '', [cargoKeys.index]: initRow, [cargoKeys.code]: '', [cargoKeys.data]: null } #}
+   {# const cargo = { [cargoKeys.action]: '', [cargoKeys.row_index]: initRow, [cargoKeys.code]: '', [cargoKeys.data]: null } #}
 
-   const setActiveRow = (row, rowIx) => {
+   const setActiveRow = (row, rowIndex) => {
       if (!row) { return; }
-      cargo[cargoKeys.index] = rowIx;
+      cargo[cargoKeys.row_index] = rowIndex;
       cargo[cargoKeys.code] = row.data[colCode]
    }
 
@@ -140,7 +142,7 @@ mgd
 
 </script>
 
-<script src='{{static_route("js/scm_export_ui.js")}}''></script>
+<script src='{{static_route("js/scm_export_ui_show.js")}}''></script>
 
 {% endblock dlg_blc_javascript %}
 {# ╘══════════════ Dialog JavaScript ══════════════╛ #}

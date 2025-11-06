@@ -6,6 +6,7 @@
     //  "args": ["--no-reload",
     "version": "0.2.0",
     "configurations": [
+        
         {
             "name": "Canoa",
             "type": "debugpy",

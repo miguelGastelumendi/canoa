@@ -42,9 +42,9 @@ const gridOptions = {
     }
     , rowData: gridRows
     , columnDefs: [
-        { field: colMeta[0].n, flex: 0, hide: true },
-        { field: colIconUrl, flex: 0, hide: true },
-        { field: colUserCurr, flex: 0, hide: true },
+        { field: colMeta[0].n, hide: true },
+        { field: colIconUrl, hide: true },
+        { field: colUserCurr, hide: true },
         { field: colMeta[3].n, headerName: colMeta[3].h, hide: false, flex: 3 },
         {
             field: colUserNew,
@@ -89,11 +89,12 @@ const gridOptions = {
             field: colMeta[5].n
             , headerName: colMeta[5].h
             , valueFormatter: params => (params.data[colMeta[5].n] ? params.data[colMeta[5].n].toLocaleDateString(dateFormat) : '')
-            , flex: 1
+            , flex: 2
         },
         {
             field: colMeta[6].n
             , headerName: colMeta[6].h
+            , headerClass: 'text-center'
             , flex: 1
             , cellStyle: { display: 'flex', justifyContent: 'center' }
         },

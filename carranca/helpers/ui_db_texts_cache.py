@@ -19,7 +19,7 @@ from flask import current_app
 from .py_helper import now
 
 # TODO from .jinja_helper import process_pre_templates
-from .types_helper import ui_db_texts
+from .types_helper import UiDbTexts
 from .ui_db_texts_helper import UITexts_TableSearch, ui_texts_locale
 
 # === Global 'constants' form HTML ui ========================
@@ -72,7 +72,7 @@ class UITexts_Cache:
     def exists(self) -> bool:
         return self.as_tuple in global_ui_texts_cache
 
-    def update(self, texts: ui_db_texts) -> None:
+    def update(self, texts: UiDbTexts) -> None:
         if self._cache_item():
             global_ui_texts_cache[self.as_tuple] = texts
 

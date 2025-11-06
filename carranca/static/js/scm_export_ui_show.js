@@ -62,11 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
                const draggedContent = draggedItem.innerHTML;
                draggedItem.innerHTML = item.innerHTML;
                item.innerHTML = draggedContent;
-               const newOrder = getGridOrder()
-               const gridOriginal = (newOrder == gridInitialOrder)
-               cargo[cargoKeys.data] = gridOriginal ? '' : newOrder
-               btnSave.disabled = gridOriginal;
-               btnExport.disabled = !gridOriginal
+               const newOrder = getReticuleOrder()
+               const gridIsOriginal = (newOrder == gridInitialOrder)
+               cargo[cargoKeys.data] = gridIsOriginal ? '' : newOrder
+               btnSave.disabled = gridIsOriginal;
+               btnExport.disabled = !gridIsOriginal
             }
          });
       });
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const gridOptions = {
    rowSelection: 'single',
    onGridReady: (params) => {
-      const firstRow = cargo ? params.api.getDisplayedRowAtIndex(cargo[cargoKeys.index]) : null;
+      const firstRow = cargo ? params.api.getDisplayedRowAtIndex(cargo[cargoKeys.row_index]) : null;
       setTimeout(() => { firstRow?.setSelected(true); setActiveRow(firstRow, firstRow?.rowIndex) }, 20);
    },
    onCellFocused: (event) => {

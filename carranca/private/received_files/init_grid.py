@@ -13,7 +13,7 @@ from flask_login import current_user
 
 from ...public.ups_handler import ups_handler
 from ...helpers.route_helper import get_private_response_data, init_response_vars
-from ...helpers.types_helper import jinja_template
+from ...helpers.types_helper import JinjaTemplate
 from ...helpers.jinja_helper import process_template
 from ...helpers.js_consts_helper import js_ui_dictionary
 from ...helpers.ui_db_texts_helper import UITextsKeys, add_msg_final
@@ -25,7 +25,7 @@ from .fetch_records import fetch_record_s, ALL_USER_RECS
 from .constants import DNLD_F, DNLD_R
 
 
-def init_grid(for_user: int) -> jinja_template:
+def init_grid(for_user: int) -> JinjaTemplate:
 
     task_code = ModuleErrorCode.RECEIVED_FILES_MGMT.value
     _, tmpl_rfn, is_get, ui_texts = init_response_vars()
@@ -79,13 +79,7 @@ def init_grid(for_user: int) -> jinja_template:
         js_ui_dict["dnld_R"] = DNLD_R  # Download Report
 
         task_code += 1  # 10
-        bw = max(len(ui_texts["btnDwnLoadFile"]), len(ui_texts["btnDwnLoadRprt"])) + 2
-        sw = "width:{}ch"
-        js_ui_dict["sel_id"] = "usrListID"
-        js_ui_dict["btn_width"] = sw.format(bw)
-        lw = max(len(s[1]) for s in users_list) if users_list else 0
-        js_ui_dict["sel_width"] = sw.format(max(bw, lw))
-
+        js_ui_dict["sel_id"] = "usr-list-id"
         task_code += 1  # 11 611
         tmpl = process_template(
             tmpl_rfn,

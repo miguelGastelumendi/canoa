@@ -1,8 +1,21 @@
 {
-    "python.analysis.extraPaths": [
-        "./carranca"
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.indexing": true,
+    "python.analysis.maxImportResolutionTries": 5,
+    "python.analysis.importFormat": "absolute",
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.exclude": [
+        "**/__pycache__",
+        ".git",
+        ".env",
+        "venv",
+        ".venv"
     ],
-    "python.analysis.typeCheckingMode": "standard",
+    "python.analysis.extraPaths": [
+        "./carranca",
+        "./carranca/helpers"
+    ],
+    "python.analysis.typeCheckingMode": "basic",
     "github.copilot.enable": {
         "*": false,
         "plaintext": false,
@@ -14,6 +27,5 @@
         "editor.formatOnSave": true
     },
     "python-envs.pythonProjects": [],
-	"python.defaultInterpreterPath": ".env\\Scripts\\python.exe",
-	
+    "python.defaultInterpreterPath": ".env\\Scripts\\python.exe",
 }

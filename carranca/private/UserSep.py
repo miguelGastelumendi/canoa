@@ -11,13 +11,13 @@ mgd
 
 from typing import TypeAlias, Optional, List, Dict, Any
 
-from ..helpers.types_helper import error_message
+from ..helpers.types_helper import ErrorMessage
 
 from .IdToCode import IdToCode
 
-user_sep_list: TypeAlias = List["UserSep"]
+UserSepList: TypeAlias = List["UserSep"]
 user_sep_dict: TypeAlias = Dict[str, Any]
-user_seps_rtn: TypeAlias = user_sep_list | error_message
+user_seps_rtn: TypeAlias = UserSepList | ErrorMessage
 
 
 class UserSep:

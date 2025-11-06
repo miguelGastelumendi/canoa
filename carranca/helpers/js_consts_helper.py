@@ -14,10 +14,10 @@ from flask import request
 from typing import Optional, List
 
 from ..common.app_error_assistant import AppStumbled
-from .types_helper import js_const
+from .types_helper import JsConstants
 
 
-# === Global js constants Keys for js_const Jinja Dictionary for j2 grid/form/security ====
+# === Global js constants Keys for JsConstants Jinja Dictionary for j2 grid/form/security ====
 #
 #  Key name const
 #  --------------
@@ -35,10 +35,10 @@ from .types_helper import js_const
 # see carranca\__init__.py
 # safe_token= {"key": js_form_sec_key, "value": js_form_sec_value(), "cargo": js_form_cargo_id }
 js_form_sec_key = "form_sec_key"
-js_form_cargo_id = "form_cargo_id"
+js_form_cargo_id = "form_cargo_id"  # don't use  "form-cargo-id" (raise errors & errors)
 def js_form_sec_value() -> str:
     # TODO: create a real key with user_id and datetime
-    return "7298kaj0fk9dl-sd=)0ya"
+    return "7298kaj0fk9dl-sd=)0ya16"
 #}
 
 # Grid
@@ -58,21 +58,21 @@ def js_form_sec_check( value: Optional[str] = None )-> str:
     return msg_error
 
 
-def js_ui_dictionary(col_meta_info_txt: str = '', col_names: List[str] = [], task_code: int=1) -> js_const:
+def js_ui_dictionary(col_meta_info_txt: str = '', col_names: List[str] = [], task_code: int=1) -> JsConstants:
 
-    js_ui_dict: js_const = {}
+    js_ui_dict: JsConstants = {}
 
-    js_ui_dict["grid_id"] = "grid_id_"
+    js_ui_dict["grid_id"] = "ag-grid-id"
     js_ui_dict[js_form_cargo_id] = js_form_cargo_id
 
     # # TODO see _ini_py:_register_jinja
     # js_ui_dict[js_form_sec_key] = js_form_sec_key  # security token key
     # js_ui_dict["form_sec_value"] = js_form_sec_value()  # security token value
 
-    ''' little of 'recursive':
+    ''' little bit of 'recursive':
         can be used as `js_ui_dict.form_sec_key` or, in macros, `just `form_sec_key`
     '''
-    js_ui_dict["js_ui_dict"]: js_const = js_ui_dict # type: ignore
+    js_ui_dict["js_ui_dict"]: JsConstants = js_ui_dict # type: ignore
 
     if col_meta_info_txt:
         col_meta_info_json = json.loads(col_meta_info_txt)

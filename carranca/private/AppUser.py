@@ -11,13 +11,13 @@ mgd
 
 from flask_login import current_user
 
-from .UserSep import user_sep_list
+from .UserSep import UserSepList
 from .RolesAbbr import RolesAbbr
 
 from ..common.app_constants import APP_LANG
 from ..common.app_error_assistant import AppStumbled
 from ..helpers.user_helper import get_user_code, get_user_folder
-from ..helpers.types_helper import error_message
+from ..helpers.types_helper import ErrorMessage
 
 
 # App needed information of the logged user.
@@ -44,7 +44,7 @@ class AppUser:
             self.is_adm = False
             self.is_support = False
             self.is_power = False
-            # self.seps: user_sep_list= [] see @property below
+            # self.seps: UserSepList= [] see @property below
         else:
             sidekick.display.debug(f"{self.__class__.__name__} was created.")
             self.lang = current_user.lang
@@ -65,17 +65,17 @@ class AppUser:
                # or (self.is_support and sidekick.debugging)
                 or self.name in ["Mauro", "Miguel"]
             )
-            # self.seps: user_sep_list = [] see @property below
+            # self.seps: UserSepList = [] see @property below
 
     @property
-    def seps(self) -> user_sep_list:
+    def seps(self) -> UserSepList:
         from ..common.app_context_vars import user_seps
 
-        result: user_sep_list = []
+        result: UserSepList = []
         if not self.ready:
             result = []
         elif isinstance(us_list := user_seps, list):
-            result: user_sep_list = us_list
+            result: UserSepList = us_list
         else:
             msg: error_message = (
                 str(us_list)

@@ -80,7 +80,7 @@ class BaseConfig(Config):
     APP_AUTO_RELOAD = True  # <- True if APP_PROPAGATE_DEBUG else False
 
     # UI Texts cache (to avoid multiple DB queries)
-    # (see table ui_texts, ui_db_texts.py and carranca.py>global_ui_texts_cache: dict)
+    # (see table ui_texts, UiDbTexts.py and carranca.py>global_ui_texts_cache: dict)
     # 0= no cache; -1 < 0 infinite; n > 0 = _n_ minutes
     APP_UI_DB_TEXTS_CACHE_LIFETIME_MIN = 0
 

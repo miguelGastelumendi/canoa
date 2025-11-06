@@ -21,15 +21,7 @@ _js_ => JScript
 _id => ID eg dlg_submit_id
 
 - Configuration (default is empty '', if not shown (see canoa.css))
-dlg_cls_body | default('dlg-body')
-dlg_close_btn_class
-dlg_cls_btn_ok
-dlg_cls_content
-dlg_cls_dialog
-dlg_cls_footer | default('dlg-footer')
-dlg_cls_header | default('dlg-header')
 dlg_cls_size | default('dlg-width') | modal-sm, 'Default = 500px', modal-lg, modal-xl
-dlg_cls_title | default('dlg-title')
 dlg_cls_top | default('mt-5')
 
 dlg_icon_id | 'dlg-var-icon-id' // the id of the icon
@@ -47,22 +39,20 @@ mgd
 
 {% extends "./layouts/base.html.j2" %}
 
-{% set dlg_main_id= 'dlg_main_id'%}
-{% set dlg_sleep_id= 'dlg_sleep_id'%}
+{% set dlg_main_id= 'dlg-main-id'%}
+{% set dlg_icon_id= 'dlg-icon-id' %}
+{% set dlg_sleep_id= 'dlg-sleep_id'%}
+{% set dlg_submit_btn_id= 'dlg-submit-btn-id' %}
+{% set dlg_submit_form_id= 'dlg-submit-form-id' %}
+{% set dlg_btns_container_id = 'dlg-btns-container-id' %}
 
-{% set dlg_submit_form_id= 'dlg_submit_form_id' %}
-{% set dlg_submit_btn_id= 'dlg_submit_btn_i' %}
-{% set dlg_btns_container_id = 'dlg_btns_container_id' %} {# <div> that contains the footer buttons #}
+{% set dlg_close_x_id= 'dlg-close-x-id' %} # The upper right [x] button ID
+{% set dlg_close_btn_id= 'dlg-close-btn-id' %}
+{% set dlg_close_form_id= 'dlg-close-form-id' %}
 
-{% set dlg_close_form_id= 'dlg_close_form_id' %}
-{% set dlg_close_x_id= 'dlg_close_x_id' %} # The upper right [x] button ID
-{% set dlg_close_btn_id= 'dlg_close_btn_id' %}
-{# {% set dlg_close_btn_title= dlg_close_btn_title | default('Fechar') %} #}
-{% set dlg_close_btn_class= dlg_close_btn_class | default('btn-close') %} {# bootstrap class #}
 {% set dlg_close_btn_visible= dlg_close_btn_visible | default(True) %}
 {% set dlg_close_action_url= dlg_close_action_url | default('/login') %}
 
-{% set dlg_icon_id= 'dlg_icon_id' %}
 {% set dlg_icon_size= dlg_icon_size | default('32px') %}
 {#
    SepIconConfig.content_for() is a function that determines the default
@@ -80,18 +70,19 @@ mgd
 
     {# ╒════════════════════════ Dialog ════════════════════════════╕ #}
     <div class="modal-dialog {{ dlg_cls_size|default('dlg-width') }}
-        {%- if (dlg_var_v_centered|default(False)) %} modal-dialog-centered {% endif -%}
-        {%- if dlg_var_scroll %} modal-dialog-scrollable {% endif %} {{ dlg_cls_dialog|default('') }}">
+        {%- if dlg_var_v_centered %} modal-dialog-centered {% endif -%}
+        {%- if dlg_var_scroll %} modal-dialog-scrollable {% endif %}
+    ">
 
     {# ╒════════════════════════ Content ═══════════════════════════╕ #}
-    <div class="modal-content{{dlg_cls_content|default('')}}">
+    <div class="modal-content">
         {# ╒════════════════════ Pillow ════════════════════════════╕ #}
         <div id="{{dlg_sleep_id}}"></div>
         {# ╘════════════════════ Pillow ════════════════════════════╛ #}
 
         {# ╒════════════════════ Header ════════════════════════════╕ #}
-        <div class="modal-header {{dlg_cls_header | default('dlg-header')}}">
-            <h5 class="modal-title {{dlg_cls_title | default('dlg-title')}}">
+        <div class="modal-header dlg-header">
+            <h5 class="modal-title dlg-title">
                 {% if dlg_var_icon_url %}
                     <span class="{%- if 'sep_icons' in dlg_var_icon_url %}dlg-sep_icon-back{% else %}dlg-icon-back{% endif %}">
                         <img id="{{dlg_icon_id}}" src="{{dlg_var_icon_url}}" alt="[!]&nbsp;" height="{{dlg_icon_size}}" width="{{dlg_icon_size}}">
@@ -100,32 +91,34 @@ mgd
                 <span inert>{{formTitle|default(app_name)}}</span>
             </h5>
             {% if dlg_close_btn_visible %}
-                <button type="submit" title="Fechar" id="{{dlg_close_x_id}}" form="{{dlg_close_form_id}}" class="{{dlg_close_btn_class}}"></button>
+                <button type="submit" title="Fechar" id="{{dlg_close_x_id}}" form="{{dlg_close_form_id}}" class="btn-close"></button>
             {% endif %}
         </div>
         {# ╘════════════════════ Header ════════════════════════════╛ #}
 
         {# ╒═════════════════════ Body ═════════════════════════════╕ #}
-        <div class="modal-body {{ dlg_cls_body|default('dlg-body') }}">
+        <div class="modal-body dlg-body {% block dlg_blc_body_cls_tweak %}{% endblock %}">
             {# ╒═════════ Dialog Body ═════════╕ #}
-            {% block dlg_blc_body %}
-            {% endblock dlg_blc_body %}
+            {% block dlg_blc_body %}{% endblock %}
             {# ╘═════════ Dialog Body ═════════╛ #}
         </div>
         {# ╘═════════════════════ Body ═════════════════════════════╛ #}
 
         {# ╒═════════════════════ Dialog Footer ════════════════════╕ #}
         {% block dlg_blc_footer %}
-        <div class="modal-footer justify-content-center {{ dlg_cls_footer|default('dlg-footer') }}">
+        <div class="modal-footer justify-content-center align-items-center py-2 dlg-footer">
 
             {# ╒═════════ Dialog Footer Buttons═════════╕ #}
-            <div id="{{dlg_btns_container_id}}" class="row">
-            {% block dlg_blc_footer_buttons %}
-        
-            {# example <div class="col-auto">Button 1/<div> ... #}
-            {% endblock dlg_blc_footer_buttons %}
+            <div id="{{dlg_btns_container_id}}" class="row justify-content-center g-2">
+            {% block dlg_blc_footer_buttons %}{% endblock %}
             </div>
             {# ╘═════════ Dialog Footer Buttons═════════╛ #}
+
+            {# ╒════════ Dialog Footer Option ══════════╕ #}
+            <div class="row justify-content-center mt-1 w-100">
+            {% block dlg_blc_footer_options %}{% endblock %}
+            </div>
+            {# ╘════════ Dialog Footer Option ══════════╛ #}
 
         </div>
         {% endblock dlg_blc_footer %}
@@ -177,19 +170,17 @@ mgd
     });
 </script>
 
-{# ╒═════════ Dialog JS ═════════╕ #}
-{% block dlg_blc_javascript %}
-{% endblock dlg_blc_javascript %}
-{# ╘═════════ Dialog JS ═════════╛ #}
+{# ╒═════════════ Dialog JS ══════════════╕ #}
+{% block dlg_blc_javascript %}{% endblock %}
+{# ╘═════════════ Dialog JS ══════════════╛ #}
 
 {% endblock base_blc_body_js %}S
 
 {% block base_blc_forms %}
-<form action="{{dlg_close_action_url}}" method="get" id="{{dlg_close_form_id}}"></form>
-{# ╒═════════ Dialog Forms ═════════╕ #}
-{% block dlg_blc_forms %}
-{% endblock dlg_blc_forms %}
-{# ╘═════════ Dialog Forms ═════════╛ #}
+    <form action="{{dlg_close_action_url}}" method="get" id="{{dlg_close_form_id}}"></form>
+    {# ╒════════════ Dialog Forms ═════════╕ #}
+    {% block dlg_blc_forms %}{% endblock %}
+    {# ╘════════════ Dialog Forms ═════════╛ #}
 {% endblock base_blc_forms %}
 
 {# eof #}

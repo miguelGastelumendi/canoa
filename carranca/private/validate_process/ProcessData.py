@@ -114,7 +114,7 @@ class ProcessData:
         self.path = self._Path(self, user_folder, common_folder, data_validate_folder, batch_name)
         # values are given in receive_file.py
         self.received_file_name = ""
-        self.received_original_name = None
+        self.received_original_name:str = None
 
     def working_file_name(self) -> str :
         return (

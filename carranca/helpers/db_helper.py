@@ -17,7 +17,7 @@ from sqlalchemy.engine import CursorResult
 # from psycopg2.errors import ProgrammingError as psycopg2_ProgrammingError
 
 from .py_helper import is_str_none_or_empty, to_str
-from .types_helper import ui_db_texts
+from .types_helper import UiDbTexts
 
 from .. import global_sqlalchemy_scoped_session
 from ..config import BaseConfig
@@ -197,7 +197,7 @@ def retrieve_dict(query: str):
 
     data = retrieve_rows(query)
 
-    result: ui_db_texts = {}
+    result: UiDbTexts = {}
     try:
         if data and isinstance(data, tuple):
             # Check if data contains multiple rows of at least two columns

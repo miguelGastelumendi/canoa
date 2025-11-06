@@ -126,13 +126,14 @@ def submit(cargo: Cargo) -> Cargo:
     #     {"msg_success": ''},
     # )
 
+    _path_read = cargo.pd.path.data_tunnel_user_read
+    _path_write = cargo.pd.path.data_tunnel_user_write
     try:
         task_code += 1  # 2
         # shortcuts
         _cfg = cargo.receive_file_cfg
         _path = cargo.pd.path
-        _path_read = cargo.pd.path.data_tunnel_user_read
-        _path_write = cargo.pd.path.data_tunnel_user_write
+
         batch_full_name = _path.batch_full_name
         data_validate_path = cargo.pd.path.data_validate
         batch_has_run_permission = True
@@ -222,18 +223,24 @@ def submit(cargo: Cargo) -> Cargo:
             std_out_str,
         )
         try:
+            def _remove_folder(folder: str ):
+                msg = f"The intermediate process folder '{folder}' was "
+                if path.exists(folder) and path.isdir(folder):
+                    shutil.rmtree(folder)
+                    sidekick.app_log.info(msg + "removed.")
+                else:
+                    sidekick.app_log.warning(msg + "not found.")
+
             if cargo.receive_file_cfg.remove_tmp_files:
-                shutil.rmtree(_path_read)
-                shutil.rmtree(_path_write)
+                _remove_folder(_path_read)
+                _remove_folder(_path_write)
             else:
                 sidekick.app_log.info(
-                    "The communication folders contents was not removed, as requested."
+                    "The intermediate process folders contents was *not* removed, as requested."
                 )
-                pass  # leave the files for debugging
-
         except:
             sidekick.app_log.warning(
-                "The communication folders contents were *not* removed because of an error."
+                "The intermediate process folders contents were *not* removed because of an error."
             )
 
     # goto email.py

@@ -20,7 +20,7 @@ from ..helpers.pw_helper import internal_logout, nobody_is_logged
 from ..public.ups_handler import ups_handler
 from ..helpers.uiact_helper import UiActResponse, UiActResponseProxy, UiActResponseKeys
 from ..helpers.jinja_helper import process_template
-from ..helpers.types_helper import jinja_template, json_txt
+from ..helpers.types_helper import JinjaTemplate, JsonText
 from ..helpers.js_consts_helper import js_form_cargo_id, js_form_sec_check
 from ..helpers.route_helper import (
     get_private_response_data,
@@ -78,63 +78,6 @@ def sep_mgmt():
 
         return sep_mgmt()
 
-#  TODO: Virou marmelada... redo it
-# def grid_route(code: str, action_route: str, action_show: Callable, method: str = MTD_GET):
-#     """
-#     This func routes calls from a grid or to a grid. 8—|
-#     see sep_grid & scm_grid
-#     """
-
-#     from ..helpers.uiact_helper import GridAction, GridCargoKeys, GridResponse
-
-#     error = "Invalid route found."
-#     try:
-#         def _goto(item_code: str) -> str:
-#             url = private_route(action_route, code=item_code)
-#             return redirect_to(url)
-
-#         def _get_route_error(param: str) -> str:
-#             return f"Unexpected route parameter [{param}]."
-
-#         error = _get_route_error("?")
-#         if nobody_is_logged():
-#             return redirect_to(login_route())
-#         elif (method != request.method.upper()):
-#             error = _get_route_error(method)
-#         \
-#             return action_show()
-#         elif method == MTD_GET and code != js_form_cargo_id:
-#             error = _get_route_error(code)
-#         elif not is_str_none_or_empty(msg_error:= js_form_sec_check()):
-#             error = msg_error
-#         elif is_str_none_or_empty(cmd_text := request.args.get(js_form_cargo_id, "") if method == MTD_GET else request.form.get(js_form_cargo_id)):
-#             error = _get_route_error("empty")
-#         else:
-#             error = _get_route_error("jscmd")
-#             grid_response = GridResponse(cmd_text)
-#             action = grid_response.action
-#             error = _get_route_error(f"action: {action}")
-#             match action:
-#                 case GridCargoKeys.insert:
-#                     return _goto(GridAction.add)
-#                 case GridCargoKeys.edit:
-#                     data = grid_response.do_data()
-#                     return _goto(data)
-#                 case GridCargoKeys.save:
-#                     data = grid_response.do_data()
-#                     return _goto(data)
-#                 case GridCargoKeys.delete:
-#                     error = "The Delete procedure is still under development."
-#                     # TODO Remove all
-#                     pass
-#     except Exception e:
-#         msg_error =
-#         pass
-
-#     _, tmpl_rfn, ui_texts = ups_handler(0, error)
-#     tmpl = render_ template(tmpl_rfn, **ui_texts)
-#     return tmpl
-
 
 def create_ups_tmpl(error: str, code: int = 0):
     _, tmpl_rfn, ui_texts = ups_handler(code, error)
@@ -142,7 +85,7 @@ def create_ups_tmpl(error: str, code: int = 0):
     return tmpl
 
 
-def uiact_response(code: str) -> Tuple[jinja_template, UiActResponse]: #| None]: Too many warns with None
+def uiact_response(code: str) -> Tuple[JinjaTemplate, UiActResponse]: #| None]: Too many warns with None
     """
     This func decodes a uiact response
     """
@@ -155,10 +98,10 @@ def uiact_response(code: str) -> Tuple[jinja_template, UiActResponse]: #| None]:
         def _get_error(param: str) -> str:
             return f"Unexpected uiact route parameter [{param}]."
 
-        def _get_result() -> Tuple[jinja_template, UiActResponse | None]:
+        def _get_result() -> Tuple[JinjaTemplate, UiActResponse | None]:
             uiact_rsp = None
-            error_tmpl: jinja_template = ''
-            cmd_text: json_txt = request.args.get(js_form_cargo_id, '') if rqs_method == MTD_GET else request.form.get(js_form_cargo_id, '')
+            error_tmpl: JinjaTemplate = ''
+            cmd_text: JsonText = request.args.get(js_form_cargo_id, '') if rqs_method == MTD_GET else request.form.get(js_form_cargo_id, '')
             if is_str_none_or_empty(cmd_text):
                 error_tmpl = create_ups_tmpl( _get_error("empty") )
             elif not (uiact_rsp:= UiActResponse(cmd_text)):
@@ -186,7 +129,7 @@ def uiact_response(code: str) -> Tuple[jinja_template, UiActResponse]: #| None]:
     return error_tmpl, uiact_rsp
 
 
-def grid_route(code: str, editor: str, show_grid: Callable) -> jinja_template:
+def grid_route(code: str, editor: str, show_grid: Callable) -> JinjaTemplate:
     """
     This func routes calls from a grid or to a grid. 8—|
     see sep_grid & scm_grid
@@ -195,7 +138,7 @@ def grid_route(code: str, editor: str, show_grid: Callable) -> jinja_template:
     if nobody_is_logged():
         return redirect_to(login_route())
 
-    go_tmpl: jinja_template = ''
+    go_tmpl: JinjaTemplate = ''
     tmpl, uiact_rsp = uiact_response(code)
 
     if tmpl:
@@ -214,7 +157,7 @@ def grid_route(code: str, editor: str, show_grid: Callable) -> jinja_template:
                 data = uiact_rsp.encode()
                 go_tmpl = _goto(data)
             case UiActResponseKeys.delete:
-                go_tmpl = create_ups_tmpl("The Delete procedure is still under development.")
+                go_tmpl = create_ups_tmpl("The `delete` procedure is under development.")
             case _:
                 go_tmpl = create_ups_tmpl(f"Unknown route action '{uiact_rsp.action}'.")
 
@@ -226,16 +169,10 @@ def sep_grid(code: str = "?"):
     """
     Through this route, the admin user can CRUD seps and display a grid
     """
+
     from .sep_grid import get_sep_grid
 
-    error_tmpl, uiact_rsp = uiact_response(code)
-    if not is_str_none_or_empty(error_tmpl):
-        return error_tmpl
-    elif uiact_rsp.code == UiActResponseProxy.show:
-        return get_sep_grid()
-    else:
-        url = private_route("sep_edit", code=uiact_rsp.code)
-        return redirect_to(url)
+    return grid_route(code, "sep_edit", get_sep_grid)
 
 
 @login_required
@@ -267,14 +204,14 @@ def scm_export(code: str = "?"):
     if not is_str_none_or_empty(error_tmpl):
         return error_tmpl
     elif uiact_rsp.code == UiActResponseProxy.show:
-        from .scm_export_ui import scm_export_ui
-        return scm_export_ui(uiact_rsp)
+        from .scm_export_ui_show import scm_export_ui_show
+        return scm_export_ui_show(uiact_rsp)
     elif uiact_rsp.action == UiActResponseKeys.export:
         from .scm_export_db import scm_export_db
         return scm_export_db(uiact_rsp)
     elif uiact_rsp.action == UiActResponseKeys.save:
-        from .scm_export_layout import scm_export_layout
-        return scm_export_layout(uiact_rsp)
+        from .scm_export_ui_save import scm_export_ui_save
+        return scm_export_ui_save(uiact_rsp)
 
     return redirect_to(login_route())
 
@@ -326,28 +263,8 @@ def receive_file():
     else:
         from .receive_file import receive_file
 
-        html = receive_file()
-        return html
-
-# DIDN'T FIND WERE IS CALLED
-#===========================
-# @login_required
-# @bp_private.route("/received_files_get", methods=[MTD_POST])
-# def received_files_get() -> str:
-#     """
-#     Through this route, the user obtains a list of the files
-#     received so that they can examine them and download them.
-#     """
-#     if nobody_is_logged():
-#         return redirect_to(login_route())
-#     else:
-#         from .received_files.fetch_records import fetch_record_s
-
-#         records, _, _ = fetch_record_s('')
-#         json = records.to_json()
-
-#         return json
-
+        tmpl = receive_file()
+        return tmpl
 
 @login_required
 @bp_private.route("/received_files_mgmt", methods=MTD_ANY)

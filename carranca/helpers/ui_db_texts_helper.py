@@ -22,7 +22,7 @@ from .pw_helper import is_someone_logged
 from .py_helper import is_str_none_or_empty
 
 # TODO from .jinja_helper import process_pre_templates
-from .types_helper import ui_db_texts
+from .types_helper import UiDbTexts, OptStr
 
 from ..common.app_constants import APP_LANG
 
@@ -97,11 +97,11 @@ class UITexts_TableSearch:
     def exists(self) -> bool:
         return self.as_tuple in global_ui_texts_cache
 
-    def update(self, texts: ui_db_texts | str) -> None:
+    def update(self, texts: UiDbTexts | str) -> None:
         if self._cfg_cache_lifetime_min == 0:
             global_ui_texts_cache[self.as_tuple] = texts
 
-    def get_text(self) -> Optional[ui_db_texts | str]:
+    def get_text(self) -> Optional[UiDbTexts | str]:
         if not self.exists():
             return None
         value: dict | str = global_ui_texts_cache[self.as_tuple]
@@ -170,7 +170,7 @@ def __get_table_row(table_search: UITexts_TableSearch) -> tuple[str, str]:
     return ("", "") if not result else result
 
 
-def _get_query_as_dict(query) -> ui_db_texts:
+def _get_query_as_dict(query) -> UiDbTexts:
     """returns UI_Texts for the item/section pair"""
     from .db_helper import retrieve_dict
 
@@ -196,7 +196,7 @@ def _msg_not_found() -> str:  ## THIS IS OUTDATED ##
 
 
 def _add_msg(
-    item: str, section: str, name: str, texts: Optional[ui_db_texts] = None, *args
+    item: str, section: str, name: str, texts: Optional[UiDbTexts] = None, *args
 ) -> str:
     """Retrieves text and adds it to a dictionary.
 
@@ -209,12 +209,23 @@ def _add_msg(
 
     Returns:
         The formatted text.
+
+    mgd 2025-10-30
+    Check if texts contains the required item
+    This will allow to set the items of sections [secSuccess, secError]
+    in the 'current' section.
+
     """
-    s = get_text(item, section)
+    # new alternative, add the msg on the same section (not in a special one)
+    msg_text: str = texts.get(item, '') if texts else ''
+    if not msg_text:
+        msg_text = get_text(item, section)
+
+
     try:
-        value = "" if s is None else (s.format(*args) if args else s)
+        value = '' if msg_text is None else (msg_text.format(*args) if args else msg_text)
     except:
-        value = s
+        value = msg_text
 
     if texts and value:  # add or refresh
         texts[name] = value
@@ -224,7 +235,7 @@ def _add_msg(
 
 # =========================================================
 # === public ==============================================
-def format_ui_item(texts: ui_db_texts, key: str, *args):
+def format_ui_item(texts: UiDbTexts, key: str, *args):
     result = texts[key]
     try:
         result = result.format(*args)
@@ -236,7 +247,7 @@ def format_ui_item(texts: ui_db_texts, key: str, *args):
 
 
 # Cached Texts retrievers ==================================
-def get_section(section_name: str) -> ui_db_texts:
+def get_section(section_name: str) -> UiDbTexts:
     """
     returns a UI_Texts of the 'section_name' from table vw_ui_texts
     """
@@ -250,15 +261,17 @@ def get_section(section_name: str) -> ui_db_texts:
     else:  # not in cache, retrieve section
         query = __get_ui_texts_query("item, text", table_cache)
         items = _get_query_as_dict(query) or {}
-
-        # TODO process_pre_templates(items) # TODO: check if needed
+        # TODO: raise if section does not
+        # if len(items) == 0:
+        #     raise KeyError(f"UI texts section '{section_name}' for [{table_cache.locale}] not found or has no items.")
+        # # TODO process_pre_templates(items) # TODO: check if needed
         items[UITextsKeys.Section.name] = section_name
         items[UITextsKeys.Form.date_format] = table_cache.locale
         table_cache.update(items)
         return items.copy()  # Ensures caller gets a copy, preventing cache pollution
 
 
-def get_text(item: str, section: str, default: str = None) -> str:
+def get_text(item: str, section: str, default: OptStr = None) -> str:
     """
     returns text for the item/section pair. if not found, a `warning message`
     """
@@ -281,13 +294,13 @@ def get_text(item: str, section: str, default: str = None) -> str:
     return text
 
 
-def get_app_menu() -> ui_db_texts:
+def get_app_menu() -> UiDbTexts:
     app_dic = get_section("appMenu")
     return app_dic
 
 
 # Texts retrievers helpers ==================================
-def get_form_texts(section_name: str) -> ui_db_texts:
+def get_form_texts(section_name: str) -> UiDbTexts:
     items = get_section(section_name)
     if items:
         # items = process_pre_templates(items) # TODO:
@@ -304,7 +317,7 @@ def get_form_texts(section_name: str) -> ui_db_texts:
     return items
 
 
-def add_msg_warning(item: str, texts: ui_db_texts = {}, *args) -> str:
+def add_msg_warning(item: str, texts: UiDbTexts = {}, *args) -> str:
     """
     returns text for the [item/'sec_Error'] pair
     and adds pair to texts => texts.add( text, 'msgError')
@@ -314,7 +327,7 @@ def add_msg_warning(item: str, texts: ui_db_texts = {}, *args) -> str:
     )
 
 
-def add_msg_error(item: str, texts: ui_db_texts = {}, *args) -> str:
+def add_msg_error(item: str, texts: UiDbTexts = {}, *args) -> str:
     """
     returns text for the [item/'sec_Error'] pair
     and adds pair to texts => texts.add( text, 'msgError')
@@ -324,7 +337,7 @@ def add_msg_error(item: str, texts: ui_db_texts = {}, *args) -> str:
     )
 
 
-def add_msg_final(item: str, texts: ui_db_texts = {}, *args) -> str:
+def add_msg_final(item: str, texts: UiDbTexts = {}, *args) -> str:
     """
     TODO: fatal
     Same as add_msg_error, but sets
@@ -336,7 +349,7 @@ def add_msg_final(item: str, texts: ui_db_texts = {}, *args) -> str:
     return msg
 
 
-def add_msg_success(item: str, texts: ui_db_texts = None, *args) -> str:
+def add_msg_success(item: str, texts: UiDbTexts, *args) -> str:
     """
     returns `text` for the [item, 'sec_Success'] pair
     (of the vw_ui_texts wonderful view)

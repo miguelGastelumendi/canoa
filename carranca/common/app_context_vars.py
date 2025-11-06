@@ -39,9 +39,9 @@ from werkzeug.local import LocalProxy
 from carranca import global_sidekick
 from .Sidekick import Sidekick
 from ..private.AppUser import AppUser
-from ..private.UserSep import user_seps_rtn, user_sep_dict, user_sep_list
+from ..private.UserSep import user_seps_rtn, user_sep_dict, UserSepList
 from ..private.JinjaUser import JinjaUser
-from ..helpers.types_helper import error_message
+from ..helpers.types_helper import ErrorMessage
 
 # share global sidekick
 sidekick: Sidekick = global_sidekick
@@ -186,7 +186,7 @@ def _get_user_seps() -> user_seps_rtn:
     from ..private.UserSep import UserSep
 
     if app_user is None:
-        result: error_message = "No current user to retrieve SEP data."
+        result: ErrorMessage = "No current user to retrieve SEP data."
     else:  # convert simple dict to UserSep again
         list_dic = _get_scoped_var("_user_seps", _prepare_user_seps)
         if list_dic is None or not isinstance(list_dic, list):

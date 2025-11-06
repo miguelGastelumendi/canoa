@@ -8,13 +8,13 @@ mgd 2025.09
 
 # cSpell: ignore samp sepsusr usrlist
 
-from ..helpers.uiact_helper import UiActResponseKeys
 from ..public.ups_handler import ups_handler
 from ..common.app_error_assistant import ModuleErrorCode, AppStumbled
 
 from ..helpers.py_helper import class_to_dict
+from ..helpers.uiact_helper import UiActResponseKeys
 from ..helpers.jinja_helper import process_template
-from ..helpers.types_helper import jinja_template
+from ..helpers.types_helper import JinjaTemplate
 from ..helpers.route_helper import get_private_response_data, init_response_vars
 from ..helpers.js_consts_helper import js_grid_col_meta_info, js_ui_dictionary
 from ..helpers.ui_db_texts_helper import add_msg_final
@@ -22,7 +22,7 @@ from ..helpers.db_records.DBRecords import ListOfDBRecords
 
 #from .scm_export
 
-def do_scm_create() -> jinja_template:
+def do_scm_create() -> JinjaTemplate:
 
     task_code = ModuleErrorCode.SCM_GRID.value
     _, tmpl_rfn, is_get, ui_texts = init_response_vars()

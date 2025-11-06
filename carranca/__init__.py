@@ -13,7 +13,7 @@ mgd
 from flask_login import LoginManager
 from sqlalchemy.orm import scoped_session
 
-from .helpers.types_helper import ui_db_texts
+from .helpers.types_helper import UiDbTexts
 from .common.Sidekick import Sidekick
 from typing import Optional, Dict, List
 
@@ -115,7 +115,7 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
     from .helpers.uiact_helper import UiActResponseProxy
     from .helpers.js_consts_helper import js_form_sec_key, js_form_cargo_id, js_form_sec_value
 
-    def __get_app_menu(sub_menu_name: str) -> ui_db_texts:
+    def __get_app_menu(sub_menu_name: str) -> UiDbTexts:
         sub_menu: dict = {}
         if not is_someone_logged():
             return sub_menu

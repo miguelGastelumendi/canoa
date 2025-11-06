@@ -22,7 +22,7 @@ from ...common.app_error_assistant import ModuleErrorCode, AppStumbled
 from ...helpers.py_helper import is_str_none_or_empty, class_to_dict
 from ...helpers.user_helper import get_batch_code
 from ...helpers.jinja_helper import process_template
-from ...helpers.types_helper import ui_db_texts, sep_mgmt_rtn, cargo_list
+from ...helpers.types_helper import UiDbTexts, SepMgmtReturn, CargoList
 from ...helpers.route_helper import get_private_response_data, init_response_vars
 from ...helpers.js_consts_helper import js_form_sec_check, js_form_cargo_id, js_ui_dictionary
 from ...helpers.ui_db_texts_helper import add_msg_final, add_msg_error, UITextsKeys
@@ -31,7 +31,7 @@ from ...helpers.db_records.DBRecords import DBRecords, ListOfDBRecords
 
 from .save_to_db import save_data
 from .send_email import send_email
-from .keys_values import CargoKeys, SepMgmtGridCols
+from .keys_values import SepMgmtGridCols, CargoKeys
 
 
 def sep_mgmt() -> str:
@@ -120,8 +120,8 @@ def _sep_data_fetch(
 
 
 def _save_and_email(
-    grid_response: cargo_list, ui_texts: ui_db_texts, task_code: int
-) -> sep_mgmt_rtn:
+    grid_response: CargoList, ui_texts: UiDbTexts, task_code: int
+) -> SepMgmtReturn:
     """Saves data & sends emails"""
 
     task_code += 1
