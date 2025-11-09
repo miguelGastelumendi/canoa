@@ -56,7 +56,7 @@ def scm_export_db(uiact_rsp: UiActResponse) -> JinjaTemplate:
         task_code += 1
         tmpl: JinjaTemplate = process_template( tmpl_rfn, **ui_texts )
     except Exception as e:
-        msg = add_msg_final("exportExcept", ui_texts, task_code)
+        msg = add_msg_final("exportException", ui_texts, task_code)
         _, tmpl_rfn, ui_texts = ups_handler(task_code, msg, e)
         tmpl = process_template(tmpl_rfn, **ui_texts)
 

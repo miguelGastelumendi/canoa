@@ -1,6 +1,6 @@
 #spell:ignore onclick jinja apikey bingint vw_sepcombined andrade inpe nginx getusermail passwordrecovery changepassword resetpassword
 #spell:ignore desloga sepcombined especificacaosetor suporteusuariogrupo suporteusuarioelemento tmpl wtforms getuseremail getusermail requestemail
-#spell:ignore venv ccedil atilde receivefile datetime saude uix unsync
+#spell:ignore venv ccedil atilde receivefile datetime saude uix unsync healthcheck
 #spell:ignore Setorista sendgrid linux cnpq ajax mgmt SQLA sqla
 
 
@@ -61,10 +61,21 @@
     Schema LOG
 
 
+        ui_texts: Dict=  UiDbTexts
+        with
+        ui_db_text
+
+
 ------- 2025 - November ----------
-2025-10-27 -- 11-05 5.03
-    "β 5.04"
-    Comprehensive revision:
+2025-11-08 --
+    Replace `ui_texts: Dict=  UiDbText` with `ui_db_texts: UIDbTexts`
+
+2025-11-06--08  v β 5.05
+    Replace SendGrid with gMail
+    New class UIDbTexts,
+
+
+2025-10-27 -- 11-05 5.04
     Updated all Canoa modules, processes, and accompanying documentation.
 
 

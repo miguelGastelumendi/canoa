@@ -42,13 +42,8 @@ def proper_user_exception(e: Exception, task_code: int) -> str:
         return info_str
 
 
-def did_I_stumbled(e: Exception):
-    """Is it me who stumbled?"""
-    return isinstance(e, AppStumbled)
-
-
 def code_interrupted(e: Exception):
-    """Is it me who stumbled?"""
+    """Is it me interrupted?"""
     return isinstance(e, JumpOut)
 
 
@@ -117,6 +112,7 @@ class ModuleErrorCode(IntEnum):
     SCM_EXPORT_UI_SHOW = 800
     SCM_EXPORT_UI_SAVE = 820
     SCM_EXPORT_DB = 840
+    CONFIRM_EMAIL = 850
 
     DB_FETCH_ROWS = 590  # only on
 

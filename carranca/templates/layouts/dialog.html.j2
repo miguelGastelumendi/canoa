@@ -45,6 +45,7 @@ mgd
 {% set dlg_submit_btn_id= 'dlg-submit-btn-id' %}
 {% set dlg_submit_form_id= 'dlg-submit-form-id' %}
 {% set dlg_btns_container_id = 'dlg-btns-container-id' %}
+{% set dlg_options_container_id = 'dlg-options-container-id' %}
 
 {% set dlg_close_x_id= 'dlg-close-x-id' %} # The upper right [x] button ID
 {% set dlg_close_btn_id= 'dlg-close-btn-id' %}
@@ -115,7 +116,7 @@ mgd
             {# ╘═════════ Dialog Footer Buttons═════════╛ #}
 
             {# ╒════════ Dialog Footer Option ══════════╕ #}
-            <div class="row justify-content-center mt-1 w-100">
+            <div id="{{dlg_options_container_id}}" class="row justify-content-center mt-1 w-100">
             {% block dlg_blc_footer_options %}{% endblock %}
             </div>
             {# ╘════════ Dialog Footer Option ══════════╛ #}

@@ -21,7 +21,7 @@ cSpell:ignore
 
 from typing import TypeAlias, Optional, Any, Dict, Tuple, List
 
-UiDbTexts: TypeAlias = Dict[str, Optional[str|bool]]
+UiDbTexts: TypeAlias = Dict[str, str|bool]
 UsualDict: TypeAlias = Dict[str, Any]
 JsConstants: TypeAlias = Dict[str, str]
 

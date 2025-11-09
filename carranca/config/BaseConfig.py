@@ -91,17 +91,26 @@ class BaseConfig(Config):
     EMAIL_ORIGINATOR = ""  # from os_environment
     EMAIL_ORIGINATOR_NAME = f"e-mail de {APP_NAME}"
     # "  with key
-    EMAIL_API_KEY = ""  # from os_environment
+    SENDGRID_API_KEY = ""  # from os_environment
     # Folders
     APP_FOLDER = app_folder
     # storage area (user_files, schema_icons...)
     COMMON_PATH = path_remove_last_folder(app_folder)
 
+    # The name of the folder for storing sensitive, non-versioned files.
+    LOCAL_STORAGE_FOLDER = "LocalStorage"
+    # ⚠️ CRITICAL: This path points to a directory for sensitive, non-versioned files.
+    # It MUST NOT be committed to Git or any other version control system. This
+    # directory is intended for confidential information such as API keys, service
+    # account credentials (e.g., 'canoa-gmail-key.json'), and other secrets that
+    # must never be exposed in the codebase.
+    LOCAL_STORAGE_PATH = path.join(COMMON_PATH, LOCAL_STORAGE_FOLDER)
+
     # My address service is SERVER_EXTERNAL_IP is empty
     # (used to send recovery email confirmation, etc)
     EXTERNAL_IP_SERVICE = "https://checkip.amazonaws.com"
     # satelier.dev.br
-    SERVER_EXTERNAL_IP = "177.43.119.39"
+   # SERVER_EXTERNAL_IP = "177.43.119.39"
     SERVER_EXTERNAL_PORT = ""
 
     """ Flask Configuration

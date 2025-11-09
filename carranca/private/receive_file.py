@@ -27,7 +27,7 @@ from ..helpers.py_helper import (
     is_str_none_or_empty,
 )  # Ensure this module contains the function
 from ..helpers.file_helper import folder_must_exist
-from ..helpers.jinja_helper import AppStumbled, process_template
+from ..helpers.jinja_helper import process_template
 from ..helpers.types_helper import JinjaTemplate
 from ..helpers.route_helper import get_private_response_data, get_form_input_value
 from ..helpers.dwnLd_goo_helper import is_gd_url_valid, download_public_google_file
@@ -59,10 +59,9 @@ def _do_sep_placeholderOption(fullname: str) -> UserSep:
 def receive_file() -> JinjaTemplate:
     tmpl_rfn, is_get, ui_texts = get_private_response_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
-    error_code = 0
 
     # utils
-    def _get_template() -> JinjaTemplate:
+    def _get_template(error_code) -> JinjaTemplate:
         seps: UserSepList = []
         ui_texts[UITextsKeys.Msg.tech] = None
         ui_texts[UITextsKeys.Msg.info] = None
@@ -89,7 +88,7 @@ def receive_file() -> JinjaTemplate:
 
     def _log_error(msg_id: str, code: int, msg: str = "", fatal: bool = False) -> int:
         e_code = ModuleErrorCode.RECEIVE_FILE_ADMIT.value + code
-
+        #AQUI BUG
         log_error = (
             add_msg_final(msg_id, ui_texts, e_code, msg)
             if fatal
@@ -102,7 +101,7 @@ def receive_file() -> JinjaTemplate:
     try:
 
         if is_get:
-            return _get_template()
+            return _get_template(0)
 
         received_at = now()
         # Find out what was kind of data was sent: an uploaded file or an URL (download)
@@ -126,16 +125,16 @@ def receive_file() -> JinjaTemplate:
         sep_data = next((sep for sep in app_user.seps if sep.id == sep_id), None)
         if sep_data is None:
             error_code = _log_error("receiveFileAdmit_bad_sep", task_code + 1, sep_id)  # 7
-            return _get_template()
+            return _get_template(error_code)
         elif has_file and has_url:
             error_code = _log_error("receiveFileAdmit_both", task_code + 2)  # 8
-            return _get_template()
+            return _get_template(error_code)
         elif not (has_file or has_url):
             error_code = _log_error("receiveFileAdmit_none", task_code + 3)  # 9
-            return _get_template()
+            return _get_template(error_code)
         elif has_url and is_gd_url_valid(url_str) > 0:
             error_code = _log_error("receiveFileAdmit_bad_url", task_code + 4)  # 10
-            return _get_template()
+            return _get_template(error_code)
 
         # Instantiate Process Data helper
         task_code = 13
@@ -162,7 +161,7 @@ def receive_file() -> JinjaTemplate:
         elif not folder_must_exist(pd.path.working_folder):
             task_code += 2  # 16
             error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code)
-            return _get_template()
+            return _get_template(error_code)
         else:
             task_code += 3  # 17
             # {0} Placeholder for the actual file name.
@@ -183,7 +182,7 @@ def receive_file() -> JinjaTemplate:
                 fn = filename if filename else "<ainda sem nome>"
                 task_code += 2  # 19
                 error_code = _log_error("receiveFileAdmit_bad_dl", task_code, fn)
-                return _get_template()
+                return _get_template(error_code)
 
         pd.received_file_name = secure_filename(pd.received_original_name)
         task_code = 20  # 20
@@ -203,7 +202,7 @@ def receive_file() -> JinjaTemplate:
             # keep error_code from process()
             _log_error(msg_id, task_code, "", True)
 
-        tmpl = _get_template()
+        tmpl = _get_template(error_code)
     except Exception as e:
         error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code + 1, "", True)
         sidekick.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")

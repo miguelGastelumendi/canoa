@@ -71,7 +71,7 @@ def scm_export_ui_save(uiact_rsp: UiActResponse) -> JinjaTemplate:
             **ui_texts,
         )
     except Exception as e:
-        msg = add_msg_final("saveExcept", ui_texts, task_code)
+        msg = add_msg_final("saveException", ui_texts, task_code)
         _, tmpl_rfn, ui_texts = ups_handler(task_code, msg, e)
         tmpl = process_template(tmpl_rfn, **ui_texts)
 

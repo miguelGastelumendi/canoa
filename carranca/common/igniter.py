@@ -331,7 +331,7 @@ def ignite_app(app_name, start_at) -> Tuple[Sidekick, str, bool]:
     # ---------------------------------------------------------------------------- #
     # Give warnings of import configuration that may be missing
 
-    if is_str_none_or_empty(config.EMAIL_API_KEY):
+    if is_str_none_or_empty(config.SENDGRID_API_KEY):
         warns += 1
         fuse.display.warn(
             "Sendgrid API key was not found, the app will not be able to send emails."

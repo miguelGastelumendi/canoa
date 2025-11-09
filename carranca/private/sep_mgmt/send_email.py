@@ -1,6 +1,6 @@
 """
 SEP Management and User Assignment
-This module handles sending emails to users regarding the
+This module handles sending emails to users regarding their
  assignment or removal of Strategic Sectors (SEPs).
 
 Emails are sent to notify users when a new SEP is assigned
@@ -8,7 +8,7 @@ Emails are sent to notify users when a new SEP is assigned
 
 Developed by the Canoa Team -- 2025
 mgd 2025-04-09
-Last Modified: 2025-04-28
+Last Modified: 2025-11-06
 """
 
 # cSpell: ignore mgmt
@@ -20,13 +20,12 @@ from sqlalchemy.orm import Session
 
 from carranca import global_sqlalchemy_scoped_session
 from ...models.private import MgmtEmailSep
-from ...helpers.types_helper import UiDbTexts, SepMgmtReturn
-from ...helpers.email_helper import RecipientsListStr
+from ...helpers.types_helper import UiDbTexts, SepMgmtReturn, OptStr
+from ...helpers.email_helper import RecipientsDic, RecipientsListStr
 from ...common.app_context_vars import sidekick
-from ...helpers.sendgrid_helper import send_email as send_email_to
+from ...helpers.gmail_api_helper import send_mail
 from ...helpers.ui_db_texts_helper import format_ui_item
 from ...common.app_error_assistant import proper_user_exception
-
 
 def send_email(batch_code: str, ui_texts: UiDbTexts, task_code: int) -> SepMgmtReturn:
     """
@@ -49,16 +48,17 @@ def send_email(batch_code: str, ui_texts: UiDbTexts, task_code: int) -> SepMgmtR
             texts = {}
             texts["subject"] = ui_texts["emailSubject"]
 
-            def _send_email(
-                email: str, to_user: str, se: str, content_id: str
-            ) -> Tuple[str, int, int]:
-                # error_count = 0
+            def _send_email( email: str, to_user: str, se: str, content_id: str ) -> OptStr:
                 msg_error = None  # maybe is a second try to send email, so clear it
                 try:
                     # Prezado {0},<br><br>A partir desta data, o Setor Estratégico '{1}' ...
                     texts["content"] = format_ui_item(ui_texts, content_id, to_user, se)
-                    if not send_email_to(RecipientsListStr(email, to_user), texts):
-                        msg_error = ui_texts["emailSilentError"]
+                    recipients = RecipientsDic(to=RecipientsListStr(email, to_user))
+                    subject = ui_texts["subject"]
+                    content = ui_texts["content"]
+
+                    if not send_mail(recipients, subject, content):
+                        msg_error: str = ui_texts["emailSilentError"]
                 except Exception as e:
                     # error_count += 1
                     msg_error = str(e)
@@ -105,6 +105,5 @@ def send_email(batch_code: str, ui_texts: UiDbTexts, task_code: int) -> SepMgmtR
             sidekick.app_log.error(msg_error)
 
     return ui_texts["emailSuccess"], msg_error, task_code
-
 
 # eof

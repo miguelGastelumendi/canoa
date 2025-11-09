@@ -17,6 +17,7 @@ from .html_helper import URL_PATH_SEP
 from .types_helper import UiDbTexts, TemplateFileFullName, OptStr
 from .ui_db_texts_helper import get_form_texts
 
+# from ..common.app_context_vars import sidekick
 from ..config import BaseConfig
 
 
@@ -28,7 +29,7 @@ templates_found = []
 
 MTD_GET= "GET"
 MTD_POST = "POST"
-MTD_ANY = [MTD_GET, MTD_POST]
+MTD_BOTH = [MTD_GET, MTD_POST]
 
 """
   ## Dynamic Route:
@@ -129,9 +130,8 @@ def get_tmpl_full_file_name(tmpl: str, folder: str) -> TemplateFileFullName:
     return tmpl_full_file_name
 
 
-def _get_response_data(
-    section: str, tmpl: str, folder: str
-) -> Tuple[TemplateFileFullName, bool, UiDbTexts]:
+def _get_response_data(section: str, tmpl: str, folder: str) -> Tuple[TemplateFileFullName, bool, UiDbTexts]:
+    from ..common.app_context_vars import sidekick
 
     try:
         tmpl = camel_to_snake(section) if tmpl is None else tmpl
@@ -147,6 +147,7 @@ def _get_response_data(
         #     ui_texts[UITextsKeys.Msg.info] = ""  # only GET has info
     except Exception as e:
         # Re-raise exception to allow it to propagate
+        sidekick.app_log.error(f"Failed in _get_response_data for section '{section}': {e}")
         raise
 
     return tmpl_full_file_name, is_get, ui_texts

@@ -41,8 +41,6 @@ class UITextsKeys:
         tech = "msgTech"
         # display only message, no form, inputs/buttons (see .carranca/templates/layouts/form.html.j2 & dialog.html.j2)
         display_only_msg = "msgOnly"
-        # Only used in carranca\config\local_ui_texts.py
-        tech_intro = None
 
     class Page:
         title = "pageTitle"
@@ -221,7 +219,6 @@ def _add_msg(
     if not msg_text:
         msg_text = get_text(item, section)
 
-
     try:
         value = '' if msg_text is None else (msg_text.format(*args) if args else msg_text)
     except:
@@ -235,7 +232,7 @@ def _add_msg(
 
 # =========================================================
 # === public ==============================================
-def format_ui_item(texts: UiDbTexts, key: str, *args):
+def format_ui_item(texts: UiDbTexts, key: str, *args) -> str:
     result = texts[key]
     try:
         result = result.format(*args)
@@ -368,6 +365,11 @@ def add_msg_success(item: str, texts: UiDbTexts, *args) -> str:
     )
     texts[UITextsKeys.Msg.display_only_msg] = True
     return msg
+
+# Cannot find the purpose
+# def get_text(item: str, texts: UiDbTexts = {}, *args):
+#     # returns text for the item/'sec_Error' pair
+#     return add_msg_error(item)
 
 
 def get_msg_error(item: str) -> str:

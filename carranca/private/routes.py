@@ -8,8 +8,6 @@ mgd
 """
 
 # cSpell: ignore werkzeug wtforms tmpl mgmt jscmd
-import errno
-from carranca.helpers.db_helper import retrieve_dict
 from flask import Blueprint, request
 from flask_login import login_required, current_user
 
@@ -26,14 +24,14 @@ from ..helpers.route_helper import (
     get_private_response_data,
     base_route_private,
     private_route,
-    get_method,
     is_method_get,
     login_route,
     redirect_to,
+    get_method,
     bp_name,
-    MTD_ANY,
     MTD_GET,
     MTD_POST,
+    MTD_BOTH,
 )
 
 # === module variables ====================================
@@ -46,7 +44,7 @@ def test_route():
     return
 
 
-# === routes =============================================
+# === Private Routes =======================================
 @bp_private.route("/home")
 def home():
     """
@@ -57,14 +55,14 @@ def home():
     """
 
     if nobody_is_logged():
-        return redirect_to(login_route(), None)
+        return redirect_to(login_route())
 
     template, _, texts = get_private_response_data("home")
     return process_template(template, **texts)
 
 
 @login_required
-@bp_private.route("/sep_mgmt", methods=MTD_ANY)
+@bp_private.route("/sep_mgmt", methods=MTD_BOTH)
 def sep_mgmt():
     """
     Through this route, the admin user can manage which
@@ -164,7 +162,7 @@ def grid_route(code: str, editor: str, show_grid: Callable) -> JinjaTemplate:
     return go_tmpl
 
 @login_required
-@bp_private.route("/sep_grid/<code>", methods=MTD_ANY)
+@bp_private.route("/sep_grid/<code>", methods=MTD_BOTH)
 def sep_grid(code: str = "?"):
     """
     Through this route, the admin user can CRUD seps and display a grid
@@ -176,7 +174,7 @@ def sep_grid(code: str = "?"):
 
 
 @login_required
-@bp_private.route("/sep_edit/<code>", methods=MTD_ANY)
+@bp_private.route("/sep_edit/<code>", methods=MTD_BOTH)
 def sep_edit(code: str = "?"):
     """
     Through this route, the user can edit a SEP
@@ -191,7 +189,7 @@ def sep_edit(code: str = "?"):
 
 
 @login_required
-@bp_private.route("/scm_export/<code>", methods=MTD_ANY)
+@bp_private.route("/scm_export/<code>", methods=MTD_BOTH)
 def scm_export(code: str = "?"):
     """
     Through this route, the user gets the export UI
@@ -216,9 +214,8 @@ def scm_export(code: str = "?"):
     return redirect_to(login_route())
 
 
-
 @login_required
-@bp_private.route("/scm_grid/<code>", methods=MTD_ANY)
+@bp_private.route("/scm_grid/<code>", methods=MTD_BOTH)
 def scm_grid(code: str = "?"):
     """
     Through this route, the user can edit and insert a Schema
@@ -229,7 +226,7 @@ def scm_grid(code: str = "?"):
 
 
 @login_required
-@bp_private.route("/scm_edit/<code>", methods=MTD_ANY)
+@bp_private.route("/scm_edit/<code>", methods=MTD_BOTH)
 def scm_edit(code: str = "?"):
     """
     Through this route, the user can edit a Schema
@@ -244,7 +241,7 @@ def scm_edit(code: str = "?"):
 
 
 @login_required
-@bp_private.route("/receive_file", methods=MTD_ANY)
+@bp_private.route("/receive_file", methods=MTD_BOTH)
 def receive_file():
     """
     Through this route, the user sends a zip file or a URL link for validation.
@@ -266,8 +263,9 @@ def receive_file():
         tmpl = receive_file()
         return tmpl
 
+
 @login_required
-@bp_private.route("/received_files_mgmt", methods=MTD_ANY)
+@bp_private.route("/received_files_mgmt", methods=MTD_BOTH)
 def received_files_mgmt():
     """
     Through this route, the user gets a grid that allows
@@ -308,7 +306,23 @@ def received_file_download():
 
 
 @login_required
-@bp_private.route("/change_password", methods=MTD_ANY)
+@bp_private.route("/confirm_user_email", methods=[MTD_GET])
+def confirm_user_email():
+    """
+    Tests and confirms that the user email and sending functionality
+    is configured and working correctly, for the user's account.
+    """
+    if nobody_is_logged():
+        return redirect_to(login_route())
+    else:
+        from .confirm_email import confirm_email
+
+        tmpl = confirm_email(current_user.email, current_user.username)
+        return tmpl
+
+
+@login_required
+@bp_private.route("/change_password", methods=MTD_BOTH)
 def change_password():
     """
     'change_password page, as it's name
