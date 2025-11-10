@@ -14,12 +14,14 @@ from flask import redirect, request, url_for
 
 from .py_helper import is_str_none_or_empty, camel_to_snake, clean_text
 from .html_helper import URL_PATH_SEP
-from .types_helper import UiDbTexts, TemplateFileFullName, OptStr
-from .ui_db_texts_helper import get_form_texts
+from .types_helper import TemplateFileFullName
+from ..common.UIDBTexts import UIDBTexts
+from .ui_db_texts_helper import get_db_texts
 
 # from ..common.app_context_vars import sidekick
 from ..config import BaseConfig
 
+ResponseData = Tuple[TemplateFileFullName, bool, UIDBTexts]
 
 base_route_private = "private"
 base_route_public = "public"
@@ -30,6 +32,8 @@ templates_found = []
 MTD_GET= "GET"
 MTD_POST = "POST"
 MTD_BOTH = [MTD_GET, MTD_POST]
+
+MTD_UNEXPECTED_ERROR = 'Unexpected Request Method. The procedure cannot be executed.'
 
 """
   ## Dynamic Route:
@@ -97,7 +101,7 @@ def is_method_get() -> bool:
     Raises a ValueError for unexpected request methods.
     """
     rm = get_method()
-    is_get = rm == MTD_GET
+    is_get = (rm == MTD_GET)
     if is_get:
         pass
     elif rm == MTD_POST:
@@ -108,9 +112,9 @@ def is_method_get() -> bool:
     return is_get
 
 
-def get_form_input_value(name: str, not_allowed: Optional[str] = "") -> OptStr:
+def get_form_input_value(name: str, not_allowed: Optional[str] = "") -> str:
     text = request.form.get(name)
-    return None if text is None else clean_text(text, not_allowed)
+    return '' if text is None else clean_text(text, not_allowed)
 
 
 def get_tmpl_full_file_name(tmpl: str, folder: str) -> TemplateFileFullName:
@@ -130,32 +134,26 @@ def get_tmpl_full_file_name(tmpl: str, folder: str) -> TemplateFileFullName:
     return tmpl_full_file_name
 
 
-def _get_response_data(section: str, tmpl: str, folder: str) -> Tuple[TemplateFileFullName, bool, UiDbTexts]:
+def _get_response_data(ui_db_section: str, tmpl_file_name: str, folder: str) -> ResponseData:
     from ..common.app_context_vars import sidekick
 
+    tmpl_full_file_name, is_get, ui_db_texts = init_response_vars()
     try:
-        tmpl = camel_to_snake(section) if tmpl is None else tmpl
-        tmpl_full_file_name: TemplateFileFullName = get_tmpl_full_file_name(tmpl, folder)
-        is_get = is_method_get()
+        tmpl_file_name = tmpl_file_name if tmpl_file_name else camel_to_snake(ui_db_section)
+        tmpl_full_file_name = get_tmpl_full_file_name(tmpl_file_name, folder)
 
-        # a section of ui_itens
-        ui_texts = get_form_texts(section)
-        # texts v2
-        # if is_get:
-        #     ui_texts[UITextsKeys.Msg.error] = ""  # This is a Cache BUG to
-        # else:
-        #     ui_texts[UITextsKeys.Msg.info] = ""  # only GET has info
+        db_texts = get_db_texts(ui_db_section)
+        ui_db_texts = UIDBTexts(db_texts, sidekick.debugging)
+
     except Exception as e:
         # Re-raise exception to allow it to propagate
-        sidekick.app_log.error(f"Failed in _get_response_data for section '{section}': {e}")
+        sidekick.app_log.error(f"Failed in _get_response_data for section '{ui_db_section}': {e}")
         raise
 
-    return tmpl_full_file_name, is_get, ui_texts
+    return tmpl_full_file_name, is_get, ui_db_texts
 
 
-def get_private_response_data(
-    ui_texts_section: str, tmpl_base_name: str = None
-) -> Tuple[TemplateFileFullName, bool, UiDbTexts]:
+def get_private_response_data(ui_texts_section: str, tmpl_base_name: str = '') -> ResponseData:
     """
     if tmpl_base_name is none is created based on ui_texts_section name
     eg:  receivedFilesMgmt -> received_files_mgmt.html.j2
@@ -163,14 +161,12 @@ def get_private_response_data(
     returns:
         - TemplateFileFullName, assumes that is in the `private` folder
         - is_get true when the request method is GET, false when is POST
-        - UiDbTexts the DB ui texts for this Form/Grid etc.
+        - UIDBTexts the DB ui texts for this Form/Grid etc.
     """
     return _get_response_data(ui_texts_section, tmpl_base_name, base_route_private)
 
 
-def get_account_response_data(
-    ui_texts_section: str, tmpl_base_name: str = None
-) -> Tuple[TemplateFileFullName, bool, UiDbTexts]:
+def get_account_response_data(ui_texts_section: str, tmpl_base_name: str = '') -> ResponseData:
     """
     if tmpl_base_name is none is created based on ui_texts_section name
     eg:  receivedFilesMgmt -> received_files_mgmt.html.j2
@@ -178,17 +174,18 @@ def get_account_response_data(
     returns:
         - TemplateFileFullName, assumes that is in the `accounts` folder
         - is_get true when the request method is GET, false when is POST
-        - UiDbTexts the DB ui texts for this Form/Grid etc.
+        - UIDBTexts the DB ui texts for this Form/Grid etc.
     """
 
     return _get_response_data(ui_texts_section, tmpl_base_name, "accounts")
 
 
-def init_response_vars() -> Tuple[dict, TemplateFileFullName, bool, UiDbTexts]:
+def init_response_vars() -> ResponseData:
     """
-    returns empty flask_form, template_full_file_name, is_get, ui_texts
+    returns JinjaTemplate, is_get, ui_db_texts
     """
-    return {}, "", True, {}
+    is_get = is_method_get()
+    return "", is_get, UIDBTexts({}, False)
 
 
 def redirect_to(route: str, message: Optional[str] = None) -> str:

@@ -24,18 +24,17 @@ from ..models.private_1.ExportGrid import ExportGrid
 def scm_export_ui_show(uiact_rsp: UiActResponse) -> JinjaTemplate:
 
     task_code = ModuleErrorCode.SCM_EXPORT_UI_SHOW
-    _, tmpl_rfn, _, ui_texts = init_response_vars()
+    tmpl, _, ui_texts = init_response_vars()
 
-    scm_cols = ["name", "color"]
-    sep_cols = ["name", "icon_file_name", "mgmt_users_id", "ui_order" ]
-
-    tmpl = ""
     try:
         task_code += 1
         tmpl_rfn, _, ui_texts = get_private_response_data("scmExportUiShow")
 
         task_code += 1
+        scm_cols = ["name", "color"]
+        sep_cols = ["name", "icon_file_name", "mgmt_users_id", "ui_order" ]
         config = ExportProcessConfig(scm_cols, sep_cols)
+
         task_code += 1
         schema_data, task_code = scm_data_get(task_code, False, config)
         task_code += 1

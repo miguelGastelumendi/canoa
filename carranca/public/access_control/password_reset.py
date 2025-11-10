@@ -36,7 +36,7 @@ def password_reset(token):
         return 0 <= days <= max
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_RESET.value
-    flask_form, tmpl_rfn, is_get, texts = init_response_vars()
+    tmpl_rfn, is_get, texts = init_response_vars()
     # TODO test, fake form?
 
     try:

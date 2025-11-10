@@ -8,9 +8,8 @@ Equipe da Canoa -- 2024
 # cSpell:ignore: nullable sqlalchemy sessionmaker sep ssep scm sepsusr usrlist SQLA duovigesimal
 
 from typing import List, Optional
-from carranca.main import app
-from carranca.private.scm_export_ui_save import SepUiOrder
-from carranca.public.ups_handler import AppStumbled
+from ..public.ups_handler import AppStumbled
+from ..private.scm_export_ui_save import SepUiOrder
 from sqlalchemy import (
     Computed,
     DateTime,
@@ -21,6 +20,7 @@ from sqlalchemy import (
     select,
     exists,
     Text,
+    text,
     func,
     and_,
 )
@@ -230,23 +230,19 @@ class Schema(SQLABaseTable):
         return row
 
     @staticmethod
-    def get_schemas(col_names: OptListOfStr = None) -> DBRecords:
+    def get_schemas(col_names: OptListOfStr = None, order_by: str = '') -> DBRecords:
         """
         Returns:
-          All records from Schema table, optional of selected fields
+          All records from Schema table, optional of selected fields, order by the order_by, eg 'name ASC'
         """
 
         def _get_data(db_session: Session):
-
-            # def __cols() -> List[Column]:
-            #     all_cols = Schema.__table__.columns
-            #     _cols = [col for col in all_cols if col.name in col_names]
-            #     return _cols
-
-            # sel_cols = __cols() if field_names else None
             sel_cols = col_names_to_columns(col_names, Schema.__table__.columns)
 
             stmt = select(*sel_cols) if sel_cols else select(Schema)
+            if order_by:
+                stmt = stmt.order_by(text(order_by))
+
             rows = db_session.execute(stmt).all()
             recs = DBRecords(stmt, rows)
             return recs

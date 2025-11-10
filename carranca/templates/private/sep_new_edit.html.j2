@@ -16,7 +16,7 @@ mgd
 {# ╒═════════════════════ Inputs ═════════════════════════╕ #}
 {% block frm_blc_inputs %}
 
-{# [ Manager (when is_full_edit) #}
+{# [ Manager (when SepEditMode.FULL_EDIT) #}
 {% if (form.manager_name and form.manager_name.data) or formForNew %}
 <div class="form-group mb-2">
     {# TODO correct 'for' #}

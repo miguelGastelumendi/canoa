@@ -32,10 +32,10 @@ def password_recovery():
     from ...common.app_context_vars import sidekick
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_RECOVERY.value
-    flask_form, tmpl_rfn, is_get, texts = init_response_vars()
+    tmpl_rfn, is_get, texts = init_response_vars()
     try:
         task_code += 1  # 1
-        flask_form = PasswordRecoveryForm(request.form)
+        form = PasswordRecoveryForm(request.form)
         task_code += 1  # 2
         tmpl_rfn, is_get, texts = get_account_response_data("passwordRecovery")
         task_code += 1  # 3
@@ -68,7 +68,7 @@ def password_recovery():
         sidekick.app_log.error(e)
         sidekick.app_log.debug(msg)
 
-    return render_template(tmpl_rfn, form=flask_form, **texts)
+    return render_template(tmpl_rfn, form=form, **texts)
 
 
 # eof

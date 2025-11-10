@@ -21,7 +21,7 @@ from ..types_helper import OptListOfStr, UsualDict
 from .DBRecord import DBRecord
 
 
-ListOfDBRecords: TypeAlias = List["DBRecord"]
+type ListOfDBRecords = List["DBRecord"]
 
 
 class DBRecords:
@@ -205,7 +205,7 @@ class DBRecords:
         self,
         exclude_fields: OptListOfStr = None,
         include_fields: OptListOfStr = None,
-    ) -> UsualDict:
+    ) -> list[UsualDict]:
         exclude_fields = (exclude_fields or []) + ["__class__.__name__"]
         if include_fields is None or len(include_fields) == 0:
             include_fields = (

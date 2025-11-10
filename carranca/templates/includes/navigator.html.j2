@@ -103,7 +103,7 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_us
                 </li>
 
                 {# ╒════════════════════ Menu: Esquema ══════════════════════════════╕ #}
-                {% if (j_user.power or True) and scm_list %}
+                {% if j_user.power  %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle unselectable-text {{nav_button_state}}"
                         href="#" id="menu-se" role="button" data-bs-toggle="dropdown">
@@ -129,14 +129,6 @@ cSpell:ignore semi-words: formul estrat gicos sess tojson jinja nbsp endfor j_us
                                 Exporta&ccedil;&atilde;o
                             </a>
                         </li>
-
-                        {# <div class="dropdown-divider"></div>
-                        {% for scm in scm_list %}
-                        <li>
-                            <a class="dropdown-item" href="{{private_route('scm_edit', code=scm.id) }}">{{scm.name}}
-                            </a>
-                        </li>
-                        {% endfor %} #}
                     </ul>
                     {# ╘════════ schema menu ════════╛ #}
                 </li>

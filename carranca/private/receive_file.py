@@ -57,31 +57,31 @@ def _do_sep_placeholderOption(fullname: str) -> UserSep:
 
 
 def receive_file() -> JinjaTemplate:
-    tmpl_rfn, is_get, ui_texts = get_private_response_data("receiveFile")
+    tmpl_rfn, is_get, ui_db_texts = get_private_response_data("receiveFile")
     tmpl_form = ReceiveFileForm(request.form)
 
     # utils
     def _get_template(error_code) -> JinjaTemplate:
         seps: UserSepList = []
-        ui_texts[UITextsKeys.Msg.tech] = None
-        ui_texts[UITextsKeys.Msg.info] = None
+        ui_db_texts[UITextsKeys.Msg.tech] = ''
+        ui_db_texts[UITextsKeys.Msg.info] = ''
         if error_code != 0:
-            ui_texts[UITextsKeys.Msg.tech] = sidekick.log_filename
+            ui_db_texts[UITextsKeys.Msg.tech] = sidekick.log_filename
         elif not (seps:= [sep for sep in app_user.seps]):
-            ui_texts[UITextsKeys.Msg.warn] = ui_texts["noSEPassigned"]
-            ui_texts[UITextsKeys.Msg.display_only_msg] = True
+            ui_db_texts[UITextsKeys.Msg.warn] = ui_db_texts["noSEPassigned"]
+            ui_db_texts[UITextsKeys.Msg.display_only_msg] = True
             seps: UserSepList = []
         elif len(seps) > 1:
-            sep_placeholder_option = _do_sep_placeholderOption(ui_texts["placeholderOption"])
+            sep_placeholder_option = _do_sep_placeholderOption(ui_db_texts["placeholderOption"])
             seps.insert(0, sep_placeholder_option)
 
-        ui_texts[UITextsKeys.Form.icon_url] = seps[0].icon_url if len(seps) > 0 else None
+        ui_db_texts[UITextsKeys.Form.icon_url] = seps[0].icon_url if len(seps) > 0 else ''
         dict_seps: List[user_sep_dict] = [class_to_dict(sep) for sep in seps]
         tmpl= process_template(
             tmpl_rfn
             , form=tmpl_form
             , seps=dict_seps
-            , **ui_texts
+            , **ui_db_texts.dict()
             , **js_ui_dictionary()
         )
         return tmpl
@@ -90,9 +90,9 @@ def receive_file() -> JinjaTemplate:
         e_code = ModuleErrorCode.RECEIVE_FILE_ADMIT.value + code
         #AQUI BUG
         log_error = (
-            add_msg_final(msg_id, ui_texts, e_code, msg)
+            add_msg_final(msg_id, ui_db_texts, e_code, msg)
             if fatal
-            else add_msg_error(msg_id, ui_texts, e_code, msg)
+            else add_msg_error(msg_id, ui_db_texts, e_code, msg)
         )
         sidekick.app_log.error(log_error)
         return e_code
@@ -186,7 +186,7 @@ def receive_file() -> JinjaTemplate:
 
         pd.received_file_name = secure_filename(pd.received_original_name)
         task_code = 20  # 20
-        ve = ui_texts["validExtensions"]
+        ve = ui_db_texts["validExtensions"]
         valid_extensions = ".zip" if is_str_none_or_empty(ve) else ve.lower().split(",")
 
         task_code += 1  # 21
@@ -196,7 +196,7 @@ def receive_file() -> JinjaTemplate:
         error_code, msg_id, _ = process(app_user, sep_data, file_data, pd, received_at, valid_extensions)
 
         if error_code == 0:
-            log_msg = add_msg_success("uploadFileSuccess", ui_texts, pd.user_receipt, app_user.email)
+            log_msg = add_msg_success("uploadFileSuccess", ui_db_texts, pd.user_receipt, app_user.email)
             sidekick.display.debug(log_msg)
         else:
             # keep error_code from process()
@@ -206,9 +206,9 @@ def receive_file() -> JinjaTemplate:
     except Exception as e:
         error_code = _log_error(RECEIVE_FILE_DEFAULT_ERROR, task_code + 1, "", True)
         sidekick.app_log.fatal(f"{RECEIVE_FILE_DEFAULT_ERROR}: Code {error_code}, Message: {e}.")
-        msg = add_msg_final("receiveFileException", ui_texts, task_code)
-        _, tmpl_rfn, ui_texts = ups_handler(task_code, msg, e)
-        tmpl = process_template(tmpl_rfn, **ui_texts)
+        msg = add_msg_final("receiveFileException", ui_db_texts, task_code)
+        _, tmpl_rfn, ui_db_texts = ups_handler(task_code, msg, e)
+        tmpl = process_template(tmpl_rfn, **ui_db_texts.dict())
 
 
     return tmpl

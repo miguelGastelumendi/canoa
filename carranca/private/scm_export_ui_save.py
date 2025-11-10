@@ -26,12 +26,11 @@ def scm_export_ui_save(uiact_rsp: UiActResponse) -> JinjaTemplate:
     task_code = ModuleErrorCode.SCM_EXPORT_UI_SAVE
     from ..models.private import Sep
 
-    _, tmpl_rfn, is_get, ui_texts = init_response_vars()
+    tmpl, _, ui_texts = init_response_vars()
 
-    tmpl = ""
     try:
         task_code += 1
-        tmpl_rfn, is_get, ui_texts = get_private_response_data("scmExportUiSave")
+        tmpl_rfn, _, ui_texts = get_private_response_data("scmExportUiSave")
 
         task_code += 1
         config = ExportProcessConfig()

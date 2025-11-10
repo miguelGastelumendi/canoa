@@ -25,10 +25,9 @@ from ..helpers.db_records.DBRecords import ListOfDBRecords
 def do_scm_create() -> JinjaTemplate:
 
     task_code = ModuleErrorCode.SCM_GRID.value
-    _, tmpl_rfn, is_get, ui_texts = init_response_vars()
-
+    tmpl, is_get, ui_texts = init_response_vars()
     scm_data: ListOfDBRecords = []
-    tmpl = ""
+
     try:
         task_code += 1  # 1
         tmpl_rfn, is_get, ui_texts = get_private_response_data("scmGrid")

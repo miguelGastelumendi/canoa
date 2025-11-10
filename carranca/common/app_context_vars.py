@@ -167,9 +167,8 @@ def _prepare_user_seps(direct=False) -> user_seps_rtn:
         for sep_row in sep_usr_rows:
             item = UserSep(**sep_row)
             item.icon_url = do_icon_get_url(item.icon_file_name, item.id)
-            dic = class_to_dict(
-                item
-            )  # as `g` only saves 'simple' classes convert it to a Dict
+            dic = class_to_dict( item )
+            # as `g` only saves 'simple' classes convert it to a Dict
             seps.append(dic)
 
     finally:

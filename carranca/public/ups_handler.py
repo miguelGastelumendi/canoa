@@ -23,14 +23,12 @@ mgd 2025-03-05
 
 import html
 import inspect
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Any
 
-# TO USE from flask import render_template
-
+from ..common.UIDBTexts import UIDBTexts
 from ..helpers.py_helper import is_str_none_or_empty
 from ..helpers.pw_helper import internal_logout, is_someone_logged
 from ..helpers.html_helper import icon_url
-from ..helpers.types_helper import UiDbTexts
 from ..helpers.route_helper import get_tmpl_full_file_name
 from ..config.local_ui_texts import AuxTexts, local_ui_texts, local_form_texts
 from ..helpers.ui_db_texts_helper import get_section, UITextsKeys
@@ -40,7 +38,7 @@ from ..common.app_error_assistant import AppStumbled
 #  --------------------
 def ups_handler(
     error_code: int, user_msg: str, e: Optional[Exception] = None, logout: bool = False
-) -> Tuple[dict, str, UiDbTexts]:
+) -> Tuple[dict, str, UIDBTexts]:
     from ..common.app_context_vars import app_user, sidekick
 
     try:
@@ -50,13 +48,13 @@ def ups_handler(
 
 
     def _get_tech_msg():
-        tech_msg = getattr(e, "tech_info", None)
+        tech_msg = getattr(e, "tech_info", '')
         return tech_msg if tech_msg else local_ui_texts(AuxTexts.section)[AuxTexts.techIntro].format(sidekick.log_filename)
 
-    tech_msg = None
-    error_msg = None
+    tech_msg = ''
+    error_msg = ''
     if not e:
-        error_msg = None  # no error, just a message for the user
+        error_msg = ''  # no error, just a message for the user
     elif isinstance(e, AppStumbled):
         error_code = e.error_code
         error_msg = e.msg
@@ -83,12 +81,7 @@ def ups_handler(
         UITextsKeys.Fatal.http_code: 500,
     }
 
-    def _should_update(key: str, value: any) -> bool:
-        """
-        Returns True if the value should be added to ui_texts.
-        Condition: The new value must not be empty, AND either the key is not in ui_texts
-        or the existing value in ui_texts is empty.
-        """
+    def _should_update(key: str, value: Any) -> bool:
         return not is_str_none_or_empty(value) and (key not in ui_texts or is_str_none_or_empty(ui_texts.get(key)))
 
     # Add `context_texts` if the key is missing from ui_texts or its value is empty.
@@ -114,7 +107,6 @@ def ups_handler(
     sidekick.app_log.error(e)
     sidekick.app_log.debug(error_msg)
 
-    return {}, ups_template, ui_texts
-
+    return {}, ups_template, UIDBTexts(ui_texts, False)
 
 # eof

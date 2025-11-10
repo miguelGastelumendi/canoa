@@ -51,7 +51,7 @@ class UserSep:
         description: str,
         visible: bool,
         icon_file_name: str,
-        icon_url: Optional[str] = None,
+        icon_url: str = '',
     ):
         from .SepIconMaker import SepIconMaker
 
@@ -71,7 +71,7 @@ class UserSep:
     description: str
     visible: bool
     icon_file_name: str
-    icon_url: Optional[str]  # expensive to 'calculate', so it is optional
+    icon_url: str  # expensive to 'calculate', so it is optional
 
 
 # eof

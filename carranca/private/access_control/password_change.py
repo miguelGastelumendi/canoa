@@ -29,7 +29,7 @@ from ..wtforms import ChangePassword
 
 def do_password_change():
     task_code = ModuleErrorCode.ACCESS_CONTROL_PW_CHANGE.value
-    flask_form, tmpl_rfn, is_get, ui_texts = init_response_vars()
+    tmpl_rfn, is_get, ui_texts = init_response_vars()
 
     try:
         task_code += 1  # 1

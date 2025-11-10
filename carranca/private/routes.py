@@ -57,8 +57,8 @@ def home():
     if nobody_is_logged():
         return redirect_to(login_route())
 
-    template, _, texts = get_private_response_data("home")
-    return process_template(template, **texts)
+    template, _, ui_db_texts = get_private_response_data("home")
+    return process_template(template, **ui_db_texts.dict())
 
 
 @login_required

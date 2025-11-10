@@ -238,9 +238,9 @@ def submit(cargo: Cargo) -> Cargo:
                 sidekick.app_log.info(
                     "The intermediate process folders contents was *not* removed, as requested."
                 )
-        except:
+        except e:
             sidekick.app_log.warning(
-                "The intermediate process folders contents were *not* removed because of an error."
+                f"The intermediate process folders contents were *not* removed because of an error [{e}]."
             )
 
     # goto email.py

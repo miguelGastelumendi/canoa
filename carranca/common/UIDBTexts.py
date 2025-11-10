@@ -74,13 +74,70 @@ class UIDBTexts:
         # 5. Return the raw value.
         return value
 
+    def dict(self) -> Dict[str, Any]:
+        """
+        Returns the raw, underlying dictionary for use with unpacking
+        e.g., in template rendering: **ui_texts.dict()
+        """
+        return self._data
+
+    def format(self, key: str, *args) -> str:
+        """
+        Retrieves a string value by key and safely attempts to format it
+        using positional arguments (*args).
+
+        If the key is missing or invalid, errors are raised by self.str().
+        If formatting fails (e.g., arguments don't match placeholders), the
+        unformatted string is returned, and a RuntimeWarning is issued
+        in debug mode.
+        """
+        result = self.str(key)
+        try:
+            result = result.format(*args)
+        except:
+            if self.is_debug_mode:
+                # Use a specific warning to log the formatting failure in debug.
+                warnings.warn(
+                    f"UIDBTexts Formatting Error: Failed to format key '{key}'. "
+                    f"Arguments ({args}) did not match placeholders. Error: {e}",
+                    RuntimeWarning, stacklevel=2
+                )
+            pass
+
+        return result
+
     # --- Dictionary Access for Strings (90% case) ---
 
     def __getitem__(self, key: str) -> str:
         """Allows dictionary-like access (ui_texts["key"]) for strings."""
         return self.str(key)
 
+    # --- Dictionary setter for Strings | bool (90% case) ---
+    def __setitem__(self, key: str, value: str | bool) -> None:
+        """
+        Allows dictionary-like assignment (ui_texts["key"] = value).
+        Restricts insertion types strictly to str or bool.
+        """
+        # This check runs always to enforce the class's contract.
+        if not isinstance(value, (str, bool)):
+            raise TypeError(
+                f"UIDBTexts only accepts str or bool for assignment, "
+                f"but received type {type(value).__name__} for key '{key}'."
+            )
+
+        self._data[key] = value
+
+
     # --- Type-Specific Accessors ---
+    def get_str(self, key: str, default: str = '') -> str:
+
+        try:
+            value = self._data.get(key, _MISSING)
+
+            return default if value is _MISSING else self.str(key)
+
+        except KeyError:
+            return default
 
     def str(self, key: str) -> str:
         """Retrieves a value guaranteed to be a string."""

@@ -29,7 +29,7 @@ def register():
         return user is not None
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_REGISTER.value
-    flask_form, tmpl_rfn, is_get, texts = init_response_vars()
+    tmpl_rfn, is_get, texts = init_response_vars()
 
     try:
         task_code += 1  # 1

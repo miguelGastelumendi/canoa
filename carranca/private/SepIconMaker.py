@@ -9,6 +9,7 @@ mgd 2024-11-15, 2025-06-24 fix+rename
 
 from os import path
 from flask import current_app
+from typing import cast
 
 from ..helpers.py_helper import to_str
 from ..helpers.html_helper import url_join
@@ -73,11 +74,11 @@ class SepIconMaker:
 
     @class_property
     def error_content(cls) -> SvgContent:
-        return cls.content_for("firebrick", "Erro")
+        return cls.content_for("firebrick", "!")
 
     @class_property
     def none_content(cls) -> SvgContent:
-        return cls.content_for("darkgrey", "Falta", stroke_opacity="0.45")
+        return cls.content_for("darkgrey", "?", stroke_opacity="0.45")
 
 
 SYSTEM_ICONS = [SepIconMaker.none_file, SepIconMaker.empty_file, SepIconMaker.error_file]

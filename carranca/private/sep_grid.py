@@ -36,7 +36,7 @@ def get_sep_grid() -> JinjaTemplate:
         return sep_usr_rows
 
     task_code = ModuleErrorCode.SEP_GRID.value
-    _, tmpl_rfn, is_get, ui_texts = init_response_vars()
+    tmpl_rfn, is_get, ui_texts = init_response_vars()
 
     sep_data: ListOfDBRecords = []
     tmpl = ""

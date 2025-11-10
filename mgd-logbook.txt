@@ -17,6 +17,9 @@
     security:
         » real secKeyViolation for forms
 
+    leftovers:
+        » def __get_scm_menu_list() -> List[Dict]: in __init__.py
+
     db:
         » user_data_files
             - set elapsed time, no datetime
@@ -61,14 +64,18 @@
     Schema LOG
 
 
-        ui_texts: Dict=  UiDbTexts
+        ui_texts: Dict=  UIDbTexts
         with
         ui_db_text
 
 
 ------- 2025 - November ----------
-2025-11-08 --
-    Replace `ui_texts: Dict=  UiDbText` with `ui_db_texts: UIDbTexts`
+2025-11-08 --09 Gemini A v β 5.06
+    - Fixing the Gemini mess, Part A
+    - Remove leftover code, impacting display Menu performance:
+        scm_menu = __get_scm_menu_list
+    - Replace `ui_texts: Dict=  UiDbText` with `ui_db_texts: UIDbTexts`
+
 
 2025-11-06--08  v β 5.05
     Replace SendGrid with gMail

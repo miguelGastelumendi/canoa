@@ -13,9 +13,9 @@ mgd
 from flask_login import LoginManager
 from sqlalchemy.orm import scoped_session
 
-from .helpers.types_helper import UiDbTexts
-from .common.Sidekick import Sidekick
 from typing import Optional, Dict, List
+from .common.Sidekick import Sidekick
+from .common.UIDBTexts import UIDBTexts
 
 # 4 App Global variables
 global_sidekick: Optional[Sidekick] = None
@@ -115,7 +115,7 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
     from .helpers.uiact_helper import UiActResponseProxy
     from .helpers.js_consts_helper import js_form_sec_key, js_form_cargo_id, js_form_sec_value
 
-    def __get_app_menu(sub_menu_name: str) -> UiDbTexts:
+    def __get_app_menu(sub_menu_name: str) -> UIDBTexts:
         sub_menu: dict = {}
         if not is_someone_logged():
             return sub_menu
@@ -150,16 +150,17 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
 
     def __get_scm_menu_list() -> List[Dict]:
         scm_list: List[Dict] = []
-        if is_someone_logged():  # 'import jinja_user' only when a user is logged
-            from .common.app_context_vars import jinja_user
+        # mgd 2025.11.09
+        # if is_someone_logged():  # 'import jinja_user' only when a user is logged
+        #     from .common.app_context_vars import jinja_user
 
-            if jinja_user.power:
-                from .models.private import Schema
+        #     if jinja_user.power:
+        #         from .models.private import Schema
 
-                scms = Schema.get_schemas(["id", "name"])
-                scm_list = [
-                    {"id": scm.id, "name": scm.name} for scm in scms
-                ]  # TODO app_user.scms]
+        #         scms = Schema.get_schemas(["id", "name"])
+        #         scm_list = [
+        #             {"id": scm.id, "name": scm.name} for scm in scms
+        #         ]  # TODO app_user.scms]
 
         return scm_list
 

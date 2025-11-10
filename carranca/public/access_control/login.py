@@ -36,14 +36,13 @@ def login():
     from ..wtforms import LoginForm
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
-    flask_form, tmpl_rfn, is_get, ui_texts = init_response_vars()
+    tmpl, is_get, ui_db_texts = init_response_vars()
 
-    html = ""  # TODO init
     try:
         task_code += 1  # 1
-        flask_form = LoginForm(request.form)
+        form = LoginForm(request.form)
         task_code += 1  # 2
-        tmpl_rfn, is_get, ui_texts = get_account_response_data("login")
+        tmpl_rfn, is_get, ui_db_texts = get_account_response_data("login")
         task_code += 1  # 3
         if is_get and is_someone_logged():
             internal_logout()
@@ -64,23 +63,23 @@ def login():
             task_code += 1  # 9
             if not user:
                 task_code += 1  # 10
-                add_msg_error("userOrPwdIsWrong", ui_texts)
+                add_msg_error("userOrPwdIsWrong", ui_db_texts)
             elif not verify_pass(password, user.password):
                 user.password_failed_at = func.now()
                 task_code += 2  # 11
                 user.password_failures = user.password_failures + 1
-                add_msg_error("userOrPwdIsWrong", ui_texts)
+                add_msg_error("userOrPwdIsWrong", ui_db_texts)
                 persist_user(user, task_code)
                 # persist_user creates an Anonymous User, so lets logout it
             elif user.disabled:
                 task_code += 3  # 12
-                add_msg_error("userIsDisabled", ui_texts)
+                add_msg_error("userIsDisabled", ui_db_texts)
             elif user_role_abbr is None:
                 task_code += 4  # 13
-                add_msg_error("roleNotFound", ui_texts, "(null)")
+                add_msg_error("roleNotFound", ui_db_texts, "(null)")
             elif not user_role_abbr in {role.value for role in RolesAbbr}:
                 task_code += 5  # 14
-                add_msg_error("roleNotFound", ui_texts, user_role_abbr)
+                add_msg_error("roleNotFound", ui_db_texts, user_role_abbr)
             else:
                 task_code += 6  # 15
                 user.recover_email_token = None
@@ -101,22 +100,22 @@ def login():
                 task_code += 1  # 20
                 return redirect_to(home_route())
 
-        html = process_template(
+        tmpl = process_template(
             tmpl_rfn,
-            form=flask_form,
-            **ui_texts,
+            form=form,
+            **ui_db_texts.dict(),
         )
     except Exception as e:
         error_code = task_code
-        msg = add_msg_final("errorLogin", ui_texts, task_code)
-        flask_form, tmpl_rfn, ui_texts = ups_handler(error_code, msg, e, True)
-        html = process_template(
+        msg = add_msg_final("errorLogin", ui_db_texts, task_code)
+        form, tmpl_rfn, ui_db_texts = ups_handler(error_code, msg, e, True)
+        tmpl = process_template(
             tmpl_rfn,
-            form=flask_form,
-            **ui_texts,
+            form=form,
+            **ui_db_texts.dict(),
         )
 
-    return html
+    return tmpl
 
 
 # eof

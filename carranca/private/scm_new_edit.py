@@ -12,11 +12,12 @@ from wtforms import StringField
 from sqlalchemy import func  # func.now() == db-server time
 
 from .wtforms import ScmEdit
-from ..helpers.uiact_helper import UiActResponseProxy
-
 from ..models.private import Schema
+from ..helpers.py_helper import is_str_none_or_empty
 from ..public.ups_handler import ups_handler
 from ..helpers.jinja_helper import process_template
+from ..helpers.uiact_helper import UiActResponseProxy
+from ..helpers.ui_db_texts_helper import add_msg_final
 from ..helpers.route_helper import (
     get_private_response_data,
     init_response_vars,
@@ -29,7 +30,6 @@ from ..helpers.route_helper import (
 
 from ..common.app_context_vars import app_user
 from ..common.app_error_assistant import ModuleErrorCode, JumpOut
-from ..helpers.ui_db_texts_helper import add_msg_final
 
 
 def do_scm_edit(data: str) -> str:
@@ -58,27 +58,28 @@ def do_scm_edit(data: str) -> str:
     scm_id = new_scm_id if is_insert else Schema.to_id(code)
 
     task_code = ModuleErrorCode.SCM_EDIT.value
-    form, tmpl_rfn, is_get, ui_texts = init_response_vars()
+    tmpl, is_get, ui_db_texts = init_response_vars()
     schema_name = "?"
-    tmpl = ""
+
+    tmpl_rfn = ''
     try:
         task_code += 1
-        tmpl_rfn, is_get, ui_texts = get_private_response_data("scmNewEdit")
+        tmpl_rfn, is_get, ui_db_texts = get_private_response_data("scmNewEdit")
         form = ScmEdit(request.form)
 
         if (scm_row := Schema() if is_insert else Schema.get_row(scm_id)) is None:
             # get the editable row
             # Someone deleted just now?
-            raise JumpOut(add_msg_final("scmEditNotFound", ui_texts), task_code + 1)
-        schema_name = ui_texts["scmNewTmpName"] if is_insert else scm_row.name
+            raise JumpOut(add_msg_final("scmEditNotFound", ui_db_texts), task_code + 1)
+        schema_name = ui_db_texts["scmNewTmpName"] if is_insert else scm_row.name
 
         task_code += 1
-        ui_texts["formTitle"] = ui_texts[f"formTitle{'New' if is_insert else 'Edit'}"]
+        ui_db_texts["formTitle"] = ui_db_texts[f"formTitle{'New' if is_insert else 'Edit'}"]
         task_code += 1  # 2
 
         form.name.render_kw["lang"] = app_user.lang
-        form.name.render_kw["pattern"] = ui_texts["nameInputPattern"]
-        form.name.render_kw["title"] = ui_texts["nameErrorHint"]
+        form.name.render_kw["pattern"] = ui_db_texts["nameInputPattern"]
+        form.name.render_kw["title"] = ui_db_texts["nameErrorHint"]
 
         form.description.render_kw["lang"] = app_user.lang
         form.content.render_kw["lang"] = app_user.lang
@@ -87,7 +88,7 @@ def do_scm_edit(data: str) -> str:
         if is_get and is_insert:
             scm_row.id = None
             scm_row.visible = False
-            scm_row.color = ui_texts["colorDefaultValue"]  # "#00000"  # RR GG BB
+            scm_row.color = ui_db_texts["colorDefaultValue"]  # "#00000"  # RR GG BB
         elif is_get and is_edit:
             for field in form:
                 if hasattr(scm_row, field.name):
@@ -134,15 +135,16 @@ def do_scm_edit(data: str) -> str:
                 # TODO Not modi
                 return redirect_to(home_route())
 
-        tmpl = process_template(tmpl_rfn, form=form, **ui_texts, **form_on_close)
+        tmpl = process_template(tmpl_rfn, form=form, **ui_db_texts, **form_on_close)
 
     except JumpOut:
-        tmpl = process_template(tmpl_rfn, **ui_texts)
+        # in an extreme case, tmpl_rfn can be empty
+        tmpl = process_template(tmpl_rfn, **ui_db_texts)
 
     except Exception as e:
-        item = add_msg_final("scmEditException", ui_texts, schema_name, task_code)
-        _, tmpl_rfn, ui_texts = ups_handler(task_code, item, e)
-        tmpl = process_template(tmpl_rfn, **ui_texts)
+        item = add_msg_final("scmEditException", ui_db_texts, schema_name, task_code)
+        _, tmpl_rfn, ui_db_texts = ups_handler(task_code, item, e)
+        tmpl = process_template(tmpl_rfn, **ui_db_texts)
 
     return tmpl
 

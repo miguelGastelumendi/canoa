@@ -125,7 +125,7 @@ def process_template(tmpl_rfn: JinjaTemplate, **context: Any) -> JinjaGeneratedH
     jHTML: JinjaGeneratedHtml = ''
     validated = False
     errors: List[str] = []
-    file_name = ''
+    file_name = '?'
     try:
         _, _, file_name = file_full_name_parse(tmpl_rfn)
         if sidekick.config.DEBUG_TEMPLATES:
@@ -150,7 +150,7 @@ def process_template(tmpl_rfn: JinjaTemplate, **context: Any) -> JinjaGeneratedH
                 )
     except Exception as e:
         if isinstance(e, TemplateSyntaxError):
-            raise AppStumbled(f"Error in file template, line {e.lineno}: {e.message}.", ModuleErrorCode.TEMPLATE_ERROR.value)
+            raise AppStumbled(f"Error in template '{file_name}', line {e.lineno}: {e.message}.", ModuleErrorCode.TEMPLATE_ERROR.value)
         elif not validated and (msg_error := _validate_jinja(jHTML, file_name)):
             raise Exception(msg_error) from e
         else:

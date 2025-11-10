@@ -10,7 +10,7 @@ mgd 2025-08-19--22  allow edit manager
 
 import re
 from flask import request
-from typing import Tuple, List
+from typing import Tuple, cast
 from os.path import splitext
 from sqlalchemy import func  # func.now() == server time
 from dataclasses import dataclass
@@ -20,15 +20,18 @@ from werkzeug.datastructures import FileStorage
 from .wtforms import SepEdit, SepNew
 from .sep_icon import icon_refresh, ICON_MIN_SIZE
 from .SepIconMaker import SepIconMaker
-from ..models.public import User
-from ..models.private import Sep, Schema, MgmtSepsUser
+from .sep_form_data import get_sep_data, SepEditMode, NoManager
+from ..models.private import Sep
 from ..private.UserSep import UserSep
-from ..helpers.py_helper import UsualDict, clean_text, is_str_none_or_empty, to_int, crc16
+from ..helpers.py_helper import is_str_none_or_empty, to_int, crc16
 from ..public.ups_handler import ups_handler
 from ..helpers.user_helper import get_batch_code
+from ..helpers.types_helper import UsualDict
 from ..helpers.uiact_helper import UiActResponseProxy
 from ..helpers.jinja_helper import process_template
+from ..common.app_context_vars import app_user
 from ..helpers.js_consts_helper import js_form_sec_check, js_ui_dictionary
+from ..common.app_error_assistant import ModuleErrorCode, AppStumbled, JumpOut
 from ..helpers.route_helper import (
     get_private_response_data,
     init_response_vars,
@@ -37,9 +40,6 @@ from ..helpers.route_helper import (
     login_route,
     redirect_to,
 )
-
-from ..common.app_context_vars import app_user
-from ..common.app_error_assistant import ModuleErrorCode, AppStumbled, JumpOut
 from ..helpers.ui_db_texts_helper import (
     UITextsKeys,
     add_msg_success,
@@ -48,18 +48,10 @@ from ..helpers.ui_db_texts_helper import (
 )
 
 
-SVG_MIME = "image/svg+xml"
-SCHEMA_LIST = "schemaList"
-MANAGER_LIST = "managerList"
-
-SCHEMA_LIST_VALUE = "schemaListValue"
-MANAGER_LIST_VALUE = "managerListValue"
-MANAGER_EMPTY_ID = 0
-
-
 def do_sep_edit(data: str) -> str:
     """SEP Edit & Insert Form"""
 
+    SVG_MIME = "image/svg+xml"
     @dataclass
     class IconData:
         content: str = ""
@@ -84,40 +76,36 @@ def do_sep_edit(data: str) -> str:
         process_on_end = login_route()  # default
         form_on_close = {}  # default = login
 
-    is_full_edit = False
-    is_simple_edit = False
-    is_insert = code == UiActResponseProxy.add
-    if is_insert:
-        # insert can modified all fields)
-        pass
+    editMode = SepEditMode.NONE
+    edit_full_or_ins = True
+    if (code == UiActResponseProxy.add):
+        editMode = SepEditMode.INSERT
     elif app_user.is_power:  #  and is_edit
-        is_full_edit = True
+        editMode = SepEditMode.FULL_EDIT
     else:
         # `normal user` can only edit description & icon
-        is_simple_edit = True
+        editMode = SepEditMode.SIMPLE_EDIT
+        edit_full_or_ins = False
+
+
 
     # edit SEP with ID, is a parameter
     new_sep_id = 0
-    sep_id = new_sep_id if is_insert else UserSep.to_id(code)
+    sep_id = new_sep_id if (editMode == SepEditMode.INSERT) else UserSep.to_id(code)
     if sep_id is None or sep_id < 0:
         return redirect_to(process_on_end)
 
     task_code = ModuleErrorCode.SEP_EDIT.value
-    flask_form, tmpl_rfn, is_get, ui_texts = init_response_vars()
+    tmpl, is_get, ui_db_texts = init_response_vars()
     # &#8209 is a `nobreak-hyphen`, &hyphen does not work.
     sep_fullname = f"SPC&#8209;{code}"
-    tmpl = ""
+    form: UsualDict = {}
     try:
+        no_manager = NoManager()
         js_ui_dict = js_ui_dictionary()
-        def _get_managers() -> List[UsualDict]:
-            user_rows = User.get_all_users(User.disabled == False)
-            mng_list = [
-                {"id": MANAGER_EMPTY_ID, "name": ui_texts["mng_placeholderOption"]}
-            ] + [{"id": user.id, "name": user.username} for user in user_rows]
-            return mng_list
 
         def was_icon_file_sent() -> Tuple[bool, FileStorage | None]:
-            form_file_name = flask_form.icon_filename.name
+            form_file_name = form.icon_filename.name
             file_storage: FileStorage = (
                 request.files[form_file_name]
                 if form_file_name in request.files
@@ -129,130 +117,36 @@ def do_sep_edit(data: str) -> str:
             )
             return icon_file_sent, file_storage
 
-        def _get_sep_data(
-            load_sep_icon_content: bool, task_code: int
-        ) -> Tuple[UserSep, Sep, int, str]:
-            sep_row = Sep() if is_insert else Sep.get_row(sep_id, load_sep_icon_content)
-            if sep_row is None:
-                # get the editable row
-                # Someone deleted just now?
-                raise JumpOut(add_msg_final("sepEditNotFound", ui_texts), task_code + 1)
-            elif is_simple_edit:
-                # edit only description & icon
-                ui_texts[SCHEMA_LIST] = []
-                ui_texts[MANAGER_LIST] = []
-            elif not app_user.is_power:
-                # Power user only can edit more fields than description & icon
-                raise AppStumbled( add_msg_final("sepNewNotAllow", ui_texts), task_code + 2, True )
-            elif is_full_edit:
-                # edit Scheme (from list), sep name, description & icon
-                ui_texts[SCHEMA_LIST_VALUE] = (
-                    "" if is_get else flask_form.schema_list.data
-                )
-                ui_texts[MANAGER_LIST_VALUE] = (
-                    MANAGER_EMPTY_ID if is_get else flask_form.manager_list.data
-                )
-                ui_texts[SCHEMA_LIST] = Schema.get_schemas().to_list()
-                ui_texts[MANAGER_LIST] = _get_managers()
-
-            else:  # is_insert => return
-                # edit Scheme (from list, but force user to select one), sep name, description & icon
-                ui_texts[SCHEMA_LIST_VALUE] = "" if is_get else flask_form.schema_list.data
-                ui_texts[UITextsKeys.Form.icon_url] = None #do_icon_get_url(SepIconMaker.empty_file)
-                select_one = ui_texts["scm_placeholderOption"]  # (select schema)
-                ui_texts[SCHEMA_LIST] = [{"id": "", "name": select_one}] + Schema.get_schemas().to_list()
-                ui_texts[MANAGER_LIST] = _get_managers()
-                ui_texts[MANAGER_LIST_VALUE] = (
-                    MANAGER_EMPTY_ID if is_get else flask_form.manager_list.data
-                )
-                return None, sep_row, task_code + 10, ui_texts["sepNewTmpName"]
-
-            # else is_simple_edit or is_full_edit
-            # ------------
-            task_code += 3
-            # Now, find the sep's manager
-            sep_manager: str = None
-            sep_usr_row: MgmtSepsUser = None
-
-            # does current user owns the sep?
-            usr_sep = next((sep for sep in app_user.seps if sep.id == sep_id), None)
-
-            # Get fresh dada from db
-            if usr_sep is not None:
-                # current user owns the sep, so it can be edited, get the record
-                sep_usr_row = MgmtSepsUser.get_sep_row(sep_id)
-                sep_manager = None if is_simple_edit else app_user.name
-            elif not app_user.is_power:
-                # current user does NOT own the sep, and he is not power user, so can *not* edit it.
-                raise JumpOut(
-                    add_msg_final("sepEditNotAllow", ui_texts, sep_fullname),
-                    task_code + 1,
-                )
-            elif (sep_usr_row := MgmtSepsUser.get_sep_row(sep_id)) is None:
-                # the selected sep id was not found
-                raise JumpOut(add_msg_final("sepEditNotFound", ui_texts), task_code + 2)
-            else:
-                # create a `usr_sep` and get the sep's manager (user_curr)
-                usr_sep_dict = dict(sep_usr_row)
-                # Remove 'user_curr' from edit_dict, because is not needed in UserSep(..)
-                sep_manager = (
-                    sep_user
-                    if (sep_user := usr_sep_dict.pop("user_curr", None))
-                    else ui_texts["managerNone"]
-                )
-                usr_sep = UserSep(**usr_sep_dict)
-                usr_sep.icon_url = SepIconMaker.get_url(usr_sep.icon_file_name)
-
-            # => usr_sep, sep_manager & sep_usr_row are ready always
-
-            # fill the form for edition
-            if is_get:
-                # set the form's data row for edition, just in case (someone messed with the db) clean up the text
-                flask_form.schema_name.data = usr_sep.scm_name
-                flask_form.sep_name.data = clean_text(sep_row.name)
-                flask_form.visible.data = bool(sep_row.visible)
-                flask_form.description.data = clean_text(sep_row.description)
-                flask_form.icon_filename.data = None
-                flask_form.manager_name.data = sep_manager
-                flask_form.manager_name.render_kw["disabled"] = not is_full_edit
-                if is_full_edit:
-                    ui_texts[SCHEMA_LIST_VALUE] = sep_row.id_schema
-                    ui_texts[MANAGER_LIST_VALUE] = to_int(sep_row.users_id, MANAGER_EMPTY_ID)
-
-                task_code += 3  # 509
-
-            task_code += 1
-            ui_texts[UITextsKeys.Form.icon_url] = usr_sep.icon_url
-            return usr_sep, sep_row, task_code, sep_usr_row.fullname
-
-        def _was_form_sep_modified(sep_row: Sep) -> Tuple[bool, bool]:
+        def _was_form_sep_modified(sep_row: Sep) -> Tuple[bool, bool, int, int]:
             # remove schema/sep separator sep+sep
-            ui_sep_name = get_form_input_value(flask_form.sep_name.name, [Sep.scm_sep])
-            ui_description = get_form_input_value(flask_form.description.name)
-            id_manager = flask_form.manager_list.data if (is_full_edit or is_insert) and not (flask_form.manager_list.data == MANAGER_EMPTY_ID) else None
+            ui_sep_name = get_form_input_value(form.sep_name.name, [Sep.scm_sep])
+            ui_description = get_form_input_value(form.description.name)
+            frm_id_manager = cast(int, form.manager_list.data)
+            id_manager = frm_id_manager if edit_full_or_ins and not (frm_id_manager == no_manager.id) else -1
 
-            if is_insert:
-                id_schema = flask_form.schema_list.data
+            if (editMode == SepEditMode.INSERT):
+                id_schema = cast(int, form.schema_list.data)
                 sep_modified = True
-                form_modified = id_manager or id_schema or ui_description or ui_sep_name
-            else:  # is_edit or is_full_edit
+                form_modified = cast(bool, id_manager or id_schema or ui_description or ui_sep_name)
+            else:
+                # SepEditMode.FULL_EDIT or SepEditMode.SIMPLE_EDIT
                 # TODO check Schema
                 sep_name = sep_row.name if ui_sep_name is None else ui_sep_name
-                flask_form.sep_name.data = sep_name
-                id_schema =flask_form.schema_list.data if is_full_edit else sep_row.id_schema
+                form.sep_name.data = sep_name
+                id_schema = cast(int, form.schema_list.data if editMode == SepEditMode.FULL_EDIT else sep_row.id_schema)
                 sep_modified = not (sep_name == sep_row.name)
-                form_modified = (
+                form_modified = cast(bool,
                     sep_modified
                     or (id_manager != sep_row.users_id)
                     or (ui_description != sep_row.description)
                     or (id_schema != sep_row.id_schema)
-                    or (flask_form.visible.data != sep_row.visible)
+                    or (form.visible.data != sep_row.visible)
                     or was_icon_file_sent()[0]  # keep it as the last test (resource)
                 )
 
             # remove spaces & '/' (scm_sep) so the user see its modified values (see get_input_text)
-            flask_form.description.data = ui_description
-            flask_form.sep_name.data = ui_sep_name
+            form.description.data = ui_description
+            form.sep_name.data = ui_sep_name
             return form_modified, sep_modified, id_schema, id_manager
 
         def _get_icon_data(sep_row: Sep) -> IconData:
@@ -269,7 +163,7 @@ def do_sep_edit(data: str) -> str:
             elif not splitext(icon_data.file_name)[1].lower().endswith(expected_ext):
                 icon_data.error_hint = expected_ext
                 icon_data.error_code = 1
-            elif not (file_obj := request.files.get(flask_form.icon_filename.name)):
+            elif not (file_obj := request.files.get(form.icon_filename.name)):
                 icon_data.error_hint = "↑×"
                 icon_data.error_code = 2
             elif len(data := file_obj.read().decode("utf-8").strip()) < ICON_MIN_SIZE:
@@ -292,33 +186,29 @@ def do_sep_edit(data: str) -> str:
             return icon_data
 
         task_code += 1  # 1
-        tmpl_rfn, is_get, ui_texts = get_private_response_data("sepNewEdit")
-        ui_texts["formForNew"] = is_insert or is_full_edit
-        ui_texts["formTitle"] = ui_texts[f"formTitle{('New' if is_insert else 'Edit')}"]
+        tmpl_rfn, is_get, ui_db_texts = get_private_response_data("sepNewEdit")
+        no_manager = NoManager(name= ui_db_texts["mng_placeholderOption"])
+
+        ui_db_texts["formForNew"] = edit_full_or_ins
+        ui_db_texts["formTitle"] = ui_db_texts[f"formTitle{('New' if editMode == SepEditMode.INSERT else 'Edit')}"]
         task_code += 1  # 2
-        flask_form = (
-            SepNew(request.form) if is_insert or is_full_edit else SepEdit(request.form)
-        )
+        form = SepNew(request.form) if edit_full_or_ins else SepEdit(request.form)
         # Personalized template for this user (see tmpl_form.sep_name for more info):
         input_disabled = not app_user.is_power
-        flask_form.sep_name.render_kw["disabled"] = input_disabled
-        flask_form.sep_name.render_kw["required"] = not input_disabled
-        flask_form.sep_name.render_kw["lang"] = app_user.lang
-        flask_form.description.render_kw["lang"] = app_user.lang
+        form.sep_name.render_kw["disabled"] = input_disabled
+        form.sep_name.render_kw["required"] = not input_disabled
+        form.sep_name.render_kw["lang"] = app_user.lang
+        form.description.render_kw["lang"] = app_user.lang
 
         task_code += 1  # 3
-        usr_sep, sep_row, task_code, sep_fullname = _get_sep_data(not is_get, task_code)
+        task_code, usr_sep, sep_row, select_lists, sep_fullname = get_sep_data(task_code, editMode, no_manager, ui_db_texts, sep_id, form, sep_fullname)
 
         task_code = ModuleErrorCode.SEP_EDIT.value + 10  # 510
         form_mod, sep_mod, id_schema, id_manager = (
             (False, False, -1, -1) if is_get else _was_form_sep_modified(sep_row)
         )
 
-        sep_name = usr_sep.name if input_disabled else flask_form.sep_name.data
-        scm_name = next(
-            (scm["name"] for scm in ui_texts[SCHEMA_LIST] if scm["id"] == id_schema),
-            "?",
-        )
+        sep_name = usr_sep.name if input_disabled else form.sep_name.data
 
         if is_get:
             task_code += 1
@@ -327,15 +217,18 @@ def do_sep_edit(data: str) -> str:
             return redirect_to(process_on_end)
         elif not is_str_none_or_empty(msg_error:= js_form_sec_check()):
             task_code += 2
-            msg_error = add_msg_error(msg_error, ui_texts)
+            msg_error = add_msg_error(msg_error, ui_db_texts)
             raise AppStumbled(msg_error, task_code, True, True)
-        elif (is_insert or sep_mod) and Sep.full_name_exists(id_schema, sep_name):
-            add_msg_error("sepNameRepeated", ui_texts, scm_name, sep_name)
+        elif (scm_name:= next((scm["name"] for scm in select_lists.schemaList if scm["id"] == id_schema), "?")) is None:
+            # should never happen
+            pass
+        elif ((editMode == SepEditMode.INSERT) or sep_mod) and Sep.full_name_exists(id_schema, sep_name):
+            add_msg_error("sepNameRepeated", ui_db_texts, scm_name, sep_name)
         elif (icon_data := _get_icon_data(sep_row)).error_code > 0:
             # msg {ext} [{hint}-{code}]
             add_msg_error(
                 "sepEditInvalidFormat",
-                ui_texts,
+                ui_db_texts,
                 SepIconMaker.ext,
                 icon_data.error_hint,
                 icon_data.error_code,
@@ -344,11 +237,11 @@ def do_sep_edit(data: str) -> str:
         else:
             task_code += 1  # 511
             sep_row.name = sep_name
-            sep_row.visible = bool(flask_form.visible.data)
-            sep_row.description = get_form_input_value(flask_form.description.name)
+            sep_row.visible = bool(form.visible.data)
+            sep_row.description = get_form_input_value(form.description.name)
             batch_code = get_batch_code()
 
-            if is_insert:
+            if (editMode == SepEditMode.INSERT):
                 icon_old_file_name = None
                 sep_row.id = None
                 sep_row.visible = True
@@ -360,13 +253,13 @@ def do_sep_edit(data: str) -> str:
                 sep_row.edt_by = app_user.id
                 sep_row.edt_at = func.now()
 
-            if is_insert or is_full_edit:
+            if edit_full_or_ins:
                 task_code += 1  # 512
                 # we need `sep_fullname`` in case of error (see except)
                 sep_fullname = Sep.get_fullname(scm_name, sep_row.name)
                 sep_row.users_id = id_manager
 
-            if schema_changed := (is_full_edit and (id_schema != sep_row.id_schema)):
+            if schema_changed := ((editMode == SepEditMode.FULL_EDIT) and (id_schema != sep_row.id_schema)):
                 sep_row.id_schema = id_schema
 
             icon_new_file_name = None
@@ -382,7 +275,7 @@ def do_sep_edit(data: str) -> str:
                 sep_row.ico_by = app_user.id
                 sep_row.ico_at = func.now()
                 sep_row.icon_version = to_int(sep_row.icon_version, 0) + 1
-                ui_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(
+                ui_db_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(
                     sep_row.icon_file_name
                 )
                 icon_new_file_name = sep_row.icon_file_name
@@ -390,8 +283,8 @@ def do_sep_edit(data: str) -> str:
             if (sep_id := Sep.save(sep_row, schema_changed, batch_code)) >= 0:  # :——)
                 task_code += 5  # 21
                 add_msg_success(
-                    "sepSuccessNew" if is_insert else "sepSuccessEdit",
-                    ui_texts,
+                    "sepSuccessNew" if editMode == SepEditMode.INSERT else "sepSuccessEdit",
+                    ui_db_texts,
                     sep_fullname,
                 )
                 if fresh_icon:  # after post
@@ -400,22 +293,22 @@ def do_sep_edit(data: str) -> str:
                     return redirect_to(process_on_end)
             else:  # :——(
                 task_code += 6  # 19
-                item = f"sepFailed{'Edit' if is_simple_edit else 'New'}"
-                add_msg_final(item, ui_texts, sep_fullname, task_code)
+                item = f"sepFailed{'Edit' if editMode == SepEditMode.SIMPLE_EDIT else 'New'}"
+                add_msg_final(item, ui_db_texts, sep_fullname, task_code)
 
-        tmpl = process_template(tmpl_rfn, form=flask_form, **ui_texts, **js_ui_dict, **form_on_close)
+        tmpl = process_template(tmpl_rfn, form=form, **ui_db_texts.dict(), **select_lists,  **js_ui_dict, **form_on_close, )
 
     except JumpOut:
-        tmpl = process_template(tmpl_rfn, **ui_texts)
+        tmpl = process_template(tmpl_rfn, **ui_db_texts)
 
     except AppStumbled as e:
-        _, tmpl_rfn, ui_texts = ups_handler(task_code, '',  e)
-        tmpl = process_template(tmpl_rfn, **ui_texts)
+        _, tmpl_rfn, ui_db_texts = ups_handler(task_code, '',  e)
+        tmpl = process_template(tmpl_rfn, **ui_db_texts)
 
     except Exception as e:
-        item = add_msg_final("sepEditException", ui_texts, sep_fullname, task_code)
-        _, tmpl_rfn, ui_texts = ups_handler(task_code, item, e)
-        tmpl = process_template(tmpl_rfn, **ui_texts)
+        item = add_msg_final("sepEditException", ui_db_texts, sep_fullname, task_code)
+        _, tmpl_rfn, ui_db_texts = ups_handler(task_code, item, e)
+        tmpl = process_template(tmpl_rfn, **ui_db_texts)
 
     return tmpl
 

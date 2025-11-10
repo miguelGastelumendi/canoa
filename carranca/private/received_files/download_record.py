@@ -25,7 +25,7 @@ from ...common.app_error_assistant import ModuleErrorCode, AppStumbled
 
 def download_rec() -> Response | None:
     task_code = ModuleErrorCode.RECEIVED_FILES_MGMT.value
-    _, _, is_get, ui_texts = init_response_vars()
+    _, is_get, ui_texts = init_response_vars()
 
     if not is_get:
         return None  # TODO: error
@@ -59,8 +59,6 @@ def download_rec() -> Response | None:
                 file_response = send_file(download_file_name)
             else:  # just deleted :-(
                 ui_texts[UITextsKeys.Msg.error] = ui_texts["fileNotFound"]
-
-
 
     except Exception as e:
         # TODO:

@@ -17,8 +17,7 @@ from sqlalchemy.engine import CursorResult
 # from psycopg2.errors import ProgrammingError as psycopg2_ProgrammingError
 
 from .py_helper import is_str_none_or_empty, to_str
-from .types_helper import UiDbTexts
-
+from .types_helper import DBTexts
 from .. import global_sqlalchemy_scoped_session
 from ..config import BaseConfig
 from ..common.app_context_vars import sidekick
@@ -58,7 +57,7 @@ def col_names_to_columns(
     column_names: List[str], columns: list[Column]
 ) -> List[Column]:
     if not column_names:
-        return columns
+        return []
 
     selected_cols = [col for col in columns if col.name in column_names]
     return selected_cols
@@ -181,7 +180,7 @@ def retrieve_rows(query: str) -> Optional[Union[Any, Tuple]]:
         return tuple()
 
 
-def retrieve_dict(query: str):
+def retrieve_dict(query: str) -> DBTexts:
     """
     Executes the query and attempts to return the result as a dictionary,
     assuming the result consists of two columns (key, value) per row.
@@ -197,7 +196,7 @@ def retrieve_dict(query: str):
 
     data = retrieve_rows(query)
 
-    result: UiDbTexts = {}
+    result: DBTexts = {}
     try:
         if data and isinstance(data, tuple):
             # Check if data contains multiple rows of at least two columns

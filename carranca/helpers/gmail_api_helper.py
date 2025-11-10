@@ -12,11 +12,11 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 
-# Assuming these helper modules exist in the project structure:
 from .email_helper import RecipientsDic
 from .py_helper import is_str_none_or_empty
-from .oauth_client import get_gmail_service_oauth
-from .service_account_client import get_gmail_service_dwd
+
+from .gmail_dwd_helper import get_gmail_service_dwd
+from .gmail_oauth_helper import get_gmail_service_oauth
 from googleapiclient.discovery import build
 
 
@@ -25,10 +25,10 @@ from googleapiclient.discovery import build
 def _create_mime_message(
     recipients: RecipientsDic,
     subject: str,
-    html_content: str,
+    content: str,
     sender_email: str,
-    file_to_send_full_name: str | None = None,
-    file_to_send_type: str | None = None,
+    file_to_send_full_name: str = '',
+    file_to_send_type: str = '',
 ) -> bytes:
     """
     Constructs the MIME message object including recipients, subject, body, and attachments.
@@ -54,7 +54,7 @@ def _create_mime_message(
     message["subject"] = subject
 
     # 2. Attach HTML body
-    message.attach(MIMEText(html_content, "html"))
+    message.attach(MIMEText(content, "html"))
 
     # 3. Handle Attachment
     if not is_str_none_or_empty(file_to_send_full_name) and path.exists(
@@ -83,9 +83,9 @@ def _create_mime_message(
 def send_mail(
     recipients: RecipientsDic,
     subject: str,
-    html_content: str,
-    file_to_send_full_name: str | None = None,
-    file_to_send_type: str | None = None,
+    content: str,
+    file_to_send_full_name: str= '',
+    file_to_send_type: str= '',
 ) -> str:
     """
     Sends an email using the Gmail API, selecting the authentication method based on config.
@@ -93,7 +93,7 @@ def send_mail(
     Args:
         recipients: A RecipientsDic object with to, cc, and bcc lists.
         subject: The email subject.
-        html_content: The HTML body of the email.
+        content: The body of the email.
         file_to_send_full_name: Full path to an attachment file.
         file_to_send_type: MIME type of the attachment.
 
@@ -132,7 +132,7 @@ def send_mail(
     raw_message_bytes = _create_mime_message(
         recipients,
         subject,
-        html_content,
+        content,
         sender_email,
         file_to_send_full_name,
         file_to_send_type
