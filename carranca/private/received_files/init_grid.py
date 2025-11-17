@@ -9,17 +9,18 @@ mgd 2025-01-14 & 03-18
 
 # cSpell: ignore samp rqst dnld rprt
 
-from carranca.models.private import AppStumbled
-from flask_login import current_user
-
-from ...public.ups_handler import ups_handler
+from ...public.ups_handler import ups_handler, AppStumbled
 from ...helpers.types_helper import JinjaTemplate
 from ...helpers.jinja_helper import process_template
-from ...helpers.route_helper import get_private_response_data, init_response_vars, MTD_UNEXPECTED_ERROR
+from ...helpers.route_helper import (
+    get_private_response_data,
+    init_response_vars,
+    MTD_UNEXPECTED_ERROR,
+)
+from ...common.app_context_vars import app_user
 from ...helpers.js_consts_helper import js_ui_dictionary
 from ...helpers.ui_db_texts_helper import UITextsKeys, add_msg_final
 from ...common.app_error_assistant import ModuleErrorCode
-from ...common.app_context_vars import app_user
 
 from .fetch_users import fetch_user_s
 from .fetch_records import fetch_record_s, ALL_USER_RECS
@@ -56,14 +57,14 @@ def init_grid(for_user: int) -> JinjaTemplate:
                 0, ("", ui_db_texts[("noneUser" if len(users_list) == 0 else "selectUser")], True)
             )
             task_code += 1  # 6
-            ui_db_texts[UITextsKeys.Form.title] = ui_db_texts[UITextsKeys.Form.title + "Power"].format(
-                request_user.user_name
-            )
+            ui_db_texts[UITextsKeys.Form.title] = ui_db_texts[
+                UITextsKeys.Form.title + "Power"
+            ].format(request_user.user_name)
             user_id = request_user.user_id
         else:  # ignore `for_user`
             task_code += 4  # 6
             users_list = []
-            user_id = current_user.id
+            user_id = app_user.id  # 2025.11.11 current_user.id
 
         # TODO check empty received_files
         task_code += 1  # 7

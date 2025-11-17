@@ -53,7 +53,7 @@ class SchemaGrid(SQLABaseTable):
     def get_schemas(
         col_names: OptListOfStr = None,
         only_visible: bool | None = None,
-    ) -> List["SchemaGrid"]: #DBRecords:
+    ) -> DBRecords: # List["SchemaGrid"], does not have .to_list()
         """
         Returns:
           All records from SchemaGrid table, optional of selected fields

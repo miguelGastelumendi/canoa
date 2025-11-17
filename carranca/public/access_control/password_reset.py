@@ -41,7 +41,9 @@ def password_reset(token):
 
     try:
         task_code += 1  # 1
-        tmpl_rfn, is_get, texts = get_account_response_data("passwordreset", "password_reset_or_change")
+        tmpl_rfn, is_get, texts = get_account_response_data(
+            "passwordreset", "password_reset_or_change"
+        )
         token_str = to_str(token)
         password = "" if is_get else get_form_input_value("password")
         task_code += 1  # 2

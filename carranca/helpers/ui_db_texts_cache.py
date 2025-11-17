@@ -30,9 +30,7 @@ class UITexts_Cache:
     _CACHE_INTERNAL_INFO_KEY: cache_key = (" ", "mgmt_data", "key")
 
     ## TODO SAVE is Cache _CACHE_INTERNAL_INFO_KEY
-    _cfg_cache_lifetime_min = int(
-        current_app.config.get("APP_UI_DB_TEXTS_CACHE_LIFETIME_MIN", 0)
-    )
+    _cfg_cache_lifetime_min = int(current_app.config.get("APP_UI_DB_TEXTS_CACHE_LIFETIME_MIN", 0))
 
     def __init__(self, section: str, item: Optional[str] = None):
         self.locale = ui_texts_locale().lower()
@@ -74,7 +72,7 @@ class UITexts_Cache:
         if self._cache_item():
             global_ui_texts_cache[self.as_tuple] = texts
 
-    def get_text(self) -> None:
+    def get_text(self) -> str | None:
         return global_ui_texts_cache[self.as_tuple] if self.exists() else None
 
     def set_info(self, key: str, info: any) -> None:
@@ -83,9 +81,7 @@ class UITexts_Cache:
         global_ui_texts_cache[UITexts_TableSearch._CACHE_INTERNAL_INFO_KEY] = cache_info
 
     def get_info_value(self) -> dict:
-        cache_value = global_ui_texts_cache.get(
-            UITexts_TableSearch._CACHE_INTERNAL_INFO_KEY, {}
-        )
+        cache_value = global_ui_texts_cache.get(UITexts_TableSearch._CACHE_INTERNAL_INFO_KEY, {})
         return cache_value
 
     @property

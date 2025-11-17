@@ -20,7 +20,6 @@ from ..helpers.js_consts_helper import js_grid_col_meta_info, js_ui_dictionary
 from ..helpers.ui_db_texts_helper import add_msg_final
 from ..helpers.db_records.DBRecords import ListOfDBRecords
 
-#from .scm_export
 
 def do_scm_create() -> JinjaTemplate:
 
@@ -60,5 +59,3 @@ def do_scm_create() -> JinjaTemplate:
 
 
 # eof
-
-

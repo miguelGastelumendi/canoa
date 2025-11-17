@@ -13,8 +13,7 @@ from sqlalchemy import func  # func.now() == db-server time
 
 from .wtforms import ScmEdit
 from ..models.private import Schema
-from ..helpers.py_helper import is_str_none_or_empty
-from ..public.ups_handler import ups_handler
+from ..public.ups_handler import get_ups_jHtml
 from ..helpers.jinja_helper import process_template
 from ..helpers.uiact_helper import UiActResponseProxy
 from ..helpers.ui_db_texts_helper import add_msg_final
@@ -39,9 +38,7 @@ def do_scm_edit(data: str) -> str:
 
     if action is not None:  # called from sep_grid
         # TODO use: window.history.back() in JavaScript.
-        process_on_end = private_route(
-            "scm_grid", code=UiActResponseProxy.show
-        )  # TODO selected Row, ix=row_index)
+        process_on_end = private_route("scm_grid", code=UiActResponseProxy.show)  # TODO selected Row, ix=row_index)
         form_on_close = {"dlg_close_action_url": process_on_end}
 
     else:  # standard routine
@@ -58,10 +55,9 @@ def do_scm_edit(data: str) -> str:
     scm_id = new_scm_id if is_insert else Schema.to_id(code)
 
     task_code = ModuleErrorCode.SCM_EDIT.value
-    tmpl, is_get, ui_db_texts = init_response_vars()
-    schema_name = "?"
+    jHtml, is_get, ui_db_texts = init_response_vars()
 
-    tmpl_rfn = ''
+    tmpl_rfn = ""
     try:
         task_code += 1
         tmpl_rfn, is_get, ui_db_texts = get_private_response_data("scmNewEdit")
@@ -71,7 +67,6 @@ def do_scm_edit(data: str) -> str:
             # get the editable row
             # Someone deleted just now?
             raise JumpOut(add_msg_final("scmEditNotFound", ui_db_texts), task_code + 1)
-        schema_name = ui_db_texts["scmNewTmpName"] if is_insert else scm_row.name
 
         task_code += 1
         ui_db_texts["formTitle"] = ui_db_texts[f"formTitle{'New' if is_insert else 'Edit'}"]
@@ -94,12 +89,9 @@ def do_scm_edit(data: str) -> str:
                 if hasattr(scm_row, field.name):
                     field.data = getattr(scm_row, field.name)
         else:  # is_post
+
             def _modified(input, field, is_mod):
-                ui_value = (
-                    get_form_input_value(input.name, None)
-                    if input.type == StringField.__name__
-                    else input.data
-                )
+                ui_value = get_form_input_value(input.name, None) if input.type == StringField.__name__ else input.data
                 _mod = field != ui_value
                 if input.data != ui_value:  # TODO, don't change .data
                     input.data = ui_value
@@ -107,10 +99,10 @@ def do_scm_edit(data: str) -> str:
                 return is_mod or _mod
 
             # TODO make a helper
-            form_md = is_insert
+            form_modified = is_insert
             for field in form:
                 if hasattr(scm_row, field.name):
-                    form_md = _modified(field, getattr(scm_row, field.name), form_md)
+                    form_modified = _modified(field, getattr(scm_row, field.name), form_modified)
 
             def _save_and_go():
                 form.populate_obj(scm_row)
@@ -118,35 +110,30 @@ def do_scm_edit(data: str) -> str:
                 scm_row.color = scm_row.color.upper()
                 Schema.save(scm_row)
                 return redirect_to(process_on_end)
-                # return redirect_to(home_route())
 
-            schema_name = form.name.data if is_insert else scm_row.name
             if is_insert:
                 scm_row.ins_by = app_user.id
                 scm_row.ins_at = func.now()
                 task_code += 1
                 return _save_and_go()
-            elif form_md:
+            elif form_modified:
                 scm_row.edt_by = app_user.id
                 scm_row.edt_at = func.now()
                 task_code += 2
                 return _save_and_go()
             else:
-                # TODO Not modi
                 return redirect_to(home_route())
 
-        tmpl = process_template(tmpl_rfn, form=form, **ui_db_texts, **form_on_close)
+        jHtml = process_template(tmpl_rfn, form=form, **ui_db_texts.dict(), **form_on_close)
 
     except JumpOut:
         # in an extreme case, tmpl_rfn can be empty
-        tmpl = process_template(tmpl_rfn, **ui_db_texts)
+        jHtml = process_template(tmpl_rfn, **ui_db_texts.dict())
 
     except Exception as e:
-        item = add_msg_final("scmEditException", ui_db_texts, schema_name, task_code)
-        _, tmpl_rfn, ui_db_texts = ups_handler(task_code, item, e)
-        tmpl = process_template(tmpl_rfn, **ui_db_texts)
+        jHtml = get_ups_jHtml("scmEditException", ui_db_texts, task_code, e)
 
-    return tmpl
+    return jHtml
 
 
 # eof

@@ -15,10 +15,13 @@ from ...config.ValidateProcessConfig import ValidateProcessConfig
 
 from ...helpers.user_helper import UserFolders, get_user_folder
 from ...helpers.file_helper import change_file_ext
+from ...helpers.types_helper import UsualDict
 from ...helpers.db_records.DBRecords import DBRecords
 
 ALL_USER_RECS = None
 IGNORE_USER = None
+
+USER_RECEIPT = "receipt"
 
 
 def fetch_record_s(
@@ -38,26 +41,21 @@ def fetch_record_s(
     """
 
     if rec_id is ALL_USER_RECS and user_id is IGNORE_USER:
-        return DBRecords(), None, None
+        return DBRecords(), "", ""
 
+    file_full_name = ""
     received_recs = ReceivedFiles.get_records(file_id=rec_id, user_id=user_id)
-    file_full_name: str = None
     report_ext = ValidateProcessConfig(False).output_file.ext
-    grid_rows = []
+    grid_rows: list[UsualDict] = []
     if received_recs:
         """Adapt the records to the local environment"""
         uf = UserFolders()
-        user_folder = get_user_folder(user_id) if user_id else app_user.folder    # app_user.folder
+        user_folder = get_user_folder(user_id) if user_id else app_user.folder  # app_user.folder
 
         for record in received_recs:
             folder = uf.uploaded if record.file_origin == "L" else uf.downloaded
-            file_full_name = path.join(folder, user_folder, record.stored_file_name)
+            file_full_name: str = path.join(folder, user_folder, record.stored_file_name)
             # Copy specific fields to a new object 'row'
-            
-            # if path.isfile(file_full_name):
-            #     print(file_full_name)
-            #     print(record.user_receipt)
-
             row = {
                 "id": record.id,
                 "data_f_found": path.isfile(file_full_name),  # data_file was found
@@ -65,7 +63,7 @@ def fetch_record_s(
                 "sep": record.sep_fullname if record.sep_fullname else no_sep,
                 "file_name": change_file_ext(record.file_name),
                 "user_name": record.user_name,
-                "receipt": record.user_receipt,
+                USER_RECEIPT: record.user_receipt,
                 "when": record.submitted_at,
                 "errors": record.report_errors,
                 "warns": record.report_warns,

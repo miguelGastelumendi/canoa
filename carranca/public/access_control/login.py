@@ -8,19 +8,20 @@ mgd
 
 # cSpell:ignore sqlalchemy wtforms
 
-from flask import render_template, request
+from flask import request
 from sqlalchemy import func
 from flask_login import login_user
 
 from ...models.public import persist_user
-from ...helpers.py_helper import is_str_none_or_empty, to_str
+from ...helpers.py_helper import is_str_none_or_empty, now_as_iso, to_str
 from ...helpers.pw_helper import internal_logout, is_someone_logged, verify_pass
 from ...private.RolesAbbr import RolesAbbr
-from ...public.ups_handler import ups_handler
+from ...public.ups_handler import get_ups_jHtml
 from ...helpers.jinja_helper import process_template
 from ...common.app_context_vars import sidekick
-from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.ui_db_texts_helper import add_msg_error, add_msg_final
+from ...helpers.js_consts_helper import js_form_sec_check
+from ...common.app_error_assistant import ModuleErrorCode, AppStumbled
+from ...helpers.ui_db_texts_helper import add_msg_error
 from ...helpers.route_helper import (
     home_route,
     redirect_to,
@@ -31,12 +32,12 @@ from ...helpers.route_helper import (
 from ...models.public import User, get_user_role_abbr
 
 
-def login():
+def do_login():
 
     from ..wtforms import LoginForm
 
     task_code = ModuleErrorCode.ACCESS_CONTROL_LOGIN.value
-    tmpl, is_get, ui_db_texts = init_response_vars()
+    jHtml, is_get, ui_db_texts = init_response_vars()
 
     try:
         task_code += 1  # 1
@@ -48,6 +49,10 @@ def login():
             internal_logout()
         elif is_get:
             pass
+        elif not is_str_none_or_empty(msg_error_key := js_form_sec_check()):
+            task_code += 1
+            msg_error = add_msg_error(msg_error_key, ui_db_texts)
+            raise AppStumbled(msg_error, task_code, True, True)
         else:
             task_code += 1  # 4
             username = get_form_input_value("username")  # TODO tmpl_form
@@ -90,7 +95,7 @@ def login():
                 task_code += 1  # 17
                 login_user(user, remember_me)
                 task_code += 1  # 18
-                msg = f"{user.username} (with id {user.id} & role '{user.role.name}') just logged in."
+                msg = f"{user.username} (with id {user.id} & role '{user.role.name}') just logged in {now_as_iso()}"
                 sidekick.display.info(msg)
                 sidekick.app_log.info(msg)
                 # user obj is lost here
@@ -100,22 +105,15 @@ def login():
                 task_code += 1  # 20
                 return redirect_to(home_route())
 
-        tmpl = process_template(
+        jHtml = process_template(
             tmpl_rfn,
             form=form,
             **ui_db_texts.dict(),
         )
     except Exception as e:
-        error_code = task_code
-        msg = add_msg_final("errorLogin", ui_db_texts, task_code)
-        form, tmpl_rfn, ui_db_texts = ups_handler(error_code, msg, e, True)
-        tmpl = process_template(
-            tmpl_rfn,
-            form=form,
-            **ui_db_texts.dict(),
-        )
+        jHtml = get_ups_jHtml("errorLogin", ui_db_texts, task_code, e)
 
-    return tmpl
+    return jHtml
 
 
 # eof

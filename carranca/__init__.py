@@ -13,16 +13,16 @@ mgd
 from flask_login import LoginManager
 from sqlalchemy.orm import scoped_session
 
-from typing import Optional, Dict, List
+from typing import Dict, List
 from .common.Sidekick import Sidekick
-from .common.UIDBTexts import UIDBTexts
 
-# 4 App Global variables
-global_sidekick: Optional[Sidekick] = None
-global_login_manager: Optional[LoginManager] = None
-global_sqlalchemy_scoped_session: Optional[scoped_session] = None
+# App Global variables
+global_sidekick: Sidekick | None = None
+global_login_manager: LoginManager = None
+global_sqlalchemy_scoped_session: scoped_session = None
 global_ui_texts_cache: Dict[str, str] = {}
 APP_DB_VERSION: str = "?"
+
 
 """
 'scoped' refers to the management of SQLAlchemy `Session` objects within a specific scope,
@@ -46,7 +46,6 @@ import jinja2
 import socket
 
 from flask import Flask
-from typing import Optional
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy import SQLAlchemy
@@ -55,7 +54,9 @@ from .helpers.py_helper import crc16
 from .private.JinjaUser import JinjaUser
 from .helpers.pw_helper import is_someone_logged
 from .helpers.file_helper import file_full_name_parse
-from .helpers.route_helper import private_route, public_route, static_route
+
+# 1/3 This line produce the sidekick-incident, moved to the _register_jinja
+# from .helpers.route_helper import private_route, public_route, static_route
 
 
 # ============================================================================ #
@@ -82,9 +83,7 @@ def _register_blueprint_events(app: Flask):
                 )
 
             cl = (int(r.headers.get("Content-Length", 0)) if r else 0) / 1000
-            app.logger.debug(
-                f"Ending secession, sending  {cl:,.2f} Kb, with response status [{r.status}]."
-            )
+            app.logger.debug(f"Ending secession, sending  {cl:,.2f} Kb, with response status [{r.status}].")
             global_sqlalchemy_scoped_session.remove()
         except Exception as e:
             app.logger.error(
@@ -112,11 +111,13 @@ def _register_blueprint_routes(app: Flask):
 
 # ---------------------------------------------------------------------------- #
 def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version: str):
+    from .helpers.types_helper import DBTexts
     from .helpers.uiact_helper import UiActResponseProxy
+    from .helpers.route_helper import private_route, public_route, static_route
     from .helpers.js_consts_helper import js_form_sec_key, js_form_cargo_id, js_form_sec_value
 
-    def __get_app_menu(sub_menu_name: str) -> UIDBTexts:
-        sub_menu: dict = {}
+    def __get_app_menu(sub_menu_name: str) -> DBTexts:
+        sub_menu: DBTexts = {}
         if not is_someone_logged():
             return sub_menu
 
@@ -129,7 +130,7 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
 
         return sub_menu
 
-    def __get_jinja_user() -> Optional[JinjaUser]:
+    def __get_jinja_user() -> JinjaUser | None:
         if is_someone_logged():  # 'import jinja_user' only when a user is logged
             from .common.app_context_vars import jinja_user
 
@@ -138,13 +139,12 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
             return None
 
     def __get_user_sep_menu_list() -> List[Dict]:
+        # Provides de sep menu
         sep_list: List[Dict] = []
         if is_someone_logged():  # 'import jinja_user' only when a user is logged
             from .common.app_context_vars import app_user
 
-            sep_list = [
-                {"code": user.code, "name": user.fullname} for user in app_user.seps
-            ]
+            sep_list = [{"code": user.code, "name": user.fullname} for user in app_user.seps]
 
         return sep_list
 
@@ -184,7 +184,7 @@ def _register_jinja(app: Flask, debugUndefined: bool, app_name: str, app_version
         scm_menu=__get_scm_menu_list,
         ui_act_add=UiActResponseProxy.add,
         ui_act_shw=UiActResponseProxy.show,
-        safe_token= {"key": js_form_sec_key, "value": js_form_sec_value(), "cargo": js_form_cargo_id }
+        safe_token={"key": js_form_sec_key, "value": js_form_sec_value(), "cargo": js_form_cargo_id},
     )
     if debugUndefined:
         # Enable DebugUndefined for better error messages in Jinja2 templates
@@ -200,7 +200,6 @@ def _do_sqlalchemy_scoped_session(uri: str) -> scoped_session:
 
     engine = create_engine(uri, future=True)
     new_session = sessionmaker(autocommit=False, autoflush=True, bind=engine)
-    uri = None
 
     return scoped_session(new_session)
 
@@ -229,7 +228,8 @@ def _create_app_and_log_file(app_name: str):
     _info(f"The Flask App was created, named '{app.name}'.")
 
     # 🖋️ Local alias for clarity — sk rides with sidekick, no duplication.
-    g_sk: Sidekick = global_sidekick
+    # from ..common.app_context_vars import sidekick
+    g_sk = global_sidekick
 
     # -- config from file
     app.config.from_object(g_sk.config)
@@ -247,9 +247,7 @@ def _create_app_and_log_file(app_name: str):
         g_sk.config.LOG_FILE_STATUS = "off"
     else:
         cfg = g_sk.config
-        error, full_name, level = do_log_file(
-            app, cfg.LOG_FILE_NAME, cfg.LOG_FILE_FOLDER, cfg.LOG_MIN_LEVEL
-        )
+        error, full_name, level = do_log_file(app, cfg.LOG_FILE_NAME, cfg.LOG_FILE_FOLDER, cfg.LOG_MIN_LEVEL)
         info = f"file '{full_name}' levels '{level}' and above"
         if not error:
             _info(f"Logging to {info}.")
@@ -261,9 +259,7 @@ def _create_app_and_log_file(app_name: str):
             g_sk.log_filename = file_full_name_parse(full_name)[2]
         else:
             g_sk.config.LOG_FILE_STATUS = "error"
-            g_sk.display.error(
-                f"{app_name}'s log {info} creation error: [{error}]."
-            )
+            g_sk.display.error(f"{app_name}'s log {info} creation error: [{error}].")
 
     return app
 
@@ -283,14 +279,13 @@ def create_app():
     global global_sidekick, APP_DB_VERSION
     # === Check if all mandatory information is ready === #
     global_sidekick, APP_DB_VERSION, display_mute_after_init = ignite_app(APP_NAME, started)
-    _info(
-        f"[{global_sidekick}] instance is now ready. It will be available during app's context."
-    )
+    _info(f"[{global_sidekick}] instance is now ready. It will be available during app's context.")
 
     # == 2/3 Global Scoped SQLAlchemy Session
     global global_sqlalchemy_scoped_session
     db_uri = str(global_sidekick.config.SQLALCHEMY_DATABASE_URI)
     global_sqlalchemy_scoped_session = _do_sqlalchemy_scoped_session(db_uri)
+    db_uri = None  # is a secret
     _info("A scoped SQLAlchemy session was successfully instantiated.")
 
     # === Flask App, config it & file log ===`#
@@ -301,9 +296,7 @@ def create_app():
     global global_login_manager
     global_login_manager = LoginManager()
     global_login_manager.init_app(app)
-    _info(
-        "The Login Manager has been successfully initialized and attached to the app."
-    )
+    _info("The Login Manager has been successfully initialized and attached to the app.")
 
     # -- Register SQLAlchemy
     _register_db(app)
@@ -317,9 +310,8 @@ def create_app():
 
     # -- Jinja2
     _register_jinja(app, global_sidekick.config.DEBUG_TEMPLATES, APP_NAME, APP_VERSION)
-    _info(
-        f"The Jinja functions of this app have been attached to 'jinja_env.globals' (with debug_templates as {global_sidekick.config.DEBUG_TEMPLATES})."
-    )
+    sd = f"(with debug_templates as {global_sidekick.config.DEBUG_TEMPLATES})"
+    _info(f"All Jinja functions of this app have been successfully attached to 'jinja_env.globals' {sd}.")
 
     # config sidekick.display
     if display_mute_after_init:

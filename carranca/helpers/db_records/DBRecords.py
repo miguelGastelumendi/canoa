@@ -9,7 +9,7 @@ Equipe da Canoa --  2024 — 2025
 
 # cspell:ignore SQLA sqla froms
 
-from typing import Optional, TypeAlias, List, Tuple, Dict
+from typing import Optional, List, Tuple, Dict
 from datetime import datetime
 from sqlalchemy import Row
 from sqlalchemy.types import String

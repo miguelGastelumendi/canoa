@@ -25,10 +25,9 @@ from ...helpers.user_helper import get_batch_code
 from ...helpers.jinja_helper import process_template
 from ...helpers.types_helper import SepMgmtReturn, CargoList
 from ...helpers.route_helper import get_private_response_data, init_response_vars
-from ...helpers.js_consts_helper import js_form_sec_check, js_form_cargo_id, js_ui_dictionary
+from ...helpers.js_consts_helper import js_form_sec_check, js_ui_dictionary, js_form_cargo_id, js_grid_col_meta_info
 from ...helpers.ui_db_texts_helper import add_msg_final, add_msg_error, UITextsKeys
 from ...helpers.db_records.DBRecords import DBRecords, ListOfDBRecords
-
 
 from .save_to_db import save_data
 from .send_email import send_email
@@ -41,19 +40,17 @@ def sep_mgmt() -> str:
 
     sep_data: ListOfDBRecords = []
     user_list = []
-    msg_error_save_and_email: str = ''
+    msg_error_save_and_email: str = ""
     try:
         task_code += 1  # 1
         tmpl_rfn, is_get, ui_db_texts = get_private_response_data("sepMgmt")
 
         task_code += 1  # 2
-        ui_db_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(
-            SepIconMaker.none_file
-        )
+        ui_db_texts[UITextsKeys.Form.icon_url] = SepIconMaker.get_url(SepIconMaker.none_file)
 
         task_code += 1  # 3
         col_names: List[str] = list(class_to_dict(SepMgmtGridCols).values())
-        js_ui_dict = js_ui_dictionary(ui_db_texts["colMetaInfo"], col_names, task_code)
+        js_ui_dict = js_ui_dictionary(ui_db_texts[js_grid_col_meta_info], col_names, task_code)
 
         sep_data = []
         item_none = ui_db_texts["itemNone"]
@@ -61,7 +58,7 @@ def sep_mgmt() -> str:
         if is_get:
             task_code += 1  # 4
             sep_data, user_list = _sep_data_fetch(item_none, col_names)
-        elif not is_str_none_or_empty(msg:= js_form_sec_check()):
+        elif not is_str_none_or_empty(msg := js_form_sec_check()):
             task_code += 2  # 5
             msg = add_msg_error(msg, ui_db_texts)
             raise AppStumbled(msg, task_code, True, True)
@@ -69,9 +66,7 @@ def sep_mgmt() -> str:
             task_code += 3  # 6
             txt_response = request.form.get(js_form_cargo_id)
             json_response: Dict[str, str] = json.loads(txt_response)
-            msg_success, msg_error_save_and_email, task_code = _save_and_email(
-                json_response, ui_db_texts, task_code
-            )
+            msg_success, msg_error_save_and_email, task_code = _save_and_email(json_response, ui_db_texts, task_code)
             sep_data, user_list = _sep_data_fetch(item_none, col_names)
 
             task_code += 1  # ?
@@ -90,7 +85,7 @@ def sep_mgmt() -> str:
         )
 
     except AppStumbled as e:
-        _, tmpl_rfn, ui_db_texts = ups_handler(task_code, '',  e)
+        _, tmpl_rfn, ui_db_texts = ups_handler(task_code, "", e)
         tmpl = process_template(tmpl_rfn, **ui_db_texts.dict())
 
     except Exception as e:
@@ -101,17 +96,13 @@ def sep_mgmt() -> str:
     return tmpl
 
 
-def _sep_data_fetch(
-    _item_none: str, col_names: List[str]
-) -> Tuple[DBRecords, List[str]]:
+def _sep_data_fetch(_item_none: str, col_names: List[str]) -> Tuple[DBRecords, List[str]]:
 
     sep_usr_rows = MgmtSepsUser.get_seps_usr(col_names)
     for record in sep_usr_rows:
         record.user_curr = _item_none if record.user_curr is None else record.user_curr
         record.user_new = record.user_curr
-        record.icon_file_name = do_icon_get_url(
-            record.icon_file_name
-        )  # this is file_name
+        record.icon_file_name = do_icon_get_url(record.icon_file_name)  # this is file_name
 
     user_rows = User.get_all_users(User.disabled == False)
     users_list = [user.username for user in user_rows]
@@ -119,28 +110,22 @@ def _sep_data_fetch(
     return sep_usr_rows, users_list
 
 
-def _save_and_email(
-    grid_response: CargoList, ui_db_texts: UIDBTexts, task_code: int
-) -> SepMgmtReturn:
+def _save_and_email(grid_response: CargoList, ui_db_texts: UIDBTexts, task_code: int) -> SepMgmtReturn:
     """Saves data & sends emails"""
 
     task_code += 1
     batch_code = get_batch_code()
-    msg_success_save, msg_error, task_code = save_data(
-        grid_response, batch_code, ui_db_texts, task_code
-    )
+    msg_success_save, msg_error, task_code = save_data(grid_response, batch_code, ui_db_texts, task_code)
     if not is_str_none_or_empty(msg_error):
-        return '', msg_error, task_code
+        return "", msg_error, task_code
 
     task_code += 1  # 567
-    msg_success_email, msg_error, task_code = send_email(
-        batch_code, ui_db_texts, task_code
-    )
+    msg_success_email, msg_error, task_code = send_email(batch_code, ui_db_texts, task_code)
     if not is_str_none_or_empty(msg_error):
-        return '', msg_error, task_code
+        return "", msg_error, task_code
 
     msg_success = f"{msg_success_save} {msg_success_email}".strip()
-    return msg_success, '', task_code
+    return msg_success, "", task_code
 
 
 # eof

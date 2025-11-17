@@ -70,8 +70,13 @@
 
 
 ------- 2025 - November ----------
+2025-11-10 -- 16 Global Revision  v β 5.07
+    - Fixing the Gemini mess, Part B/B
+    - Global Revision with Power User OK
+
+
 2025-11-08 --09 Gemini A v β 5.06
-    - Fixing the Gemini mess, Part A
+    - Fixing the Gemini mess, Part A/B
     - Remove leftover code, impacting display Menu performance:
         scm_menu = __get_scm_menu_list
     - Replace `ui_texts: Dict=  UiDbText` with `ui_db_texts: UIDbTexts`

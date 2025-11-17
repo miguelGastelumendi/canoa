@@ -8,7 +8,7 @@ mgd 2024-05-21: Base, Debug, Production
 mgd 2024-10-11: Base went to it's own file
 """
 
-# cSpell:ignore SQLALCHEMY searchpath
+# cSpell:ignore UNMINIFIED SQLALCHEMY searchpath
 
 from os import environ
 from hashlib import sha384
@@ -88,15 +88,16 @@ class DynamicConfig(BaseConfig):
         self.DB_len_val_for_email = LenValidate(8, 60)
 
         # propagate APP_DEBUG
-        def _if_debug(attrib, default=self.APP_DEBUG):
-            return default if attrib is None else as_bool(attrib)
+        default = self.APP_DEBUG if self.APP_PROPAGATE_DEBUG else False
 
-        if self.APP_PROPAGATE_DEBUG:
-            self.TESTING = _if_debug(self.TESTING)  # Flask
-            self.APP_MINIFIED = _if_debug(self.APP_MINIFIED, not self.APP_DEBUG)
-            self.DEBUG_TEMPLATES = _if_debug(self.DEBUG_TEMPLATES)  # jinja
-            self.DEBUG_RENDERED_TEMPLATES = _if_debug(self.DEBUG_RENDERED_TEMPLATES)
-            self.APP_DISPLAY_DEBUG_MSG = _if_debug(self.APP_DISPLAY_DEBUG_MSG)
+        def _if_debug(value):
+            return default if value is None else as_bool(value)
+
+        self.TESTING = _if_debug(self.TESTING)  # Flask
+        self.APP_UNMINIFIED = _if_debug(self.APP_UNMINIFIED)  #
+        self.DEBUG_TEMPLATES = _if_debug(self.DEBUG_TEMPLATES)  # jinja
+        self.DEBUG_RENDERED_TEMPLATES = _if_debug(self.DEBUG_RENDERED_TEMPLATES)
+        self.APP_DISPLAY_DEBUG_MSG = _if_debug(self.APP_DISPLAY_DEBUG_MSG)
 
         if is_str_none_or_empty(self.SECRET_KEY):
             """
@@ -123,6 +124,7 @@ class DevelopmentConfig(DynamicConfig):
     def __init__(self, fuse: Fuse):
         super().__init__(fuse, True, True, "127.0.0.1:50090")
 
+
 # ===[2] Stage Config
 class StageConfig(DynamicConfig):
     """
@@ -134,6 +136,7 @@ class StageConfig(DynamicConfig):
 
     def __init__(self, fuse: Fuse):
         super().__init__(fuse, False, False, "192.168.0.1:5002")
+
 
 # ===[3] Production Config
 class ProductionConfig(DynamicConfig):

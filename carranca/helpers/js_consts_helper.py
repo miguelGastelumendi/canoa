@@ -4,7 +4,8 @@ Grid HTML + js + py communication constants
 Equipe da Canoa -- 2025
 mgd 2025-01-19 -- 10-08
 """
-#TODO: ui_form_helper
+
+# TODO: ui_form_helper
 
 
 # cSpell:ignore
@@ -36,29 +37,33 @@ from .types_helper import JsConstants
 # safe_token= {"key": js_form_sec_key, "value": js_form_sec_value(), "cargo": js_form_cargo_id }
 js_form_sec_key = "form_sec_key"
 js_form_cargo_id = "form_cargo_id"  # don't use  "form-cargo-id" (raise errors & errors)
+
+
 def js_form_sec_value() -> str:
     # TODO: create a real key with user_id and datetime
     return "7298kaj0fk9dl-sd=)0ya16"
-#}
+
+
+# }
 
 # Grid
 js_grid_col_meta_info = "colMetaInfo"
 
-# ui_texts msg error
-ui_texts_sec_error = "secKeyViolation"
+# ui_texts secury ley msg error key (in DB ui_items)
+ui_texts_sec_error_key = "secKeyViolation"
 
 
-def js_form_sec_check( value: Optional[str] = None )-> str:
+def js_form_sec_check(value: Optional[str] = None) -> str:
     # TODO "secKey"
-    check = value if value else request.form.get(js_form_sec_key, '')
+    check = value if value else request.form.get(js_form_sec_key, "")
 
-    msg_error = '' if check == js_form_sec_value() else ui_texts_sec_error
+    msg_error = "" if check == js_form_sec_value() else ui_texts_sec_error_key
     # "secKeyExpired"
     # ...'TODO
     return msg_error
 
 
-def js_ui_dictionary(col_meta_info_txt: str = '', col_names: List[str] = [], task_code: int=1) -> JsConstants:
+def js_ui_dictionary(col_meta_info_txt: str = "", col_names: List[str] = [], task_code: int = 1) -> JsConstants:
 
     js_ui_dict: JsConstants = {}
 
@@ -69,10 +74,10 @@ def js_ui_dictionary(col_meta_info_txt: str = '', col_names: List[str] = [], tas
     # js_ui_dict[js_form_sec_key] = js_form_sec_key  # security token key
     # js_ui_dict["form_sec_value"] = js_form_sec_value()  # security token value
 
-    ''' little bit of 'recursive':
+    """ little bit of 'recursive':
         can be used as `js_ui_dict.form_sec_key` or, in macros, `just `form_sec_key`
-    '''
-    js_ui_dict["js_ui_dict"]: JsConstants = js_ui_dict # type: ignore
+    """
+    js_ui_dict["js_ui_dict"]: JsConstants = js_ui_dict  # type: ignore
 
     if col_meta_info_txt:
         col_meta_info_json = json.loads(col_meta_info_txt)
@@ -89,11 +94,9 @@ def js_ui_dictionary(col_meta_info_txt: str = '', col_names: List[str] = [], tas
             )
 
         # short for 'n': name, 'h': header
-        js_ui_dict["grid_col_meta"] = [{"n": key, "h": col_meta_info_json[key]} for key in col_meta_info_json] # type: ignore
-
+        js_ui_dict["grid_col_meta"] = [{"n": key, "h": col_meta_info_json[key]} for key in col_meta_info_json]  # type: ignore
 
     return js_ui_dict
 
 
-
-#eof
+# eof

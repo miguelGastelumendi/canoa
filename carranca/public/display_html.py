@@ -29,7 +29,7 @@ from ..common.app_context_vars import sidekick
 def __prepare_img_files(
     html_images: list[str], db_images: list[str], img_local_path: str, section: str
 ) -> bool:
-    from ..helpers.ui_db_texts_helper import get_text
+    from ..helpers.ui_db_texts_helper import retrieve_text
 
     is_img_local_path_ready = os.path.exists(img_local_path)
     missing_files = html_images.copy()  # missing files from folder, assume all
@@ -61,7 +61,7 @@ def __prepare_img_files(
 
     for file in available_files:
         try:
-            b64encoded = get_text(file, section)
+            b64encoded = retrieve_text(file, section)
             if not is_str_none_or_empty(b64encoded):
                 image_data = base64.b64decode(b64encoded)
                 with open(os.path.join(img_local_path, file), "wb") as file:

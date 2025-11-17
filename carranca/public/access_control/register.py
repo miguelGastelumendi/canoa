@@ -15,7 +15,11 @@ from ...common.app_context_vars import sidekick
 from ...models.public import persist_user
 from ...helpers.pw_helper import internal_logout, is_someone_logged
 from ...common.app_error_assistant import ModuleErrorCode
-from ...helpers.route_helper import get_account_response_data, get_form_input_value, init_response_vars
+from ...helpers.route_helper import (
+    get_account_response_data,
+    get_form_input_value,
+    init_response_vars,
+)
 from ...helpers.ui_db_texts_helper import add_msg_success, add_msg_error, add_msg_final
 
 from ..wtforms import RegisterForm

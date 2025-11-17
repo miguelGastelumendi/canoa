@@ -62,7 +62,7 @@ class UserDataFiles(SQLABaseTable):
     ticket = Column(String(40), unique=True)
     id_sep = Column(Integer)  # fk
     id_users = Column(Integer)  # fk
-    log_file_name = Column(String(200)) # use in case of error
+    log_file_name = Column(String(200))  # use in case of error
     # register, file info
     file_name = Column(String(80))
     file_size = Column(Integer)
@@ -133,9 +133,7 @@ class UserDataFiles(SQLABaseTable):
         elif len(rows) == 1:
             return rows[0]
         else:
-            raise KeyError(
-                f"The ticket {uTicket} return several records, expecting only one."
-            )
+            raise KeyError(f"The ticket {uTicket} return several records, expecting only one.")
 
     @staticmethod
     def _ins_or_upd(isInsert: bool, uTicket: str, **kwargs) -> None:
@@ -230,7 +228,7 @@ class Schema(SQLABaseTable):
         return row
 
     @staticmethod
-    def get_schemas(col_names: OptListOfStr = None, order_by: str = '') -> DBRecords:
+    def get_schemas(col_names: OptListOfStr = None, order_by: str = "") -> DBRecords:
         """
         Returns:
           All records from Schema table, optional of selected fields, order by the order_by, eg 'name ASC'
@@ -370,9 +368,7 @@ class Sep(SQLABaseTable):
                 icon_content = SepIconMaker.empty_content if is_empty else sep.icon_svg
             except Exception as e:
                 icon_content = SepIconMaker.error_content
-                sidekick.app_log.error(
-                    f"Error retrieving icon content of SEP {id}: [{e}]."
-                )
+                sidekick.app_log.error(f"Error retrieving icon content of SEP {id}: [{e}].")
             return icon_content
 
         e, msg_error, icon_content = db_fetch_rows(_get_data)
@@ -393,7 +389,7 @@ class Sep(SQLABaseTable):
 
             try:
                 for sep_id, new_index in items:
-                    db_session.query(Sep).filter_by(id=sep_id).update({"ui_order": new_index })
+                    db_session.query(Sep).filter_by(id=sep_id).update({"ui_order": new_index})
 
                 db_session.commit()
 
@@ -401,9 +397,7 @@ class Sep(SQLABaseTable):
                 db_session.rollback()
                 raise AppStumbled("Error save Schema ui-order.", task_code, False, e)
 
-
         return True
-
 
     @staticmethod
     def save(sep_row: "Sep", schema_changed: bool, batch_code: str) -> int:
@@ -448,9 +442,7 @@ class Sep(SQLABaseTable):
 
         def _get_data(db_session: Session) -> SvgContent:
             # see sep__sch_name_lower_uix
-            stmt = select(Sep.name_lower).where(
-                Sep.id_schema == id_schema, Sep.name_lower == func.lower(sep_name)
-            )
+            stmt = select(Sep.name_lower).where(Sep.id_schema == id_schema, Sep.name_lower == func.lower(sep_name))
             name_exists = db_session.query(exists(stmt)).scalar()
             return name_exists
 
@@ -464,11 +456,7 @@ class Sep(SQLABaseTable):
 
         def _get_data(db_session: Session) -> List[Sep]:
             sel_cols = col_names_to_columns(col_names, Sep.__table__.columns)
-            stmt = (
-                select(*sel_cols)
-                .where(and_(Sep.id_schema == scm_id, Sep.visible == True))
-                .order_by(Sep.ui_order)
-            )
+            stmt = select(*sel_cols).where(and_(Sep.id_schema == scm_id, Sep.visible == True)).order_by(Sep.ui_order)
             rows = db_session.execute(stmt).all()
             recs = DBRecords(stmt, rows)
             return recs
@@ -509,12 +497,8 @@ class ReceivedFiles(SQLABaseTable):
     report_warns = Column(Integer)
 
     user_receipt = Column(String(15))
-    email_sent = Column(
-        Boolean
-    )  # index (email_sent, had_reception_error, user_id, registered_at)
-    had_reception_error = Column(
-        Boolean
-    )  # index (email_sent, had_reception_error, user_id, registered_at)
+    email_sent = Column(Boolean)  # index (email_sent, had_reception_error, user_id, registered_at)
+    had_reception_error = Column(Boolean)  # index (email_sent, had_reception_error, user_id, registered_at)
 
     @staticmethod
     def get_records(
@@ -541,8 +525,7 @@ class ReceivedFiles(SQLABaseTable):
             else:
                 # For grid
                 stmt = stmt.where(
-                    ReceivedFiles.had_reception_error == had_reception_error,
-
+                    # 2025.11.11 debuging ReceivedFiles.had_reception_error == had_reception_error,
                     # and_( # and_(  mgd-bug-2025-10-01
                     #     ReceivedFiles.email_sent == email_sent,
                     #     ReceivedFiles.had_reception_error == had_reception_error,
@@ -595,9 +578,7 @@ class ReceivedFilesCount(SQLABaseTable):
 
             return recs
 
-        _, _, received_files_count = db_fetch_rows(
-            _get_data, ReceivedFilesCount.__tablename__
-        )
+        _, _, received_files_count = db_fetch_rows(_get_data, ReceivedFilesCount.__tablename__)
         return received_files_count
 
 
@@ -662,9 +643,7 @@ class MgmtSepsUser(SQLABaseTable):
         return MgmtSepsUser.id_to_code.encode(id)
 
     @staticmethod
-    def _get_sep_list(
-        user_id: Optional[int] = None, sep_id: Optional[int] = None
-    ) -> DBRecords:
+    def _get_sep_list(user_id: Optional[int] = None, sep_id: Optional[int] = None) -> DBRecords:
         """⚠️
         any change here must be repeated in
         carranca/private/UserSep.py:UserSep
@@ -690,7 +669,7 @@ class MgmtSepsUser(SQLABaseTable):
         return MgmtSepsUser._get_sep_list(user_id)
 
     @staticmethod
-    def get_sep_row(sep_id: int) -> "MgmtSepsUser":
+    def get_sep_row(sep_id: int) -> Optional["MgmtSepsUser"]:
         """Get one sep"""
         records: DBRecords = MgmtSepsUser._get_sep_list(None, sep_id)
         return None if records is None or (records.count == 0) else records[0]

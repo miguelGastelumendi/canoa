@@ -9,7 +9,9 @@ Equipe da Canoa  2024 — 2025
 mgd
 """
 
-from enum import IntEnum
+# type: ignore[reportUnknownMemberType]
+
+from enum import IntEnum, StrEnum
 from typing import Optional
 
 from ..helpers.py_helper import crc16, now_as_iso
@@ -26,10 +28,7 @@ def proper_user_exception(e: Exception, task_code: int) -> str:
         str: A detailed error message for support/administrative users, or a
              code (e-code) that is searchable in the log
     """
-    from .app_context_vars import (
-        app_user,
-        sidekick,
-    )  # global_sidekick is not ready yet when this module is used
+    from .app_context_vars import app_user, sidekick  # global_sidekick is not ready yet when this module is used
 
     error_str = str(e)
     code = crc16(error_str)
@@ -65,7 +64,7 @@ class AppStumbled(Exception):
         logout: bool = False,
         is_fatal: bool = False,
         original_e: Optional[Exception] = None,
-        tech_info: Optional[str] = None
+        tech_info: Optional[str] = None,
     ):
         self.msg = msg
         self.error_code = error_code
@@ -119,12 +118,18 @@ class ModuleErrorCode(IntEnum):
     RECEIVED_FILES_MGMT = 700
 
 
+class HTTPStatusCode(StrEnum):
+    # this are key for table ui_items.name = <key>, section= 2 (secError)
+    CODE_400 = "HTTP-400"  # 400 Bad Request:
+    CODE_404 = "HTTP-404"  # 404 Not Found
+    CODE_405 = "HTTP-405"  # 404 Not Found
 
 
 class RaiseIf:
     """Flags to raise an error
     or just print the condition
     """
+
     ignite_no_sql_conn = True
 
 

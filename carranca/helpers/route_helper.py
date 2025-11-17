@@ -9,19 +9,20 @@ Equipe da Canoa -- 2024
 
 import requests
 from os import path
-from typing import Tuple, Optional
 from flask import redirect, request, url_for
+from typing import Tuple, Optional
 
 from .py_helper import is_str_none_or_empty, camel_to_snake, clean_text
 from .html_helper import URL_PATH_SEP
-from .types_helper import TemplateFileFullName
+# 2/3. This line produce the sidekick-incident
+from .jinja_helper import TemplateFileFullName
+from .types_helper import JinjaGeneratedHtml
 from ..common.UIDBTexts import UIDBTexts
 from .ui_db_texts_helper import get_db_texts
 
-# from ..common.app_context_vars import sidekick
 from ..config import BaseConfig
 
-ResponseData = Tuple[TemplateFileFullName, bool, UIDBTexts]
+ResponseData = Tuple[JinjaGeneratedHtml, bool, UIDBTexts]
 
 base_route_private = "private"
 base_route_public = "public"
@@ -29,11 +30,11 @@ base_route_static = "static"
 public_route__password_reset = "password_reset"
 templates_found = []
 
-MTD_GET= "GET"
+MTD_GET = "GET"
 MTD_POST = "POST"
 MTD_BOTH = [MTD_GET, MTD_POST]
 
-MTD_UNEXPECTED_ERROR = 'Unexpected Request Method. The procedure cannot be executed.'
+MTD_UNEXPECTED_ERROR = "Unexpected Request Method. The procedure cannot be executed."
 
 """
   ## Dynamic Route:
@@ -92,8 +93,10 @@ def index_route() -> str:
 def home_route() -> str:
     return private_route("home")
 
+
 def get_method() -> str:
     return request.method.upper()
+
 
 def is_method_get() -> bool:
     """
@@ -101,7 +104,7 @@ def is_method_get() -> bool:
     Raises a ValueError for unexpected request methods.
     """
     rm = get_method()
-    is_get = (rm == MTD_GET)
+    is_get = rm == MTD_GET
     if is_get:
         pass
     elif rm == MTD_POST:
@@ -114,7 +117,7 @@ def is_method_get() -> bool:
 
 def get_form_input_value(name: str, not_allowed: Optional[str] = "") -> str:
     text = request.form.get(name)
-    return '' if text is None else clean_text(text, not_allowed)
+    return "" if text is None else clean_text(text, not_allowed)
 
 
 def get_tmpl_full_file_name(tmpl: str, folder: str) -> TemplateFileFullName:
@@ -153,7 +156,7 @@ def _get_response_data(ui_db_section: str, tmpl_file_name: str, folder: str) -> 
     return tmpl_full_file_name, is_get, ui_db_texts
 
 
-def get_private_response_data(ui_texts_section: str, tmpl_base_name: str = '') -> ResponseData:
+def get_private_response_data(ui_texts_section: str, tmpl_base_name: str = "") -> ResponseData:
     """
     if tmpl_base_name is none is created based on ui_texts_section name
     eg:  receivedFilesMgmt -> received_files_mgmt.html.j2
@@ -166,7 +169,7 @@ def get_private_response_data(ui_texts_section: str, tmpl_base_name: str = '') -
     return _get_response_data(ui_texts_section, tmpl_base_name, base_route_private)
 
 
-def get_account_response_data(ui_texts_section: str, tmpl_base_name: str = '') -> ResponseData:
+def get_account_response_data(ui_texts_section: str, tmpl_base_name: str = "") -> ResponseData:
     """
     if tmpl_base_name is none is created based on ui_texts_section name
     eg:  receivedFilesMgmt -> received_files_mgmt.html.j2

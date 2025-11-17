@@ -89,7 +89,7 @@ def login():
     if is_method_get() and is_someone_logged():
         return redirect_to(home_route())
     else:
-        from .access_control.login import login as do_login
+        from .access_control.login import do_login
 
         return do_login()
 

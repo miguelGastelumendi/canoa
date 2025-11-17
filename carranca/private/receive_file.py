@@ -10,8 +10,9 @@ mgd
 
 
 from flask import request
-from typing import List
+from typing import TYPE_CHECKING, List
 from werkzeug.utils import secure_filename
+
 
 from ..public.ups_handler import ups_handler
 from ..common.app_context_vars import sidekick, app_user
@@ -39,20 +40,21 @@ from ..helpers.ui_db_texts_helper import (
     add_msg_final,
 )
 from .validate_process.ProcessData import ProcessData
-from .UserSep import UserSep, UserSepList, user_sep_dict
+
+if TYPE_CHECKING:
+    from .UserSep import UserSep, UserSepList, UserSepDict
 
 RECEIVE_FILE_DEFAULT_ERROR: str = "uploadFileError"
 
 # link em gd de test em mgd account https://drive.google.com/file/d/1yn1fAkCQ4Eg1dv0jeV73U6-KETUKVI58/view?usp=sharing
 
 
-def _do_sep_placeholderOption(fullname: str) -> UserSep:
+def _do_sep_placeholderOption(fullname: str) -> "UserSep":
     from .sep_icon import do_icon_get_url
     from .SepIconMaker import SepIconMaker
+    from .UserSep import UserSep
 
-    sep_fake = UserSep(
-        -1, "", "", fullname, "", False, SepIconMaker.none_file, do_icon_get_url("")
-    )  # empty
+    sep_fake = UserSep(-1, "", "", fullname, "", False, SepIconMaker.none_file, do_icon_get_url(""))  # empty
     return sep_fake
 
 
@@ -62,33 +64,27 @@ def receive_file() -> JinjaTemplate:
 
     # utils
     def _get_template(error_code) -> JinjaTemplate:
-        seps: UserSepList = []
-        ui_db_texts[UITextsKeys.Msg.tech] = ''
-        ui_db_texts[UITextsKeys.Msg.info] = ''
+        seps: "UserSepList" = []
+        ui_db_texts[UITextsKeys.Msg.tech] = ""
+        ui_db_texts[UITextsKeys.Msg.info] = ""
         if error_code != 0:
             ui_db_texts[UITextsKeys.Msg.tech] = sidekick.log_filename
-        elif not (seps:= [sep for sep in app_user.seps]):
+        elif not (seps := [sep for sep in app_user.seps]):
             ui_db_texts[UITextsKeys.Msg.warn] = ui_db_texts["noSEPassigned"]
             ui_db_texts[UITextsKeys.Msg.display_only_msg] = True
-            seps: UserSepList = []
+            seps: "UserSepList" = []
         elif len(seps) > 1:
             sep_placeholder_option = _do_sep_placeholderOption(ui_db_texts["placeholderOption"])
             seps.insert(0, sep_placeholder_option)
 
-        ui_db_texts[UITextsKeys.Form.icon_url] = seps[0].icon_url if len(seps) > 0 else ''
-        dict_seps: List[user_sep_dict] = [class_to_dict(sep) for sep in seps]
-        tmpl= process_template(
-            tmpl_rfn
-            , form=tmpl_form
-            , seps=dict_seps
-            , **ui_db_texts.dict()
-            , **js_ui_dictionary()
-        )
+        ui_db_texts[UITextsKeys.Form.icon_url] = seps[0].icon_url if len(seps) > 0 else ""
+        dict_seps: List[UserSepDict] = [class_to_dict(sep) for sep in seps]
+        tmpl = process_template(tmpl_rfn, form=tmpl_form, seps=dict_seps, **ui_db_texts.dict(), **js_ui_dictionary())
         return tmpl
 
     def _log_error(msg_id: str, code: int, msg: str = "", fatal: bool = False) -> int:
         e_code = ModuleErrorCode.RECEIVE_FILE_ADMIT.value + code
-        #AQUI BUG
+        # AQUI BUG
         log_error = (
             add_msg_final(msg_id, ui_db_texts, e_code, msg)
             if fatal
@@ -209,7 +205,6 @@ def receive_file() -> JinjaTemplate:
         msg = add_msg_final("receiveFileException", ui_db_texts, task_code)
         _, tmpl_rfn, ui_db_texts = ups_handler(task_code, msg, e)
         tmpl = process_template(tmpl_rfn, **ui_db_texts.dict())
-
 
     return tmpl
 

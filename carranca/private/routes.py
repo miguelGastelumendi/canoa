@@ -18,7 +18,7 @@ from ..helpers.pw_helper import internal_logout, nobody_is_logged
 from ..public.ups_handler import ups_handler
 from ..helpers.uiact_helper import UiActResponse, UiActResponseProxy, UiActResponseKeys
 from ..helpers.jinja_helper import process_template
-from ..helpers.types_helper import JinjaTemplate, JsonText
+from ..helpers.types_helper import JinjaGeneratedHtml, JinjaTemplate, JsonText
 from ..helpers.js_consts_helper import js_form_cargo_id, js_form_sec_check
 from ..helpers.route_helper import (
     get_private_response_data,
@@ -83,12 +83,12 @@ def create_ups_tmpl(error: str, code: int = 0):
     return tmpl
 
 
-def uiact_response(code: str) -> Tuple[JinjaTemplate, UiActResponse]: #| None]: Too many warns with None
+def uiact_response(code: str) -> Tuple[JinjaTemplate, UiActResponse]:  # | None]: Too many warns with None
     """
     This func decodes a uiact response
     """
 
-    error_tmpl = ''
+    error_tmpl = ""
     uiact_rsp = None
     try:
         rqs_method = get_method()
@@ -98,19 +98,23 @@ def uiact_response(code: str) -> Tuple[JinjaTemplate, UiActResponse]: #| None]: 
 
         def _get_result() -> Tuple[JinjaTemplate, UiActResponse | None]:
             uiact_rsp = None
-            error_tmpl: JinjaTemplate = ''
-            cmd_text: JsonText = request.args.get(js_form_cargo_id, '') if rqs_method == MTD_GET else request.form.get(js_form_cargo_id, '')
+            error_tmpl: JinjaTemplate = ""
+            cmd_text: JsonText = (
+                request.args.get(js_form_cargo_id, "")
+                if rqs_method == MTD_GET
+                else request.form.get(js_form_cargo_id, "")
+            )
             if is_str_none_or_empty(cmd_text):
-                error_tmpl = create_ups_tmpl( _get_error("empty") )
-            elif not (uiact_rsp:= UiActResponse(cmd_text)):
+                error_tmpl = create_ups_tmpl(_get_error("empty"))
+            elif not (uiact_rsp := UiActResponse(cmd_text)):
                 error_tmpl = create_ups_tmpl(_get_error("none"))
             elif is_str_none_or_empty(uiact_rsp.action):
                 error_tmpl = create_ups_tmpl(_get_error("action: ''"))
 
             return error_tmpl, uiact_rsp
 
-        if rqs_method == MTD_POST and not is_str_none_or_empty(msg_error:= js_form_sec_check()):
-            error_tmpl = create_ups_tmpl(msg_error)
+        if rqs_method == MTD_POST and not is_str_none_or_empty(msg_error_key := js_form_sec_check()):
+            error_tmpl = create_ups_tmpl(msg_error_key)
         elif code == js_form_cargo_id:
             # the code is send via a html form's input or on the parameter
             error_tmpl, uiact_rsp = _get_result()
@@ -136,30 +140,32 @@ def grid_route(code: str, editor: str, show_grid: Callable) -> JinjaTemplate:
     if nobody_is_logged():
         return redirect_to(login_route())
 
-    go_tmpl: JinjaTemplate = ''
-    tmpl, uiact_rsp = uiact_response(code)
+    jHtml: JinjaGeneratedHtml = ""
+    error_tmpl, uiact_rsp = uiact_response(code)
 
-    if tmpl:
-        go_tmpl= tmpl
+    if error_tmpl:
+        jHtml = error_tmpl
     elif uiact_rsp and uiact_rsp.code == UiActResponseProxy.show:
-        go_tmpl= show_grid()
+        jHtml = show_grid()
     elif uiact_rsp:
+
         def _goto(item_code: str) -> str:
             url = private_route(editor, code=item_code)
             return redirect_to(url)
 
         match uiact_rsp.action:
             case UiActResponseKeys.insert:
-                go_tmpl = _goto(UiActResponseProxy.add)
+                return _goto(UiActResponseProxy.add)
             case UiActResponseKeys.edit:
                 data = uiact_rsp.encode()
-                go_tmpl = _goto(data)
+                jHtml = _goto(data)
             case UiActResponseKeys.delete:
-                go_tmpl = create_ups_tmpl("The `delete` procedure is under development.")
+                jHtml = create_ups_tmpl("The `delete` procedure is under development.")
             case _:
-                go_tmpl = create_ups_tmpl(f"Unknown route action '{uiact_rsp.action}'.")
+                jHtml = create_ups_tmpl(f"Unknown route action '{uiact_rsp.action}'.")
 
-    return go_tmpl
+    return jHtml
+
 
 @login_required
 @bp_private.route("/sep_grid/<code>", methods=MTD_BOTH)
@@ -203,12 +209,15 @@ def scm_export(code: str = "?"):
         return error_tmpl
     elif uiact_rsp.code == UiActResponseProxy.show:
         from .scm_export_ui_show import scm_export_ui_show
+
         return scm_export_ui_show(uiact_rsp)
     elif uiact_rsp.action == UiActResponseKeys.export:
         from .scm_export_db import scm_export_db
+
         return scm_export_db(uiact_rsp)
     elif uiact_rsp.action == UiActResponseKeys.save:
         from .scm_export_ui_save import scm_export_ui_save
+
         return scm_export_ui_save(uiact_rsp)
 
     return redirect_to(login_route())
@@ -309,13 +318,18 @@ def received_file_download():
 @bp_private.route("/confirm_user_email", methods=[MTD_GET])
 def confirm_user_email():
     """
-    Tests and confirms that the user email and sending functionality
-    is configured and working correctly, for the user's account.
+    Sends a test email to the user's registered address to verify
+    email deliverability and sending engine functionality.
     """
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
         from .confirm_email import confirm_email
+
+        from ..common.app_context_vars import __prepare_user_seps
+        # get_user_sep TEST
+        seps = __prepare_user_seps()
+        print(seps)
 
         tmpl = confirm_email(current_user.email, current_user.username)
         return tmpl
@@ -335,9 +349,9 @@ def change_password():
     if nobody_is_logged():
         return redirect_to(login_route())
     else:
-        from .access_control.password_change import do_password_change
+        from .access_control.password_change import do_change_password
 
-        return do_password_change()
+        return do_change_password()
 
 
 @bp_private.route("/logout")

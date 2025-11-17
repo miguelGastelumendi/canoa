@@ -1,43 +1,45 @@
+// ==========================================================================
+//  Award-winning tidy configuration by gemini
+//  Project-level VS Code settings
+//  Last updated: 2025-11-10
+//  Verified for VS Code ≥ 1.95 and Python ≥ 3.13
+//  https://chatgpt.com/share/69121fc6-0d0c-8013-8708-4bf31e095a59
+// ==========================================================================
+
 {
-    // === Pylance Performance/Analysis Settings ===
+   // === General Editor Settings ===
+   "editor.formatOnSave": true,
 
-    // CHANGE 1: Use 'openFilesOnly' to restrict analysis to files currently open in the editor.
-    // This dramatically reduces CPU load and lag.
-    "python.analysis.diagnosticMode": "openFilesOnly",
+   // === Language-specific (Python) Overrides ===
+   "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.formatOnSave": true,
+      "editor.tabSize": 4
+   },
 
-    // Indexing is often necessary for auto-completion and Go to Definition on larger projects.
-    // However, if you are certain it hurts performance, keeping it false is fine.
-    "python.analysis.indexing": false,
+   // === GitHub Copilot ===
+   // (Disabled or custom configuration placeholder)
+   "github.copilot.enable": { /* Copilot disabled for this workspace */ },
 
-    // CHANGE 2: Give Pylance more attempts to resolve complex internal imports before giving up.
-    "python.analysis.maxImportResolutionTries": 10,
+   // === Python Analysis / Pylance Settings ===
+   "python.analysis.autoSearchPaths": true,
+   "python.analysis.diagnosticMode": "openFilesOnly",
+   "python.analysis.exclude": [
+      "**/__pycache__",
+      ".env",
+      ".git",
+      ".venv",
+      "venv"
+   ],
+   "python.analysis.importFormat": "relative",
+   "python.analysis.indexing": false,
+   "python.analysis.maxImportResolutionTries": 10,
+   "python.analysis.typeCheckingMode": "standard",
+   "python.analysis.extraPaths": [
+        ".env/Lib/site-packages"
+   ],
 
-    "python.analysis.importFormat": "relative",
-    "python.analysis.autoSearchPaths": true,
-
-    // This list looks good for excluding standard non-source code directories.
-    "python.analysis.exclude": [
-        "**/__pycache__",
-        ".git",
-        ".env",
-        "venv",
-        ".venv"
-    ],
-
-    // This is good for strong typing!
-    "python.analysis.typeCheckingMode": "standard",
-
-    // === Other Settings ===
-    "github.copilot.enable": { /* ... (These settings are fine, Copilot is disabled) ... */ },
-
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true,
-        "editor.tabSize": 4,
-    },
-    "python-envs.pythonProjects": [],
-
-    // This looks correct, assuming .env/bin/python is your interpreter path
-    "python.defaultInterpreterPath": ".env/bin/python",
-    "editor.formatOnSave": true
+   // === Environment and Interpreter Settings ===
+   "python.defaultInterpreterPath": ".env\\Scripts\\python.exe",
+   "python-envs.pythonProjects": []
 }
